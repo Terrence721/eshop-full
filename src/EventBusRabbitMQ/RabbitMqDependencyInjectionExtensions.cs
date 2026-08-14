@@ -1,5 +1,6 @@
 using eShop.EventBusRabbitMQ;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 
 namespace Microsoft.Extensions.Hosting;
 
@@ -32,9 +33,22 @@ public static class RabbitMqDependencyInjectionExtensions
 
         // Abstractions on top of the core client API
         builder.Services.AddSingleton<RabbitMQTelemetry>();
-        builder.Services.AddSingleton<IEventBus, RabbitMQEventBus>();
-        // Start consuming messages as soon as the application starts
-        builder.Services.AddSingleton<IHostedService>(sp => (RabbitMQEventBus)sp.GetRequiredService<IEventBus>());
+        builder.Services.AddSingleton<RabbitMQEventBus>();
+
+        // IEventBus resolves to a Decorator chain wrapping the bare RabbitMQEventBus:
+        // resilience (outermost, so each retry attempt re-enters telemetry) then telemetry.
+        builder.Services.AddSingleton<IEventBus>(sp =>
+        {
+            IEventBus bus = sp.GetRequiredService<RabbitMQEventBus>();
+            bus = new TelemetryEventBusDecorator(bus, sp.GetRequiredService<RabbitMQTelemetry>());
+            bus = new ResilientEventBusDecorator(bus, sp.GetRequiredService<IOptions<EventBusOptions>>());
+            return bus;
+        });
+
+        // Start consuming messages as soon as the application starts. This resolves the same
+        // RabbitMQEventBus singleton registered above, not the decorated IEventBus, so the
+        // connection/channel it opens in StartAsync is the one PublishAsync calls flow through.
+        builder.Services.AddSingleton<IHostedService>(sp => sp.GetRequiredService<RabbitMQEventBus>());
 
         return new EventBusBuilder(builder.Services);
     }
