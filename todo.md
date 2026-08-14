@@ -130,4 +130,14 @@ Not yet merged — opened automatically within hours of `.github/workflows/*` la
 
 ### CI status
 
-`eShop Pull Request Validation`, `eShop Pull Request Validation - .NET MAUI`, and `Playwright Tests for eShop` are red right now, on purpose — `eShop.slnx`/`eShop.Web.slnf` already reference all 19 projects but only 1 (`EventBus`, incomplete) exists on disk. Decided with the user (2026-08-14) to leave these red rather than mask them: it's the honest signal for a repo built incrementally in the open, and they'll go green naturally once enough projects exist to actually build. GitHub's own auto-injected "Automatic Dependency Submission" check is red for the same reason.
+Originally `eShop.slnx`/`eShop.Web.slnf` referenced all 19 projects while only 1 (`EventBus`) existed on disk, which failed every build/test workflow and GitHub's own auto-injected "Automatic Dependency Submission" check. Fixed 2026-08-14 by trimming the solution files to only list projects that actually exist, adding each one incrementally as it's added (see `docs/architecturedesign.md` Section 3) — decided with the user to keep this practice going forward rather than list projects upfront again.
+
+Current state:
+
+- ✅ **`eShop Pull Request Validation`** — green. Its `Test` step also needed a fix: `dotnet test --solution` hard-fails with "No test projects were found" when the solution has zero test projects (structural, not a real failure, since `tests/` hasn't been added yet) — the workflow now tolerates that specific case while still failing on any real test failure.
+- ✅ **`dynamic / submit-nuget`** (GitHub's Automatic Dependency Submission) — green, now that a real restorable project exists.
+- ✅ **CodeQL** — green (now analyzing both `csharp` and `javascript-typescript`, auto-detected once real source existed).
+- 🔴 **`eShop Pull Request Validation - .NET MAUI`** — red, correctly: `ClientApp.csproj` doesn't exist yet, so there's genuinely nothing to build.
+- 🔴 **`Playwright Tests for eShop`** — red, correctly: needs a live `eShop.AppHost`-launched instance, which can't exist until `eShop.AppHost` is added (deliberately last).
+
+The remaining two red checks are honest signals, not bugs — they'll go green naturally once `ClientApp` and `eShop.AppHost` respectively exist.
