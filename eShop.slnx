@@ -2,6 +2,7 @@
   <Folder Name="/src/">
     <Project Path="src/EventBus/EventBus.csproj" />
     <Project Path="src/EventBusRabbitMQ/EventBusRabbitMQ.csproj" />
+    <Project Path="src/eShop.ServiceDefaults/eShop.ServiceDefaults.csproj" />
   </Folder>
   <Folder Name="/Solution Items/">
     <File Path=".editorconfig" />
