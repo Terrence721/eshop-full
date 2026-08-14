@@ -8,9 +8,7 @@ public record IntegrationEvent
         CreationDate = DateTime.UtcNow;
     }
 
-    [JsonInclude]
-    public Guid Id { get; set; }
+    public Guid Id { get; init; }
 
-    [JsonInclude]
-    public DateTime CreationDate { get; set; }
+    public DateTime CreationDate { get; init; }
 }
