@@ -120,7 +120,7 @@ Migration order is **foundation first**: shared/foundation projects, then the se
 | 15 | `WebApp` | Not started |
 | 16 | `WebAppComponents` | Not started |
 | 17 | `HybridApp` | Not started |
-| 18 | `ClientApp` (.NET MAUI) | Not started |
+| 18 | `ClientApp` (.NET MAUI) | Not started — **flag when reached**: uncomment the `Build`/`Test` steps in `.github/workflows/pr-validation-maui.yml` (commented out since `src/ClientApp/ClientApp.csproj` doesn't exist yet) |
 | 19 | `eShop.AppHost` | Not started — deliberately last, references every other project — **flag when reached**: uncomment the `Install Playwright Browsers`/`Run Playwright tests`/`upload-artifact` steps in `.github/workflows/playwright.yml` (commented out since `playwright.config.ts`'s `webServer` needs this project to launch the app) |
 | 20 | `tests/` (5 test projects) | Not started |
 | 21 | `build/` tooling | Not started |
@@ -144,8 +144,9 @@ Current state:
 
 - ✅ **`eShop Pull Request Validation`** — green. Its `Test` step also needed a fix: `dotnet test --solution` hard-fails with "No test projects were found" when the solution has zero test projects (structural, not a real failure, since `tests/` hasn't been added yet) — the workflow now tolerates that specific case while still failing on any real test failure.
 - ✅ **`dynamic / submit-nuget`** (GitHub's Automatic Dependency Submission) — green, now that a real restorable project exists.
-- ✅ **CodeQL** — green (now analyzing both `csharp` and `javascript-typescript`, auto-detected once real source existed).
-- 🔴 **`eShop Pull Request Validation - .NET MAUI`** — red, correctly: `ClientApp.csproj` doesn't exist yet, so there's genuinely nothing to build.
-- 🔴 **`Playwright Tests for eShop`** — red, correctly: needs a live `eShop.AppHost`-launched instance, which can't exist until `eShop.AppHost` is added (deliberately last).
+- ✅ **CodeQL** — green. Originally GitHub's Default setup, which extracted C# with `build-mode: none` and got flagged for "Low C# analysis quality" (55% call-target resolution, 67% known-type expressions, both under the 85% threshold — can't resolve NuGet package types or cross-project references without an actual build). Switched to Advanced setup (`.github/workflows/codeql.yml`) with `build-mode: manual` for `csharp` (runs `dotnet build eShop.Web.slnf` first); `javascript-typescript` and `actions` stay `build-mode: none`.
+- ✅ **`Playwright Tests for eShop`** — green. Three real fixes plus one deferral: corepack wasn't enabled before `yarn install`, so the runner's stock Yarn 1.22.22 couldn't read `package.json`'s `"packageManager": "yarn@4.18.0"` pin; the HTTPS dev-cert step tried `--trust`, which fails on Ubuntu (no OS trust store) even though nothing needs it trusted (tests run over HTTP via `ESHOP_USE_HTTP_ENDPOINTS`); and the `Install Playwright Browsers`/`Run Playwright tests`/`upload-artifact` steps are commented out until `eShop.AppHost` exists (see row 19 above) — that project needs to exist for `playwright.config.ts`'s `webServer` to launch the app at all.
+- ✅ **`eShop Pull Request Validation - .NET MAUI`** — green. `Build`/`Test` steps commented out until `ClientApp` exists (see row 18 above); the workload-install steps stay live since a broken workload feed is still a real regression worth catching.
+- All four workflows also picked up explicit `permissions: contents: read` after CodeQL's `actions` language scan flagged `pr-validation.yml`, `pr-validation-maui.yml`, and `playwright.yml` for not declaring permissions (default `GITHUB_TOKEN` scope is broader than any of them need).
 
-The remaining two red checks are honest signals, not bugs — they'll go green naturally once `ClientApp` and `eShop.AppHost` respectively exist.
+Every currently-red step in the two commented-out sections above is an honest, tracked gap, not a bug — they'll come back once `ClientApp` and `eShop.AppHost` respectively exist.
