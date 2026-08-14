@@ -5,7 +5,7 @@
 
 This document describes the architecture eShop-full is being built toward — verified against the real source app (Microsoft's [dotnet/eShop](https://github.com/dotnet/eShop), snapshotted locally at `F:\eShop-main\eShop-main`) and against what has actually landed in this repo, not a generic description of what an e-commerce microservices app "usually" looks like. See [todo.md](../todo.md) for exactly how much of this exists right now, and the [project board](https://github.com/users/Terrence721/projects/5) for the live per-project status.
 
-**Current status, stated plainly:** as of this writing, `src/Shared/` (2 linked-source files) is added and reviewed, `src/EventBus/EventBus.csproj` exists but its 8 source files don't yet, and none of the other 18 projects exist on disk. Everything below describing the full system is the target this repo is being built toward one file at a time, not a claim that it already runs end-to-end.
+**Current status, stated plainly:** as of this writing, `src/Shared/` (2 linked-source files), `EventBus`, and `EventBusRabbitMQ` are added and reviewed, and none of the other 17 projects exist on disk. Everything below describing the full system is the target this repo is being built toward one file at a time, not a claim that it already runs end-to-end.
 
 ## 1. What this is
 
@@ -32,8 +32,8 @@ Target layout, verified against the source app (✅ = exists in this repo right 
 eShop-full/
 ├── src/
 │   ├── Shared/                  ✅ linked-source utilities (not a .csproj — see Section 4)
-│   ├── EventBus/                ✅ .csproj added, source files pending
-│   ├── EventBusRabbitMQ/
+│   ├── EventBus/                ✅ added and reviewed
+│   ├── EventBusRabbitMQ/        ✅ added and reviewed — see Section 9
 │   ├── eShop.ServiceDefaults/
 │   ├── IntegrationEventLogEF/
 │   ├── Identity.API/
@@ -94,7 +94,15 @@ Once `eShop.AppHost` exists: `dotnet run --project src/eShop.AppHost/eShop.AppHo
 
 **All three build/test workflows are red right now, on purpose** — they reference `eShop.Web.slnf`/`ClientApp`, and only 1 of 19 projects exists so far. See `todo.md`'s "CI status" for the reasoning behind leaving this visible rather than masking it.
 
-## 8. Where to go next
+## 9. Decorator for cross-cutting concerns
+
+This is a deliberately designed fork, not a copy-paste port — upstream's structure is a starting point to evaluate, not a constraint to preserve. The clearest example so far: `EventBusRabbitMQ`'s upstream `RabbitMQEventBus` class owned RabbitMQ connection/channel/publish/consume plumbing *and* OpenTelemetry tracing *and* Polly retry logic, all in one class. Digging into why turned up two real bugs living in that mixing — a null-conditional (`?.`) that silently never threw the exception it looked like it was guarding, and a Polly `Execute` vs `ExecuteAsync` mismatch that made the retry pipeline inert for the exact exceptions it was configured to catch (verified against the actual `Polly.Core` assembly, not assumed — see `todo.md`'s `EventBusRabbitMQ` section for both).
+
+The fix was a **Decorator split**: `IEventBus` is now implemented three times — a bare `RabbitMQEventBus` (transport only), wrapped by `TelemetryEventBusDecorator` (OpenTelemetry), wrapped by `ResilientEventBusDecorator` (Polly retry, now using the correct async API). Each concern is isolated enough to reason about — and get right — on its own.
+
+That's the template for the rest of this build, not a one-off: as `eShop.ServiceDefaults` and `Ordering.API` (MediatR's `IPipelineBehavior<TRequest,TResponse>` is the same idea applied to the CQRS pipeline) land, cross-cutting concerns get layered on as decorators around a plain implementation rather than mixed into it. Not every project needs the same treatment, though — e.g. `Catalog.API` (EF Core-backed) and `Basket.API` (Redis-backed) call for different data-access patterns given how differently queryable their stores are, a call to make honestly when each project is actually added rather than forced into one shape now.
+
+## 10. Where to go next
 
 - Live progress and evidence trail: [todo.md](../todo.md)
 - Per-project Kanban status: [GitHub Project board](https://github.com/users/Terrence721/projects/5)
