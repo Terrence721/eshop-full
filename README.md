@@ -11,6 +11,7 @@ A reference .NET application implementing an e-commerce website using a services
 - **[`todo.md`](todo.md)** — the phase-by-phase log of everything done and everything still open. This is the source of truth for progress.
 - **[GitHub Project board](https://github.com/users/Terrence721/projects/5)** — a Scrum-style Backlog/Planned/In Progress/Verification & QA/Done view of the same work, for a quick at-a-glance status without reading the full log. Kept in sync with [`todo.md`](todo.md).
 - **[`docs/architecturedesign.md`](docs/architecturedesign.md)** — how this repo is put together and the reasoning behind the file-by-file migration approach.
+- **[Wiki](https://github.com/Terrence721/eshop-full/wiki)** — short pointers per completed piece of work (SDK/build config, package-version research, CI/tooling, `Shared`, `EventBus`), each linking back to the real source rather than repeating it.
 
 ## Getting Started
 
