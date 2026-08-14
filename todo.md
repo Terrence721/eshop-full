@@ -21,7 +21,7 @@ A living list of what's done and what's left on this build. This is an independe
 | `EventBusRabbitMQ` | All 6 source files added, one real bug found and fixed — see "EventBusRabbitMQ" below |
 | `eShop.ServiceDefaults` | All 7 source files added, several real fixes found and made — see "eShop.ServiceDefaults" below |
 
-**Still to do:** 16 of 19 `.csproj` projects, plus `tests/` and `build/` — see the "Still to do" table below and [project board](https://github.com/users/Terrence721/projects/5) for the live board.
+**Still to do:** 15 of 18 `.csproj` projects, plus `tests/` and `build/` — see the "Still to do" table below and [project board](https://github.com/users/Terrence721/projects/5) for the live board. Project count changed 2026-08-15: `WebAppComponents`/`HybridApp` dropped, `WebBFF` added — see the "Frontend and API layer" section below.
 
 ## ✅ Done
 
@@ -133,7 +133,7 @@ Commits: `c430813`, `96ca024`, `8e7b556`, `e4db372`, `bb84b6b`, `3dd2a7e`, `81d1
 - `RabbitMQEventBus.cs` — found and fixed a real bug, present verbatim in upstream Microsoft source: `PublishAsync`'s `(await _rabbitMQConnection?.CreateChannelAsync()) ?? throw new InvalidOperationException("RabbitMQ connection is not open")` looks like it handles a null connection gracefully, but doesn't. The null-conditional (`?.`) short-circuits the *entire* parenthesized expression to a null `Task<IChannel>` when `_rabbitMQConnection` is null; `await`-ing a null task throws `NullReferenceException` immediately, so the `?? throw` branch is unreachable dead code — a caller hitting this path during startup (before `StartAsync` finishes setting the connection) would get an opaque NRE instead of the intended message. Fixed with an explicit `if (_rabbitMQConnection is null) throw ...` before the `await`, preserving the original message/intent.
 - `RabbitMqDependencyInjectionExtensions.cs` — no changes needed at first pass; the sole concrete `IEventBusBuilder` implementation, consistent with the abstraction `EventBus`'s `EventBusBuilderExtensions.cs` already builds on. Rewired below once the Decorator split landed.
 
-**Decorator split (2026-08-14):** upstream fidelity is no longer this project's design constraint — see [architecturedesign.md Section 9](docs/architecturedesign.md#9-decorator-for-cross-cutting-concerns) for the fork-wide principle this established. `RabbitMQEventBus` mixed connection/channel/publish/consume plumbing with cross-cutting telemetry and resilience concerns in one class; split into three `IEventBus` implementations composed as `ResilientEventBusDecorator` → `TelemetryEventBusDecorator` → bare `RabbitMQEventBus`.
+**Decorator split (2026-08-14):** upstream fidelity is no longer this project's design constraint — see [architecturedesign.md Section 8](docs/architecturedesign.md#8-decorator-for-cross-cutting-concerns) for the fork-wide principle this established. `RabbitMQEventBus` mixed connection/channel/publish/consume plumbing with cross-cutting telemetry and resilience concerns in one class; split into three `IEventBus` implementations composed as `ResilientEventBusDecorator` → `TelemetryEventBusDecorator` → bare `RabbitMQEventBus`.
 
 That investigation turned up a second real bug, more significant than the first, also present verbatim in upstream Microsoft source: `PublishAsync` ran its publish step through `_pipeline.Execute(async () => {...})`. Verified against the actual `Polly.Core 8.6.6` assembly (via a throwaway console app reflecting `ResiliencePipeline`'s real method set, not assumed) that this binds to the **synchronous** `Execute<TResult>(Func<TResult> callback)` with `TResult` inferred as `Task` — it invokes the lambda once and treats the returned `Task` object itself as the outcome, without awaiting it. Any exception thrown from inside the lambda after its first `await` (i.e. from `channel.BasicPublishAsync`, exactly where `BrokerUnreachableException`/`SocketException` would occur) happens after `Execute` has already returned, so the retry pipeline's `ShouldHandle` never observes it — the retry logic was inert for the exact failures it was configured to catch. `ResilientEventBusDecorator` fixes this using the real `ExecuteAsync<TState>(Func<TState, CancellationToken, ValueTask>, TState, CancellationToken)` overload instead, which genuinely awaits the inner call.
 
@@ -145,7 +145,7 @@ No RabbitMQ broker exists yet to integration-test the retry fix end-to-end (no `
 
 ### Design pattern backlog
 
-Not implemented yet — raised during the 2026-08-14 pattern scan that produced the `EventBusRabbitMQ` Decorator split (see [architecturedesign.md Section 9](docs/architecturedesign.md#9-decorator-for-cross-cutting-concerns)), tracked here plus a Backlog card each on the [project board](https://github.com/users/Terrence721/projects/5) so they surface again when the relevant project is actually added rather than being forgotten in chat history:
+Not implemented yet — raised during the 2026-08-14 pattern scan that produced the `EventBusRabbitMQ` Decorator split (see [architecturedesign.md Section 8](docs/architecturedesign.md#8-decorator-for-cross-cutting-concerns)), tracked here plus a Backlog card each on the [project board](https://github.com/users/Terrence721/projects/5) so they surface again when the relevant project is actually added rather than being forgotten in chat history:
 
 | Item | Where it applies | What |
 |---|---|---|
@@ -173,6 +173,14 @@ Commits: `f3de7d1`, `2fbeb5b`, `9643055`, `8b66c22`, `c781a42`, `16a0dad`, `88ae
 
 Commits: `98c14e3`, `27611d0`, `3594f5a`, `4f14d23`, `8b2888a`, `73be164`, `2097b44`, `292fe9f`, `5fbea93`, `f10775b`, `1cf5491`, `478daeb`.
 
+### Frontend and API layer (decided 2026-08-15, not built yet)
+
+Three related decisions made while planning `WebApp`, ahead of actually building it — recorded here so they aren't lost before that work starts. Full reasoning in [architecturedesign.md Section 9](docs/architecturedesign.md#9-frontend-react-instead-of-blazor).
+
+- **`WebApp` goes React, not Blazor.** A React + ASP.NET Core Web API split is a more common, more in-demand combination in the .NET job market than a Blazor frontend, and demonstrates a genuine full-stack split rather than staying single-language. `WebAppComponents`/`HybridApp` are dropped from the plan (not converted) — they only existed to share Blazor components between `WebApp` and the mobile shell, which no longer applies once `WebApp` isn't Blazor. Project count changed from upstream's 19 to this fork's 18 (`-2` for the drop, `+1` for `WebBFF` below). `ClientApp` (native .NET MAUI) is unaffected.
+- **New `WebBFF` project, using `Duende.BFF`.** Blazor Server implicitly acted as its own backend-for-frontend (its C# runs server-side, aggregating/orchestrating calls before anything reaches the browser); a React SPA has no server-side execution, so that goes away along with Blazor, not just the rendering tech. Mirrors the existing `Mobile App` → `Mobile BFF` → `Mobile API` shape already in [eShop's architecture diagram](img/eshop_architecture.png), applied to the web client instead of the browser calling `Catalog.API`/`Ordering.API`/`Basket.API` directly. `Duende.BFF` specifically because `Identity.API` is already Duende IdentityServer, and Duende publishes that package for exactly this scenario — keeps OAuth tokens server-side (httpOnly session cookie) instead of a JWT reachable from browser JS. Targeted for the week after 2026-08-14.
+- **`Basket.API` keeps gRPC, adds gRPC-Web.** The architecture diagram shows `Basket API` called via gRPC directly from the Blazor Web App — something Blazor Server can do natively that a browser SPA can't (no HTTP/2 trailer support in browsers). Decided against both replacing gRPC with REST and duplicating it with a second REST surface; `Basket.API` will add ASP.NET Core's first-party `Grpc.AspNetCore.Web` middleware instead, so the same service handles native gRPC (server-to-server) and gRPC-Web (`WebBFF`/`WebApp`, via a client like `@connectrpc/connect-web`) without a separate proxy. Flagged against `Basket.API`'s row below.
+
 ## 🚧 Still to do
 
 Migration order is **foundation first**: shared/foundation projects, then the services that depend on them, then the web frontends, then `eShop.AppHost` (references everything, so it goes last), then `tests/` and `build/`. See [project board](https://github.com/users/Terrence721/projects/5) for the live board — this table is the flat list.
@@ -185,7 +193,7 @@ Migration order is **foundation first**: shared/foundation projects, then the se
 | 4 | `IntegrationEventLogEF` | Not started |
 | 5 | `Identity.API` | Not started — **flag when reached**: verify `Duende.IdentityServer` 7.x→8.x breaking API/DB-schema changes against actual usage; also verify `AuthenticationExtensions.AddDefaultAuthentication`'s `ValidateAudience = true` (re-enabled 2026-08-15, was disabled in source) actually validates cleanly against real issued tokens — see "eShop.ServiceDefaults" above |
 | 6 | `Catalog.API` | Not started |
-| 7 | `Basket.API` | Not started |
+| 7 | `Basket.API` | Not started — **flag when reached**: add `Grpc.AspNetCore.Web` middleware so its gRPC service also serves gRPC-Web for `WebApp`/`WebBFF` — see "Frontend and API layer" below |
 | 8 | `Ordering.Domain` | Not started |
 | 9 | `Ordering.Infrastructure` | Not started |
 | 10 | `Ordering.API` | Not started — **flag when reached**: verify `MediatR` 12.5.0 usage compiles clean (pinned below source's original 13.0.0 per the license decision above) |
@@ -193,13 +201,12 @@ Migration order is **foundation first**: shared/foundation projects, then the se
 | 12 | `PaymentProcessor` | Not started |
 | 13 | `Webhooks.API` | Not started |
 | 14 | `WebhookClient` | Not started |
-| 15 | `WebApp` | Not started |
-| 16 | `WebAppComponents` | Not started |
-| 17 | `HybridApp` | Not started |
-| 18 | `ClientApp` (.NET MAUI) | Not started — **flag when reached**: uncomment the `Build`/`Test` steps in `.github/workflows/pr-validation-maui.yml` (commented out since `src/ClientApp/ClientApp.csproj` doesn't exist yet) |
-| 19 | `eShop.AppHost` | Not started — deliberately last, references every other project — **flag when reached**: uncomment the `Install Playwright Browsers`/`Run Playwright tests`/`upload-artifact` steps in `.github/workflows/playwright.yml` (commented out since `playwright.config.ts`'s `webServer` needs this project to launch the app) |
-| 20 | `tests/` (5 test projects) | Not started |
-| 21 | `build/` tooling | Not started |
+| 15 | `WebApp` | Not started — **React, not Blazor** (upstream: Blazor storefront) — see "Frontend and API layer" below |
+| 16 | `WebBFF` | Not started — **new project, not in upstream** — Backend-for-Frontend for `WebApp` using `Duende.BFF`, targeted for the week after 2026-08-14 — see "Frontend and API layer" below |
+| 17 | `ClientApp` (.NET MAUI) | Not started — **flag when reached**: uncomment the `Build`/`Test` steps in `.github/workflows/pr-validation-maui.yml` (commented out since `src/ClientApp/ClientApp.csproj` doesn't exist yet) |
+| 18 | `eShop.AppHost` | Not started — deliberately last, references every other project — **flag when reached**: uncomment the `Install Playwright Browsers`/`Run Playwright tests`/`upload-artifact` steps in `.github/workflows/playwright.yml` (commented out since `playwright.config.ts`'s `webServer` needs this project to launch the app) |
+| 19 | `tests/` (5 test projects) | Not started |
+| 20 | `build/` tooling | Not started |
 
 ### Open Dependabot PRs
 
