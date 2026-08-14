@@ -10,7 +10,7 @@ public class RabbitMQTelemetry
     public ActivitySource ActivitySource { get; } = new(ActivitySourceName);
     public TextMapPropagator Propagator { get; } = Propagators.DefaultTextMapPropagator;
 
-    public static void SetActivityContext(Activity activity, string routingKey, string operation)
+    public static void SetActivityContext(Activity? activity, string routingKey, string operation)
     {
         if (activity is not null)
         {
