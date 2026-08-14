@@ -17,8 +17,9 @@ A living list of what's done and what's left on this build. This is an independe
 | Dotfiles, solution files, CI | `.editorconfig`, `.gitattributes`, `.gitignore`, `eShop.slnx`/`eShop.Web.slnf`, `.github/workflows/*`, `.github/dependabot.yml` — see "Dotfiles, solution files, and CI" below |
 | Package manager | Switched npm → Yarn 4.18.0 (Berry, node-modules linker) via corepack — see "Yarn + e2e" below |
 | `src/Shared/` | Both linked-source files added, reviewed for code quality, no changes needed |
+| `EventBus` | All 8 source files added — see "EventBus" below |
 
-**Still to do:** 18 of 19 `.csproj` projects, plus `tests/` and `build/` — see the "Still to do" table below and [SCRUMBOARD.md](SCRUMBOARD.md) for the live board.
+**Still to do:** 18 of 19 `.csproj` projects, plus `tests/` and `build/` — see the "Still to do" table below and [project board](https://github.com/users/Terrence721/projects/5) for the live board.
 
 ## ✅ Done
 
@@ -99,13 +100,24 @@ Not a `.csproj` project — a shared-source folder linked directly into consumin
 
 Commits: `3c263e4`, `5e65794` (original); `0c361d9`, `10df006` (2026-08-14 DRY/SOLID fixes).
 
+### EventBus
+
+`.csproj` added in `a2e37eb`. All 8 remaining source files reviewed for correctness and SOLID/DRY/composition-over-inheritance, added unchanged — none needed a fix:
+
+- `GlobalUsings.cs`, `Events/IntegrationEvent.cs`, `Abstractions/IIntegrationEventHandler.cs`, `Abstractions/IEventBus.cs`, `Abstractions/IEventBusBuilder.cs` — all minimal and ISP-compliant; `IntegrationEvent`'s inheritance-based design (a base record other events extend for shared Id/CreationDate) is a legitimate "is-a" value-object hierarchy, not a smell.
+- `Abstractions/EventBusSubscriptionInfo.cs` — an Options-pattern class bundling `EventTypes` + `JsonSerializerOptions`, the idiomatic shape for that pattern rather than an SRP violation; its AOT/trimming pragma suppressions are correctly scoped to one reflection-based fallback method.
+- `Extensions/GenericTypeExtensions.cs` — the `object` overload delegates to the `Type` overload instead of duplicating its logic.
+- `Extensions/EventBusBuilderExtensions.cs` — both methods share the `Services.Configure<EventBusSubscriptionInfo>(...)` + `return eventBusBuilder;` shape, but that's Options-pattern/fluent-builder boilerplate, not duplicated logic — the configured behavior differs completely between the two.
+
+Commits: `c430813`, `96ca024`, `8e7b556`, `e4db372`, `bb84b6b`, `3dd2a7e`, `81d1e63`, `1058b5c`.
+
 ## 🚧 Still to do
 
-Migration order is **foundation first**: shared/foundation projects, then the services that depend on them, then the web frontends, then `eShop.AppHost` (references everything, so it goes last), then `tests/` and `build/`. See [SCRUMBOARD.md](SCRUMBOARD.md) for the live board — this table is the flat list.
+Migration order is **foundation first**: shared/foundation projects, then the services that depend on them, then the web frontends, then `eShop.AppHost` (references everything, so it goes last), then `tests/` and `build/`. See [project board](https://github.com/users/Terrence721/projects/5) for the live board — this table is the flat list.
 
 | # | Project | Status |
 |---|---|---|
-| 1 | `EventBus` | In progress — `.csproj` in (`a2e37eb`), 8 source files remain (`Abstractions/`, `Events/`, `Extensions/`, `GlobalUsings.cs`) |
+| 1 | `EventBus` | ✅ Done — see "EventBus" above |
 | 2 | `EventBusRabbitMQ` | Not started |
 | 3 | `eShop.ServiceDefaults` | Not started |
 | 4 | `IntegrationEventLogEF` | Not started |
