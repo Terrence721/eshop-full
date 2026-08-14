@@ -22,9 +22,9 @@ public sealed class RabbitMQEventBus(
     private readonly ActivitySource _activitySource = rabbitMQTelemetry.ActivitySource;
     private readonly string _queueName = options.Value.SubscriptionClientName;
     private readonly EventBusSubscriptionInfo _subscriptionInfo = subscriptionOptions.Value;
-    private IConnection _rabbitMQConnection;
+    private IConnection? _rabbitMQConnection;
 
-    private IChannel _consumerChannel;
+    private IChannel? _consumerChannel;
 
     public async Task PublishAsync(IntegrationEvent @event)
     {
@@ -60,7 +60,7 @@ public sealed class RabbitMQEventBus(
 
         static void InjectTraceContextIntoBasicProperties(IBasicProperties props, string key, string value)
         {
-            props.Headers ??= new Dictionary<string, object>();
+            props.Headers ??= new Dictionary<string, object?>();
             props.Headers[key] = value;
         }
 
@@ -91,9 +91,8 @@ public sealed class RabbitMQEventBus(
     {
         static IEnumerable<string> ExtractTraceContextFromBasicProperties(IReadOnlyBasicProperties props, string key)
         {
-            if (props.Headers.TryGetValue(key, out var value))
+            if (props.Headers is not null && props.Headers.TryGetValue(key, out var value) && value is byte[] bytes)
             {
-                var bytes = value as byte[];
                 return [Encoding.UTF8.GetString(bytes)];
             }
             return [];
@@ -135,7 +134,9 @@ public sealed class RabbitMQEventBus(
         // Even on exception we take the message off the queue.
         // in a REAL WORLD app this should be handled with a Dead Letter Exchange (DLX).
         // For more information see: https://www.rabbitmq.com/dlx.html
-        await _consumerChannel.BasicAckAsync(eventArgs.DeliveryTag, multiple: false);
+        // _consumerChannel is guaranteed assigned here: this handler is only ever invoked after
+        // StartAsync wires it up (consumer.ReceivedAsync += OnMessageReceived) later than the assignment.
+        await _consumerChannel!.BasicAckAsync(eventArgs.DeliveryTag, multiple: false);
     }
 
     private async Task ProcessEvent(string eventName, string message)
@@ -156,6 +157,12 @@ public sealed class RabbitMQEventBus(
         // Deserialize the event
         var integrationEvent = DeserializeMessage(message, eventType);
 
+        if (integrationEvent is null)
+        {
+            logger.LogWarning("Unable to deserialize event {EventName} from message", eventName);
+            return;
+        }
+
         // REVIEW: This could be done in parallel
 
         // Get all the handlers using the event type as the key
@@ -168,7 +175,7 @@ public sealed class RabbitMQEventBus(
     [UnconditionalSuppressMessage("Trimming", "IL2026:RequiresUnreferencedCode",
         Justification = "The 'JsonSerializer.IsReflectionEnabledByDefault' feature switch, which is set to false by default for trimmed .NET apps, ensures the JsonSerializer doesn't use Reflection.")]
     [UnconditionalSuppressMessage("AOT", "IL3050:RequiresDynamicCode", Justification = "See above.")]
-    private IntegrationEvent DeserializeMessage(string message, Type eventType)
+    private IntegrationEvent? DeserializeMessage(string message, Type eventType)
     {
         return JsonSerializer.Deserialize(message, eventType, _subscriptionInfo.JsonSerializerOptions) as IntegrationEvent;
     }
