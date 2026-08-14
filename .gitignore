@@ -491,3 +491,10 @@ $RECYCLE.BIN/
 /playwright/.auth/
 /user.json
 .azure
+
+# Yarn Berry (node-modules linker: no need to vendor releases/sdks)
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/versions
+.pnp.*
