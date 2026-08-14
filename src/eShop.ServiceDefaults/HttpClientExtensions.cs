@@ -28,11 +28,6 @@ public static class HttpClientExtensions
             _httpContextAccessor = httpContextAccessor;
         }
 
-        public HttpClientAuthorizationDelegatingHandler(IHttpContextAccessor httpContextAccessor, HttpMessageHandler innerHandler) : base(innerHandler)
-        {
-            _httpContextAccessor = httpContextAccessor;
-        }
-
         protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {
             if (_httpContextAccessor.HttpContext is HttpContext context)
