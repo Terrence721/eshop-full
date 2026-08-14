@@ -38,8 +38,16 @@ jobs:
           dotnet workload install maccatalyst
           dotnet workload install maui
 
-      - name: Build
-        run: dotnet build src/ClientApp/ClientApp.csproj
-
-      - name: Test
-        run: dotnet test --project tests/ClientApp.UnitTests/ClientApp.UnitTests.csproj --no-progress --output detailed
+      # Commented out until src/ClientApp exists (deliberately added last
+      # among the client projects, see todo.md). Until then this fails
+      # every run with MSB1009 ("Project file does not exist"), which is
+      # genuine -- there's nothing to build yet -- but wastes the ~2
+      # minutes the workload installs above take on every run that
+      # touches this file. Workload installs stay live since a broken
+      # workload feed is still a real regression worth catching.
+      # Uncomment once ClientApp is added.
+      # - name: Build
+      #   run: dotnet build src/ClientApp/ClientApp.csproj
+      #
+      # - name: Test
+      #   run: dotnet test --project tests/ClientApp.UnitTests/ClientApp.UnitTests.csproj --no-progress --output detailed
