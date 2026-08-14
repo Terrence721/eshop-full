@@ -2,7 +2,8 @@
   "solution": {
     "path": "eShop.slnx",
     "projects": [
-      "src\\EventBus\\EventBus.csproj"
+      "src\\EventBus\\EventBus.csproj",
+      "src\\EventBusRabbitMQ\\EventBusRabbitMQ.csproj"
     ]
   }
 }
