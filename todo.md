@@ -34,6 +34,15 @@ A living list of what's done and what's left on this build. This is an independe
 
 Commits: `56cc1e6`.
 
+**Nullable reference types, standardized 2026-08-15:** upstream itself is inconsistent here — `eShop.ServiceDefaults.csproj` sets `<Nullable>enable</Nullable>`, `EventBus`/`EventBusRabbitMQ` never set it at all (so it's off, per SDK default), and neither does the source's own `Directory.Build.props`. Found while reviewing `eShop.ServiceDefaults.csproj` before adding it. Not something to inherit — this fork makes one deliberate choice instead: `<Nullable>enable</Nullable>` moved into `Directory.Build.props` so every project gets it consistently. Rebuilding with it on surfaced 11 real nullable-annotation gaps in the already-committed `EventBus`/`EventBusRabbitMQ` files (`TreatWarningsAsErrors` turned every one into a build failure), all fixed:
+
+- `RabbitMQTelemetry.SetActivityContext` and `ActivityExtensions.SetExceptionTags` (`src/Shared/`) both already null-checked their `Activity` parameter internally and returned early — the parameter itself was just typed non-nullable. Retyped to `Activity?` to match what the methods actually do.
+- `RabbitMQEventBus._rabbitMQConnection`/`_consumerChannel` are genuinely null until `StartAsync` assigns them — declared nullable rather than lied about, matching the existing null-check already in `PublishAsync`.
+- `EventBusOptions.SubscriptionClientName` marked `required` — it's populated by configuration binding after construction, not the constructor, so a plain non-nullable auto-property was never honest here.
+- Two fixes were more than re-annotating: `ExtractTraceContextFromBasicProperties` did `value as byte[]` then passed the result straight to `Encoding.UTF8.GetString` unchecked — a header present under the expected key but not actually a `byte[]` would have thrown `ArgumentNullException` *outside* `OnMessageReceived`'s try/catch, crashing the whole receive path over one malformed trace header. Now pattern-matches (`value is byte[] bytes`) and falls through to the existing empty-result path instead. And `DeserializeMessage`'s `as IntegrationEvent` cast can genuinely return null (malformed message body) but its return type and `ProcessEvent`'s unchecked use of the result didn't account for that — return type is now `IntegrationEvent?`, and `ProcessEvent` logs and returns early on null, matching the existing pattern for an unresolvable event type just above it.
+
+Commits: `fff05bb`, `5a54552`, `61a93f8`, `adb8293`, `1abf885`.
+
 ### Directory.Packages.props research
 
 Every one of ~50 central package pins was checked against its actual current-latest version (web search, not assumption) rather than copied from source. Routine patch bumps aren't itemized here — the notable ones:
