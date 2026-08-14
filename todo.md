@@ -80,6 +80,14 @@ Bumped: `@playwright/test` `1.42.1` → `1.62.1`, `dotenv` `16.4.5` → `17.4.2`
 
 Commits: `12fbf3e`, `a8da68a`, `14a82f2`, `6110d6f`, `f23d298`, `bb6d745`, `ca98dac`.
 
+### Editor config
+
+| File | Change | Why |
+|---|---|---|
+| `.vscode/settings.json` | `dotnet.defaultSolution` pinned to `eShop.slnx` | C# Dev Kit couldn't auto-detect which solution to load and showed a "No Solution" badge, disabling IntelliSense and build integration |
+
+Commit: `0185981`.
+
 ### `src/Shared/`
 
 Not a `.csproj` project — a shared-source folder linked directly into consuming projects (absent from `eShop.slnx` for exactly that reason). Both files reviewed for code quality and left unchanged:
