@@ -1,0 +1,20 @@
+<Project>
+
+  <PropertyGroup>
+    <WarnOnPackingNonPackableProject>false</WarnOnPackingNonPackableProject>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <DebugType>embedded</DebugType>
+    <DebugSymbols>true</DebugSymbols>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <!-- Suppress only low/moderate NuGet audit warnings; high & critical (NU1903/NU1904) must surface. -->
+    <NoWarn>NU1901;NU1902</NoWarn>
+    <UseArtifactsOutput>true</UseArtifactsOutput>
+  </PropertyGroup>
+
+  <!-- Enable OpenAI OpenTelemetry so OpenAI calls participate in tracing and metrics. -->
+  <ItemGroup>
+    <RuntimeHostConfigurationOption Include="OpenAI.Experimental.EnableOpenTelemetry"
+                                    Value="true" />
+  </ItemGroup>
+
+</Project>
