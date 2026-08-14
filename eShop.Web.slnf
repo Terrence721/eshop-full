@@ -3,7 +3,8 @@
     "path": "eShop.slnx",
     "projects": [
       "src\\EventBus\\EventBus.csproj",
-      "src\\EventBusRabbitMQ\\EventBusRabbitMQ.csproj"
+      "src\\EventBusRabbitMQ\\EventBusRabbitMQ.csproj",
+      "src\\eShop.ServiceDefaults\\eShop.ServiceDefaults.csproj"
     ]
   }
 }
