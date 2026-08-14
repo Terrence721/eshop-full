@@ -90,12 +90,14 @@ Commit: `0185981`.
 
 ### `src/Shared/`
 
-Not a `.csproj` project — a shared-source folder linked directly into consuming projects (absent from `eShop.slnx` for exactly that reason). Both files reviewed for code quality and left unchanged:
+Not a `.csproj` project — a shared-source folder linked directly into consuming projects (absent from `eShop.slnx` for exactly that reason).
 
-- `ActivityExtensions.cs` — no namespace is deliberate (global namespace lets any consuming project call `.SetExceptionTags()` without a `using`), and the internal null-check on the `Activity` receiver is load-bearing: it's an extension method, callable on a `null` receiver, and `RabbitMQEventBus.cs` (not yet added) relies on that by calling it without `?.`.
-- `MigrateDbContextExtensions.cs` — deliberately overrides `BackgroundService.StartAsync` (not `ExecuteAsync`) so host startup actually waits on the migration to finish before the app is considered ready. Correct, not an oversight.
+- `ActivityExtensions.cs` — reviewed for code quality, left unchanged. No namespace is deliberate (global namespace lets any consuming project call `.SetExceptionTags()` without a `using`), and the internal null-check on the `Activity` receiver is load-bearing: it's an extension method, callable on a `null` receiver, and `RabbitMQEventBus.cs` (not yet added) relies on that by calling it without `?.`.
+- `MigrateDbContextExtensions.cs` — reviewed for code quality; deliberately overrides `BackgroundService.StartAsync` (not `ExecuteAsync`) so host startup actually waits on the migration to finish before the app is considered ready. Correct, not an oversight. **Revisited 2026-08-14** for a DRY/SOLID pass, which found two real (if minor) issues — both present verbatim in real upstream Microsoft source, not local mistakes, so fixing them is a deliberate, documented exception to this project's usual "keep upstream architecture intact" rule:
+  - `MigrateDbContextAsync` and the private `InvokeSeeder` had near-identical `StartActivity`/try-catch/`SetExceptionTags`/rethrow shapes — extracted into one private `RunWithActivityAsync` helper; external behavior (both activities tagged on failure, one log message) is unchanged.
+  - `IDbSeeder<TContext>` moved out of this file into its own `Abstractions/IDbSeeder.cs` (same `Microsoft.AspNetCore.Hosting` namespace, so no consumer-facing change) for discoverability.
 
-Commits: `3c263e4`, `5e65794`.
+Commits: `3c263e4`, `5e65794` (original); `0c361d9`, `10df006` (2026-08-14 DRY/SOLID fixes).
 
 ## 🚧 Still to do
 
