@@ -35,38 +35,45 @@ internal static class MigrateDbContextExtensions
         var logger = scopeServices.GetRequiredService<ILogger<TContext>>();
         var context = scopeServices.GetRequiredService<TContext>();
 
-        using var activity = ActivitySource.StartActivity($"Migration operation {typeof(TContext).Name}");
+        await RunWithActivityAsync(
+            $"Migration operation {typeof(TContext).Name}",
+            async () =>
+            {
+                logger.LogInformation("Migrating database associated with context {DbContextName}", typeof(TContext).Name);
 
-        try
-        {
-            logger.LogInformation("Migrating database associated with context {DbContextName}", typeof(TContext).Name);
+                var strategy = context.Database.CreateExecutionStrategy();
 
-            var strategy = context.Database.CreateExecutionStrategy();
-
-            await strategy.ExecuteAsync(() => InvokeSeeder(seeder, context, scopeServices));
-        }
-        catch (Exception ex)
-        {
-            logger.LogError(ex, "An error occurred while migrating the database used on context {DbContextName}", typeof(TContext).Name);
-
-            activity?.SetExceptionTags(ex);
-
-            throw;
-        }
+                await strategy.ExecuteAsync(() => InvokeSeeder(seeder, context, scopeServices));
+            },
+            ex => logger.LogError(ex, "An error occurred while migrating the database used on context {DbContextName}", typeof(TContext).Name));
     }
 
-    private static async Task InvokeSeeder<TContext>(Func<TContext, IServiceProvider, Task> seeder, TContext context, IServiceProvider services)
+    private static Task InvokeSeeder<TContext>(Func<TContext, IServiceProvider, Task> seeder, TContext context, IServiceProvider services)
         where TContext : DbContext
+        => RunWithActivityAsync(
+            $"Migrating {typeof(TContext).Name}",
+            async () =>
+            {
+                await context.Database.MigrateAsync();
+                await seeder(context, services);
+            });
+
+    // Shared by MigrateDbContextAsync and InvokeSeeder: both need an activity
+    // scoped to the work, with the exception tagged onto it and rethrown on
+    // failure. onError lets MigrateDbContextAsync also log, without forcing
+    // InvokeSeeder to.
+    private static async Task RunWithActivityAsync(string activityName, Func<Task> action, Action<Exception>? onError = null)
     {
-        using var activity = ActivitySource.StartActivity($"Migrating {typeof(TContext).Name}");
+        using var activity = ActivitySource.StartActivity(activityName);
 
         try
         {
-            await context.Database.MigrateAsync();
-            await seeder(context, services);
+            await action();
         }
         catch (Exception ex)
         {
+            onError?.Invoke(ex);
+
             activity?.SetExceptionTags(ex);
 
             throw;
@@ -86,8 +93,4 @@ internal static class MigrateDbContextExtensions
             return Task.CompletedTask;
         }
     }
-}
-public interface IDbSeeder<in TContext> where TContext : DbContext
-{
-    Task SeedAsync(TContext context);
 }
