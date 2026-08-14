@@ -8,7 +8,6 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using OpenTelemetry;
 using OpenTelemetry.Context.Propagation;
-using Polly.Retry;
 
 public sealed class RabbitMQEventBus(
     ILogger<RabbitMQEventBus> logger,
@@ -19,7 +18,6 @@ public sealed class RabbitMQEventBus(
 {
     private const string ExchangeName = "eshop_event_bus";
 
-    private readonly ResiliencePipeline _pipeline = CreateResiliencePipeline(options.Value.RetryCount);
     private readonly TextMapPropagator _propagator = rabbitMQTelemetry.Propagator;
     private readonly ActivitySource _activitySource = rabbitMQTelemetry.ActivitySource;
     private readonly string _queueName = options.Value.SubscriptionClientName;
@@ -55,78 +53,33 @@ public sealed class RabbitMQEventBus(
 
         var body = SerializeMessage(@event);
 
-        // Start an activity with a name following the semantic convention of the OpenTelemetry messaging specification.
-        // https://github.com/open-telemetry/semantic-conventions/blob/main/docs/messaging/messaging-spans.md
-        var activityName = $"{routingKey} publish";
-
-        await _pipeline.Execute(async () =>
+        var properties = new BasicProperties()
         {
-            using var activity = _activitySource.StartActivity(activityName, ActivityKind.Client);
+            DeliveryMode = DeliveryModes.Persistent
+        };
 
-            // Depending on Sampling (and whether a listener is registered or not), the activity above may not be created.
-            // If it is created, then propagate its context. If it is not created, the propagate the Current context, if any.
-
-            ActivityContext contextToInject = default;
-
-            if (activity != null)
-            {
-                contextToInject = activity.Context;
-            }
-            else if (Activity.Current != null)
-            {
-                contextToInject = Activity.Current.Context;
-            }
-
-            var properties = new BasicProperties()
-            {
-                DeliveryMode = DeliveryModes.Persistent
-            };
-
-            static void InjectTraceContextIntoBasicProperties(IBasicProperties props, string key, string value)
-            {
-                props.Headers ??= new Dictionary<string, object>();
-                props.Headers[key] = value;
-            }
-
-            _propagator.Inject(new PropagationContext(contextToInject, Baggage.Current), properties, InjectTraceContextIntoBasicProperties);
-
-            SetActivityContext(activity, routingKey, "publish");
-
-            if (logger.IsEnabled(LogLevel.Trace))
-            {
-                logger.LogTrace("Publishing event to RabbitMQ: {EventId}", @event.Id);
-            }
-
-            try
-            {
-                await channel.BasicPublishAsync(
-                    exchange: ExchangeName,
-                    routingKey: routingKey,
-                    mandatory: true,
-                    basicProperties: properties,
-                    body: body);
-            }
-            catch (Exception ex)
-            {
-                activity.SetExceptionTags(ex);
-
-                throw;
-            }
-        });
-    }
-
-    private static void SetActivityContext(Activity activity, string routingKey, string operation)
-    {
-        if (activity is not null)
+        static void InjectTraceContextIntoBasicProperties(IBasicProperties props, string key, string value)
         {
-            // These tags are added demonstrating the semantic conventions of the OpenTelemetry messaging specification
-            // https://github.com/open-telemetry/semantic-conventions/blob/main/docs/messaging/messaging-spans.md
-            activity.SetTag("messaging.system", "rabbitmq");
-            activity.SetTag("messaging.destination_kind", "queue");
-            activity.SetTag("messaging.operation", operation);
-            activity.SetTag("messaging.destination.name", routingKey);
-            activity.SetTag("messaging.rabbitmq.routing_key", routingKey);
+            props.Headers ??= new Dictionary<string, object>();
+            props.Headers[key] = value;
         }
+
+        // Propagate the ambient trace context (started by TelemetryEventBusDecorator, if present)
+        // into the outgoing message headers so a consumer can continue the same trace.
+        var contextToInject = Activity.Current?.Context ?? default;
+        _propagator.Inject(new PropagationContext(contextToInject, Baggage.Current), properties, InjectTraceContextIntoBasicProperties);
+
+        if (logger.IsEnabled(LogLevel.Trace))
+        {
+            logger.LogTrace("Publishing event to RabbitMQ: {EventId}", @event.Id);
+        }
+
+        await channel.BasicPublishAsync(
+            exchange: ExchangeName,
+            routingKey: routingKey,
+            mandatory: true,
+            basicProperties: properties,
+            body: body);
     }
 
     public void Dispose()
@@ -156,7 +109,7 @@ public sealed class RabbitMQEventBus(
 
         using var activity = _activitySource.StartActivity(activityName, ActivityKind.Client, parentContext.ActivityContext);
 
-        SetActivityContext(activity, eventArgs.RoutingKey, "receive");
+        RabbitMQTelemetry.SetActivityContext(activity, eventArgs.RoutingKey, "receive");
 
         var eventName = eventArgs.RoutingKey;
         var message = Encoding.UTF8.GetString(eventArgs.Body.Span);
@@ -302,25 +255,5 @@ public sealed class RabbitMQEventBus(
     public Task StopAsync(CancellationToken cancellationToken)
     {
         return Task.CompletedTask;
-    }
-
-    private static ResiliencePipeline CreateResiliencePipeline(int retryCount)
-    {
-        // See https://www.pollydocs.org/strategies/retry.html
-        var retryOptions = new RetryStrategyOptions
-        {
-            ShouldHandle = new PredicateBuilder().Handle<BrokerUnreachableException>().Handle<SocketException>(),
-            MaxRetryAttempts = retryCount,
-            DelayGenerator = (context) => ValueTask.FromResult(GenerateDelay(context.AttemptNumber))
-        };
-
-        return new ResiliencePipelineBuilder()
-            .AddRetry(retryOptions)
-            .Build();
-
-        static TimeSpan? GenerateDelay(int attempt)
-        {
-            return TimeSpan.FromSeconds(Math.Pow(2, attempt));
-        }
     }
 }
