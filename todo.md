@@ -19,8 +19,9 @@ A living list of what's done and what's left on this build. This is an independe
 | `src/Shared/` | Both linked-source files added, reviewed for code quality, no changes needed |
 | `EventBus` | All 8 source files added — see "EventBus" below |
 | `EventBusRabbitMQ` | All 6 source files added, one real bug found and fixed — see "EventBusRabbitMQ" below |
+| `eShop.ServiceDefaults` | All 7 source files added, several real fixes found and made — see "eShop.ServiceDefaults" below |
 
-**Still to do:** 17 of 19 `.csproj` projects, plus `tests/` and `build/` — see the "Still to do" table below and [project board](https://github.com/users/Terrence721/projects/5) for the live board.
+**Still to do:** 16 of 19 `.csproj` projects, plus `tests/` and `build/` — see the "Still to do" table below and [project board](https://github.com/users/Terrence721/projects/5) for the live board.
 
 ## ✅ Done
 
@@ -150,12 +151,27 @@ Not implemented yet — raised during the 2026-08-14 pattern scan that produced 
 |---|---|---|
 | `IEventSerializer` strategy | `EventBusRabbitMQ` | `RabbitMQEventBus.SerializeMessage`/`DeserializeMessage` hardcode `System.Text.Json` directly in the transport class. Extracting a small `IEventSerializer` strategy would let the wire format be swapped without touching transport code — upstream doesn't do this. |
 | Parallel vs. sequential handler dispatch | `EventBusRabbitMQ` | `ProcessEvent` awaits each `IIntegrationEventHandler` sequentially, with upstream's own unresolved `// REVIEW: This could be done in parallel` comment still in the code. Make an actual documented call (`Task.WhenAll` fan-out, or sequential-by-design with the ordering-guarantee reasoning written down) instead of leaving the question open. |
-| Decorator convention reused for HTTP clients | `eShop.ServiceDefaults` | Formalize the same telemetry/resilience-as-decorator approach proven in `EventBusRabbitMQ` into a reusable convention every later service's HTTP clients apply, instead of each service reinventing it. |
 | MediatR `IPipelineBehavior<TRequest,TResponse>` | `Ordering.API` | MediatR's built-in pipeline behaviors are the same Decorator/Chain-of-Responsibility idea applied to the CQRS pipeline — the natural place to double down on the philosophy established in `EventBusRabbitMQ` (logging/validation/transaction behaviors wrapping every command handler). |
 | Repository pattern: deliberate split | `Catalog.API` vs `Basket.API` | A defensible, non-uniform call once both exist: **no** redundant Repository layer over EF Core in `Catalog.API` (`DbContext` already is one), **yes** a thin Repository over Redis in `Basket.API` (justified there since Redis isn't queryable the way EF Core is). |
 | Observer pattern, documented not changed | `Webhooks.API`/`WebhookClient` | Webhooks are Observer pattern applied over HTTP — worth stating explicitly in `architecturedesign.md` when that project lands, not a code change. |
 
+**Resolved, not just deferred:** "Decorator convention reused for HTTP clients" — `eShop.ServiceDefaults.Extensions.AddServiceDefaults` already wires `ConfigureHttpClientDefaults(http => { http.AddStandardResilienceHandler(); http.AddServiceDiscovery(); })`, which *is* the framework's own `DelegatingHandler`-chain Decorator. No new code needed; every service that calls `AddServiceDefaults()` gets it automatically.
+
 Commits: `f3de7d1`, `2fbeb5b`, `9643055`, `8b66c22`, `c781a42`, `16a0dad`, `88ae99e`, `6321b20`, `1e00b64`, `f5ec63c`, `2014f55`.
+
+### eShop.ServiceDefaults
+
+`.csproj` added in `98c14e3` (its explicit `<Nullable>enable</Nullable>` dropped — see "Nullable reference types" above, now inherited solution-wide). All 7 source files reviewed; this pass went further than "does it work" — every finding below either got fixed or explicitly tracked, not left as "verified, matches upstream":
+
+- `ConfigurationExtensions.cs` — clean. `GetRequiredValue`'s `IConfigurationSection`-aware error path is exercised by real callers elsewhere in this project (not speculative), and its namespace placement (`Microsoft.Extensions.Configuration`) matches the discoverability pattern already used in `EventBus`.
+- `ClaimsPrincipalExtensions.cs` — `GetUserName` normalized to the simple `FindFirst(ClaimTypes.Name)` overload instead of an equivalent predicate lambda. `GetUserId`'s `"sub"` lookup only worked because `AuthenticationExtensions.AddDefaultAuthentication` removes `"sub"` from `JsonWebTokenHandler.DefaultInboundClaimTypeMap` elsewhere — a hidden order-dependency between two files with nothing enforcing it. Now falls back to `ClaimTypes.NameIdentifier`, correct regardless of whether that removal ran.
+- `HttpClientExtensions.cs` — removed `HttpClientAuthorizationDelegatingHandler`'s second constructor (took an explicit `HttpMessageHandler innerHandler`). Nothing in this app's DI wiring ever supplies one; it's the standard idiom for unit-testing a `DelegatingHandler` directly, but `tests/` is over a dozen projects away in the migration order — kept unreachable code around for that long isn't a decision being implemented now. Add it back alongside the real test that needs it.
+- `Extensions.cs` — three fixes: the `// Default health checks assume the event bus and self health checks` comment was misleading (that method only adds `"self"`; the event-bus check comes from Aspire's `AddRabbitMQClient` auto-registering one in a different project) — rewritten to say that directly. `AddMeter`/`AddSource("Experimental.Microsoft.Extensions.AI")` referenced a package not in this project; verified the string against the real `Microsoft.Extensions.AI 10.9.0` assembly (`OpenTelemetryConsts.DefaultSourceName`, confirmed via reflection in a scratch project, not assumed) and extracted the duplicated literal to a local `const` rather than add a full package reference for one string. Removed a permanently-commented-out Prometheus-scraping line gated on a package (`OpenTelemetry.Exporter.Prometheus.AspNetCore`) not referenced anywhere in this repo — this fork's telemetry story is OTLP export, not scrape-based, so it was never going to get turned on.
+- `AuthenticationExtensions.cs` — two real fixes. `TokenValidationParameters.ValidateAudience = false` meant `options.Audience` (set from config) was purely decorative — nothing checked a token's `aud` claim against it, so a token issued for one downstream API could be replayed against any other API using this same code. Removed the override (defaults to `true`, which `JwtBearerOptions.Audience` already auto-populates `ValidAudience` for) — flagged in the "Still to do" table's `Identity.API` row to verify once real tokens exist. The `#if DEBUG` Android-emulator issuer hardcoded `https://10.0.2.2:5243`; `10.0.2.2` is a legitimate fixed emulator host alias, but `:5243` was a magic number only correct if `eShop.AppHost` (not built yet) happens to pin `Identity.API` to that exact port. Now derived from `identityUrl`'s real `Uri.Port`.
+- `OpenApiOptionsExtensions.cs` — `BuildDescription`'s deprecation-notice branch checked for a trailing period before appending; the sunset-date branch right after it didn't do the same check — real inconsistent logic, not a style nit. Extracted the shared check into one `AppendSentenceSeparator` helper both branches call. Confirmed clean otherwise: builds warning-free under `Nullable enable` (settles whether `OpenApiSecuritySchemeReference`'s second constructor parameter is genuinely nullable), and the reference-as-dictionary-key pattern in `ApplyAuthorizationChecks` matches Microsoft's own published `Asp.Versioning` + `Microsoft.AspNetCore.OpenApi` sample gallery.
+- `OpenApi.Extensions.cs` — `UseDefaultOpenApi` picked the "default" API doc via `descriptions[^1]`, assuming `IApiVersionDescriptionProvider.ApiVersionDescriptions` returns versions in ascending order (undocumented anywhere found). Switched to `descriptions.MaxBy(d => d.ApiVersion)`, correct regardless of provider ordering — confirmed `ApiVersion` is comparable by letting the real build succeed rather than assuming. `AddDefaultOpenApi` computed the `scopes` dictionary unconditionally before its `if (!openApi.Exists())` guard, doing that work even when OpenAPI is disabled; guard moved first.
+
+Commits: `98c14e3`, `27611d0`, `3594f5a`, `4f14d23`, `8b2888a`, `73be164`, `2097b44`, `292fe9f`, `5fbea93`, `f10775b`, `1cf5491`, `478daeb`.
 
 ## 🚧 Still to do
 
@@ -164,10 +180,10 @@ Migration order is **foundation first**: shared/foundation projects, then the se
 | # | Project | Status |
 |---|---|---|
 | 1 | `EventBus` | ✅ Done — see "EventBus" above |
-| 2 | `EventBusRabbitMQ` | Not started |
-| 3 | `eShop.ServiceDefaults` | Not started |
+| 2 | `EventBusRabbitMQ` | ✅ Done — see "EventBusRabbitMQ" above |
+| 3 | `eShop.ServiceDefaults` | ✅ Done — see "eShop.ServiceDefaults" above |
 | 4 | `IntegrationEventLogEF` | Not started |
-| 5 | `Identity.API` | Not started — **flag when reached**: verify `Duende.IdentityServer` 7.x→8.x breaking API/DB-schema changes against actual usage |
+| 5 | `Identity.API` | Not started — **flag when reached**: verify `Duende.IdentityServer` 7.x→8.x breaking API/DB-schema changes against actual usage; also verify `AuthenticationExtensions.AddDefaultAuthentication`'s `ValidateAudience = true` (re-enabled 2026-08-15, was disabled in source) actually validates cleanly against real issued tokens — see "eShop.ServiceDefaults" above |
 | 6 | `Catalog.API` | Not started |
 | 7 | `Basket.API` | Not started |
 | 8 | `Ordering.Domain` | Not started |
