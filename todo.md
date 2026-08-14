@@ -131,7 +131,20 @@ Also moved during the split: `SetActivityContext` off `RabbitMQEventBus` and ont
 
 No RabbitMQ broker exists yet to integration-test the retry fix end-to-end (no `eShop.AppHost` yet) — the fix's correctness rests on the reflected Polly API signatures, not a live run; flagged honestly rather than claimed as verified.
 
-**Scoped out of this pass, left as follow-ups:** extracting an `IEventSerializer` strategy for `SerializeMessage`/`DeserializeMessage` (currently hardcoded to `System.Text.Json`), and making an explicit call on `ProcessEvent`'s sequential-vs-parallel handler dispatch (upstream leaves a `// REVIEW: This could be done in parallel` comment unresolved).
+**Scoped out of this pass, left as follow-ups:** extracting an `IEventSerializer` strategy for `SerializeMessage`/`DeserializeMessage` (currently hardcoded to `System.Text.Json`), and making an explicit call on `ProcessEvent`'s sequential-vs-parallel handler dispatch (upstream leaves a `// REVIEW: This could be done in parallel` comment unresolved). Both are also tracked in "Design pattern backlog" below.
+
+### Design pattern backlog
+
+Not implemented yet — raised during the 2026-08-14 pattern scan that produced the `EventBusRabbitMQ` Decorator split (see [architecturedesign.md Section 9](docs/architecturedesign.md#9-decorator-for-cross-cutting-concerns)), tracked here plus a Backlog card each on the [project board](https://github.com/users/Terrence721/projects/5) so they surface again when the relevant project is actually added rather than being forgotten in chat history:
+
+| Item | Where it applies | What |
+|---|---|---|
+| `IEventSerializer` strategy | `EventBusRabbitMQ` | `RabbitMQEventBus.SerializeMessage`/`DeserializeMessage` hardcode `System.Text.Json` directly in the transport class. Extracting a small `IEventSerializer` strategy would let the wire format be swapped without touching transport code — upstream doesn't do this. |
+| Parallel vs. sequential handler dispatch | `EventBusRabbitMQ` | `ProcessEvent` awaits each `IIntegrationEventHandler` sequentially, with upstream's own unresolved `// REVIEW: This could be done in parallel` comment still in the code. Make an actual documented call (`Task.WhenAll` fan-out, or sequential-by-design with the ordering-guarantee reasoning written down) instead of leaving the question open. |
+| Decorator convention reused for HTTP clients | `eShop.ServiceDefaults` | Formalize the same telemetry/resilience-as-decorator approach proven in `EventBusRabbitMQ` into a reusable convention every later service's HTTP clients apply, instead of each service reinventing it. |
+| MediatR `IPipelineBehavior<TRequest,TResponse>` | `Ordering.API` | MediatR's built-in pipeline behaviors are the same Decorator/Chain-of-Responsibility idea applied to the CQRS pipeline — the natural place to double down on the philosophy established in `EventBusRabbitMQ` (logging/validation/transaction behaviors wrapping every command handler). |
+| Repository pattern: deliberate split | `Catalog.API` vs `Basket.API` | A defensible, non-uniform call once both exist: **no** redundant Repository layer over EF Core in `Catalog.API` (`DbContext` already is one), **yes** a thin Repository over Redis in `Basket.API` (justified there since Redis isn't queryable the way EF Core is). |
+| Observer pattern, documented not changed | `Webhooks.API`/`WebhookClient` | Webhooks are Observer pattern applied over HTTP — worth stating explicitly in `architecturedesign.md` when that project lands, not a code change. |
 
 Commits: `f3de7d1`, `2fbeb5b`, `9643055`, `8b66c22`, `c781a42`, `16a0dad`, `88ae99e`, `6321b20`, `1e00b64`, `f5ec63c`, `2014f55`.
 
