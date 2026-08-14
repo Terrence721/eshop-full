@@ -121,7 +121,7 @@ Migration order is **foundation first**: shared/foundation projects, then the se
 | 16 | `WebAppComponents` | Not started |
 | 17 | `HybridApp` | Not started |
 | 18 | `ClientApp` (.NET MAUI) | Not started |
-| 19 | `eShop.AppHost` | Not started — deliberately last, references every other project |
+| 19 | `eShop.AppHost` | Not started — deliberately last, references every other project — **flag when reached**: uncomment the `Install Playwright Browsers`/`Run Playwright tests`/`upload-artifact` steps in `.github/workflows/playwright.yml` (commented out since `playwright.config.ts`'s `webServer` needs this project to launch the app) |
 | 20 | `tests/` (5 test projects) | Not started |
 | 21 | `build/` tooling | Not started |
 
