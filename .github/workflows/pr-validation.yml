@@ -26,4 +26,13 @@ jobs:
       - name: Build
         run: dotnet build eShop.Web.slnf
       - name: Test
-        run: dotnet test --solution eShop.Web.slnf --no-build --no-progress --output detailed
+        run: |
+          set +e
+          output=$(dotnet test --solution eShop.Web.slnf --no-build --no-progress --output detailed 2>&1)
+          exit_code=$?
+          echo "$output"
+          if [ $exit_code -ne 0 ] && echo "$output" | grep -q "No test projects were found"; then
+            echo "No test projects exist yet (tests/ hasn't been added) - not a real failure."
+            exit 0
+          fi
+          exit $exit_code
