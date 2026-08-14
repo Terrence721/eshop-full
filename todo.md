@@ -18,8 +18,9 @@ A living list of what's done and what's left on this build. This is an independe
 | Package manager | Switched npm → Yarn 4.18.0 (Berry, node-modules linker) via corepack — see "Yarn + e2e" below |
 | `src/Shared/` | Both linked-source files added, reviewed for code quality, no changes needed |
 | `EventBus` | All 8 source files added — see "EventBus" below |
+| `EventBusRabbitMQ` | All 6 source files added, one real bug found and fixed — see "EventBusRabbitMQ" below |
 
-**Still to do:** 18 of 19 `.csproj` projects, plus `tests/` and `build/` — see the "Still to do" table below and [project board](https://github.com/users/Terrence721/projects/5) for the live board.
+**Still to do:** 17 of 19 `.csproj` projects, plus `tests/` and `build/` — see the "Still to do" table below and [project board](https://github.com/users/Terrence721/projects/5) for the live board.
 
 ## ✅ Done
 
@@ -111,16 +112,18 @@ Commits: `3c263e4`, `5e65794` (original); `0c361d9`, `10df006` (2026-08-14 DRY/S
 
 Commits: `c430813`, `96ca024`, `8e7b556`, `e4db372`, `bb84b6b`, `3dd2a7e`, `81d1e63`, `1058b5c`.
 
-### EventBusRabbitMQ (in progress)
+### EventBusRabbitMQ
 
-`.csproj` added in `f3de7d1`. 4 of 6 source files reviewed for correctness and SOLID/DRY/composition-over-inheritance so far:
+`.csproj` added in `f3de7d1`. All 6 source files reviewed for correctness and SOLID/DRY/composition-over-inheritance:
 
 - `GlobalUsings.cs`, `EventBusOptions.cs` — minimal, no changes needed.
 - `RabbitMQTelemetry.cs` — no changes needed; `OpenTelemetry.Api` (its `TextMapPropagator`/`Propagators` types) resolves transitively via `Aspire.RabbitMQ.Client`, confirmed against `project.assets.json` rather than assumed.
 - `RabbitMQEventBus.cs` — found and fixed a real bug, present verbatim in upstream Microsoft source: `PublishAsync`'s `(await _rabbitMQConnection?.CreateChannelAsync()) ?? throw new InvalidOperationException("RabbitMQ connection is not open")` looks like it handles a null connection gracefully, but doesn't. The null-conditional (`?.`) short-circuits the *entire* parenthesized expression to a null `Task<IChannel>` when `_rabbitMQConnection` is null; `await`-ing a null task throws `NullReferenceException` immediately, so the `?? throw` branch is unreachable dead code — a caller hitting this path during startup (before `StartAsync` finishes setting the connection) would get an opaque NRE instead of the intended message. Fixed with an explicit `if (_rabbitMQConnection is null) throw ...` before the `await`, preserving the original message/intent.
-- `RabbitMqDependencyInjectionExtensions.cs` not yet added.
+- `RabbitMqDependencyInjectionExtensions.cs` — no changes needed; the sole concrete `IEventBusBuilder` implementation, consistent with the abstraction `EventBus`'s `EventBusBuilderExtensions.cs` already builds on.
 
-Commits: `f3de7d1`, `2fbeb5b`, `9643055`, `8b66c22`, `c781a42`.
+**Design follow-up raised, not yet actioned:** the class mixes RabbitMQ connection/channel/publish/consume plumbing with cross-cutting telemetry and Polly retry concerns in one `RabbitMQEventBus` class. A Decorator-based split (bare event bus wrapped by separate telemetry/resilience decorators) would separate those concerns more cleanly — worth doing as a deliberate design pass rather than mid-flight during the initial file-by-file add, since it touches DI registration and is easier to get right consistently once more services exist to design against.
+
+Commits: `f3de7d1`, `2fbeb5b`, `9643055`, `8b66c22`, `c781a42`, `16a0dad`.
 
 ## 🚧 Still to do
 
