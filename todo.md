@@ -173,6 +173,15 @@ Commits: `f3de7d1`, `2fbeb5b`, `9643055`, `8b66c22`, `c781a42`, `16a0dad`, `88ae
 
 Commits: `98c14e3`, `27611d0`, `3594f5a`, `4f14d23`, `8b2888a`, `73be164`, `2097b44`, `292fe9f`, `5fbea93`, `f10775b`, `1cf5491`, `478daeb`.
 
+### IntegrationEventLogEF (in progress)
+
+`.csproj` added in `0e6e311`. 2 of 7 source files reviewed for correctness and SOLID/DRY/composition-over-inheritance so far:
+
+- `EventStateEnum.cs` — renamed to `EventState.cs`/`EventState`. Microsoft's own .NET Framework Design Guidelines explicitly say not to suffix enum type names with `Enum` — this eShop source file violates that guideline in Microsoft's own sample. Explicit integer values on each member kept as-is (correct, since this enum gets persisted to a Postgres column and needs stable values across the outbox pattern's `NotPublished`/`InProgress`/`Published`/`PublishedFailed` states).
+- `GlobalUsings.cs`, `IntegrationEventLogEntry.cs`, `IntegrationLogExtensions.cs`, `Services/IIntegrationEventLogService.cs`, `Services/IntegrationEventLogService.cs`, `Utilities/ResilientTransaction.cs` not yet added.
+
+Commits: `0e6e311`, `21c9deb`.
+
 ### Frontend and API layer (decided 2026-08-15, not built yet)
 
 Three related decisions made while planning `WebApp`, ahead of actually building it — recorded here so they aren't lost before that work starts. Full reasoning in [architecturedesign.md Section 9](docs/architecturedesign.md#9-frontend-react-instead-of-blazor).
@@ -190,7 +199,7 @@ Migration order is **foundation first**: shared/foundation projects, then the se
 | 1 | `EventBus` | ✅ Done — see "EventBus" above |
 | 2 | `EventBusRabbitMQ` | ✅ Done — see "EventBusRabbitMQ" above |
 | 3 | `eShop.ServiceDefaults` | ✅ Done — see "eShop.ServiceDefaults" above |
-| 4 | `IntegrationEventLogEF` | Not started |
+| 4 | `IntegrationEventLogEF` | 🚧 In progress — see "IntegrationEventLogEF (in progress)" above |
 | 5 | `Identity.API` | Not started — **flag when reached**: verify `Duende.IdentityServer` 7.x→8.x breaking API/DB-schema changes against actual usage; also verify `AuthenticationExtensions.AddDefaultAuthentication`'s `ValidateAudience = true` (re-enabled 2026-08-15, was disabled in source) actually validates cleanly against real issued tokens — see "eShop.ServiceDefaults" above |
 | 6 | `Catalog.API` | Not started |
 | 7 | `Basket.API` | Not started — **flag when reached**: add `Grpc.AspNetCore.Web` middleware so its gRPC service also serves gRPC-Web for `WebApp`/`WebBFF` — see "Frontend and API layer" below |
