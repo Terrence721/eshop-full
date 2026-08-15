@@ -23,7 +23,7 @@ Previous eShop versions:
 
 ### Prerequisites
 
-- Clone the eShop repository: https://github.com/dotnet/eshop
+- Clone this repository: https://github.com/Terrence721/eshop-full
 - [Install & start Docker Desktop](https://docs.docker.com/engine/install/)
 
 #### Windows with Visual Studio
