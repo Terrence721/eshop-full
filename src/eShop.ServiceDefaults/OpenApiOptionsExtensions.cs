@@ -30,7 +30,7 @@ internal static class OpenApiOptionsExtensions
         return options;
     }
 
-    private static void AppendSentenceSeparator(StringBuilder text)
+    internal static void AppendSentenceSeparator(StringBuilder text)
     {
         if (text.Length > 0)
         {
@@ -43,7 +43,7 @@ internal static class OpenApiOptionsExtensions
         }
     }
 
-    private static string BuildDescription(ApiVersionDescription api, string description)
+    internal static string BuildDescription(ApiVersionDescription api, string description)
     {
         var text = new StringBuilder(description);
 
