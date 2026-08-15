@@ -4,7 +4,8 @@
     "projects": [
       "src\\EventBus\\EventBus.csproj",
       "src\\EventBusRabbitMQ\\EventBusRabbitMQ.csproj",
-      "src\\eShop.ServiceDefaults\\eShop.ServiceDefaults.csproj"
+      "src\\eShop.ServiceDefaults\\eShop.ServiceDefaults.csproj",
+      "src\\IntegrationEventLogEF\\IntegrationEventLogEF.csproj"
     ]
   }
 }
