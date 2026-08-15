@@ -5,6 +5,9 @@
     <Project Path="src/eShop.ServiceDefaults/eShop.ServiceDefaults.csproj" />
     <Project Path="src/IntegrationEventLogEF/IntegrationEventLogEF.csproj" />
   </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/eShop.ServiceDefaults.UnitTests/eShop.ServiceDefaults.UnitTests.csproj" />
+  </Folder>
   <Folder Name="/Solution Items/">
     <File Path=".editorconfig" />
     <File Path="Directory.Packages.props" />
