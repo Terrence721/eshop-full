@@ -225,7 +225,7 @@ Migration order is **foundation first**: shared/foundation projects, then the se
 | 16 | `WebBFF` | Not started — **new project, not in upstream** — Backend-for-Frontend for `WebApp` using `Duende.BFF`, targeted for the week after 2026-08-14 — see "Frontend and API layer" below |
 | 17 | `ClientApp` (.NET MAUI) | Not started — **flag when reached**: uncomment the `Build`/`Test` steps in `.github/workflows/pr-validation-maui.yml` (commented out since `src/ClientApp/ClientApp.csproj` doesn't exist yet) |
 | 18 | `eShop.AppHost` | Not started — deliberately last, references every other project — **flag when reached**: uncomment the `Install Playwright Browsers`/`Run Playwright tests`/`upload-artifact` steps in `.github/workflows/playwright.yml` (commented out since `playwright.config.ts`'s `webServer` needs this project to launch the app) |
-| 19 | `tests/` (5 test projects) | Not started |
+| 19 | `tests/` (5 test projects) | Not started — **framework decided**: `MSTest.Sdk` on the `Microsoft.Testing.Platform` runner (already pinned in `global.json`, not a new choice) — see "Testing strategy" below |
 | 20 | `build/` tooling | Not started |
 
 ### Open Dependabot PRs
@@ -239,13 +239,24 @@ Not yet merged — opened automatically within hours of `.github/workflows/*` la
 | `dependabot/github_actions/actions/upload-artifact-7` | `actions/upload-artifact` v6 → v7 |
 | `dependabot/github_actions/actions/setup-node-7` | `actions/setup-node` v6 → v7 |
 
+### Testing strategy (decided 2026-08-15, not built yet)
+
+Framework: `MSTest.Sdk` on the `Microsoft.Testing.Platform` (MTP) runner — not a new decision, `global.json` already pins `MSTest.Sdk 4.3.3` and `"test": {"runner": "Microsoft.Testing.Platform"}` from the original SDK/build-config research, and the real upstream `tests/` folder's 5 projects are MSTest-based too. Considered switching to xUnit (broader community mindshare, more Aspire-testing blog coverage) but decided against overriding an already-researched, already-committed version decision without a concrete reason to.
+
+CI reporting (`pr-validation.yml`, added 2026-08-15) verified against a real scratch `MSTest.Sdk 4.3.3` project, not assumed — MTP's CLI is a different surface from legacy VSTest (`dotnet test --help` under the pinned runner explicitly states "doesn't support VSTest"), so the familiar `--collect:"XPlat Code Coverage"`/`--logger trx` flags don't apply here:
+
+- `--coverage --coverage-output-format cobertura` and `--report-trx` are both built into the MTP runner itself — confirmed by running a real probe project, no extra NuGet package needed for either.
+- [`dorny/test-reporter@v3`](https://github.com/dorny/test-reporter) publishes the `.trx` as a PR-visible check run (`reporter: dotnet-trx`); `actions/upload-artifact@v6` uploads the Cobertura XML. Both real interfaces confirmed against the action's own `action.yml`/README, not guessed — the correct permissions (`actions: read`, `checks: write`, added to the existing `contents: read`) and current version tag (`@v3`, not `@v1`) came from that check.
+- Both new steps are `if: always()` with `fail-on-empty: false` / `if-no-files-found: ignore`, and the existing "no test projects found" tolerance (exit code 1, tolerated since `tests/` doesn't exist) was re-verified against the real repo with the new flags added — same graceful no-op, confirmed via a real build+test run, not assumed.
+- **Honest gap:** the "tests actually run and produce real coverage/TRX output" path is unverified end-to-end — there's nothing in `tests/` yet to exercise it. Only the "no test projects" tolerant path is currently provable. Revisit once `tests/` is added (row 19 above) to confirm the happy path for real.
+
 ### CI status
 
 Originally `eShop.slnx`/`eShop.Web.slnf` referenced all 19 projects while only 1 (`EventBus`) existed on disk, which failed every build/test workflow and GitHub's own auto-injected "Automatic Dependency Submission" check. Fixed 2026-08-14 by trimming the solution files to only list projects that actually exist, adding each one incrementally as it's added (see `docs/architecturedesign.md` Section 3) — decided with the user to keep this practice going forward rather than list projects upfront again.
 
 Current state:
 
-- ✅ **`eShop Pull Request Validation`** — green. Its `Test` step also needed a fix: `dotnet test --solution` hard-fails with "No test projects were found" when the solution has zero test projects (structural, not a real failure, since `tests/` hasn't been added yet) — the workflow now tolerates that specific case while still failing on any real test failure.
+- ✅ **`eShop Pull Request Validation`** — green. Its `Test` step also needed a fix: `dotnet test --solution` hard-fails with "No test projects were found" when the solution has zero test projects (structural, not a real failure, since `tests/` hasn't been added yet) — the workflow now tolerates that specific case while still failing on any real test failure. Coverage collection and TRX test reporting added 2026-08-15 — see "Testing strategy" above.
 - ✅ **`dynamic / submit-nuget`** (GitHub's Automatic Dependency Submission) — green, now that a real restorable project exists.
 - ✅ **CodeQL** — green. Originally GitHub's Default setup, which extracted C# with `build-mode: none` and got flagged for "Low C# analysis quality" (55% call-target resolution, 67% known-type expressions, both under the 85% threshold — can't resolve NuGet package types or cross-project references without an actual build). Switched to Advanced setup (`.github/workflows/codeql.yml`) with `build-mode: manual` for `csharp` (runs `dotnet build eShop.Web.slnf` first); `javascript-typescript` and `actions` stay `build-mode: none`.
 - ✅ **`Playwright Tests for eShop`** — green. Three real fixes plus one deferral: corepack wasn't enabled before `yarn install`, so the runner's stock Yarn 1.22.22 couldn't read `package.json`'s `"packageManager": "yarn@4.18.0"` pin; the HTTPS dev-cert step tried `--trust`, which fails on Ubuntu (no OS trust store) even though nothing needs it trusted (tests run over HTTP via `ESHOP_USE_HTTP_ENDPOINTS`); and the `Install Playwright Browsers`/`Run Playwright tests`/`upload-artifact` steps are commented out until `eShop.AppHost` exists (see row 19 above) — that project needs to exist for `playwright.config.ts`'s `webServer` to launch the app at all.
