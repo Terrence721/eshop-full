@@ -1,11 +1,11 @@
 # Architecture Overview
 
 <!-- markdownlint-disable-next-line MD036 -->
-**Last Updated: August 14, 2026**
+**Last Updated: August 15, 2026**
 
 This document describes the architecture eShop-full is being built toward — verified against the real source app (Microsoft's [dotnet/eShop](https://github.com/dotnet/eShop), snapshotted locally at `F:\eShop-main\eShop-main`) and against what has actually landed in this repo, not a generic description of what an e-commerce microservices app "usually" looks like. See [todo.md](../todo.md) for exactly how much of this exists right now, and the [project board](https://github.com/users/Terrence721/projects/5) for the live per-project status.
 
-**Current status, stated plainly:** as of this writing, `src/Shared/` (2 linked-source files), `EventBus`, `EventBusRabbitMQ`, and `eShop.ServiceDefaults` are added and reviewed, and none of the other 15 projects exist on disk. Everything below describing the full system is the target this repo is being built toward one file at a time, not a claim that it already runs end-to-end.
+**Current status, stated plainly:** as of this writing, `src/Shared/` (2 linked-source files), `EventBus`, `EventBusRabbitMQ`, and `eShop.ServiceDefaults` are added and reviewed; `IntegrationEventLogEF` is in progress (5 of 7 source files); the other 16 projects don't exist on disk yet. `eShop.ServiceDefaults` also has real test coverage now (`tests/eShop.ServiceDefaults.UnitTests`, 26 passing tests) — see Section 11. Everything below describing the full system is the target this repo is being built toward one file at a time, not a claim that it already runs end-to-end.
 
 ## 1. What this is
 
@@ -35,7 +35,7 @@ eShop-full/
 │   ├── EventBus/                ✅ added and reviewed
 │   ├── EventBusRabbitMQ/        ✅ added and reviewed — see Section 8
 │   ├── eShop.ServiceDefaults/    ✅ added and reviewed
-│   ├── IntegrationEventLogEF/
+│   ├── IntegrationEventLogEF/   🚧 in progress (5 of 7 source files)
 │   ├── Identity.API/
 │   ├── Catalog.API/
 │   ├── Basket.API/
@@ -50,8 +50,10 @@ eShop-full/
 │   ├── WebBFF/                    # new, not in upstream — see Section 9
 │   ├── ClientApp/                # .NET MAUI
 │   └── eShop.AppHost/             # Aspire orchestrator — added last, references everything
-├── tests/                         # 5 test projects (Basket.UnitTests, Catalog.FunctionalTests,
+├── tests/                        ✅ eShop.ServiceDefaults.UnitTests added (26 tests) — see Section 11.
+│                                   # Upstream's own 5 (Basket.UnitTests, Catalog.FunctionalTests,
 │                                   # Ordering.FunctionalTests, Ordering.UnitTests, ClientApp.UnitTests)
+│                                   # land alongside the projects they test, not batched at the end.
 ├── build/                         # Build tooling from source repo
 ├── e2e/                          ✅ Playwright e2e specs
 ├── docs/                         ✅ this folder
@@ -111,7 +113,20 @@ Upstream's `WebApp` is a Blazor storefront, with `WebAppComponents` sharing Razo
 
 **The real technical consequence, not just a frontend swap:** the architecture diagram shows `Basket API` called via **gRPC** directly from the Blazor Web App — something Blazor Server can do natively (the gRPC client runs server-side in .NET) that a browser-based React SPA fundamentally cannot (browsers don't support the HTTP/2 trailers native gRPC needs). Decided **not** to replace gRPC with REST for `Basket.API`, and **not** to duplicate it with a second REST surface — instead, `Basket.API` will add ASP.NET Core's first-party `Grpc.AspNetCore.Web` middleware, letting the same gRPC service handle native gRPC (server-to-server, e.g. `Mobile BFF`/`Ordering.API`) *and* gRPC-Web (the React frontend, via a client like `@connectrpc/connect-web`) without a separate proxy service. This keeps gRPC as `Basket.API`'s genuine service contract — matching the diagram's intent and worth demonstrating on its own — while solving the browser problem with the minimal, Microsoft-supported path rather than guessing at a workaround when `Basket.API` actually gets built.
 
-## 10. Where to go next
+## 11. Testing strategy
+
+Framework: **`MSTest.Sdk`** on .NET's newer **`Microsoft.Testing.Platform`** (MTP) runner — not a new choice made for testing specifically, `global.json` already pinned both from the original SDK/build-config research, and upstream's own `tests/` folder is MSTest-based too. MTP is a genuinely different CLI surface from the older VSTest-based `dotnet test` (its own `--help` states it plainly: "doesn't support VSTest") — coverage (`--coverage --coverage-output-format cobertura`) and TRX reporting (`--report-trx`) are both built into the runner itself, confirmed against a real scratch project rather than assumed. CI (`pr-validation.yml`) publishes results via [`dorny/test-reporter`](https://github.com/dorny/test-reporter) as a PR-visible check run and uploads the coverage artifact — verified end-to-end against a real GitHub Actions run, not just written and hoped to work.
+
+**Testing is no longer a separate end-of-migration phase.** The original plan deferred all of `tests/` to its own migration slot, batched after every service and frontend existed. That's reversed: `tests/eShop.ServiceDefaults.UnitTests` was added and grown to 26 passing tests *before* the source migration resumed past `IntegrationEventLogEF`, and going forward every project gets its own test project in the same unit of work as its source files — not deferred. `src/Shared/` gets the same treatment despite not being a `.csproj` project itself, since its linked-source files are real logic other projects depend on.
+
+Two patterns worth carrying forward, both discovered while building `eShop.ServiceDefaults.UnitTests`:
+
+- **`InternalsVisibleTo` for `internal` classes worth testing directly.** `OpenApiOptionsExtensions` (and the whole class it lives in) is `internal` — nothing in it is reachable from a test assembly without explicit visibility. Rather than reach for reflection (brittle, tests implementation detail instead of behavior) or skip coverage of logic that had already shipped one real bug, the fix was the idiomatic one: widen the specific members to `internal` and add `<InternalsVisibleTo Include="{ProjectName}.UnitTests" />` to the source project. No public API changes.
+- **`NSubstitute` for behavior that only exists behind a DI/HTTP pipeline.** `HttpClientExtensions`'s bearer-token-injecting `DelegatingHandler` is a *private* nested class — the only way to exercise it is through `AddAuthToken`'s public surface, a real `IServiceCollection`, and a mocked `IAuthenticationService` standing in for the ASP.NET Core auth pipeline. `NSubstitute` was already a centrally-pinned package (upstream's own `Ordering.UnitTests` uses it), so this isn't a new dependency, just its first real use in this fork.
+
+**Honest gap, tracked not solved:** wanted one combined HTML report across every test project, not one file per project (confirmed via a real 2-project scratch solution that `--report-html` produces per-project output, same as `--report-trx`). The real fix — [microsoft/testfx#10529](https://github.com/microsoft/testfx/pull/10529), "Add HTML report artifact consolidation" — merged 2026-08-09 but hasn't shipped in a `Microsoft.Testing.Extensions.HtmlReport` NuGet release yet (still `2.3.3`, published 2026-07-28, checked directly against the NuGet API). Dependabot already tracks that package, so no new tooling is needed to know when it ships — see `todo.md`'s "Testing strategy" section and the tracked Backlog card.
+
+## 12. Where to go next
 
 - Live progress and evidence trail: [todo.md](../todo.md)
 - Per-project Kanban status: [GitHub Project board](https://github.com/users/Terrence721/projects/5)
