@@ -178,9 +178,10 @@ Commits: `98c14e3`, `27611d0`, `3594f5a`, `4f14d23`, `8b2888a`, `73be164`, `2097
 `.csproj` added in `0e6e311`. 2 of 7 source files reviewed for correctness and SOLID/DRY/composition-over-inheritance so far:
 
 - `EventStateEnum.cs` — renamed to `EventState.cs`/`EventState`. Microsoft's own .NET Framework Design Guidelines explicitly say not to suffix enum type names with `Enum` — this eShop source file violates that guideline in Microsoft's own sample. Explicit integer values on each member kept as-is (correct, since this enum gets persisted to a Postgres column and needs stable values across the outbox pattern's `NotPublished`/`InProgress`/`Published`/`PublishedFailed` states).
-- `GlobalUsings.cs`, `IntegrationEventLogEntry.cs`, `IntegrationLogExtensions.cs`, `Services/IIntegrationEventLogService.cs`, `Services/IntegrationEventLogService.cs`, `Utilities/ResilientTransaction.cs` not yet added.
+- `GlobalUsings.cs` — 2 of the source's 8 `global using`s were dead: `System.Data.Common` (nothing in the project spells out `DbTransaction` by name — `GetDbTransaction()`'s return value is passed straight through) and `Microsoft.EntityFrameworkCore.Metadata.Builders` (`.ToTable()` is an extension method resolved via the already-imported `Microsoft.EntityFrameworkCore` namespace; `.HasKey()` is an instance method on an implicitly-typed lambda parameter, so it needs no import at all). Verified against a real build — not assumed — by temporarily staging the 5 remaining unmodified source files, building with the 2 suspects removed and nullable checks off to isolate symbol resolution, and confirming zero errors, before trimming for real. No inheritance anywhere in this project's remaining files (`IntegrationEventLogService<TContext>` composes a `TContext` field and implements two interfaces; `ResilientTransaction` composes a `DbContext` field behind a private constructor/static factory) — composition-over-inheritance already holds without any change needed.
+- `IntegrationEventLogEntry.cs`, `IntegrationLogExtensions.cs`, `Services/IIntegrationEventLogService.cs`, `Services/IntegrationEventLogService.cs`, `Utilities/ResilientTransaction.cs` not yet added.
 
-Commits: `0e6e311`, `21c9deb`.
+Commits: `0e6e311`, `21c9deb`, `848efca`.
 
 ### Frontend and API layer (decided 2026-08-15, not built yet)
 
