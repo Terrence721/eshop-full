@@ -18,6 +18,8 @@ on:
 
 permissions:
   contents: read
+  actions: read
+  checks: write
 
 jobs:
   test:
@@ -31,7 +33,7 @@ jobs:
       - name: Test
         run: |
           set +e
-          output=$(dotnet test --solution eShop.Web.slnf --no-build --no-progress --output detailed 2>&1)
+          output=$(dotnet test --solution eShop.Web.slnf --no-build --no-progress --output detailed --coverage --coverage-output-format cobertura --report-trx --results-directory ./TestResults 2>&1)
           exit_code=$?
           echo "$output"
           if [ $exit_code -ne 0 ] && echo "$output" | grep -q "No test projects were found"; then
@@ -39,3 +41,18 @@ jobs:
             exit 0
           fi
           exit $exit_code
+      - name: Publish test results
+        uses: dorny/test-reporter@v3
+        if: always()
+        with:
+          name: Test Results
+          path: 'TestResults/**/*.trx'
+          reporter: dotnet-trx
+          fail-on-empty: false
+      - name: Upload coverage report
+        uses: actions/upload-artifact@v6
+        if: always()
+        with:
+          name: coverage-report
+          path: TestResults/**/*.cobertura.xml
+          if-no-files-found: ignore
