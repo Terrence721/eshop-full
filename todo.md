@@ -189,6 +189,8 @@ Commits: `98c14e3`, `27611d0`, `3594f5a`, `4f14d23`, `8b2888a`, `73be164`, `2097
 - **Repo-wide unused-usings audit, 2026-08-15:** prompted by the `System.Reflection` catch above, audited every `GlobalUsings.cs` and every local `using` across all 4 projects added so far. Found 2 more real dead imports, both in already-"Done" projects — see `EventBus`'s and `eShop.ServiceDefaults`'s sections above.
 - `Services/IntegrationEventLogService.cs`, `Utilities/ResilientTransaction.cs` not yet added.
 
+**📍 Paused here 2026-08-15** to plan testing strategy before continuing. Next file when work resumes: `Services/IntegrationEventLogService.cs` (needs `global using System.Reflection;` re-added alongside it — see above).
+
 Commits: `0e6e311`, `21c9deb`, `848efca`, `d4f9b3b`, `756f227`, `fb33711`.
 
 ### Frontend and API layer (decided 2026-08-15, not built yet)
