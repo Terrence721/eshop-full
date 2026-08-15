@@ -45,6 +45,8 @@
     <PackageVersion Include="Microsoft.Extensions.Identity.Stores" Version="$(DotnetPackagesVersion)" />
     <PackageVersion Include="Microsoft.OpenApi" Version="2.9.0" />
     <PackageVersion Include="MSTest" Version="4.3.3" />
+    <!-- Microsoft marks this extension experimental: API/CLI options/report format may change without notice. -->
+    <PackageVersion Include="Microsoft.Testing.Extensions.HtmlReport" Version="2.3.3" />
     <!-- Version together with EF -->
     <PackageVersion Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="10.0.3" />
     <PackageVersion Include="Microsoft.EntityFrameworkCore.Tools" Version="$(DotnetPackagesVersion)" />

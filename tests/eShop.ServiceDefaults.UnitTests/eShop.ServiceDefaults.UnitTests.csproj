@@ -9,6 +9,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.Testing.Extensions.HtmlReport" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\..\src\eShop.ServiceDefaults\eShop.ServiceDefaults.csproj" />
   </ItemGroup>
 
