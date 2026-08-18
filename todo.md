@@ -159,6 +159,16 @@ No RabbitMQ broker exists yet to integration-test the retry fix end-to-end (no `
 
 **Scoped out of this pass, left as follow-ups:** extracting an `IEventSerializer` strategy for `SerializeMessage`/`DeserializeMessage` (currently hardcoded to `System.Text.Json`), and making an explicit call on `ProcessEvent`'s sequential-vs-parallel handler dispatch (upstream leaves a `// REVIEW: This could be done in parallel` comment unresolved). Both are also tracked in "Design pattern backlog" below.
 
+### EventBusRabbitMQ.UnitTests (in progress)
+
+`tests/EventBusRabbitMQ.UnitTests` scaffolded (`MSTest.Sdk`, matching precedent). Tracked as [issue #8](https://github.com/Terrence721/eshop-full/issues/8), sub-issue of #5. `ActivityExtensions.cs` (linked in from `src/Shared/`) is deliberately out of scope here — `src/Shared/` gets its own dedicated test project, not tested piecemeal through whichever project happens to link it.
+
+- `EventBusOptionsTests.cs` (1 test) — clean. Locks in `RetryCount`'s default of `10` — a genuine business decision (not a language default), worth a regression test even though the file is otherwise a plain options POCO.
+
+Remaining: `RabbitMQTelemetry.cs`, `RabbitMQEventBus.cs`, `RabbitMqDependencyInjectionExtensions.cs`, `ResilientEventBusDecorator.cs`, `TelemetryEventBusDecorator.cs`. `GlobalUsings.cs` needs no test (no behavior).
+
+Commits: `52f7fc3`, `1d2d7d5`.
+
 ### Design pattern backlog
 
 Not implemented yet — raised during the 2026-08-14 pattern scan that produced the `EventBusRabbitMQ` Decorator split (see [architecturedesign.md Section 8](docs/architecturedesign.md#8-decorator-for-cross-cutting-concerns)), tracked here plus a Backlog card each on the [project board](https://github.com/users/Terrence721/projects/5) so they surface again when the relevant project is actually added rather than being forgotten in chat history:
