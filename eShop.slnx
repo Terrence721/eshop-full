@@ -6,6 +6,7 @@
     <Project Path="src/IntegrationEventLogEF/IntegrationEventLogEF.csproj" />
   </Folder>
   <Folder Name="/tests/">
+    <Project Path="tests/EventBus.UnitTests/EventBus.UnitTests.csproj" />
     <Project Path="tests/eShop.ServiceDefaults.UnitTests/eShop.ServiceDefaults.UnitTests.csproj" />
   </Folder>
   <Folder Name="/Solution Items/">
