@@ -159,9 +159,9 @@ Also moved during the split: `SetActivityContext` off `RabbitMQEventBus` and ont
 
 **Scoped out of this pass, left as follow-ups:** extracting an `IEventSerializer` strategy for `SerializeMessage`/`DeserializeMessage` (currently hardcoded to `System.Text.Json`), and making an explicit call on `ProcessEvent`'s sequential-vs-parallel handler dispatch (upstream leaves a `// REVIEW: This could be done in parallel` comment unresolved). Both are also tracked in "Design pattern backlog" below.
 
-### EventBusRabbitMQ.UnitTests (in progress)
+### EventBusRabbitMQ.UnitTests
 
-`tests/EventBusRabbitMQ.UnitTests` scaffolded (`MSTest.Sdk`, matching precedent). Tracked as [issue #8](https://github.com/Terrence721/eshop-full/issues/8), sub-issue of #5. `ActivityExtensions.cs` (linked in from `src/Shared/`) is deliberately out of scope here — `src/Shared/` gets its own dedicated test project, not tested piecemeal through whichever project happens to link it.
+`tests/EventBusRabbitMQ.UnitTests` scaffolded (`MSTest.Sdk`, matching precedent). **All 6 applicable source files covered, 17 passing tests.** Tracked as [issue #8](https://github.com/Terrence721/eshop-full/issues/8), sub-issue of #5. `ActivityExtensions.cs` (linked in from `src/Shared/`) is deliberately out of scope here — `src/Shared/` gets its own dedicated test project, not tested piecemeal through whichever project happens to link it.
 
 - `EventBusOptionsTests.cs` (1 test) — clean. Locks in `RetryCount`'s default of `10` — a genuine business decision (not a language default), worth a regression test even though the file is otherwise a plain options POCO.
 - `RabbitMQTelemetryTests.cs` (4 tests) — clean, each test's arrange is distinct and minimal. Confirms `SetActivityContext`'s null-guard (no-op, doesn't throw) and, via a real `ActivityListener`/`ActivitySource` (not a mock), that all 5 OpenTelemetry messaging semantic-convention tags actually land on the activity with the right values.
@@ -171,9 +171,11 @@ Also moved during the split: `SetActivityContext` off `RabbitMQEventBus` and ont
 
 - `ResilientEventBusDecoratorTests.cs` (3 tests) — clean, a shared `FlakyEventBus` test double (throws a queued sequence of exceptions, then succeeds) and `CreateDecorator` helper. Confirms no retry on immediate success, no retry for exceptions outside `ShouldHandle`'s set (`InvalidOperationException` propagates on the first call), and — the significant one — **`PublishAsync_retries_and_succeeds_after_a_transient_SocketException` verifies the Polly retry fix end-to-end for the first time**, not just via the reflected `Polly.Core` API signatures the original fix relied on. A `SocketException` thrown once, with `RetryCount: 1`, is retried and the second call succeeds — proving `ExecuteAsync` genuinely awaits and observes the failure now, closing the honest gap this project flagged since the fix landed (no RabbitMQ broker existed to prove it before). Kept to one retry deliberately: the delay formula (`2^attempt` seconds) is hardcoded in the source, not injectable, so more retries would mean a slower test for no more signal.
 
-Remaining: `RabbitMqDependencyInjectionExtensions.cs`. `GlobalUsings.cs` needs no test (no behavior).
+- `RabbitMqDependencyInjectionExtensionsTests.cs` (4 tests) — clean, all 4 share a `CreateBuilder()` helper (real setup complexity — configuring a fake `ConnectionStrings:rabbitmq` entry so `builder.AddRabbitMQClient(...)` registers cleanly without a live broker). Confirms the `ArgumentNullException.ThrowIfNull(builder)` guard, that the returned `IEventBusBuilder`'s `Services` is the same collection as `builder.Services`, and that `IEventBus` resolves as a `ResilientEventBusDecorator` (the outer layer of the Decorator chain). The significant one: **`AddRabbitMqEventBus_registers_the_same_RabbitMQEventBus_singleton_as_the_IHostedService`** locks in the exact invariant the source comment calls out — the registered `IHostedService` and the `RabbitMQEventBus` resolved directly must be the same instance, or `StartAsync` would open a connection on one instance while the decorator chain published through a different, never-started one. Verified `AddRabbitMQClient` registers cleanly against a bare, never-connected connection string — no live broker needed for any of this.
 
-Commits: `52f7fc3`, `1d2d7d5`, `ee87d64`, `a5e83cf`, `b3562c6`, `7eb783a`.
+**No test needed:** `GlobalUsings.cs` (no behavior).
+
+Commits: `52f7fc3`, `1d2d7d5`, `ee87d64`, `a5e83cf`, `b3562c6`, `7eb783a`, `8b22764`, `517808d`.
 
 ### Design pattern backlog
 
