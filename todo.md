@@ -1,7 +1,7 @@
 # 📝 TODO
 
 <!-- markdownlint-disable-next-line MD036 -->
-**Last Updated: August 14, 2026**
+**Last Updated: August 18, 2026**
 
 A living list of what's done and what's left on this build. This is an independently modernized version of Microsoft's [dotnet/eShop](https://github.com/dotnet/eShop) reference app — a .NET Aspire microservices e-commerce platform added **one file at a time**, evaluated and upgraded as it comes in, not a wholesale copy of the source repo. See [docs/architecturedesign.md](docs/architecturedesign.md) for how it's put together and the [project board](https://github.com/users/Terrence721/projects/5) for the live per-project Kanban view of the migration itself.
 
@@ -18,10 +18,11 @@ A living list of what's done and what's left on this build. This is an independe
 | Package manager | Switched npm → Yarn 4.18.0 (Berry, node-modules linker) via corepack — see "Yarn + e2e" below |
 | `src/Shared/` | Both linked-source files added, reviewed for code quality, no changes needed |
 | `EventBus` | All 8 source files added — see "EventBus" below |
-| `EventBusRabbitMQ` | All 6 source files added, one real bug found and fixed — see "EventBusRabbitMQ" below |
+| `EventBusRabbitMQ` | All 6 source files added, two real bugs found and fixed — see "EventBusRabbitMQ" below |
 | `eShop.ServiceDefaults` | All 7 source files added, several real fixes found and made — see "eShop.ServiceDefaults" below |
+| Test coverage | `eShop.ServiceDefaults.UnitTests` (33 tests), `EventBus.UnitTests` (16 tests), `EventBusRabbitMQ.UnitTests` (17 tests) — all applicable files covered, 66 tests total, added ahead of the `tests/` migration slot — see "Testing strategy" below |
 
-**Still to do:** 15 of 18 `.csproj` projects, plus `tests/` and `build/` — see the "Still to do" table below and [project board](https://github.com/users/Terrence721/projects/5) for the live board. Project count changed 2026-08-15: `WebAppComponents`/`HybridApp` dropped, `WebBFF` added — see the "Frontend and API layer" section below.
+**Still to do:** 16 of 20 `.csproj` projects, plus `build/` — see the "Still to do" table below and [project board](https://github.com/users/Terrence721/projects/5) for the live board. Project count changed 2026-08-15: `WebAppComponents`/`HybridApp` dropped, `WebBFF` added — see the "Frontend and API layer" section below.
 
 ## ✅ Done
 
