@@ -167,9 +167,11 @@ No RabbitMQ broker exists yet to integration-test the retry fix end-to-end (no `
 - `RabbitMQTelemetryTests.cs` (4 tests) — clean, each test's arrange is distinct and minimal. Confirms `SetActivityContext`'s null-guard (no-op, doesn't throw) and, via a real `ActivityListener`/`ActivitySource` (not a mock), that all 5 OpenTelemetry messaging semantic-convention tags actually land on the activity with the right values.
 - `RabbitMQEventBusTests.cs` (2 of the file's methods covered) — clean, both tests share a `CreateEventBus()` helper (real complexity worth factoring out — the constructor takes 5 dependencies). `PublishAsync_throws_InvalidOperationException_when_connection_is_not_open` is the first test in the repo to directly exercise `RabbitMQEventBus` at all, and it's a genuine regression test: it proves the connection-guard bug already found and fixed in this file (see the `EventBusRabbitMQ` section above) for real, not just by inspection. `Dispose()` confirmed to no-op safely when `_consumerChannel` was never assigned. **Scoped out, deferred as genuine integration-test territory**: `StartAsync`, `OnMessageReceived`, `ProcessEvent`, and `SerializeMessage`/`DeserializeMessage` all need either a real RabbitMQ broker or heavy `RabbitMQ.Client` interface mocking (`IConnection`/`IChannel`/`IBasicProperties`) to exercise meaningfully — not attempted this pass.
 
-Remaining: `RabbitMqDependencyInjectionExtensions.cs`, `ResilientEventBusDecorator.cs`, `TelemetryEventBusDecorator.cs`. `GlobalUsings.cs` needs no test (no behavior).
+- `TelemetryEventBusDecoratorTests.cs` (3 tests) — clean, a shared `FakeEventBus` test double and `ListenToAllActivities()` helper used appropriately across tests. Confirms `PublishAsync` delegates to the inner `IEventBus`, that an inner exception gets tagged onto the activity (`exception.message`/`exception.stacktrace`/`exception.type`/`ActivityStatusCode.Error`) *and* rethrows rather than swallowing it, and that the started activity is named `"{EventTypeName} publish"` with the messaging semantic-convention tags applied. All via a real `ActivityListener`, not a mock — same rigor as `RabbitMQTelemetryTests.cs`.
 
-Commits: `52f7fc3`, `1d2d7d5`, `ee87d64`, `a5e83cf`.
+Remaining: `RabbitMqDependencyInjectionExtensions.cs`, `ResilientEventBusDecorator.cs`. `GlobalUsings.cs` needs no test (no behavior).
+
+Commits: `52f7fc3`, `1d2d7d5`, `ee87d64`, `a5e83cf`, `b3562c6`.
 
 ### Design pattern backlog
 
