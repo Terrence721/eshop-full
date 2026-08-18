@@ -155,7 +155,7 @@ That investigation turned up a second real bug, more significant than the first,
 
 Also moved during the split: `SetActivityContext` off `RabbitMQEventBus` and onto `RabbitMQTelemetry` (the class both the receive path and the new publish decorator depend on for `ActivitySource`/`Propagator`), and `RabbitMQEventBus.PublishAsync`'s context-propagation injection now sources its `ActivityContext` from the ambient `Activity.Current` (set by `TelemetryEventBusDecorator`) rather than a locally-created activity — `Activity.Current` is `AsyncLocal`-backed and flows through the `await` chain automatically, which is a real improvement over the original's manual activity-threading through nested lambdas. Receive-side tracing (`OnMessageReceived`/`ProcessEvent`) is deliberately unchanged: it isn't reachable through `IEventBus.PublishAsync` at all (driven by `RabbitMQEventBus`'s own `IHostedService`/consumer-callback wiring), so there's no decorator seam for it — a documented asymmetry, not an oversight.
 
-No RabbitMQ broker exists yet to integration-test the retry fix end-to-end (no `eShop.AppHost` yet) — the fix's correctness rests on the reflected Polly API signatures, not a live run; flagged honestly rather than claimed as verified.
+**Verified end-to-end 2026-08-18**, updating the original honest caveat: no RabbitMQ broker exists yet (no `eShop.AppHost`), so the retry pipeline itself couldn't be integration-tested against a live broker — but `ResilientEventBusDecoratorTests.cs` (see the `EventBusRabbitMQ.UnitTests` section below) verifies the actual bug fix (does `ExecuteAsync` genuinely await and retry) using a fake inner `IEventBus`, which is what the fix's correctness actually hinges on. No longer resting on the reflected Polly API signatures alone.
 
 **Scoped out of this pass, left as follow-ups:** extracting an `IEventSerializer` strategy for `SerializeMessage`/`DeserializeMessage` (currently hardcoded to `System.Text.Json`), and making an explicit call on `ProcessEvent`'s sequential-vs-parallel handler dispatch (upstream leaves a `// REVIEW: This could be done in parallel` comment unresolved). Both are also tracked in "Design pattern backlog" below.
 
@@ -169,9 +169,11 @@ No RabbitMQ broker exists yet to integration-test the retry fix end-to-end (no `
 
 - `TelemetryEventBusDecoratorTests.cs` (3 tests) — clean, a shared `FakeEventBus` test double and `ListenToAllActivities()` helper used appropriately across tests. Confirms `PublishAsync` delegates to the inner `IEventBus`, that an inner exception gets tagged onto the activity (`exception.message`/`exception.stacktrace`/`exception.type`/`ActivityStatusCode.Error`) *and* rethrows rather than swallowing it, and that the started activity is named `"{EventTypeName} publish"` with the messaging semantic-convention tags applied. All via a real `ActivityListener`, not a mock — same rigor as `RabbitMQTelemetryTests.cs`.
 
-Remaining: `RabbitMqDependencyInjectionExtensions.cs`, `ResilientEventBusDecorator.cs`. `GlobalUsings.cs` needs no test (no behavior).
+- `ResilientEventBusDecoratorTests.cs` (3 tests) — clean, a shared `FlakyEventBus` test double (throws a queued sequence of exceptions, then succeeds) and `CreateDecorator` helper. Confirms no retry on immediate success, no retry for exceptions outside `ShouldHandle`'s set (`InvalidOperationException` propagates on the first call), and — the significant one — **`PublishAsync_retries_and_succeeds_after_a_transient_SocketException` verifies the Polly retry fix end-to-end for the first time**, not just via the reflected `Polly.Core` API signatures the original fix relied on. A `SocketException` thrown once, with `RetryCount: 1`, is retried and the second call succeeds — proving `ExecuteAsync` genuinely awaits and observes the failure now, closing the honest gap this project flagged since the fix landed (no RabbitMQ broker existed to prove it before). Kept to one retry deliberately: the delay formula (`2^attempt` seconds) is hardcoded in the source, not injectable, so more retries would mean a slower test for no more signal.
 
-Commits: `52f7fc3`, `1d2d7d5`, `ee87d64`, `a5e83cf`, `b3562c6`.
+Remaining: `RabbitMqDependencyInjectionExtensions.cs`. `GlobalUsings.cs` needs no test (no behavior).
+
+Commits: `52f7fc3`, `1d2d7d5`, `ee87d64`, `a5e83cf`, `b3562c6`, `7eb783a`.
 
 ### Design pattern backlog
 
