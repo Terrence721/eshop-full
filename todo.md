@@ -177,7 +177,7 @@ Commits: `98c14e3`, `27611d0`, `3594f5a`, `4f14d23`, `8b2888a`, `73be164`, `2097
 
 ### eShop.ServiceDefaults.UnitTests
 
-First real test project (`tests/eShop.ServiceDefaults.UnitTests`, `MSTest.Sdk` on `Microsoft.Testing.Platform` — see "Testing strategy" below), added ahead of the `tests/` migration slot per the 2026-08-15 testing-workflow change. 6 of 7 source files covered, 30 passing tests. Same SOLID/DRY/composition-over-inheritance review discipline applied to source files applies here too — findings below, not just "tests added, all green":
+First real test project (`tests/eShop.ServiceDefaults.UnitTests`, `MSTest.Sdk` on `Microsoft.Testing.Platform` — see "Testing strategy" below), added ahead of the `tests/` migration slot per the 2026-08-15 testing-workflow change. **All 7 source files covered, 33 passing tests.** Same SOLID/DRY/composition-over-inheritance review discipline applied to source files applies here too — findings below, not just "tests added, all green":
 
 - `ConfigurationExtensionsTests.cs` (3 tests) — clean. `new ConfigurationBuilder().Build()` repeated twice is below the threshold worth extracting (a single parameterless BCL call, not shared arrange complexity).
 - `ClaimsPrincipalExtensionsTests.cs` (6 tests) — clean; a `PrincipalWith(params Claim[])` helper was already factored out at write time.
@@ -185,10 +185,11 @@ First real test project (`tests/eShop.ServiceDefaults.UnitTests`, `MSTest.Sdk` o
 - `OpenApiOptionsExtensionsTests.cs` (9 tests) — **real finding, fixed**: `new ApiVersionDescription(new ApiVersion(1, 0), "v1", ...)` was repeated 6 times with the first two arguments identical in every call and only `deprecated`/`sunsetPolicy` actually varying per test — unlike the single-BCL-call cases elsewhere in this project, this is a multi-argument constructor with real duplicated literals, not incidental arrange boilerplate. Extracted a `Version(bool deprecated = false, SunsetPolicy? sunsetPolicy = null)` factory helper; all 6 call sites now surface only what actually varies per test.
 - `AuthenticationExtensionsTests.cs` (5 tests) — clean; a `BuilderWithIdentity(string url, string audience)` helper already factored out at write time.
 - `ExtensionsTests.cs` (4 tests, covers `AddDefaultHealthChecks`/`AddServiceDefaults`/`ConfigureOpenTelemetry`) — clean. `Host.CreateApplicationBuilder()`/`BuildServiceProvider()` repeated across test methods is deliberate, not a defect: test code favors DAMP (each test readable in isolation) over strict DRY, and a shared arrange helper here would only save one BCL call per test while coupling otherwise-independent tests together.
+- `OpenApiExtensionsTests.cs` (3 tests, covers `AddDefaultOpenApi`/`UseDefaultOpenApi`'s no-op guard paths) — clean. Shares the same 2-assertion (`AreSame` fluent-return + `AreEqual` service-count-unchanged) shape as `AuthenticationExtensionsTests`'s no-op test — now 3 occurrences across 2 files, considered whether that crosses into "extract a shared cross-class helper" territory, but two trivial assertions on a guard clause still isn't duplicated *logic*, just a recurring trivial shape.
 
-**Remaining, deferred as genuine integration-test territory, not silently skipped:** `Extensions.cs`'s `MapDefaultEndpoints` (needs a real running `WebApplication`/Kestrel listener to verify `/health`/`/alive` HTTP behavior) and the OTLP-exporter branch of the private `AddOpenTelemetryExporters` (not observable without reflecting into OpenTelemetry SDK's internal exporter pipeline). `OpenApi.Extensions.cs` not started.
+**Genuine integration-test territory, deferred not silently skipped:** `Extensions.cs`'s `MapDefaultEndpoints` (needs a real running `WebApplication`/Kestrel listener to verify `/health`/`/alive` HTTP behavior) and the OTLP-exporter branch of the private `AddOpenTelemetryExporters` (not observable without reflecting into OpenTelemetry SDK's internal exporter pipeline). `OpenApi.Extensions.cs`'s "real wiring" path (an actual `IApiVersioningBuilder`, `MapOpenApi`/`MapScalarApiReference` route behavior) needs a live server and 3 NuGet packages' extension-method interplay not yet verified against a real API.
 
-Commits: `79727c6`, `1cff7a0`, `43f0a6e`, `0589fc9`, `4ab0639`, `e5b6e74`, `067bf87`, `8ba47d3`, `887b077`, `a1f075a`, `7a50122`.
+Commits: `79727c6`, `1cff7a0`, `43f0a6e`, `0589fc9`, `4ab0639`, `e5b6e74`, `067bf87`, `8ba47d3`, `887b077`, `a1f075a`, `7a50122`, `83dfb80`.
 
 ### IntegrationEventLogEF (in progress)
 
