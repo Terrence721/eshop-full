@@ -164,10 +164,11 @@ No RabbitMQ broker exists yet to integration-test the retry fix end-to-end (no `
 `tests/EventBusRabbitMQ.UnitTests` scaffolded (`MSTest.Sdk`, matching precedent). Tracked as [issue #8](https://github.com/Terrence721/eshop-full/issues/8), sub-issue of #5. `ActivityExtensions.cs` (linked in from `src/Shared/`) is deliberately out of scope here — `src/Shared/` gets its own dedicated test project, not tested piecemeal through whichever project happens to link it.
 
 - `EventBusOptionsTests.cs` (1 test) — clean. Locks in `RetryCount`'s default of `10` — a genuine business decision (not a language default), worth a regression test even though the file is otherwise a plain options POCO.
+- `RabbitMQTelemetryTests.cs` (4 tests) — clean, each test's arrange is distinct and minimal. Confirms `SetActivityContext`'s null-guard (no-op, doesn't throw) and, via a real `ActivityListener`/`ActivitySource` (not a mock), that all 5 OpenTelemetry messaging semantic-convention tags actually land on the activity with the right values.
 
-Remaining: `RabbitMQTelemetry.cs`, `RabbitMQEventBus.cs`, `RabbitMqDependencyInjectionExtensions.cs`, `ResilientEventBusDecorator.cs`, `TelemetryEventBusDecorator.cs`. `GlobalUsings.cs` needs no test (no behavior).
+Remaining: `RabbitMQEventBus.cs`, `RabbitMqDependencyInjectionExtensions.cs`, `ResilientEventBusDecorator.cs`, `TelemetryEventBusDecorator.cs`. `GlobalUsings.cs` needs no test (no behavior).
 
-Commits: `52f7fc3`, `1d2d7d5`.
+Commits: `52f7fc3`, `1d2d7d5`, `ee87d64`.
 
 ### Design pattern backlog
 
