@@ -130,10 +130,13 @@ Commits: `c430813`, `96ca024`, `8e7b556`, `e4db372`, `bb84b6b`, `3dd2a7e`, `81d1
 `tests/EventBus.UnitTests` scaffolded (`MSTest.Sdk`, matching `eShop.ServiceDefaults.UnitTests`'s convention). Tracked as [issue #7](https://github.com/Terrence721/eshop-full/issues/7), sub-issue of #5.
 
 - `Extensions/GenericTypeExtensionsTests.cs` (6 tests) — clean, no DRY/SOLID fix needed (each test a single-line assertion, no shared setup worth extracting). One test (`GetGenericTypeName_does_not_recurse_into_nested_generic_arguments`) deliberately pins down the already-documented nested-generic limitation from the source review above (asserts the current, imperfect `List\`1`-with-backtick output) so any future fix has to be a deliberate, visible change to the test, not a silent behavior shift.
+- `Events/IntegrationEventTests.cs` (3 tests) — clean. Covers the default constructor's `Id`/`CreationDate` assignment and confirms object-initializer values correctly override those constructor defaults (a real interaction worth locking in, since `init` accessors + a parameterless constructor that already sets values is a combination that's easy to get subtly wrong).
 
-Remaining: `Abstractions/EventBusSubscriptionInfo.cs`, `Abstractions/IEventBus.cs`, `Abstractions/IEventBusBuilder.cs`, `Abstractions/IIntegrationEventHandler.cs`, `Events/IntegrationEvent.cs`, `Extensions/EventBusBuilderExtensions.cs`.
+**No test needed:** `Abstractions/IEventBus.cs` and `Abstractions/IEventBusBuilder.cs` are pure interfaces with zero behavior of their own — nothing to assert at runtime that isn't already enforced at compile time by the rest of the solution building against them.
 
-Commits: `1bdb2a4`, `4afa072`.
+Remaining: `Abstractions/EventBusSubscriptionInfo.cs`, `Abstractions/IIntegrationEventHandler.cs` (its default-interface-method downcast has real logic worth testing), `Extensions/EventBusBuilderExtensions.cs`.
+
+Commits: `1bdb2a4`, `4afa072`, `fa68056`.
 
 ### EventBusRabbitMQ
 
