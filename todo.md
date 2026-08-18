@@ -125,21 +125,20 @@ Commits: `3c263e4`, `5e65794` (original); `0c361d9`, `10df006` (2026-08-14 DRY/S
 
 Commits: `c430813`, `96ca024`, `8e7b556`, `e4db372`, `bb84b6b`, `3dd2a7e`, `81d1e63`, `1058b5c`, `1722848`, `9634191`, `75b5115`.
 
-### EventBus.UnitTests (in progress)
+### EventBus.UnitTests
 
-`tests/EventBus.UnitTests` scaffolded (`MSTest.Sdk`, matching `eShop.ServiceDefaults.UnitTests`'s convention). Tracked as [issue #7](https://github.com/Terrence721/eshop-full/issues/7), sub-issue of #5.
+`tests/EventBus.UnitTests` scaffolded (`MSTest.Sdk`, matching `eShop.ServiceDefaults.UnitTests`'s convention). **All 6 applicable source files covered, 16 passing tests.** Tracked as [issue #7](https://github.com/Terrence721/eshop-full/issues/7), sub-issue of #5.
 
 - `Extensions/GenericTypeExtensionsTests.cs` (6 tests) — clean, no DRY/SOLID fix needed (each test a single-line assertion, no shared setup worth extracting). One test (`GetGenericTypeName_does_not_recurse_into_nested_generic_arguments`) deliberately pins down the already-documented nested-generic limitation from the source review above (asserts the current, imperfect `List\`1`-with-backtick output) so any future fix has to be a deliberate, visible change to the test, not a silent behavior shift.
 - `Events/IntegrationEventTests.cs` (3 tests) — clean. Covers the default constructor's `Id`/`CreationDate` assignment and confirms object-initializer values correctly override those constructor defaults (a real interaction worth locking in, since `init` accessors + a parameterless constructor that already sets values is a combination that's easy to get subtly wrong).
 - `Abstractions/IIntegrationEventHandlerTests.cs` (1 test) — clean. `IIntegrationEventHandler<TIntegrationEvent>`'s explicit-interface default method (`Task IIntegrationEventHandler.Handle(IntegrationEvent) => Handle((TIntegrationEvent)@event)`) is real dispatch logic despite living on an interface — confirmed the downcast correctly forwards to the typed `Handle` overload with the same event instance (`AreSame`, not just equality), matching exactly what `todo.md`'s original `EventBus` review claimed was "type-safe by construction."
 
 - `Abstractions/EventBusSubscriptionInfoTests.cs` (3 tests) — clean. `JsonSerializerOptions` is copy-constructed per-instance from a shared static default (`new(DefaultSerializerOptions)`) rather than referencing it directly — confirmed via a real build that two `EventBusSubscriptionInfo` instances get independent, non-shared `JsonSerializerOptions` objects, so a `ConfigureJsonOptions` customization on one subscription doesn't leak into another's.
+- `Extensions/EventBusBuilderExtensionsTests.cs` (3 tests) — clean, standard shared-test-double pattern (a `TestEvent`/`TestHandler`/`TestEventBusBuilder` trio used across all 3 tests, matching precedent from `IIntegrationEventHandlerTests.cs`). Needed a real DI container to verify `ConfigureJsonOptions`/`AddSubscription<T,TH>`'s registrations actually resolve correctly, which surfaced a genuine package gap: `Microsoft.Extensions.DependencyInjection.Abstractions` now bundles the concrete `ServiceCollection` class itself (confirmed via reflection — a real change from what used to require the separate package), but `BuildServiceProvider()`/`ServiceProvider` still need the actual `Microsoft.Extensions.DependencyInjection` package. Added it, centrally versioned alongside `Microsoft.Extensions.Options`.
 
 **No test needed:** `Abstractions/IEventBus.cs` and `Abstractions/IEventBusBuilder.cs` are pure interfaces with zero behavior of their own — nothing to assert at runtime that isn't already enforced at compile time by the rest of the solution building against them.
 
-Remaining: `Extensions/EventBusBuilderExtensions.cs`.
-
-Commits: `1bdb2a4`, `4afa072`, `fa68056`, `396390f`, `85b0141`.
+Commits: `1bdb2a4`, `4afa072`, `fa68056`, `396390f`, `85b0141`, `5ca0f9e`, `8143f55`.
 
 ### EventBusRabbitMQ
 
