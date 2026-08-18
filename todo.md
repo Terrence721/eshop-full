@@ -133,11 +133,13 @@ Commits: `c430813`, `96ca024`, `8e7b556`, `e4db372`, `bb84b6b`, `3dd2a7e`, `81d1
 - `Events/IntegrationEventTests.cs` (3 tests) — clean. Covers the default constructor's `Id`/`CreationDate` assignment and confirms object-initializer values correctly override those constructor defaults (a real interaction worth locking in, since `init` accessors + a parameterless constructor that already sets values is a combination that's easy to get subtly wrong).
 - `Abstractions/IIntegrationEventHandlerTests.cs` (1 test) — clean. `IIntegrationEventHandler<TIntegrationEvent>`'s explicit-interface default method (`Task IIntegrationEventHandler.Handle(IntegrationEvent) => Handle((TIntegrationEvent)@event)`) is real dispatch logic despite living on an interface — confirmed the downcast correctly forwards to the typed `Handle` overload with the same event instance (`AreSame`, not just equality), matching exactly what `todo.md`'s original `EventBus` review claimed was "type-safe by construction."
 
+- `Abstractions/EventBusSubscriptionInfoTests.cs` (3 tests) — clean. `JsonSerializerOptions` is copy-constructed per-instance from a shared static default (`new(DefaultSerializerOptions)`) rather than referencing it directly — confirmed via a real build that two `EventBusSubscriptionInfo` instances get independent, non-shared `JsonSerializerOptions` objects, so a `ConfigureJsonOptions` customization on one subscription doesn't leak into another's.
+
 **No test needed:** `Abstractions/IEventBus.cs` and `Abstractions/IEventBusBuilder.cs` are pure interfaces with zero behavior of their own — nothing to assert at runtime that isn't already enforced at compile time by the rest of the solution building against them.
 
-Remaining: `Abstractions/EventBusSubscriptionInfo.cs`, `Extensions/EventBusBuilderExtensions.cs`.
+Remaining: `Extensions/EventBusBuilderExtensions.cs`.
 
-Commits: `1bdb2a4`, `4afa072`, `fa68056`, `396390f`.
+Commits: `1bdb2a4`, `4afa072`, `fa68056`, `396390f`, `85b0141`.
 
 ### EventBusRabbitMQ
 
