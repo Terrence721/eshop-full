@@ -125,6 +125,16 @@ Commits: `3c263e4`, `5e65794` (original); `0c361d9`, `10df006` (2026-08-14 DRY/S
 
 Commits: `c430813`, `96ca024`, `8e7b556`, `e4db372`, `bb84b6b`, `3dd2a7e`, `81d1e63`, `1058b5c`, `1722848`, `9634191`, `75b5115`.
 
+### EventBus.UnitTests (in progress)
+
+`tests/EventBus.UnitTests` scaffolded (`MSTest.Sdk`, matching `eShop.ServiceDefaults.UnitTests`'s convention). Tracked as [issue #7](https://github.com/Terrence721/eshop-full/issues/7), sub-issue of #5.
+
+- `Extensions/GenericTypeExtensionsTests.cs` (6 tests) — clean, no DRY/SOLID fix needed (each test a single-line assertion, no shared setup worth extracting). One test (`GetGenericTypeName_does_not_recurse_into_nested_generic_arguments`) deliberately pins down the already-documented nested-generic limitation from the source review above (asserts the current, imperfect `List\`1`-with-backtick output) so any future fix has to be a deliberate, visible change to the test, not a silent behavior shift.
+
+Remaining: `Abstractions/EventBusSubscriptionInfo.cs`, `Abstractions/IEventBus.cs`, `Abstractions/IEventBusBuilder.cs`, `Abstractions/IIntegrationEventHandler.cs`, `Events/IntegrationEvent.cs`, `Extensions/EventBusBuilderExtensions.cs`.
+
+Commits: `1bdb2a4`, `4afa072`.
+
 ### EventBusRabbitMQ
 
 `.csproj` added in `f3de7d1`. All 6 source files reviewed for correctness and SOLID/DRY/composition-over-inheritance:
