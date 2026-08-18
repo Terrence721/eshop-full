@@ -8,6 +8,9 @@ namespace eShop.ServiceDefaults.UnitTests;
 [TestClass]
 public class OpenApiOptionsExtensionsTests
 {
+    private static ApiVersionDescription Version(bool deprecated = false, SunsetPolicy? sunsetPolicy = null) =>
+        new(new ApiVersion(1, 0), "v1", deprecated, sunsetPolicy);
+
     [TestMethod]
     public void AppendSentenceSeparator_does_nothing_when_text_is_empty()
     {
@@ -41,7 +44,7 @@ public class OpenApiOptionsExtensionsTests
     [TestMethod]
     public void BuildDescription_returns_plain_description_when_not_deprecated_and_no_sunset_policy()
     {
-        var api = new ApiVersionDescription(new ApiVersion(1, 0), "v1");
+        var api = Version();
 
         var result = OpenApiOptionsExtensions.BuildDescription(api, "Catalog API");
 
@@ -51,7 +54,7 @@ public class OpenApiOptionsExtensionsTests
     [TestMethod]
     public void BuildDescription_appends_deprecation_notice_when_deprecated()
     {
-        var api = new ApiVersionDescription(new ApiVersion(1, 0), "v1", deprecated: true);
+        var api = Version(deprecated: true);
 
         var result = OpenApiOptionsExtensions.BuildDescription(api, "Catalog API");
 
@@ -61,7 +64,7 @@ public class OpenApiOptionsExtensionsTests
     [TestMethod]
     public void BuildDescription_does_not_double_period_when_description_already_ends_with_one()
     {
-        var api = new ApiVersionDescription(new ApiVersion(1, 0), "v1", deprecated: true);
+        var api = Version(deprecated: true);
 
         var result = OpenApiOptionsExtensions.BuildDescription(api, "Catalog API.");
 
@@ -72,7 +75,7 @@ public class OpenApiOptionsExtensionsTests
     public void BuildDescription_appends_sunset_date_when_policy_has_a_date()
     {
         var sunsetDate = new DateTimeOffset(2027, 1, 1, 0, 0, 0, TimeSpan.Zero);
-        var api = new ApiVersionDescription(new ApiVersion(1, 0), "v1", sunsetPolicy: new SunsetPolicy(sunsetDate));
+        var api = Version(sunsetPolicy: new SunsetPolicy(sunsetDate));
 
         var result = OpenApiOptionsExtensions.BuildDescription(api, "Catalog API");
 
@@ -102,7 +105,7 @@ public class OpenApiOptionsExtensionsTests
             policy.Links.Add(link);
         }
 
-        var api = new ApiVersionDescription(new ApiVersion(1, 0), "v1", sunsetPolicy: policy);
+        var api = Version(sunsetPolicy: policy);
 
         var result = OpenApiOptionsExtensions.BuildDescription(api, "Catalog API");
 
@@ -116,7 +119,7 @@ public class OpenApiOptionsExtensionsTests
     public void BuildDescription_combines_deprecation_and_sunset_date_with_correct_separators()
     {
         var sunsetDate = new DateTimeOffset(2027, 6, 15, 0, 0, 0, TimeSpan.Zero);
-        var api = new ApiVersionDescription(new ApiVersion(1, 0), "v1", deprecated: true, sunsetPolicy: new SunsetPolicy(sunsetDate));
+        var api = Version(deprecated: true, sunsetPolicy: new SunsetPolicy(sunsetDate));
 
         var result = OpenApiOptionsExtensions.BuildDescription(api, "Catalog API");
 
