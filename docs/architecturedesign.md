@@ -1,11 +1,11 @@
 # Architecture Overview
 
 <!-- markdownlint-disable-next-line MD036 -->
-**Last Updated: August 15, 2026**
+**Last Updated: August 18, 2026**
 
 This document describes the architecture eShop-full is being built toward — verified against the real source app (Microsoft's [dotnet/eShop](https://github.com/dotnet/eShop), snapshotted locally at `F:\eShop-main\eShop-main`) and against what has actually landed in this repo, not a generic description of what an e-commerce microservices app "usually" looks like. See [todo.md](../todo.md) for exactly how much of this exists right now, and the [project board](https://github.com/users/Terrence721/projects/5) for the live per-project status.
 
-**Current status, stated plainly:** as of this writing, `src/Shared/` (2 linked-source files), `EventBus`, `EventBusRabbitMQ`, and `eShop.ServiceDefaults` are added and reviewed; `IntegrationEventLogEF` is in progress (5 of 7 source files); the other 16 projects don't exist on disk yet. `eShop.ServiceDefaults` also has real test coverage now (`tests/eShop.ServiceDefaults.UnitTests`, 26 passing tests) — see Section 11. Everything below describing the full system is the target this repo is being built toward one file at a time, not a claim that it already runs end-to-end.
+**Current status, stated plainly:** as of this writing, `src/Shared/` (2 linked-source files), `EventBus`, `EventBusRabbitMQ`, and `eShop.ServiceDefaults` are added and reviewed; `IntegrationEventLogEF` is in progress (5 of 7 source files); the other 16 projects don't exist on disk yet. `eShop.ServiceDefaults` also has complete test coverage now (`tests/eShop.ServiceDefaults.UnitTests`, all 7 source files, 33 passing tests) — see Section 11. Everything below describing the full system is the target this repo is being built toward one file at a time, not a claim that it already runs end-to-end.
 
 ## 1. What this is
 
@@ -117,7 +117,9 @@ Upstream's `WebApp` is a Blazor storefront, with `WebAppComponents` sharing Razo
 
 Framework: **`MSTest.Sdk`** on .NET's newer **`Microsoft.Testing.Platform`** (MTP) runner — not a new choice made for testing specifically, `global.json` already pinned both from the original SDK/build-config research, and upstream's own `tests/` folder is MSTest-based too. MTP is a genuinely different CLI surface from the older VSTest-based `dotnet test` (its own `--help` states it plainly: "doesn't support VSTest") — coverage (`--coverage --coverage-output-format cobertura`) and TRX reporting (`--report-trx`) are both built into the runner itself, confirmed against a real scratch project rather than assumed. CI (`pr-validation.yml`) publishes results via [`dorny/test-reporter`](https://github.com/dorny/test-reporter) as a PR-visible check run and uploads the coverage artifact — verified end-to-end against a real GitHub Actions run, not just written and hoped to work.
 
-**Testing is no longer a separate end-of-migration phase.** The original plan deferred all of `tests/` to its own migration slot, batched after every service and frontend existed. That's reversed: `tests/eShop.ServiceDefaults.UnitTests` was added and grown to 26 passing tests *before* the source migration resumed past `IntegrationEventLogEF`, and going forward every project gets its own test project in the same unit of work as its source files — not deferred. `src/Shared/` gets the same treatment despite not being a `.csproj` project itself, since its linked-source files are real logic other projects depend on.
+**Testing is no longer a separate end-of-migration phase.** The original plan deferred all of `tests/` to its own migration slot, batched after every service and frontend existed. That's reversed: `tests/eShop.ServiceDefaults.UnitTests` was added and grown to full coverage — **all 7 source files, 33 passing tests** — *before* the source migration resumed past `IntegrationEventLogEF`, and going forward every project gets its own test project in the same unit of work as its source files — not deferred. `src/Shared/` gets the same treatment despite not being a `.csproj` project itself, since its linked-source files are real logic other projects depend on.
+
+Not every method in a file is a pure-unit-test candidate, and that's stated explicitly rather than papered over: `MapDefaultEndpoints` (needs a live `WebApplication`/Kestrel listener), the OTLP-exporter branch of `AddOpenTelemetryExporters` (only observable via OpenTelemetry SDK internals), and `AddDefaultOpenApi`'s real `IApiVersioningBuilder`-wiring path plus all of `UseDefaultOpenApi`'s route behavior (needs a live server and three NuGet packages' extension-method interplay not yet verified against a real API) are documented as genuine integration-test territory in `todo.md`, not silently skipped.
 
 Two patterns worth carrying forward, both discovered while building `eShop.ServiceDefaults.UnitTests`:
 
