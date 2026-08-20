@@ -1,0 +1,842 @@
+<title>Terrence Daniels — Full-Stack .NET Engineer</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta
+  name="description"
+  content="An independently modernized version of Microsoft's dotnet/eShop reference app — a .NET Aspire microservices e-commerce platform added one file at a time, evaluated against actual current-latest versions rather than copied over wholesale. Real bugs found and fixed in Microsoft's own reference source, verified against real assemblies and real builds, not assumed."
+/>
+<link rel="canonical" href="https://terrence721.github.io/eshop-full/portfolio.html" />
+
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content="Terrence Daniels — Portfolio" />
+<meta property="og:url" content="https://terrence721.github.io/eshop-full/portfolio.html" />
+<meta property="og:title" content="eshop-full — a .NET Aspire microservices platform, by Terrence Daniels" />
+<meta
+  property="og:description"
+  content="An independently modernized version of Microsoft's dotnet/eShop reference app, added one file at a time — real bugs found in Microsoft's own source (a Polly retry pipeline that never retried, a disabled JWT audience check), verified against real assemblies and real builds. Not a bulk copy."
+/>
+
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:title" content="eshop-full — a .NET Aspire microservices platform, by Terrence Daniels" />
+<meta
+  name="twitter:description"
+  content="An independently modernized version of Microsoft's dotnet/eShop reference app — added one file at a time, real bugs found and fixed in Microsoft's own source, verified against real assemblies and real builds, not assumed."
+/>
+<style>
+  :root {
+    --paper: #ede9df;
+    --paper-2: #e2ddd0;
+    --ink: #1c2333;
+    --ink-soft: #4b5567;
+    --rule: #c7c0ac;
+    --accent: #a13d2b;
+    --accent-ink: #fff7ef;
+    --accent-2: #2e5266;
+    --font-display:
+      Georgia, 'Iowan Old Style', 'Palatino Linotype', 'Book Antiqua', serif;
+    --font-body:
+      -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial,
+      sans-serif;
+    --font-mono:
+      ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono',
+      monospace;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --paper: #14181f;
+      --paper-2: #1b212b;
+      --ink: #e8e4d9;
+      --ink-soft: #a3aabb;
+      --rule: #303748;
+      --accent: #dd7a4a;
+      --accent-ink: #1c1006;
+      --accent-2: #7fb2cc;
+    }
+  }
+  :root[data-theme='dark'] {
+    --paper: #14181f;
+    --paper-2: #1b212b;
+    --ink: #e8e4d9;
+    --ink-soft: #a3aabb;
+    --rule: #303748;
+    --accent: #dd7a4a;
+    --accent-ink: #1c1006;
+    --accent-2: #7fb2cc;
+  }
+  :root[data-theme='light'] {
+    --paper: #ede9df;
+    --paper-2: #e2ddd0;
+    --ink: #1c2333;
+    --ink-soft: #4b5567;
+    --rule: #c7c0ac;
+    --accent: #a13d2b;
+    --accent-ink: #fff7ef;
+    --accent-2: #2e5266;
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+  html {
+    color-scheme: light dark;
+  }
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--font-body);
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+  }
+  a {
+    color: var(--accent-2);
+    text-decoration-thickness: 1px;
+    text-underline-offset: 3px;
+  }
+  a:hover {
+    color: var(--accent);
+  }
+  a:focus-visible,
+  button:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+  }
+
+  .wrap {
+    max-width: 880px;
+    margin: 0 auto;
+    padding: 0 28px;
+  }
+
+  /* ---------- hero ---------- */
+  .hero {
+    position: relative;
+    padding: 72px 0 44px;
+    background-image: repeating-linear-gradient(
+      135deg,
+      color-mix(in srgb, var(--ink) 4%, transparent) 0 2px,
+      transparent 2px 26px
+    );
+    border-bottom: 1px solid var(--rule);
+  }
+  .eyebrow {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    margin: 0 0 18px;
+  }
+  .eyebrow::before {
+    content: '◆ ';
+    color: var(--accent);
+  }
+  h1.name {
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-size: clamp(2.6rem, 6vw, 4.2rem);
+    letter-spacing: -0.01em;
+    line-height: 1.02;
+    margin: 0 0 10px;
+    text-wrap: balance;
+  }
+  .role {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: clamp(1.1rem, 2.4vw, 1.4rem);
+    color: var(--accent-2);
+    margin: 0 0 22px;
+  }
+  .thesis {
+    max-width: 62ch;
+    font-size: 1.05rem;
+    color: var(--ink-soft);
+    margin: 0 0 34px;
+  }
+  .hero-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    align-items: center;
+  }
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--font-mono);
+    font-size: 0.82rem;
+    letter-spacing: 0.03em;
+    padding: 10px 16px;
+    border: 1px solid var(--ink);
+    color: var(--ink);
+    text-decoration: none;
+    background: transparent;
+  }
+  .btn:hover {
+    background: var(--ink);
+    color: var(--paper);
+  }
+  .btn.primary {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: var(--accent-ink);
+  }
+  .btn.primary:hover {
+    background: var(--accent-2);
+    border-color: var(--accent-2);
+    color: var(--accent-ink);
+  }
+
+  /* stamp badge */
+  .stamp {
+    position: absolute;
+    top: 58px;
+    right: 28px;
+    width: 128px;
+    height: 128px;
+    border: 2px solid var(--accent);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transform: rotate(-9deg);
+    opacity: 0.92;
+  }
+  .stamp::before {
+    content: '';
+    position: absolute;
+    inset: 8px;
+    border: 1px dashed var(--accent);
+    border-radius: 50%;
+  }
+  .stamp-inner {
+    text-align: center;
+    font-family: var(--font-mono);
+    color: var(--accent);
+  }
+  .stamp-inner .n {
+    font-size: 1.5rem;
+    font-weight: 700;
+    line-height: 1;
+  }
+  .stamp-inner .l {
+    display: block;
+    font-size: 0.55rem;
+    letter-spacing: 0.12em;
+    margin-top: 4px;
+  }
+  @media (max-width: 620px) {
+    .stamp {
+      display: none;
+    }
+  }
+
+  /* ---------- manifest stat strip ---------- */
+  .manifest {
+    background: var(--paper-2);
+    border-bottom: 1px solid var(--rule);
+    overflow-x: auto;
+  }
+  .manifest-row {
+    display: flex;
+    min-width: max-content;
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+  }
+  .manifest-cell {
+    padding: 16px 24px;
+    border-right: 1px solid var(--rule);
+    white-space: nowrap;
+  }
+  .manifest-cell:last-child {
+    border-right: none;
+  }
+  .manifest-cell .v {
+    font-size: 1.15rem;
+    color: var(--accent);
+    font-weight: 700;
+  }
+  .manifest-cell .k {
+    display: block;
+    font-size: 0.68rem;
+    letter-spacing: 0.08em;
+    color: var(--ink-soft);
+    text-transform: uppercase;
+    margin-top: 2px;
+  }
+
+  /* ---------- sections ---------- */
+  section {
+    padding: 52px 0;
+    border-bottom: 1px solid var(--rule);
+  }
+  section:last-of-type {
+    border-bottom: none;
+  }
+  h2 {
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-size: 1.7rem;
+    margin: 0 0 6px;
+    text-wrap: balance;
+  }
+  .h2-sub {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    margin: 0 0 22px;
+  }
+  p {
+    max-width: 68ch;
+  }
+  .lede {
+    font-size: 1.02rem;
+    color: var(--ink-soft);
+    max-width: 66ch;
+  }
+
+  .chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 18px 0 0;
+  }
+  .chip {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    padding: 4px 10px;
+    border: 1px solid var(--rule);
+    color: var(--ink-soft);
+  }
+
+  /* ledger line items */
+  .ledger {
+    border-top: 1px solid var(--rule);
+    margin-top: 24px;
+  }
+  .item {
+    display: grid;
+    grid-template-columns: 40px 1fr;
+    gap: 4px 18px;
+    padding: 18px 0;
+    border-bottom: 1px solid var(--rule);
+  }
+  .item .no {
+    font-family: var(--font-mono);
+    color: var(--accent);
+    font-size: 0.9rem;
+    padding-top: 2px;
+  }
+  .item .file {
+    font-family: var(--font-mono);
+    font-size: 0.88rem;
+    color: var(--ink);
+  }
+  .item .desc {
+    color: var(--ink-soft);
+    font-size: 0.95rem;
+    margin: 4px 0 8px;
+  }
+  .item .meta {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    color: var(--ink-soft);
+  }
+  .item .meta .tag {
+    color: var(--accent-2);
+  }
+  .item .meta a {
+    margin-left: 8px;
+  }
+
+  .note {
+    border-left: 2px solid var(--accent-2);
+    padding: 4px 0 4px 16px;
+    color: var(--ink-soft);
+    font-size: 0.92rem;
+    margin: 22px 0 0;
+    max-width: 62ch;
+  }
+  .note strong {
+    color: var(--ink);
+  }
+
+  .twocol {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 28px;
+    margin-top: 20px;
+  }
+  @media (max-width: 640px) {
+    .twocol {
+      grid-template-columns: 1fr;
+    }
+  }
+  .card {
+    border: 1px solid var(--rule);
+    padding: 18px 20px;
+  }
+  .card h3 {
+    font-family: var(--font-body);
+    font-size: 0.95rem;
+    font-weight: 700;
+    margin: 0 0 8px;
+  }
+  .card p {
+    font-size: 0.9rem;
+    color: var(--ink-soft);
+    margin: 0;
+  }
+
+  footer {
+    padding: 44px 0 72px;
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+  }
+  footer .links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 22px;
+    margin-bottom: 22px;
+  }
+  footer .fine {
+    color: var(--ink-soft);
+    font-size: 0.78rem;
+    max-width: 62ch;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    * {
+      transition: none !important;
+    }
+  }
+</style>
+
+<div class="hero">
+  <div class="wrap">
+    <p class="eyebrow">Portfolio Manifest — Prepared 2026-08-20</p>
+    <h1 class="name">Terrence&nbsp;Daniels</h1>
+    <p class="role">Full-Stack .NET Engineer</p>
+    <p class="thesis">
+      An independently modernized version of Microsoft's <strong>dotnet/eShop</strong>
+      reference app — a .NET Aspire microservices e-commerce platform added
+      <strong>one file at a time</strong>, each file evaluated and upgraded
+      against actual current-latest versions rather than copied over
+      wholesale. Still early — three foundation projects done, a fourth in
+      progress, sixteen still ahead — but every file that's landed has been
+      reviewed, tested, and, where it mattered, proven wrong in Microsoft's
+      own reference source before being fixed.
+    </p>
+    <div class="hero-actions">
+      <a class="btn primary" href="https://github.com/Terrence721/eshop-full"
+        >View the repository →</a
+      >
+      <a
+        class="btn"
+        href="https://github.com/Terrence721/eshop-full/blob/main/docs/architecturedesign.md"
+        >Architecture decisions</a
+      >
+      <a
+        class="btn"
+        href="https://github.com/Terrence721/eshop-full/blob/main/todo.md"
+        >Build log</a
+      >
+    </div>
+  </div>
+  <div class="stamp" aria-hidden="true">
+    <div class="stamp-inner">
+      <span class="n">10</span>
+      <span class="l">REAL BUGS<br />FOUND &amp; FIXED</span>
+    </div>
+  </div>
+</div>
+
+<div class="manifest">
+  <div class="wrap">
+    <div class="manifest-row">
+      <div class="manifest-cell">
+        <span class="v">3 of 20</span><span class="k">projects done</span>
+      </div>
+      <div class="manifest-cell">
+        <span class="v">66/66</span><span class="k">tests passing</span>
+      </div>
+      <div class="manifest-cell">
+        <span class="v">10</span><span class="k">real bugs found &amp; fixed</span>
+      </div>
+      <div class="manifest-cell">
+        <span class="v">3</span><span class="k">decorator layers, one IEventBus</span>
+      </div>
+      <div class="manifest-cell">
+        <span class="v">~50</span><span class="k">package versions researched</span>
+      </div>
+      <div class="manifest-cell">
+        <span class="v">1</span><span class="k">Blazor → React pivot</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="wrap">
+  <section>
+    <h2>Why this project</h2>
+    <p class="h2-sub">Microsoft's own reference architecture, verified rather than trusted</p>
+    <p class="lede">
+      .NET Aspire microservices, event-driven integration, and a real
+      transactional outbox pattern show up constantly on resumes and rarely
+      get built end-to-end. <code>dotnet/eShop</code> is Microsoft's own
+      teaching reference for exactly this shape — which made it a genuinely
+      useful thing to rebuild file by file rather than fork wholesale: every
+      package version re-researched against what's actually current, every
+      file read closely enough to catch two real bugs sitting in Microsoft's
+      own sample code, and a handful of deliberate design departures (a
+      Decorator split, React instead of Blazor) made and recorded as this
+      fork's own choices, not upstream's.
+    </p>
+    <div class="chips">
+      <span class="chip">.NET 10</span>
+      <span class="chip">.NET Aspire 13.4</span>
+      <span class="chip">RabbitMQ</span>
+      <span class="chip">EF Core</span>
+      <span class="chip">Polly</span>
+      <span class="chip">OpenTelemetry</span>
+      <span class="chip">MSTest / Microsoft.Testing.Platform</span>
+      <span class="chip">NSubstitute</span>
+      <span class="chip">GitHub Actions</span>
+      <span class="chip">CodeQL</span>
+    </div>
+  </section>
+
+  <section>
+    <h2>Foundation first, four projects deep</h2>
+    <p class="h2-sub">
+      Shared → EventBus → EventBusRabbitMQ → eShop.ServiceDefaults, then the transactional outbox
+    </p>
+    <p class="lede">
+      Migration order is deliberate: shared/foundation projects first, since
+      everything else depends on them. <code>src/Shared/</code>'s two
+      linked-source files, <code>EventBus</code>'s abstractions,
+      <code>EventBusRabbitMQ</code>'s RabbitMQ implementation, and
+      <code>eShop.ServiceDefaults</code>'s Aspire telemetry/health-check/resilience
+      defaults are done and reviewed. <code>IntegrationEventLogEF</code> — the
+      EF Core-backed transactional outbox every event-publishing service will
+      write through — is in progress at 5 of 7 source files. The other 16
+      projects don't exist on disk yet; see
+      <a href="https://github.com/Terrence721/eshop-full/blob/main/todo.md">todo.md</a>
+      for the honest current state rather than assuming more is done.
+    </p>
+    <div class="twocol">
+      <div class="card">
+        <h3>Deliberate deviations, not defaults</h3>
+        <p>
+          A <code>RabbitMQEventBus</code> mixing transport plumbing with
+          telemetry and Polly resilience split into a three-layer
+          <a href="diagrams/event-flow.html">Decorator chain</a> once
+          upstream fidelity stopped being the constraint. <code>WebApp</code>
+          is going React, not Blazor — a deliberate job-market call, not a
+          technical necessity — which cascades into a new <code>WebBFF</code>
+          project not in upstream at all. Both decisions, and the reasoning
+          behind them, are recorded in
+          <a href="https://github.com/Terrence721/eshop-full/blob/main/docs/architecturedesign.md"
+            >docs/architecturedesign.md</a
+          >.
+        </p>
+      </div>
+      <div class="card">
+        <h3>Verification over assumption</h3>
+        <p>
+          The Polly bug below was confirmed by reflecting the real
+          <code>Polly.Core 8.6.6</code> assembly, not read off documentation.
+          The MTP test-runner's CLI flags were confirmed against a real
+          scratch project before trusting them in CI. A repo-wide unused-using
+          audit was verified by deliberately planting a known-dead import
+          first and confirming the check actually caught it, before trusting
+          a clean result anywhere else.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Real bugs, not just version bumps</h2>
+    <p class="h2-sub">
+      Found by reading closely and verifying against real assemblies, not by assuming upstream is correct
+    </p>
+    <p class="lede">
+      Every entry below was present, verbatim, in the files as they came from
+      Microsoft's own <code>dotnet/eShop</code> repo unless noted otherwise —
+      this isn't a list of typos, it's what a genuine line-by-line review
+      turned up in a widely-referenced Microsoft reference sample.
+    </p>
+    <div class="ledger">
+      <div class="item">
+        <div class="no">01</div>
+        <div>
+          <div class="file">EventBusRabbitMQ — Polly retry pipeline never actually retried</div>
+          <div class="desc">
+            <code>PublishAsync</code> ran its publish step through
+            <code>_pipeline.Execute(async () => {...})</code> — the
+            <strong>synchronous</strong> <code>Execute&lt;TResult&gt;</code>
+            overload with <code>TResult</code> inferred as <code>Task</code>,
+            confirmed by reflecting the real <code>Polly.Core 8.6.6</code>
+            assembly rather than assumed. Any exception thrown after the
+            lambda's first <code>await</code> — exactly where
+            <code>BrokerUnreachableException</code> would occur — happened
+            after <code>Execute</code> had already returned, so the retry
+            pipeline never observed the failures it was configured to catch.
+            Fixed by moving to the real <code>ExecuteAsync</code> overload as
+            part of a full <a href="diagrams/event-flow.html">Decorator split</a>.
+          </div>
+          <div class="meta"><span class="tag">high · reliability</span></div>
+        </div>
+      </div>
+      <div class="item">
+        <div class="no">02</div>
+        <div>
+          <div class="file">eShop.ServiceDefaults — JWT audience validation silently disabled</div>
+          <div class="desc">
+            <code>TokenValidationParameters.ValidateAudience = false</code>
+            meant a token's <code>aud</code> claim was never actually
+            checked, so a token issued for one downstream API could be
+            replayed against any other API using this same authentication
+            code. Removed the override — <code>ValidateAudience</code>
+            defaults to <code>true</code>, and <code>JwtBearerOptions.Audience</code>
+            already auto-populates the expected value. Flagged for
+            re-verification against real issued tokens once
+            <code>Identity.API</code> lands.
+          </div>
+          <div class="meta"><span class="tag">high · security</span></div>
+        </div>
+      </div>
+      <div class="item">
+        <div class="no">03</div>
+        <div>
+          <div class="file">EventBusRabbitMQ — a null-conditional that made its own error path unreachable</div>
+          <div class="desc">
+            <code>(await _rabbitMQConnection?.CreateChannelAsync()) ?? throw
+            new InvalidOperationException(...)</code> looks like it handles a
+            closed connection gracefully. It doesn't — the
+            <code>?.</code> short-circuits the whole parenthesized
+            expression to a null <code>Task</code>, and awaiting a null task
+            throws <code>NullReferenceException</code> immediately, so the
+            <code>?? throw</code> branch was dead code. A caller during
+            startup got an opaque NRE instead of the intended message. Fixed
+            with an explicit null check before the <code>await</code>.
+          </div>
+          <div class="meta"><span class="tag">medium · reliability</span></div>
+        </div>
+      </div>
+      <div class="item">
+        <div class="no">04</div>
+        <div>
+          <div class="file">EventBusRabbitMQ — an unchecked cast could crash the whole message-receive path</div>
+          <div class="desc">
+            <code>ExtractTraceContextFromBasicProperties</code> did
+            <code>value as byte[]</code> then passed the result straight to
+            <code>Encoding.UTF8.GetString</code> unchecked — a trace header
+            present under the expected key but not actually a
+            <code>byte[]</code> would throw <code>ArgumentNullException</code>
+            <em>outside</em> <code>OnMessageReceived</code>'s own try/catch,
+            crashing the entire receive path over one malformed header.
+            Rewritten to pattern-match (<code>value is byte[] bytes</code>)
+            and fall through to the existing empty-result path instead.
+          </div>
+          <div class="meta"><span class="tag">medium · reliability</span></div>
+        </div>
+      </div>
+      <div class="item">
+        <div class="no">05</div>
+        <div>
+          <div class="file">EventBusRabbitMQ — a cast that can return null, used unchecked</div>
+          <div class="desc">
+            <code>DeserializeMessage</code>'s <code>as IntegrationEvent</code>
+            cast can genuinely return null for a malformed message body, but
+            its return type and <code>ProcessEvent</code>'s use of the result
+            didn't account for that. Return type changed to
+            <code>IntegrationEvent?</code>; <code>ProcessEvent</code> now
+            logs and returns early on null, matching the existing pattern for
+            an unresolvable event type. The exact same cast-can-return-null
+            shape recurred later in <code>IntegrationEventLogEntry.cs</code> —
+            caught the second time because the first fix was still fresh.
+          </div>
+          <div class="meta"><span class="tag">medium · reliability</span></div>
+        </div>
+      </div>
+      <div class="item">
+        <div class="no">06</div>
+        <div>
+          <div class="file">eShop.ServiceDefaults — a hidden order-dependency between two unrelated files</div>
+          <div class="desc">
+            <code>ClaimsPrincipalExtensions.GetUserId</code>'s
+            <code>"sub"</code> claim lookup only worked because a
+            <em>different</em> file, <code>AuthenticationExtensions</code>,
+            happens to remove <code>"sub"</code> from the framework's default
+            claim-type map elsewhere — nothing enforced that ordering or
+            documented the dependency. Now falls back to
+            <code>ClaimTypes.NameIdentifier</code> regardless of whether that
+            removal ran, so it's correct on its own.
+          </div>
+          <div class="meta"><span class="tag">medium · correctness</span></div>
+        </div>
+      </div>
+      <div class="item">
+        <div class="no">07</div>
+        <div>
+          <div class="file">eShop.ServiceDefaults — an unproven ordering assumption picking the "default" API version</div>
+          <div class="desc">
+            <code>UseDefaultOpenApi</code> picked the default API doc via
+            <code>descriptions[^1]</code> — "take the last one" — assuming
+            <code>IApiVersionDescriptionProvider.ApiVersionDescriptions</code>
+            returns versions in ascending order, which is undocumented
+            anywhere. Switched to <code>descriptions.MaxBy(d =&gt;
+            d.ApiVersion)</code>, correct regardless of provider ordering.
+          </div>
+          <div class="meta"><span class="tag">medium · correctness</span></div>
+        </div>
+      </div>
+      <div class="item">
+        <div class="no">08</div>
+        <div>
+          <div class="file">IntegrationEventLogEF — a lazy IEnumerable wrapping a side-effecting Select</div>
+          <div class="desc">
+            <code>RetrieveEventLogsPendingToPublishAsync</code> returned
+            <code>Task&lt;IEnumerable&lt;...&gt;&gt;</code>, but the real
+            implementation's <code>.OrderBy().Select(e =&gt;
+            e.DeserializeJsonContent(...))</code> chain is lazy, and
+            <code>DeserializeJsonContent</code> mutates state as a side
+            effect — returning it as <code>IEnumerable</code> risked that
+            mutation re-running, or running late, on every enumeration.
+            Changed to <code>Task&lt;IReadOnlyList&lt;...&gt;&gt;</code>,
+            forcing materialization when the implementation lands.
+          </div>
+          <div class="meta"><span class="tag">medium · correctness</span></div>
+        </div>
+      </div>
+      <div class="item">
+        <div class="no">09</div>
+        <div>
+          <div class="file">eShop.ServiceDefaults — inconsistent logic between two adjacent branches</div>
+          <div class="desc">
+            <code>BuildDescription</code>'s deprecation-notice branch checked
+            for a trailing period before appending its message; the
+            sunset-date branch immediately after it didn't do the same
+            check — a real logic inconsistency, not a style nit. Extracted a
+            shared <code>AppendSentenceSeparator</code> helper both branches
+            now call.
+          </div>
+          <div class="meta"><span class="tag">low · correctness</span></div>
+        </div>
+      </div>
+      <div class="item">
+        <div class="no">10</div>
+        <div>
+          <div class="file">eShop.ServiceDefaults — a magic port number in an emulator-only code path</div>
+          <div class="desc">
+            The <code>#if DEBUG</code> Android-emulator issuer hardcoded
+            <code>https://10.0.2.2:5243</code> — <code>10.0.2.2</code> is a
+            legitimate fixed emulator host alias, but <code>:5243</code> was
+            only correct if <code>eShop.AppHost</code> (not built yet)
+            happens to pin <code>Identity.API</code> to that exact port. Now
+            derived from <code>identityUrl</code>'s real <code>Uri.Port</code>
+            instead of a hardcoded guess.
+          </div>
+          <div class="meta"><span class="tag">low · correctness</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Verifying it actually works</h2>
+    <p class="h2-sub">
+      66 tests, and a Decorator split that finally let the flagship fix get proven
+    </p>
+    <p class="lede">
+      <code>MSTest.Sdk</code> on .NET's newer
+      <code>Microsoft.Testing.Platform</code> runner — a genuinely different
+      CLI surface from legacy VSTest, confirmed against a real scratch
+      project before trusting its coverage/TRX flags in CI. Testing isn't
+      deferred to a batched end-of-migration phase here: every project that's
+      done gets full test coverage in the same unit of work, before the
+      source migration moves past it.
+    </p>
+    <div class="twocol">
+      <div class="card">
+        <h3>66/66 tests, decorators make it possible</h3>
+        <p>
+          <code>ResilientEventBusDecoratorTests.cs</code> verifies bug #01
+          end-to-end for the first time in this project's history — a fake
+          inner <code>IEventBus</code> that fails once then succeeds, no real
+          RabbitMQ broker needed, since decorators wrap <em>any</em>
+          <code>IEventBus</code>. Closes a gap that had sat unproven since
+          the fix landed. See
+          <a href="diagrams/testing-strategy.html">Testing Strategy</a>.
+        </p>
+      </div>
+      <div class="card">
+        <h3>Honest gap, tracked not solved</h3>
+        <p>
+          Wanted one combined HTML report across every test project — MTP's
+          <code>--report-html</code> produces one file per project instead,
+          confirmed via a real 2-project scratch solution. The actual fix
+          merged upstream 2026-08-09 but hasn't shipped in a NuGet release
+          yet; Dependabot already tracks the package individually, so no new
+          tooling is needed to know when it does.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Judgment calls</h2>
+    <p class="h2-sub">Where the interesting decisions actually happened</p>
+    <p class="lede">
+      The review posture changed partway through: early files were kept
+      close to upstream's architecture on principle, then that constraint
+      was explicitly dropped — "this is going to self-hosted" — in favor of
+      treating inconsistencies across upstream's own multi-contributor
+      codebase as things to resolve under one deliberate design, not inherit
+      silently. That's what produced the Decorator split above, and it's why
+      later reviews stopped citing "matches upstream" as a reason to leave
+      something as-is. Separately, <code>WebApp</code> going React instead of
+      Blazor wasn't a technical necessity — Blazor Server can call
+      <code>Basket.API</code> over gRPC natively from the browser tier, which
+      a React SPA can't — so that decision now cascades into a new
+      <code>WebBFF</code> project and a <code>Grpc.AspNetCore.Web</code>
+      middleware addition to <code>Basket.API</code>, both decided ahead of
+      being built and recorded in
+      <a href="https://github.com/Terrence721/eshop-full/blob/main/todo.md">todo.md</a>
+      as they happened.
+    </p>
+  </section>
+</div>
+
+<footer>
+  <div class="wrap">
+    <div class="links">
+      <a href="https://github.com/Terrence721/eshop-full">Repository</a>
+      <a
+        href="https://github.com/Terrence721/eshop-full/blob/main/docs/architecturedesign.md"
+        >Architecture decisions</a
+      >
+      <a href="https://github.com/Terrence721/eshop-full/blob/main/todo.md"
+        >Build log</a
+      >
+      <a href="https://github.com/Terrence721/eshop-full/wiki">Wiki</a>
+      <a href="https://github.com/users/Terrence721/projects/5"
+        >Project board</a
+      >
+      <a href="https://terrence721.github.io/">Portfolio hub</a>
+    </div>
+    <p class="fine">
+      An independently modernized version of Microsoft's own
+      <code>dotnet/eShop</code> reference app, not a fork left as-is. Every
+      number on this page is reproducible from the repository's own
+      <code>todo.md</code> evidence trail, commit history, and CI runs —
+      nothing here is asserted without a link to check it against. This one's
+      still early — 3 of 20 projects done — see <code>todo.md</code> for the
+      honest current state rather than assuming it's further along.
+    </p>
+  </div>
+</footer>
