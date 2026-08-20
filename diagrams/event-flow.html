@@ -220,8 +220,9 @@
   <p class="dek">
     Services integrate through published/consumed events, not direct calls — <code>EventBus</code>
     defines the abstraction (<code>IEventBus</code>), <code>EventBusRabbitMQ</code> is the only
-    implementation today, and <code>IntegrationEventLogEF</code> (in progress) will give every publisher a
-    transactional outbox instead of a fire-and-forget publish. Reviewing <code>RabbitMQEventBus</code>
+    implementation today, and <code>IntegrationEventLogEF</code> (done) gives every publisher a
+    transactional outbox instead of a fire-and-forget publish — not wired into a consumer yet, since no
+    service that would call it exists on disk. Reviewing <code>RabbitMQEventBus</code>
     closely enough to split it turned up two real bugs, both present verbatim in Microsoft's own reference
     source. See <a href="system-architecture.html">System Architecture</a> for where this foundation layer
     sits relative to everything still to come.
@@ -340,15 +341,15 @@
     </p>
   </div>
 
-  <h2>The Outbox (in progress)</h2>
+  <h2>The Outbox (done, not wired up yet)</h2>
   <div class="zoom zoom--outbox">
     <div class="zoom-head">
       <span class="zoom-tag">IntegrationEventLogEF</span>
       <p class="zoom-title">Domain write and event-to-publish, one transaction</p>
     </div>
     <p>
-      Not wired up yet — 5 of 7 source files are reviewed, <code>Services/IntegrationEventLogService.cs</code>
-      and <code>Utilities/ResilientTransaction.cs</code> aren't added. The target shape: a publishing
+      All 7 source files reviewed, but not wired up yet — no service that would call it exists on disk.
+      The target shape: a publishing
       service writes its domain change and an <code>IntegrationEventLogEntry</code> row in the
       <strong>same</strong> database transaction, so a crash between "domain write committed" and "event
       published" can't lose the event — a separate process picks up
@@ -369,5 +370,5 @@
     </p>
   </div>
 
-  <footer>eshop-full · 1 IEventBus, 3 decorators · 2 real bugs found in the split · outbox pattern in progress</footer>
+  <footer>eshop-full · 1 IEventBus, 3 decorators · 2 real bugs found in the split · outbox pattern done, not wired up</footer>
 </div>
