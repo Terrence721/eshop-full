@@ -1,0 +1,17 @@
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"c:/Users/Terre/source/repos/eShop-full/.claude/hooks/pre-commit-build-check.js\"",
+            "timeout": 180,
+            "statusMessage": "Checking for git commit, building eShop.Web.slnf if needed..."
+          }
+        ]
+      }
+    ]
+  }
+}
