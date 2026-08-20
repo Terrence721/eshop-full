@@ -81,7 +81,7 @@ Added as-is (already current): `.editorconfig`, `.gitattributes`, `.gitignore`, 
 - `.github/workflows/*` — `actions/checkout` v4→v5, `actions/setup-dotnet` v3/v4→v5, `actions/setup-node` v4→v6, `actions/upload-artifact` v4→v6; dropped `dotnet-quality: 'preview'` now that .NET 10 is GA; `playwright.yml` switched from `npm ci` to `yarn install --frozen-lockfile`.
 - `.github/dependabot.yml` — kept the existing NuGet grouping, added `npm` and `github-actions` ecosystems so the whole toolchain stays current, not just NuGet.
 
-**Already working as designed:** Dependabot opened 4 real PRs against the actions versions above within hours of them landing — `actions/checkout` v5→v7, `actions/setup-dotnet` v5→v6, `actions/upload-artifact` v6→v7, `actions/setup-node` v4→v6→v7 (superseded twice). Not yet merged — see "Still to do".
+**Already working as designed:** Dependabot opened 4 real PRs against the actions versions above within hours of them landing — `actions/checkout` v5→v7, `actions/setup-dotnet` v5→v6, `actions/upload-artifact` v6→v7, `actions/setup-node` v4→v6→v7 (superseded twice). 3 remain open, not yet merged; the `actions/upload-artifact` one was auto-closed the same day and hasn't reopened yet — see "Still to do".
 
 Commit: `a0c162f`.
 
@@ -320,10 +320,11 @@ Not yet merged — opened automatically within hours of `.github/workflows/*` la
 
 | PR | Change |
 |---|---|
-| `dependabot/github_actions/actions/checkout-7` | `actions/checkout` v5 → v7 |
-| `dependabot/github_actions/actions/setup-dotnet-6` | `actions/setup-dotnet` v5 → v6 |
-| `dependabot/github_actions/actions/upload-artifact-7` | `actions/upload-artifact` v6 → v7 |
-| `dependabot/github_actions/actions/setup-node-7` | `actions/setup-node` v6 → v7 |
+| [#1](https://github.com/Terrence721/eshop-full/pull/1) `dependabot/github_actions/actions/checkout-7` | `actions/checkout` v5 → v7 |
+| [#2](https://github.com/Terrence721/eshop-full/pull/2) `dependabot/github_actions/actions/setup-dotnet-6` | `actions/setup-dotnet` v5 → v6 |
+| [#4](https://github.com/Terrence721/eshop-full/pull/4) `dependabot/github_actions/actions/setup-node-7` | `actions/setup-node` v6 → v7 |
+
+**Real drift caught and fixed 2026-08-20:** this table previously listed a 4th PR, [#3](https://github.com/Terrence721/eshop-full/pull/3) bumping `actions/upload-artifact` v6→v7 — Dependabot auto-closed it the same day it was opened ("Looks like actions/upload-artifact is no longer a dependency, so this is no longer needed"), correct at the time since its only reference (`playwright.yml`) was commented out pending `eShop.AppHost`. It came back into active use the very next day (`pr-validation.yml`'s coverage-artifact upload step, added 2026-08-15 — see "Testing strategy" below) but the `github-actions` ecosystem only rescans weekly, so no fresh PR has reopened for it yet. Worth checking again once a week has passed since 2026-08-15.
 
 ### Testing strategy (decided 2026-08-15, not built yet)
 
