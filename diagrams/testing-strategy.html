@@ -1,0 +1,309 @@
+<title>Testing Strategy — 66 Tests, Three Projects Deep</title>
+<style>
+  :root {
+    --ink: #1c1f24;
+    --ink-soft: #4e5561;
+    --paper: #e8eaee;
+    --surface: #ffffff;
+    --line: #bcc0c9;
+    --a: #2b4f6e;
+    --a-bg: #dfe6ed;
+    --b: #2b6e5a;
+    --b-bg: #dcede6;
+    --c: #6e4f2b;
+    --c-bg: #ede4d8;
+    --d: #5a2b6e;
+    --d-bg: #e6dcee;
+    --mono: ui-monospace, "SF Mono", "Cascadia Mono", "Consolas", "Liberation Mono", monospace;
+    --sans: -apple-system, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  }
+
+  :root[data-theme="dark"] {
+    --ink: #e9ebee;
+    --ink-soft: #a7adb8;
+    --paper: #15171b;
+    --surface: #1d2025;
+    --line: #3a3f47;
+    --a: #82aed4;
+    --a-bg: #1a2733;
+    --b: #6fc4a8;
+    --b-bg: #17281f;
+    --c: #d4a878;
+    --c-bg: #2c2419;
+    --d: #b98fd4;
+    --d-bg: #241a2c;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --ink: #e9ebee;
+      --ink-soft: #a7adb8;
+      --paper: #15171b;
+      --surface: #1d2025;
+      --line: #3a3f47;
+      --a: #82aed4;
+      --a-bg: #1a2733;
+      --b: #6fc4a8;
+      --b-bg: #17281f;
+      --c: #d4a878;
+      --c-bg: #2c2419;
+      --d: #b98fd4;
+      --d-bg: #241a2c;
+    }
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--sans);
+    padding: 2.5rem 1.5rem 4rem;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .page { max-width: 1080px; margin: 0 auto; }
+
+  .eyebrow {
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    margin: 0 0 0.6rem;
+  }
+
+  h1 {
+    font-size: clamp(1.5rem, 2.6vw, 2.05rem);
+    line-height: 1.15;
+    margin: 0 0 0.5rem;
+    letter-spacing: -0.01em;
+    text-wrap: balance;
+  }
+
+  .dek {
+    font-size: 1rem;
+    line-height: 1.55;
+    color: var(--ink-soft);
+    max-width: 72ch;
+    margin: 0 0 2.2rem;
+  }
+  .dek code { font-family: var(--mono); font-size: 0.9em; color: var(--ink); }
+  .dek a { color: var(--ink); }
+
+  h2 {
+    font-size: 0.72rem;
+    font-family: var(--mono);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    margin: 2.2rem 0 1rem;
+  }
+  h2:first-of-type { margin-top: 0; }
+
+  /* coverage table */
+  table.coverage {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.85rem;
+    margin-bottom: 0.4rem;
+  }
+  table.coverage th, table.coverage td {
+    text-align: left;
+    padding: 0.55rem 0.7rem;
+    border-bottom: 1px solid var(--line);
+  }
+  table.coverage th {
+    font-family: var(--mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+  }
+  table.coverage td code { font-family: var(--mono); font-size: 0.85em; }
+  table.coverage td.num { font-family: var(--mono); font-variant-numeric: tabular-nums; }
+  table.coverage tr.total td { font-weight: 700; border-top: 2px solid var(--line); border-bottom: none; }
+
+  /* pattern cards */
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+    margin-bottom: 1rem;
+  }
+  @media (max-width: 680px) { .grid { grid-template-columns: 1fr; } }
+
+  .card {
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    background: var(--surface);
+    padding: 1.1rem 1.2rem 1.2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+  }
+  .card-tag {
+    font-family: var(--mono);
+    font-size: 0.64rem;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    padding: 0.2rem 0.55rem;
+    border-radius: 4px;
+    font-weight: 700;
+    width: fit-content;
+  }
+  .card--a .card-tag { color: var(--a); background: var(--a-bg); }
+  .card--b .card-tag { color: var(--b); background: var(--b-bg); }
+  .card--c .card-tag { color: var(--c); background: var(--c-bg); }
+  .card--d .card-tag { color: var(--d); background: var(--d-bg); }
+  .card-title { font-size: 0.95rem; font-weight: 600; margin: 0; }
+  .card p.body { font-size: 0.85rem; line-height: 1.6; color: var(--ink-soft); margin: 0; }
+  .card code { font-family: var(--mono); font-size: 0.9em; color: var(--ink); }
+  .card .proof {
+    font-size: 0.78rem;
+    line-height: 1.5;
+    color: var(--ink);
+    background: var(--paper);
+    border-radius: 6px;
+    padding: 0.5rem 0.65rem;
+    margin-top: auto;
+  }
+
+  .callout {
+    border: 1px solid var(--line);
+    background: var(--surface);
+    border-radius: 10px;
+    padding: 1rem 1.3rem;
+    display: flex;
+    align-items: baseline;
+    gap: 0.9rem;
+    margin: 1.6rem 0 0.5rem;
+  }
+  .callout-mark { font-family: var(--mono); font-size: 0.95rem; color: var(--ink-soft); font-weight: 600; flex: 0 0 auto; }
+  .callout p { margin: 0; font-size: 0.88rem; line-height: 1.55; color: var(--ink); }
+  .callout code { font-family: var(--mono); font-size: 0.92em; }
+  .callout a { color: var(--ink); }
+
+  footer {
+    margin-top: 2.6rem;
+    padding-top: 1.2rem;
+    border-top: 1px solid var(--line);
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    color: var(--ink-soft);
+    letter-spacing: 0.02em;
+  }
+</style>
+
+<div class="page">
+  <p class="eyebrow">eshop-full — testing strategy</p>
+  <h1>66 tests, three projects deep — and the fix decorators finally let get proven.</h1>
+  <p class="dek">
+    <code>MSTest.Sdk</code> on .NET's newer <code>Microsoft.Testing.Platform</code> (MTP) runner — already
+    pinned in <code>global.json</code> from the original SDK research, not a new choice. Testing isn't a
+    batched end-of-migration phase: every project gets its own test project in the same unit of work as
+    its source files, before the source migration moves past it. See
+    <a href="event-flow.html">Event Flow</a> for the Decorator split this testing approach depends on.
+  </p>
+
+  <h2>Coverage so far</h2>
+  <table class="coverage">
+    <thead><tr><th>Project</th><th>Source files covered</th><th>Tests</th></tr></thead>
+    <tbody>
+      <tr><td><code>eShop.ServiceDefaults.UnitTests</code></td><td class="num">7 of 7</td><td class="num">33</td></tr>
+      <tr><td><code>EventBusRabbitMQ.UnitTests</code></td><td class="num">6 of 6 applicable</td><td class="num">17</td></tr>
+      <tr><td><code>EventBus.UnitTests</code></td><td class="num">6 of 6 applicable</td><td class="num">16</td></tr>
+      <tr class="total"><td>Total</td><td></td><td class="num">66</td></tr>
+    </tbody>
+  </table>
+  <p class="dek" style="margin: 0.6rem 0 0; font-size: 0.86rem;">
+    "Applicable" excludes pure interfaces with zero behavior of their own (<code>IEventBus</code>,
+    <code>IEventBusBuilder</code>) — stated explicitly per file, not silently assumed clean.
+  </p>
+
+  <h2>Patterns worth carrying forward</h2>
+  <div class="grid">
+    <div class="card card--a">
+      <span class="card-tag">Decorator-enabled testing</span>
+      <p class="card-title">Fake inner IEventBus, no broker needed</p>
+      <p class="body">
+        <code>ResilientEventBusDecorator</code>/<code>TelemetryEventBusDecorator</code> wrap
+        <em>any</em> <code>IEventBus</code> — so their tests use a fake inner bus instead of a real
+        RabbitMQ broker (which doesn't exist yet, no <code>eShop.AppHost</code>).
+      </p>
+      <p class="proof">Proof: <code>PublishAsync_retries_and_succeeds_after_a_transient_SocketException</code> verifies the Polly fix end-to-end for the first time — closing a gap open since the fix landed.</p>
+    </div>
+    <div class="card card--b">
+      <span class="card-tag">InternalsVisibleTo</span>
+      <p class="card-title">Test internal classes directly, don't reflect</p>
+      <p class="body">
+        <code>OpenApiOptionsExtensions</code> is <code>internal</code> end-to-end. Rather than reach for
+        reflection (brittle, tests implementation detail) or skip coverage of logic that had already
+        shipped one real bug, the members got widened to <code>internal</code> and
+        <code>&lt;InternalsVisibleTo&gt;</code> added — no public API change.
+      </p>
+    </div>
+    <div class="card card--c">
+      <span class="card-tag">NSubstitute</span>
+      <p class="body" style="margin-top: -0.2rem;">Already centrally pinned (upstream's own <code>Ordering.UnitTests</code> uses it) — first real use in this fork.</p>
+      <p class="card-title">Mock the pipeline, not the class under test</p>
+      <p class="body">
+        <code>HttpClientExtensions</code>'s bearer-token-injecting handler is a private nested class —
+        only reachable through <code>AddAuthToken</code>'s public surface plus a real
+        <code>IServiceCollection</code> and a mocked <code>IAuthenticationService</code> standing in for
+        the ASP.NET Core auth pipeline.
+      </p>
+    </div>
+    <div class="card card--d">
+      <span class="card-tag">Real ActivityListener</span>
+      <p class="card-title">Don't mock OpenTelemetry, listen to it for real</p>
+      <p class="body">
+        <code>RabbitMQTelemetryTests.cs</code> and <code>TelemetryEventBusDecoratorTests.cs</code> both use
+        a real <code>ActivityListener</code>/<code>ActivitySource</code> to confirm the actual messaging
+        semantic-convention tags land with the right values — not a mock standing in for what OpenTelemetry
+        would do.
+      </p>
+    </div>
+  </div>
+
+  <h2>CI, verified not assumed</h2>
+  <p class="dek" style="margin-bottom: 0.6rem;">
+    MTP is a genuinely different CLI surface from legacy VSTest-based <code>dotnet test</code> — its own
+    <code>--help</code> states plainly it "doesn't support VSTest," so the familiar
+    <code>--collect:"XPlat Code Coverage"</code>/<code>--logger trx</code> flags don't apply. Every flag
+    below was confirmed against a real scratch <code>MSTest.Sdk</code> project before trusting it in CI.
+  </p>
+  <div class="grid">
+    <div class="card card--a">
+      <span class="card-tag">Coverage + TRX</span>
+      <p class="body">
+        <code>--coverage --coverage-output-format cobertura</code> and <code>--report-trx</code> are both
+        built into the MTP runner itself — no extra NuGet package needed for either.
+      </p>
+    </div>
+    <div class="card card--b">
+      <span class="card-tag">PR-visible reporting</span>
+      <p class="body">
+        <a href="https://github.com/dorny/test-reporter">dorny/test-reporter@v3</a> publishes the
+        <code>.trx</code> as a PR-visible check run; a real push confirmed "3 passed, 0 failed" rendering
+        with each test named, end-to-end against actual GitHub Actions.
+      </p>
+    </div>
+  </div>
+
+  <div class="callout">
+    <span class="callout-mark">i</span>
+    <p>
+      <strong>Honest gap, tracked not solved:</strong> wanted one combined HTML report across every test
+      project — MTP's <code>--report-html</code> produces one file per project instead (confirmed via a
+      real 2-project scratch solution). The actual fix,
+      <a href="https://github.com/microsoft/testfx/pull/10529">microsoft/testfx#10529</a>, merged
+      2026-08-09 but hasn't shipped in a <code>Microsoft.Testing.Extensions.HtmlReport</code> NuGet release
+      yet. Dependabot already tracks that package individually, so no new tooling is needed to know when
+      it does.
+    </p>
+  </div>
+
+  <footer>eshop-full · MSTest.Sdk 4.3.3 on Microsoft.Testing.Platform · 66/66 passing · decorator-enabled fake-bus testing</footer>
+</div>
