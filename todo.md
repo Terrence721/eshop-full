@@ -10,7 +10,7 @@ A living list of what's done and what's left on this build. This is an independe
 **Done, in full:**
 
 | Item | Detail |
-|---|---|
+| --- | --- |
 | Repo bootstrap | git init, public GitHub repo live at [Terrence721/eshop-full](https://github.com/Terrence721/eshop-full) |
 | SDK/build config | `global.json`, `Directory.Build.props`/`.targets`, `nuget.config` — see "SDK and build config" below |
 | Central package versions | `Directory.Packages.props` — ~50 packages individually researched against actual current-latest, not copied as-is — see "Directory.Packages.props research" below |
@@ -31,7 +31,7 @@ A living list of what's done and what's left on this build. This is an independe
 ### SDK and build config
 
 | File | Change | Why |
-|---|---|---|
+| --- | --- | --- |
 | `global.json` | SDK pin `10.0.100` + `allowPrerelease: true` → stable `10.0.400` (current as of 2026-08-11); `MSTest.Sdk` `4.0.2` → `4.3.3` | Source repo was written during .NET 10's preview cycle. .NET 10 is GA now — pinning to a prerelease channel is unnecessary risk (could silently pull .NET 11 previews) |
 | `Directory.Build.props` | Removed `SuppressNETCoreSdkPreviewMessage` (no longer applicable); narrowed `NoWarn` from `NU1901;NU1902;NU1903;NU1904` to `NU1901;NU1902` | The source blanket-suppressed NuGet security-audit warnings for **all** severities, including high/critical. That's a real anti-pattern for a repo we're actively adding fresh packages to — we want to know if a critical vuln shows up in a transitive dependency |
 | `Directory.Build.targets`, `nuget.config` | Copied as-is | Already current, nothing to change |
@@ -52,7 +52,7 @@ Commits: `fff05bb`, `5a54552`, `61a93f8`, `adb8293`, `1abf885`.
 Every one of ~50 central package pins was checked against its actual current-latest version (web search, not assumption) rather than copied from source. Routine patch bumps aren't itemized here — the notable ones:
 
 | Package(s) | Change | Detail |
-|---|---|---|
+| --- | --- | --- |
 | `Asp.Versioning.Http`/`.Mvc.ApiExplorer`/`.OpenApi` | `10.0.0-preview.2` → stable `10.0.0` | Hit GA since the source snapshot was taken |
 | `Asp.Versioning.Http.Client` | Split out to `8.1.0` | Diverged from the rest of the `Asp.Versioning.*` family onto its own version line — pinning it to the same variable as the others would have been wrong |
 | `Aspire.*` | `13.2.0` → `13.4.6` | Routine, but `Aspire.Azure.AI.OpenAI` stays on the unstable/preview variable — Microsoft genuinely hasn't shipped a stable release of that one yet |
@@ -98,7 +98,7 @@ Commits: `12fbf3e`, `a8da68a`, `14a82f2`, `6110d6f`, `f23d298`, `bb6d745`, `ca98
 ### Editor config
 
 | File | Change | Why |
-|---|---|---|
+| --- | --- | --- |
 | `.vscode/settings.json` | `dotnet.defaultSolution` pinned to `eShop.slnx` | C# Dev Kit couldn't auto-detect which solution to load and showed a "No Solution" badge, disabling IntelliSense and build integration |
 
 Commit: `0185981`.
@@ -185,7 +185,7 @@ Commits: `52f7fc3`, `1d2d7d5`, `ee87d64`, `a5e83cf`, `b3562c6`, `7eb783a`, `8b22
 Not implemented yet — raised during the 2026-08-14 pattern scan that produced the `EventBusRabbitMQ` Decorator split (see [architecturedesign.md Section 8](docs/architecturedesign.md#8-decorator-for-cross-cutting-concerns)), tracked here plus a Backlog card each on the [project board](https://github.com/users/Terrence721/projects/5) so they surface again when the relevant project is actually added rather than being forgotten in chat history:
 
 | Item | Where it applies | What |
-|---|---|---|
+| --- | --- | --- |
 | `IEventSerializer` strategy | `EventBusRabbitMQ` | `RabbitMQEventBus.SerializeMessage`/`DeserializeMessage` hardcode `System.Text.Json` directly in the transport class. Extracting a small `IEventSerializer` strategy would let the wire format be swapped without touching transport code — upstream doesn't do this. |
 | Parallel vs. sequential handler dispatch | `EventBusRabbitMQ` | `ProcessEvent` awaits each `IIntegrationEventHandler` sequentially, with upstream's own unresolved `// REVIEW: This could be done in parallel` comment still in the code. Make an actual documented call (`Task.WhenAll` fan-out, or sequential-by-design with the ordering-guarantee reasoning written down) instead of leaving the question open. |
 | MediatR `IPipelineBehavior<TRequest,TResponse>` | `Ordering.API` | MediatR's built-in pipeline behaviors are the same Decorator/Chain-of-Responsibility idea applied to the CQRS pipeline — the natural place to double down on the philosophy established in `EventBusRabbitMQ` (logging/validation/transaction behaviors wrapping every command handler). |
@@ -328,7 +328,7 @@ Commit: `a87e627`.
 Migration order is **foundation first**: shared/foundation projects, then the services that depend on them, then the web frontends, then `eShop.AppHost` (references everything, so it goes last), then `tests/` and `build/`. See [project board](https://github.com/users/Terrence721/projects/5) for the live board — this table is the flat list.
 
 | # | Project | Status |
-|---|---|---|
+| --- | --- | --- |
 | 1 | `EventBus` | ✅ Done — see "EventBus" above |
 | 2 | `EventBusRabbitMQ` | ✅ Done — see "EventBusRabbitMQ" above |
 | 3 | `eShop.ServiceDefaults` | ✅ Done — see "eShop.ServiceDefaults" above |
@@ -356,7 +356,7 @@ Migration order is **foundation first**: shared/foundation projects, then the se
 Not yet merged — opened automatically within hours of `.github/workflows/*` landing, confirming the new `dependabot.yml` ecosystems work as intended:
 
 | PR | Change |
-|---|---|
+| --- | --- |
 | [#1](https://github.com/Terrence721/eshop-full/pull/1) `dependabot/github_actions/actions/checkout-7` | `actions/checkout` v5 → v7 |
 | [#2](https://github.com/Terrence721/eshop-full/pull/2) `dependabot/github_actions/actions/setup-dotnet-6` | `actions/setup-dotnet` v5 → v6 |
 | [#4](https://github.com/Terrence721/eshop-full/pull/4) `dependabot/github_actions/actions/setup-node-7` | `actions/setup-node` v6 → v7 |
