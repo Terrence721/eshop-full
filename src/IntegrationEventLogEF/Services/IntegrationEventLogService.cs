@@ -3,8 +3,6 @@ namespace eShop.IntegrationEventLogEF.Services;
 public class IntegrationEventLogService<TContext> : IIntegrationEventLogService, IDisposable
     where TContext : DbContext
 {
-    private static readonly IReadOnlyDictionary<string, Type> s_eventTypesByShortName = BuildEventTypesByShortName();
-
     private volatile bool _disposedValue;
     private readonly TContext _context;
 
@@ -26,7 +24,7 @@ public class IntegrationEventLogService<TContext> : IIntegrationEventLogService,
 
         return result
             .OrderBy(e => e.CreationTime)
-            .Select(e => e.DeserializeJsonContent(ResolveEventType(e.EventTypeShortName)))
+            .Select(e => e.DeserializeJsonContent(IntegrationEventTypeResolver.Resolve(e.EventTypeShortName)))
             .ToList();
     }
 
@@ -61,42 +59,6 @@ public class IntegrationEventLogService<TContext> : IIntegrationEventLogService,
         }
 
         await _context.SaveChangesAsync();
-    }
-
-    private static Type ResolveEventType(string eventTypeShortName)
-    {
-        if (!s_eventTypesByShortName.TryGetValue(eventTypeShortName, out var eventType))
-        {
-            throw new InvalidOperationException(
-                $"No integration event type named '{eventTypeShortName}' was found in the entry assembly.");
-        }
-
-        return eventType;
-    }
-
-    private static IReadOnlyDictionary<string, Type> BuildEventTypesByShortName()
-    {
-        var entryAssembly = Assembly.GetEntryAssembly()
-            ?? throw new InvalidOperationException("No entry assembly is available to resolve integration event types from.");
-
-        var eventTypesByShortName = new Dictionary<string, Type>();
-        var duplicateNames = new List<string>();
-
-        foreach (var type in entryAssembly.GetTypes().Where(t => t.Name.EndsWith(nameof(IntegrationEvent), StringComparison.Ordinal)))
-        {
-            if (!eventTypesByShortName.TryAdd(type.Name, type))
-            {
-                duplicateNames.Add(type.Name);
-            }
-        }
-
-        if (duplicateNames.Count != 0)
-        {
-            throw new InvalidOperationException(
-                $"Multiple integration event types share the same short name, which the outbox can't disambiguate: {string.Join(", ", duplicateNames)}.");
-        }
-
-        return eventTypesByShortName;
     }
 
     protected virtual void Dispose(bool disposing)
