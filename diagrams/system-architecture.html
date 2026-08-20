@@ -1,0 +1,369 @@
+<title>System Architecture — Twenty Projects, Four Layers</title>
+<style>
+  :root {
+    --ink: #1b1f1e;
+    --ink-soft: #4b544f;
+    --paper: #e9ece9;
+    --surface: #ffffff;
+    --line: #b7bfba;
+    --done: #2b6e4a;
+    --done-bg: #e1ede4;
+    --progress: #8b6d1f;
+    --progress-bg: #f1ecd8;
+    --planned: #5b6460;
+    --planned-bg: #eef1ef;
+    --mono: ui-monospace, "SF Mono", "Cascadia Mono", "Consolas", "Liberation Mono", monospace;
+    --sans: -apple-system, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  }
+
+  :root[data-theme="dark"] {
+    --ink: #eceeec;
+    --ink-soft: #a9b2ac;
+    --paper: #141716;
+    --surface: #1c2120;
+    --line: #3a423e;
+    --done: #6fc493;
+    --done-bg: #172a1f;
+    --progress: #d9b463;
+    --progress-bg: #2c2519;
+    --planned: #a9b2ac;
+    --planned-bg: #222725;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --ink: #eceeec;
+      --ink-soft: #a9b2ac;
+      --paper: #141716;
+      --surface: #1c2120;
+      --line: #3a423e;
+      --done: #6fc493;
+      --done-bg: #172a1f;
+      --progress: #d9b463;
+      --progress-bg: #2c2519;
+      --planned: #a9b2ac;
+      --planned-bg: #222725;
+    }
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--sans);
+    padding: 2.5rem 1.5rem 4rem;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .page { max-width: 1080px; margin: 0 auto; }
+
+  .eyebrow {
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    margin: 0 0 0.6rem;
+  }
+
+  h1 {
+    font-size: clamp(1.5rem, 2.6vw, 2.05rem);
+    line-height: 1.15;
+    margin: 0 0 0.5rem;
+    letter-spacing: -0.01em;
+    text-wrap: balance;
+  }
+
+  .dek {
+    font-size: 1rem;
+    line-height: 1.55;
+    color: var(--ink-soft);
+    max-width: 72ch;
+    margin: 0 0 2.2rem;
+  }
+
+  .dek code { font-family: var(--mono); font-size: 0.9em; color: var(--ink); }
+  .dek a { color: var(--ink); }
+
+  h2 {
+    font-size: 0.72rem;
+    font-family: var(--mono);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    margin: 0 0 1rem;
+  }
+
+  /* Layer diagram */
+  .layers {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    margin-bottom: 2.2rem;
+  }
+
+  .layer {
+    display: flex;
+    align-items: center;
+    gap: 0.9rem;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    background: var(--surface);
+    padding: 0.85rem 1.1rem;
+    flex-wrap: wrap;
+  }
+
+  .layer-label {
+    font-family: var(--mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    flex: 0 0 148px;
+  }
+
+  .layer-nodes { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+
+  .node {
+    font-family: var(--mono);
+    font-size: 0.78rem;
+    border-radius: 6px;
+    padding: 0.35rem 0.7rem;
+    border: 1px solid var(--line);
+    white-space: nowrap;
+  }
+
+  .node--done { border-color: var(--done); color: var(--done); background: var(--done-bg); font-weight: 600; }
+  .node--progress { border-color: var(--progress); color: var(--progress); background: var(--progress-bg); font-weight: 600; }
+  .node--planned { border-color: var(--line); color: var(--ink-soft); }
+
+  .layer-arrow {
+    text-align: center;
+    color: var(--ink-soft);
+    font-size: 0.72rem;
+    font-family: var(--mono);
+  }
+
+  .legend {
+    display: flex;
+    gap: 1.4rem;
+    flex-wrap: wrap;
+    margin: 0.4rem 0 2.2rem;
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    color: var(--ink-soft);
+  }
+  .legend span { display: inline-flex; align-items: center; gap: 0.4rem; }
+  .dot { width: 9px; height: 9px; border-radius: 50%; display: inline-block; }
+  .dot--done { background: var(--done); }
+  .dot--progress { background: var(--progress); }
+  .dot--planned { background: var(--line); }
+
+  /* Card grid */
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    margin-bottom: 1.6rem;
+  }
+
+  .card {
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    background: var(--surface);
+    padding: 1.1rem 1.2rem 1.2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+  }
+
+  .card-tag {
+    font-family: var(--mono);
+    font-size: 0.66rem;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
+    font-weight: 600;
+    width: fit-content;
+  }
+
+  .card--done .card-tag { color: var(--done); background: var(--done-bg); }
+  .card--progress .card-tag { color: var(--progress); background: var(--progress-bg); }
+
+  .card-title { font-size: 0.95rem; font-weight: 600; margin: 0; font-family: var(--mono); }
+
+  .card ul { margin: 0; padding-left: 1.1rem; font-size: 0.82rem; line-height: 1.6; color: var(--ink-soft); }
+  .card ul li::marker { color: var(--line); }
+
+  .card-link { font-size: 0.78rem; margin-top: auto; }
+  .card-link a { color: var(--ink); }
+
+  .callout {
+    border: 1px solid var(--planned);
+    background: var(--planned-bg);
+    border-radius: 10px;
+    padding: 1rem 1.3rem;
+    display: flex;
+    align-items: baseline;
+    gap: 0.9rem;
+    margin-bottom: 2rem;
+  }
+
+  .callout-mark { font-family: var(--mono); font-size: 0.95rem; color: var(--ink); font-weight: 600; flex: 0 0 auto; }
+  .callout p { margin: 0; font-size: 0.88rem; line-height: 1.55; color: var(--ink); }
+  .callout code { font-family: var(--mono); font-size: 0.92em; }
+  .callout a { color: var(--ink); }
+
+  footer {
+    margin-top: 2.6rem;
+    padding-top: 1.2rem;
+    border-top: 1px solid var(--line);
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    color: var(--ink-soft);
+    letter-spacing: 0.02em;
+  }
+
+  @media (max-width: 720px) {
+    .grid { grid-template-columns: 1fr; }
+    .layer { flex-direction: column; align-items: flex-start; }
+    .layer-label { flex: none; }
+  }
+</style>
+
+<div class="page">
+  <p class="eyebrow">eshop-full — system architecture</p>
+  <h1>Twenty projects, four layers — three done, one in progress, sixteen still to come.</h1>
+  <p class="dek">
+    This is the target shape, not a claim that it already runs end-to-end — <code>eShop.AppHost</code>
+    (the Aspire orchestrator every service and container dependency registers with) is deliberately the
+    <strong>last</strong> project added, since it can't meaningfully exist until the things it orchestrates
+    do. Migration order is foundation-first: shared/foundation projects, then domain APIs, then background
+    workers, then the two frontends, then <code>eShop.AppHost</code>, then <code>tests/</code> and
+    <code>build/</code>. See <a href="event-flow.html">Event Flow</a> for how the foundation layer's
+    pieces actually talk to each other today.
+  </p>
+
+  <h2>Layers</h2>
+  <div class="layers">
+    <div class="layer">
+      <span class="layer-label">Frontends</span>
+      <div class="layer-nodes">
+        <span class="node node--planned">WebApp (React)</span>
+        <span class="node node--planned">WebBFF (Duende.BFF)</span>
+        <span class="node node--planned">ClientApp (.NET MAUI)</span>
+      </div>
+    </div>
+    <div class="layer-arrow">↓ HTTP / gRPC-Web / gRPC</div>
+    <div class="layer">
+      <span class="layer-label">Domain APIs</span>
+      <div class="layer-nodes">
+        <span class="node node--planned">Identity.API</span>
+        <span class="node node--planned">Catalog.API</span>
+        <span class="node node--planned">Basket.API</span>
+        <span class="node node--planned">Ordering.API</span>
+        <span class="node node--planned">Webhooks.API</span>
+      </div>
+    </div>
+    <div class="layer-arrow">↓ publish/consume integration events</div>
+    <div class="layer">
+      <span class="layer-label">Background workers</span>
+      <div class="layer-nodes">
+        <span class="node node--planned">OrderProcessor</span>
+        <span class="node node--planned">PaymentProcessor</span>
+        <span class="node node--planned">WebhookClient (sample)</span>
+      </div>
+    </div>
+    <div class="layer-arrow">↓ every layer above builds on</div>
+    <div class="layer">
+      <span class="layer-label">Foundation</span>
+      <div class="layer-nodes">
+        <span class="node node--done">Shared</span>
+        <span class="node node--done">EventBus</span>
+        <span class="node node--done">EventBusRabbitMQ</span>
+        <span class="node node--done">eShop.ServiceDefaults</span>
+        <span class="node node--progress">IntegrationEventLogEF (5/7)</span>
+      </div>
+    </div>
+    <div class="layer-arrow">↓ orchestrates all of the above, added last</div>
+    <div class="layer">
+      <span class="layer-label">Orchestration</span>
+      <div class="layer-nodes">
+        <span class="node node--planned">eShop.AppHost</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="legend">
+    <span><span class="dot dot--done"></span> done</span>
+    <span><span class="dot dot--progress"></span> in progress</span>
+    <span><span class="dot dot--planned"></span> not started</span>
+  </div>
+
+  <h2>Foundation layer — the part that's real today</h2>
+  <div class="grid">
+    <div class="card card--done">
+      <span class="card-tag">Done</span>
+      <p class="card-title">Shared</p>
+      <ul>
+        <li>Linked-source utilities, no <code>.csproj</code></li>
+        <li>Compiled directly into consuming projects</li>
+      </ul>
+    </div>
+
+    <div class="card card--done">
+      <span class="card-tag">Done</span>
+      <p class="card-title">EventBus</p>
+      <ul>
+        <li>Transport-agnostic abstractions</li>
+        <li><code>IEventBus</code>, <code>IIntegrationEventHandler&lt;T&gt;</code></li>
+      </ul>
+      <div class="card-link"><a href="projects-reference.html">→ Projects reference</a></div>
+    </div>
+
+    <div class="card card--done">
+      <span class="card-tag">Done</span>
+      <p class="card-title">EventBusRabbitMQ</p>
+      <ul>
+        <li>RabbitMQ implementation, 3-layer Decorator chain</li>
+        <li>2 real upstream bugs found and fixed</li>
+      </ul>
+      <div class="card-link"><a href="event-flow.html">→ Event Flow</a></div>
+    </div>
+
+    <div class="card card--done">
+      <span class="card-tag">Done</span>
+      <p class="card-title">eShop.ServiceDefaults</p>
+      <ul>
+        <li>Aspire telemetry/health-check/resilience defaults</li>
+        <li>Shared by every service via <code>AddServiceDefaults()</code></li>
+      </ul>
+      <div class="card-link"><a href="projects-reference.html">→ Projects reference</a></div>
+    </div>
+
+    <div class="card card--progress">
+      <span class="card-tag">In progress</span>
+      <p class="card-title">IntegrationEventLogEF</p>
+      <ul>
+        <li>EF Core-backed transactional outbox</li>
+        <li>5 of 7 source files reviewed so far</li>
+      </ul>
+      <div class="card-link"><a href="event-flow.html">→ Event Flow</a></div>
+    </div>
+  </div>
+
+  <div class="callout">
+    <span class="callout-mark">i</span>
+    <p>
+      Every project above and below is on the <a href="projects-reference.html">Projects Reference</a>
+      diagram with its real one-line role. How the foundation layer's pieces publish, decorate, and
+      persist an integration event today is on <a href="event-flow.html">Event Flow</a>. How each done
+      project got to full test coverage is on <a href="testing-strategy.html">Testing Strategy</a>.
+    </p>
+  </div>
+
+  <footer>eshop-full · .NET 10 / Aspire 13.4 · 3 of 20 projects done · foundation-first migration order</footer>
+</div>
