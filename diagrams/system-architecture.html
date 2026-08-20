@@ -254,6 +254,7 @@
       <div class="layer-nodes">
         <span class="node node--planned">WebApp (React)</span>
         <span class="node node--planned">WebBFF (Duende.BFF)</span>
+        <span class="node node--planned">Identity.WebApp (React)</span>
         <span class="node node--planned">ClientApp (.NET MAUI)</span>
       </div>
     </div>
@@ -261,7 +262,7 @@
     <div class="layer">
       <span class="layer-label">Domain APIs</span>
       <div class="layer-nodes">
-        <span class="node node--planned">Identity.API</span>
+        <span class="node node--progress">Identity.API</span>
         <span class="node node--planned">Catalog.API</span>
         <span class="node node--planned">Basket.API</span>
         <span class="node node--planned">Ordering.API</span>
@@ -285,7 +286,7 @@
         <span class="node node--done">EventBus</span>
         <span class="node node--done">EventBusRabbitMQ</span>
         <span class="node node--done">eShop.ServiceDefaults</span>
-        <span class="node node--progress">IntegrationEventLogEF (5/7)</span>
+        <span class="node node--done">IntegrationEventLogEF</span>
       </div>
     </div>
     <div class="layer-arrow">↓ orchestrates all of the above, added last</div>
@@ -344,14 +345,27 @@
       <div class="card-link"><a href="projects-reference.html">→ Projects reference</a></div>
     </div>
 
-    <div class="card card--progress">
-      <span class="card-tag">In progress</span>
+    <div class="card card--done">
+      <span class="card-tag">Done</span>
       <p class="card-title">IntegrationEventLogEF</p>
       <ul>
         <li>EF Core-backed transactional outbox</li>
-        <li>5 of 7 source files reviewed so far</li>
+        <li>All 7 source files reviewed, several real fixes</li>
       </ul>
       <div class="card-link"><a href="event-flow.html">→ Event Flow</a></div>
+    </div>
+  </div>
+
+  <h2>Domain APIs — first one underway</h2>
+  <div class="grid">
+    <div class="card card--progress">
+      <span class="card-tag">In progress</span>
+      <p class="card-title">Identity.API</p>
+      <ul>
+        <li>Duende IdentityServer + ASP.NET Core Identity, EF Core-backed</li>
+        <li>Scaffold added; source review still underway</li>
+      </ul>
+      <div class="card-link"><a href="projects-reference.html">→ Projects reference</a></div>
     </div>
   </div>
 
@@ -365,5 +379,5 @@
     </p>
   </div>
 
-  <footer>eshop-full · .NET 10 / Aspire 13.4 · 3 of 20 projects done · foundation-first migration order</footer>
+  <footer>eshop-full · .NET 10 / Aspire 13.4 · 4 of 21 projects done · foundation-first migration order</footer>
 </div>
