@@ -191,7 +191,7 @@
 
 <div class="page">
   <p class="eyebrow">eshop-full — projects reference</p>
-  <h1>Twenty projects, one migration order: foundation, then domain, then workers, then frontends, then orchestration.</h1>
+  <h1>Twenty-one projects, one migration order: foundation, then domain, then workers, then frontends, then orchestration.</h1>
   <p class="dek">
     Every project below, in the order it's actually being built — not upstream's original list order.
     <code>eShop.slnx</code>/<code>eShop.Web.slnf</code> only ever list what exists on disk today, so
@@ -228,17 +228,17 @@
       <p class="card-title">eShop.ServiceDefaults</p>
       <p class="card-desc">Aspire telemetry/health-check/resilience defaults, shared by every service via <code>AddServiceDefaults()</code>.</p>
     </div>
-    <div class="card card--progress">
-      <span class="card-tag">In progress</span>
+    <div class="card card--done">
+      <span class="card-tag">Done</span>
       <p class="card-title">IntegrationEventLogEF</p>
-      <p class="card-desc">EF Core-backed transactional outbox — 5 of 7 source files reviewed.</p>
+      <p class="card-desc">EF Core-backed transactional outbox — all 7 source files reviewed, several real fixes.</p>
     </div>
   </div>
 
   <h2>Domain APIs</h2>
   <div class="grid">
-    <div class="card card--planned">
-      <span class="card-tag">Not started</span>
+    <div class="card card--progress">
+      <span class="card-tag">In progress</span>
       <p class="card-title">Identity.API</p>
       <p class="card-desc">Duende IdentityServer — the OIDC provider for the whole system.</p>
       <div class="card-flag">Flag when reached: verify Duende 7.x→8.x breaking changes, and that <code>ValidateAudience = true</code> validates cleanly against real issued tokens.</div>
@@ -310,6 +310,11 @@
     </div>
     <div class="card card--planned">
       <span class="card-tag">Not started</span>
+      <p class="card-title">Identity.WebApp</p>
+      <p class="card-desc">New project, not in upstream (working name) — React replacement for Duende's Quickstart Razor UI (Account/Consent/Device/Diagnostics/Grants), hosted separately from <code>Identity.API</code>.</p>
+    </div>
+    <div class="card card--planned">
+      <span class="card-tag">Not started</span>
       <p class="card-title">ClientApp</p>
       <p class="card-desc">Native .NET MAUI mobile client — unaffected by the React pivot.</p>
     </div>
@@ -330,5 +335,5 @@
     </p>
   </div>
 
-  <footer>eshop-full · 20 projects target · 3 done · 1 in progress · foundation-first migration order</footer>
+  <footer>eshop-full · 21 projects target · 4 done · 1 in progress · foundation-first migration order</footer>
 </div>
