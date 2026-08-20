@@ -5,7 +5,7 @@
 
 This document describes the architecture eShop-full is being built toward — verified against the real source app (Microsoft's [dotnet/eShop](https://github.com/dotnet/eShop), snapshotted locally at `F:\eShop-main\eShop-main`) and against what has actually landed in this repo, not a generic description of what an e-commerce microservices app "usually" looks like. See [todo.md](../todo.md) for exactly how much of this exists right now, and the [project board](https://github.com/users/Terrence721/projects/5) for the live per-project status.
 
-**Current status, stated plainly:** as of this writing, `src/Shared/` (2 linked-source files), `EventBus`, `EventBusRabbitMQ`, `eShop.ServiceDefaults`, and `IntegrationEventLogEF` are added and reviewed; the other 15 projects don't exist on disk yet. All four also have complete test coverage now (33, 16, 17, and 17 passing tests respectively, 83 total) — see Section 11. Everything below describing the full system is the target this repo is being built toward one file at a time, not a claim that it already runs end-to-end.
+**Current status, stated plainly:** as of this writing, `src/Shared/` (2 linked-source files), `EventBus`, `EventBusRabbitMQ`, `eShop.ServiceDefaults`, and `IntegrationEventLogEF` are added and reviewed, with complete test coverage (33, 16, 17, and 17 passing tests respectively, 83 total) — see Section 11. `Identity.API` is in progress (scaffold added, source review not yet started). The other 15 projects don't exist on disk yet. Everything below describing the full system is the target this repo is being built toward one file at a time, not a claim that it already runs end-to-end.
 
 ## 1. What this is
 
@@ -36,7 +36,7 @@ eShop-full/
 │   ├── EventBusRabbitMQ/        ✅ added and reviewed — see Section 8
 │   ├── eShop.ServiceDefaults/    ✅ added and reviewed
 │   ├── IntegrationEventLogEF/   ✅ added and reviewed
-│   ├── Identity.API/
+│   ├── Identity.API/            🚧 in progress (scaffold added, source review underway)
 │   ├── Identity.WebApp/           # new, not in upstream (working name) — see Section 9
 │   ├── Catalog.API/
 │   ├── Basket.API/
@@ -63,7 +63,7 @@ eShop-full/
 └── eShop.slnx, eShop.Web.slnf    ✅ kept trimmed to only projects that exist — see todo.md
 ```
 
-`eShop.slnx`/`eShop.Web.slnf` deliberately do **not** list all 18 of this fork's target projects upfront the way the source repo lists all 19 of its own from day one — each project is added to them the moment it actually lands, so `dotnet build` and CI only ever try to build what exists. See `todo.md`'s "Still to do" for why this matters.
+`eShop.slnx`/`eShop.Web.slnf` deliberately do **not** list all 19 of this fork's target `src/` projects upfront the way the source repo lists all 19 of its own from day one (the count matches upstream's by coincidence: `-2` `WebAppComponents`/`HybridApp`, `+1` `WebBFF`, `+1` `Identity.WebApp`, net zero) — each project is added to them the moment it actually lands, so `dotnet build` and CI only ever try to build what exists. See `todo.md`'s "Still to do" for why this matters.
 
 ## 4. Services breakdown
 
