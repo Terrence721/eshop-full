@@ -24,7 +24,7 @@ A living list of what's done and what's left on this build. This is an independe
 | Test coverage | `eShop.ServiceDefaults.UnitTests` (33 tests), `EventBus.UnitTests` (16 tests), `EventBusRabbitMQ.UnitTests` (17 tests), `IntegrationEventLogEF.UnitTests` (17 tests) — all applicable files across all 4 projects covered, 83 tests total — see "Testing strategy" below |
 | Portfolio page + diagrams | `portfolio.html` and `diagrams/{system-architecture,event-flow,projects-reference,testing-strategy}.html`, published via GitHub Pages at [terrence721.github.io/eshop-full](https://terrence721.github.io/eshop-full/) — see "Portfolio page and diagrams" below |
 
-**Still to do:** 15 of 20 `.csproj` projects, plus `build/` — see the "Still to do" table below and [project board](https://github.com/users/Terrence721/projects/5) for the live board. Project count changed 2026-08-15: `WebAppComponents`/`HybridApp` dropped, `WebBFF` added — see the "Frontend and API layer" section below.
+**Still to do:** 17 of 21 `.csproj` projects, plus `build/` — see the "Still to do" table below and [project board](https://github.com/users/Terrence721/projects/5) for the live board. Project count changed 2026-08-15 (`WebAppComponents`/`HybridApp` dropped, `WebBFF` added) and again 2026-08-20 (`Identity.WebApp` added) — see the "Frontend and API layer" section below.
 
 ## ✅ Done
 
@@ -286,6 +286,7 @@ Three related decisions made while planning `WebApp`, ahead of actually building
 - **`WebApp` goes React, not Blazor.** A React + ASP.NET Core Web API split is a more common, more in-demand combination in the .NET job market than a Blazor frontend, and demonstrates a genuine full-stack split rather than staying single-language. `WebAppComponents`/`HybridApp` are dropped from the plan (not converted) — they only existed to share Blazor components between `WebApp` and the mobile shell, which no longer applies once `WebApp` isn't Blazor. Project count changed from upstream's 19 to this fork's 18 (`-2` for the drop, `+1` for `WebBFF` below). `ClientApp` (native .NET MAUI) is unaffected.
 - **New `WebBFF` project, using `Duende.BFF`.** Blazor Server implicitly acted as its own backend-for-frontend (its C# runs server-side, aggregating/orchestrating calls before anything reaches the browser); a React SPA has no server-side execution, so that goes away along with Blazor, not just the rendering tech. Mirrors the existing `Mobile App` → `Mobile BFF` → `Mobile API` shape already in [eShop's architecture diagram](img/eshop_architecture.png), applied to the web client instead of the browser calling `Catalog.API`/`Ordering.API`/`Basket.API` directly. `Duende.BFF` specifically because `Identity.API` is already Duende IdentityServer, and Duende publishes that package for exactly this scenario — keeps OAuth tokens server-side (httpOnly session cookie) instead of a JWT reachable from browser JS. Targeted for the week after 2026-08-14.
 - **`Basket.API` keeps gRPC, adds gRPC-Web.** The architecture diagram shows `Basket API` called via gRPC directly from the Blazor Web App — something Blazor Server can do natively that a browser SPA can't (no HTTP/2 trailer support in browsers). Decided against both replacing gRPC with REST and duplicating it with a second REST surface; `Basket.API` will add ASP.NET Core's first-party `Grpc.AspNetCore.Web` middleware instead, so the same service handles native gRPC (server-to-server) and gRPC-Web (`WebBFF`/`WebApp`, via a client like `@connectrpc/connect-web`) without a separate proxy. Flagged against `Basket.API`'s row below.
+- **New `Identity.WebApp` project (working name), decided 2026-08-20 while starting `Identity.API`'s own review.** Duende IdentityServer's Quickstart scaffold (`Account`/`Consent`/`Device`/`Diagnostics`/`Grants` — Razor MVC controllers + views, rendered at `Identity.API`'s own origin mid-OIDC-redirect) goes React instead, all of it, not just the login page. Hosted as its own separate frontend project rather than co-located in `Identity.API`'s `wwwroot`, consistent with the `WebApp`/`WebBFF` split rather than a one-off exception. **Open, not yet decided:** exact project name, and how `Identity.API` exposes the account/consent/device actions to it (convert the MVC actions to a JSON API `Identity.WebApp` calls, vs. some other shape) — Duende's Quickstart UI assumes server-rendered forms/anti-forgery/`TempData`, none of which carry over as-is to a SPA calling an API. Resolve when this project's work actually starts, not guessed at now. Flagged against `Identity.API`'s row below.
 
 ## 🚧 Still to do
 
@@ -297,22 +298,23 @@ Migration order is **foundation first**: shared/foundation projects, then the se
 | 2 | `EventBusRabbitMQ` | ✅ Done — see "EventBusRabbitMQ" above |
 | 3 | `eShop.ServiceDefaults` | ✅ Done — see "eShop.ServiceDefaults" above |
 | 4 | `IntegrationEventLogEF` | ✅ Done — see "IntegrationEventLogEF" above |
-| 5 | `Identity.API` | Not started — **flag when reached**: verify `Duende.IdentityServer` 7.x→8.x breaking API/DB-schema changes against actual usage; also verify `AuthenticationExtensions.AddDefaultAuthentication`'s `ValidateAudience = true` (re-enabled 2026-08-15, was disabled in source) actually validates cleanly against real issued tokens — see "eShop.ServiceDefaults" above |
-| 6 | `Catalog.API` | Not started |
-| 7 | `Basket.API` | Not started — **flag when reached**: add `Grpc.AspNetCore.Web` middleware so its gRPC service also serves gRPC-Web for `WebApp`/`WebBFF` — see "Frontend and API layer" below |
-| 8 | `Ordering.Domain` | Not started |
-| 9 | `Ordering.Infrastructure` | Not started |
-| 10 | `Ordering.API` | Not started — **flag when reached**: verify `MediatR` 12.5.0 usage compiles clean (pinned below source's original 13.0.0 per the license decision above) |
-| 11 | `OrderProcessor` | Not started |
-| 12 | `PaymentProcessor` | Not started |
-| 13 | `Webhooks.API` | Not started |
-| 14 | `WebhookClient` | Not started |
-| 15 | `WebApp` | Not started — **React, not Blazor** (upstream: Blazor storefront) — see "Frontend and API layer" below |
-| 16 | `WebBFF` | Not started — **new project, not in upstream** — Backend-for-Frontend for `WebApp` using `Duende.BFF`, targeted for the week after 2026-08-14 — see "Frontend and API layer" below |
-| 17 | `ClientApp` (.NET MAUI) | Not started — **flag when reached**: uncomment the `Build`/`Test` steps in `.github/workflows/pr-validation-maui.yml` (commented out since `src/ClientApp/ClientApp.csproj` doesn't exist yet) |
-| 18 | `eShop.AppHost` | Not started — deliberately last, references every other project — **flag when reached**: uncomment the `Install Playwright Browsers`/`Run Playwright tests`/`upload-artifact` steps in `.github/workflows/playwright.yml` (commented out since `playwright.config.ts`'s `webServer` needs this project to launch the app) |
-| 19 | `tests/` (5 test projects) | Not started — **framework decided**: `MSTest.Sdk` on the `Microsoft.Testing.Platform` runner (already pinned in `global.json`, not a new choice) — see "Testing strategy" below |
-| 20 | `build/` tooling | Not started |
+| 5 | `Identity.API` | Not started — **flag when reached**: verify `Duende.IdentityServer` 7.x→8.x breaking API/DB-schema changes against actual usage; verify `AuthenticationExtensions.AddDefaultAuthentication`'s `ValidateAudience = true` (re-enabled 2026-08-15, was disabled in source) actually validates cleanly against real issued tokens — see "eShop.ServiceDefaults" above; also, the Quickstart UI's account/consent/device actions need to be exposed for `Identity.WebApp` to call — see "Frontend and API layer" below |
+| 6 | `Identity.WebApp` (working name) | Not started — **new project, not in upstream** — React replacement for Duende's Quickstart Razor UI (`Account`/`Consent`/`Device`/`Diagnostics`/`Grants`), decided 2026-08-20 — see "Frontend and API layer" below |
+| 7 | `Catalog.API` | Not started |
+| 8 | `Basket.API` | Not started — **flag when reached**: add `Grpc.AspNetCore.Web` middleware so its gRPC service also serves gRPC-Web for `WebApp`/`WebBFF` — see "Frontend and API layer" below |
+| 9 | `Ordering.Domain` | Not started |
+| 10 | `Ordering.Infrastructure` | Not started |
+| 11 | `Ordering.API` | Not started — **flag when reached**: verify `MediatR` 12.5.0 usage compiles clean (pinned below source's original 13.0.0 per the license decision above) |
+| 12 | `OrderProcessor` | Not started |
+| 13 | `PaymentProcessor` | Not started |
+| 14 | `Webhooks.API` | Not started |
+| 15 | `WebhookClient` | Not started |
+| 16 | `WebApp` | Not started — **React, not Blazor** (upstream: Blazor storefront) — see "Frontend and API layer" below |
+| 17 | `WebBFF` | Not started — **new project, not in upstream** — Backend-for-Frontend for `WebApp` using `Duende.BFF`, targeted for the week after 2026-08-14 — see "Frontend and API layer" below |
+| 18 | `ClientApp` (.NET MAUI) | Not started — **flag when reached**: uncomment the `Build`/`Test` steps in `.github/workflows/pr-validation-maui.yml` (commented out since `src/ClientApp/ClientApp.csproj` doesn't exist yet) |
+| 19 | `eShop.AppHost` | Not started — deliberately last, references every other project — **flag when reached**: uncomment the `Install Playwright Browsers`/`Run Playwright tests`/`upload-artifact` steps in `.github/workflows/playwright.yml` (commented out since `playwright.config.ts`'s `webServer` needs this project to launch the app) |
+| 20 | `tests/` (5 test projects, plus `Identity.WebApp.UnitTests`/similar once that project exists) | Not started — **framework decided**: `MSTest.Sdk` on the `Microsoft.Testing.Platform` runner (already pinned in `global.json`, not a new choice) — see "Testing strategy" below |
+| 21 | `build/` tooling | Not started |
 
 ### Open Dependabot PRs
 
