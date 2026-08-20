@@ -1,0 +1,373 @@
+<title>Event Flow — Three Decorators Deep</title>
+<style>
+  :root {
+    --ink: #1c1a1f;
+    --ink-soft: #534f57;
+    --paper: #ece8ea;
+    --surface: #ffffff;
+    --line: #beb7bc;
+    --transport: #2b4f6e;
+    --transport-bg: #dfe6ed;
+    --telemetry: #6e4f2b;
+    --telemetry-bg: #ede4d8;
+    --resilient: #6e2b3f;
+    --resilient-bg: #edd8de;
+    --outbox: #2b6e5a;
+    --outbox-bg: #dcede6;
+    --bug: #a13d2b;
+    --bug-bg: #f3e2dd;
+    --mono: ui-monospace, "SF Mono", "Cascadia Mono", "Consolas", "Liberation Mono", monospace;
+    --sans: -apple-system, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  }
+
+  :root[data-theme="dark"] {
+    --ink: #ece9ec;
+    --ink-soft: #aca6ac;
+    --paper: #17151a;
+    --surface: #201e23;
+    --line: #423e44;
+    --transport: #82aed4;
+    --transport-bg: #1a2733;
+    --telemetry: #d4a878;
+    --telemetry-bg: #2c2419;
+    --resilient: #d47f96;
+    --resilient-bg: #2c1c22;
+    --outbox: #6fc4a8;
+    --outbox-bg: #17281f;
+    --bug: #dd7a4a;
+    --bug-bg: #2c1e17;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --ink: #ece9ec;
+      --ink-soft: #aca6ac;
+      --paper: #17151a;
+      --surface: #201e23;
+      --line: #423e44;
+      --transport: #82aed4;
+      --transport-bg: #1a2733;
+      --telemetry: #d4a878;
+      --telemetry-bg: #2c2419;
+      --resilient: #d47f96;
+      --resilient-bg: #2c1c22;
+      --outbox: #6fc4a8;
+      --outbox-bg: #17281f;
+      --bug: #dd7a4a;
+      --bug-bg: #2c1e17;
+    }
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--sans);
+    padding: 2.5rem 1.5rem 4rem;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .page { max-width: 1080px; margin: 0 auto; }
+
+  .eyebrow {
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    margin: 0 0 0.6rem;
+  }
+
+  h1 {
+    font-size: clamp(1.5rem, 2.6vw, 2.05rem);
+    line-height: 1.15;
+    margin: 0 0 0.5rem;
+    letter-spacing: -0.01em;
+    text-wrap: balance;
+  }
+
+  .dek {
+    font-size: 1rem;
+    line-height: 1.55;
+    color: var(--ink-soft);
+    max-width: 72ch;
+    margin: 0 0 2.2rem;
+  }
+  .dek code { font-family: var(--mono); font-size: 0.9em; color: var(--ink); }
+  .dek a { color: var(--ink); }
+
+  h2 {
+    font-size: 0.72rem;
+    font-family: var(--mono);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    margin: 2.2rem 0 1rem;
+  }
+  h2:first-of-type { margin-top: 0; }
+
+  /* pipeline */
+  .pipeline {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.4rem 0.3rem;
+    margin-bottom: 0.6rem;
+  }
+  .step {
+    font-family: var(--mono);
+    font-size: 0.78rem;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 7px;
+    padding: 0.5rem 0.8rem;
+  }
+  .step--zoomed.z-transport { border-color: var(--transport); color: var(--transport); background: var(--transport-bg); font-weight: 600; }
+  .step--zoomed.z-telemetry { border-color: var(--telemetry); color: var(--telemetry); background: var(--telemetry-bg); font-weight: 600; }
+  .step--zoomed.z-resilient { border-color: var(--resilient); color: var(--resilient); background: var(--resilient-bg); font-weight: 600; }
+  .step--zoomed.z-outbox { border-color: var(--outbox); color: var(--outbox); background: var(--outbox-bg); font-weight: 600; }
+  .step--bug { border-color: var(--bug); color: var(--bug); background: var(--bug-bg); font-weight: 600; }
+  .arrow { color: var(--ink-soft); font-size: 0.8rem; }
+
+  /* zoom cards */
+  .zoom {
+    border: 1px solid var(--line);
+    background: var(--surface);
+    border-radius: 10px;
+    padding: 1.1rem 1.3rem 1.2rem;
+    margin-bottom: 1rem;
+  }
+  .zoom p { margin: 0; font-size: 0.9rem; line-height: 1.6; color: var(--ink); max-width: 74ch; }
+  .zoom code { font-family: var(--mono); font-size: 0.9em; }
+  .zoom-head { display: flex; align-items: baseline; gap: 0.7rem; margin-bottom: 0.55rem; flex-wrap: wrap; }
+  .zoom-tag {
+    font-family: var(--mono);
+    font-size: 0.64rem;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    padding: 0.2rem 0.55rem;
+    border-radius: 4px;
+    font-weight: 700;
+    white-space: nowrap;
+  }
+  .zoom--transport .zoom-tag { color: var(--transport); background: var(--transport-bg); }
+  .zoom--telemetry .zoom-tag { color: var(--telemetry); background: var(--telemetry-bg); }
+  .zoom--resilient .zoom-tag { color: var(--resilient); background: var(--resilient-bg); }
+  .zoom--outbox .zoom-tag { color: var(--outbox); background: var(--outbox-bg); }
+  .zoom--bug .zoom-tag { color: var(--bug); background: var(--bug-bg); }
+  .zoom-title { font-size: 0.92rem; font-weight: 600; margin: 0; }
+
+  .bug-before-after {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.8rem;
+    margin-top: 0.7rem;
+  }
+  @media (max-width: 640px) { .bug-before-after { grid-template-columns: 1fr; } }
+  .ba {
+    border: 1px dashed var(--line);
+    border-radius: 8px;
+    padding: 0.7rem 0.85rem;
+  }
+  .ba-label {
+    font-family: var(--mono);
+    font-size: 0.62rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    margin: 0 0 0.4rem;
+  }
+  .ba code {
+    display: block;
+    font-family: var(--mono);
+    font-size: 0.76rem;
+    line-height: 1.55;
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+
+  .callout {
+    border: 1px solid var(--line);
+    background: var(--surface);
+    border-radius: 10px;
+    padding: 1rem 1.3rem;
+    display: flex;
+    align-items: baseline;
+    gap: 0.9rem;
+    margin: 1.4rem 0 0.5rem;
+  }
+  .callout-mark { font-family: var(--mono); font-size: 0.95rem; color: var(--ink-soft); font-weight: 600; flex: 0 0 auto; }
+  .callout p { margin: 0; font-size: 0.88rem; line-height: 1.55; color: var(--ink); }
+  .callout code { font-family: var(--mono); font-size: 0.92em; }
+  .callout a { color: var(--ink); }
+
+  footer {
+    margin-top: 2.6rem;
+    padding-top: 1.2rem;
+    border-top: 1px solid var(--line);
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    color: var(--ink-soft);
+    letter-spacing: 0.02em;
+  }
+</style>
+
+<div class="page">
+  <p class="eyebrow">eshop-full — event bus &amp; integration events</p>
+  <h1>One publish call, three decorators deep — and the bug hiding in the middle one.</h1>
+  <p class="dek">
+    Services integrate through published/consumed events, not direct calls — <code>EventBus</code>
+    defines the abstraction (<code>IEventBus</code>), <code>EventBusRabbitMQ</code> is the only
+    implementation today, and <code>IntegrationEventLogEF</code> (in progress) will give every publisher a
+    transactional outbox instead of a fire-and-forget publish. Reviewing <code>RabbitMQEventBus</code>
+    closely enough to split it turned up two real bugs, both present verbatim in Microsoft's own reference
+    source. See <a href="system-architecture.html">System Architecture</a> for where this foundation layer
+    sits relative to everything still to come.
+  </p>
+
+  <h2>Publish Path</h2>
+  <div class="pipeline">
+    <span class="step">Ordering.API (planned)</span><span class="arrow">→</span>
+    <span class="step">IEventBus.PublishAsync</span><span class="arrow">→</span>
+    <span class="step step--zoomed z-resilient">ResilientEventBusDecorator</span><span class="arrow">→</span>
+    <span class="step step--zoomed z-telemetry">TelemetryEventBusDecorator</span><span class="arrow">→</span>
+    <span class="step step--zoomed z-transport">RabbitMQEventBus</span><span class="arrow">→</span>
+    <span class="step">RabbitMQ broker</span>
+  </div>
+  <p class="dek" style="margin: 0.6rem 0 0; font-size: 0.86rem;">
+    Three separate <code>IEventBus</code> implementations, composed by wrapping — a caller only ever sees
+    <code>IEventBus</code>, and doesn't know or care how many layers are behind it.
+  </p>
+
+  <h2>Zoomed In</h2>
+
+  <div class="zoom zoom--resilient">
+    <div class="zoom-head">
+      <span class="zoom-tag">Outer layer</span>
+      <p class="zoom-title">ResilientEventBusDecorator — Polly retry, now genuinely async</p>
+    </div>
+    <p>
+      Wraps the inner bus in a Polly <code>ResiliencePipeline</code> so transient failures
+      (<code>BrokerUnreachableException</code>, <code>SocketException</code>) get retried before the
+      caller ever sees them. This is the layer that had to be rebuilt to fix bug #1 below — see
+      <a href="#bug-polly">Bug: retry pipeline never retried</a>.
+    </p>
+  </div>
+
+  <div class="zoom zoom--telemetry">
+    <div class="zoom-head">
+      <span class="zoom-tag">Middle layer</span>
+      <p class="zoom-title">TelemetryEventBusDecorator — OpenTelemetry tracing</p>
+    </div>
+    <p>
+      Starts an activity named <code>"{EventTypeName} publish"</code> with the OpenTelemetry messaging
+      semantic-convention tags applied, tags any exception onto that activity, and rethrows rather than
+      swallowing it. <code>RabbitMQEventBus.PublishAsync</code>'s own context-propagation now sources its
+      <code>ActivityContext</code> from this layer's ambient <code>Activity.Current</code>
+      (<code>AsyncLocal</code>-backed, flows through the <code>await</code> chain automatically) instead of
+      a locally-created activity threaded manually through nested lambdas.
+    </p>
+  </div>
+
+  <div class="zoom zoom--transport">
+    <div class="zoom-head">
+      <span class="zoom-tag">Inner layer</span>
+      <p class="zoom-title">RabbitMQEventBus — transport only</p>
+    </div>
+    <p>
+      Connection/channel management, the real <code>BasicPublishAsync</code> call, and consumer
+      wiring — nothing else. Splitting telemetry and resilience out of this class is what surfaced both
+      bugs below in the first place: each concern is small enough now to read closely and get right on its
+      own, where before it was one class doing three unrelated jobs.
+    </p>
+  </div>
+
+  <h2>The Bugs This Split Found</h2>
+
+  <div class="zoom zoom--bug" id="bug-polly">
+    <div class="zoom-head">
+      <span class="zoom-tag">Flagship bug</span>
+      <p class="zoom-title">The retry pipeline never actually retried</p>
+    </div>
+    <p>
+      <code>PublishAsync</code> ran its publish step through <code>_pipeline.Execute(async () =&gt;
+      {...})</code> — the <strong>synchronous</strong> <code>Execute&lt;TResult&gt;</code> overload with
+      <code>TResult</code> inferred as <code>Task</code>, confirmed by reflecting the real
+      <code>Polly.Core 8.6.6</code> assembly rather than assumed from documentation. It invoked the lambda
+      once and treated the returned <code>Task</code> object itself as the outcome, without awaiting it —
+      so any exception thrown after the lambda's first <code>await</code> (exactly where
+      <code>channel.BasicPublishAsync</code> would throw) happened <em>after</em> <code>Execute</code> had
+      already returned. The retry pipeline's <code>ShouldHandle</code> never observed it.
+    </p>
+    <div class="bug-before-after">
+      <div class="ba">
+        <p class="ba-label">Before — inert</p>
+        <code>_pipeline.Execute(async () =&gt;
+{
+    await channel.BasicPublishAsync(...);
+});
+// exception after the await
+// never reaches ShouldHandle</code>
+      </div>
+      <div class="ba">
+        <p class="ba-label">After — genuinely retries</p>
+        <code>await _pipeline.ExecuteAsync(
+    static async (state, ct) =&gt;
+        await state.channel
+            .BasicPublishAsync(...),
+    state, cancellationToken);</code>
+      </div>
+    </div>
+  </div>
+
+  <div class="zoom zoom--bug">
+    <div class="zoom-head">
+      <span class="zoom-tag">Second bug</span>
+      <p class="zoom-title">A null-conditional that made its own error path unreachable</p>
+    </div>
+    <p>
+      <code>(await _rabbitMQConnection?.CreateChannelAsync()) ?? throw new
+      InvalidOperationException("RabbitMQ connection is not open")</code> looks like it handles a closed
+      connection gracefully. It doesn't — the <code>?.</code> short-circuits the <em>entire</em>
+      parenthesized expression to a null <code>Task&lt;IChannel&gt;</code> when
+      <code>_rabbitMQConnection</code> is null, and awaiting a null task throws
+      <code>NullReferenceException</code> immediately — so the <code>?? throw</code> fallback was dead
+      code. A caller hitting this path during startup (before <code>StartAsync</code> finishes setting the
+      connection) got an opaque NRE instead of the intended message. Fixed with an explicit
+      <code>if (_rabbitMQConnection is null) throw ...</code> before the <code>await</code>.
+    </p>
+  </div>
+
+  <h2>The Outbox (in progress)</h2>
+  <div class="zoom zoom--outbox">
+    <div class="zoom-head">
+      <span class="zoom-tag">IntegrationEventLogEF</span>
+      <p class="zoom-title">Domain write and event-to-publish, one transaction</p>
+    </div>
+    <p>
+      Not wired up yet — 5 of 7 source files are reviewed, <code>Services/IntegrationEventLogService.cs</code>
+      and <code>Utilities/ResilientTransaction.cs</code> aren't added. The target shape: a publishing
+      service writes its domain change and an <code>IntegrationEventLogEntry</code> row in the
+      <strong>same</strong> database transaction, so a crash between "domain write committed" and "event
+      published" can't lose the event — a separate process picks up
+      <code>NotPublished</code>-state rows and ships them to <code>IEventBus</code> after the fact. The
+      same cast-can-return-null bug already fixed once in <code>RabbitMQEventBus.DeserializeMessage</code>
+      recurred in <code>IntegrationEventLogEntry.cs</code>'s own JSON deserialization — caught the second
+      time because the first fix was still fresh.
+    </p>
+  </div>
+
+  <div class="callout">
+    <span class="callout-mark">i</span>
+    <p>
+      Neither bug above was provable end-to-end until the Decorator split made the resilience layer
+      testable on its own — no real RabbitMQ broker exists yet (no <code>eShop.AppHost</code>). See
+      <a href="testing-strategy.html">Testing Strategy</a> for how a fake inner <code>IEventBus</code>
+      finally closed that gap.
+    </p>
+  </div>
+
+  <footer>eshop-full · 1 IEventBus, 3 decorators · 2 real bugs found in the split · outbox pattern in progress</footer>
+</div>
