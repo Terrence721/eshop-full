@@ -7,7 +7,6 @@
     <AspireVersion>13.4.6</AspireVersion>
     <AspireUnstablePackagesVersion>13.4.6-preview.1.26319.6</AspireUnstablePackagesVersion>
     <GrpcVersion>2.83.0</GrpcVersion>
-    <!-- Duende.IdentityServer.Storage has no 8.x release yet; it's pinned separately below. -->
     <DuendeVersion>8.0.6</DuendeVersion>
     <!-- Asp.Versioning.Http/Mvc.ApiExplorer/OpenApi hit a stable 10.0.0 release; Http.Client diverged onto its own 8.x line and is pinned separately below. -->
     <ApiVersioningVersion>10.0.0</ApiVersioningVersion>
@@ -81,11 +80,10 @@
     <PackageVersion Include="OpenTelemetry.Instrumentation.Runtime" Version="1.17.0" />
     <!-- IdentityServer -->
     <PackageVersion Include="Duende.IdentityServer" Version="$(DuendeVersion)" />
-    <PackageVersion Include="Duende.IdentityServer.AspNetIdentity" Version="8.0.4" />
-    <PackageVersion Include="Duende.IdentityServer.EntityFramework" Version="8.0.4" />
-    <PackageVersion Include="Duende.IdentityServer.EntityFramework.Storage" Version="8.0.1" />
-    <!-- No 8.x release yet upstream as of 2026-08-14; latest available is still 7.4.7. -->
-    <PackageVersion Include="Duende.IdentityServer.Storage" Version="7.4.7" />
+    <PackageVersion Include="Duende.IdentityServer.AspNetIdentity" Version="$(DuendeVersion)" />
+    <PackageVersion Include="Duende.IdentityServer.EntityFramework" Version="$(DuendeVersion)" />
+    <PackageVersion Include="Duende.IdentityServer.EntityFramework.Storage" Version="$(DuendeVersion)" />
+    <PackageVersion Include="Duende.IdentityServer.Storage" Version="$(DuendeVersion)" />
     <!-- Scaffolding -->
     <PackageVersion Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="10.0.2" />
     <!-- Grpc -->
