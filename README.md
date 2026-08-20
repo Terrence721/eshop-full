@@ -1,41 +1,71 @@
-# eShop Reference Application - "AdventureWorks"
+# 🛍️ eShop — A .NET Aspire Microservices Platform
 
-A reference .NET application implementing an e-commerce website using a services-based architecture using .NET Aspire.
+[![eShop Pull Request Validation](https://github.com/Terrence721/eshop-full/actions/workflows/pr-validation.yml/badge.svg)](https://github.com/Terrence721/eshop-full/actions/workflows/pr-validation.yml)
+[![CodeQL](https://github.com/Terrence721/eshop-full/actions/workflows/codeql.yml/badge.svg)](https://github.com/Terrence721/eshop-full/actions/workflows/codeql.yml)
 
-![eShop Reference Application architecture diagram](img/eshop_architecture.png)
+**[📜 View the portfolio page →](https://terrence721.github.io/eshop-full/portfolio.html)**
 
-![eShop homepage screenshot](img/eshop_homepage.png)
+Last updated: August 20, 2026 (3 of 20 projects done — `EventBus`, `EventBusRabbitMQ`, `eShop.ServiceDefaults`, plus `Shared` — `IntegrationEventLogEF` 5/7 source files in progress; 66/66 tests passing)
+
+This is an independently modernized version of Microsoft's [dotnet/eShop](https://github.com/dotnet/eShop) reference app — a .NET Aspire microservices e-commerce platform (product catalog, basket, ordering, identity, payments, outbound webhooks) added **one file at a time**, each file evaluated and upgraded against actual current-latest package versions rather than copied over wholesale.
+
+Not a fork left as-is. Every package version was individually re-researched, several real bugs were found and fixed in Microsoft's own reference source (verified against real assemblies and real builds, not assumed), and a handful of deliberate design departures — a Decorator split for `EventBusRabbitMQ`, React instead of Blazor for the web frontend — were made and recorded as this fork's own choices.
+
+**At a glance:** 66/66 tests passing across `eShop.ServiceDefaults.UnitTests` + `EventBus.UnitTests` + `EventBusRabbitMQ.UnitTests`, added ahead of the `tests/` migration slot so every completed project ships with full coverage rather than deferring it to the end — see the **[Testing Strategy diagram](https://terrence721.github.io/eshop-full/diagrams/testing-strategy.html)**.
 
 ## 🧭 Start Here
 
-- **[`todo.md`](todo.md)** — the phase-by-phase log of everything done and everything still open. This is the source of truth for progress.
-- **[GitHub Project board](https://github.com/users/Terrence721/projects/5)** — a Scrum-style Backlog/Planned/In Progress/Verification & QA/Done view of the same work, for a quick at-a-glance status without reading the full log. Kept in sync with [`todo.md`](todo.md).
-- **[`docs/architecturedesign.md`](docs/architecturedesign.md)** — how this repo is put together and the reasoning behind the file-by-file migration approach.
-- **[Wiki](https://github.com/Terrence721/eshop-full/wiki)** — short pointers per completed piece of work (SDK/build config, package-version research, CI/tooling, `Shared`, `EventBus`), each linking back to the real source rather than repeating it.
+- **[System Architecture](https://terrence721.github.io/eshop-full/diagrams/system-architecture.html)** — the 20-project target layout, four layers, and exactly what's real today
+- **[Event Flow](https://terrence721.github.io/eshop-full/diagrams/event-flow.html)** — the `EventBus`/`EventBusRabbitMQ` Decorator chain, and the two real bugs found while building it
+- **[Projects Reference](https://terrence721.github.io/eshop-full/diagrams/projects-reference.html)** — every project, its real one-line role, and its status
+- **[Testing Strategy](https://terrence721.github.io/eshop-full/diagrams/testing-strategy.html)** — the patterns behind 66 passing tests, and the fix a Decorator split finally let get proven end-to-end
 
-## Getting Started
+The [wiki](https://github.com/Terrence721/eshop-full/wiki) goes deeper per completed piece of work, each page linking back to the real source rather than repeating it.
 
-This version of eShop is based on .NET 10.
+- **[`todo.md`](todo.md)** — the evidence-backed log of everything done and everything still open, with commit hashes. This is the source of truth for progress.
+- **[GitHub Project board](https://github.com/users/Terrence721/projects/5)** — a Scrum-style Backlog/Planned/In Progress/Verification & QA/Done view of the same work. Kept in sync with [`todo.md`](todo.md).
+- **[`docs/architecturedesign.md`](docs/architecturedesign.md)** — the reasoning behind this repo's architectural decisions, verified against the real source app rather than described generically.
+- **[`portfolio.html`](https://terrence721.github.io/eshop-full/portfolio.html)** — this repo as a portfolio piece: real bugs found, real design decisions made, and why, for anyone scanning it rather than reading it as documentation.
+- **[CONTRIBUTING.md](./CONTRIBUTING.md)** — development setup and contribution principles.
 
-Previous eShop versions:
-* [.NET 9](https://github.com/dotnet/eShop/tree/release/9.0)
-* [.NET 8](https://github.com/dotnet/eShop/tree/release/8.0)
+## 🧭 Why This Matters
 
-### Prerequisites
+.NET Aspire microservices, event-driven integration through a message bus, and a transactional outbox pattern show up constantly on resumes and rarely get built end-to-end with the reasoning behind each decision written down. `dotnet/eShop` is Microsoft's own teaching reference for exactly this shape — a genuinely useful thing to rebuild file by file rather than fork wholesale, since it means every package version gets re-verified, every file gets read closely enough to catch what's actually wrong with it, and every design choice that diverges from upstream is a deliberate call, not an oversight.
 
-- Clone this repository: https://github.com/Terrence721/eshop-full
+## 🏗 What's Here So Far
+
+`Shared` (linked-source utilities), `EventBus` (transport-agnostic event abstractions), `EventBusRabbitMQ` (the RabbitMQ implementation, split into a 3-layer Decorator chain after two real bugs turned up in the original single-class version), and `eShop.ServiceDefaults` (Aspire telemetry/health-check/resilience defaults) are complete, reviewed, and fully tested. `IntegrationEventLogEF` — the EF Core-backed transactional outbox every event-publishing service will write through — is in progress at 5 of 7 source files. The other 16 projects don't exist on disk yet. See [`todo.md`](todo.md) for the full build-out plan and the honest current state.
+
+```text
+  Shared/                 linked-source utilities                          ✅ done
+  EventBus/                transport-agnostic event abstractions            ✅ done
+  EventBusRabbitMQ/        RabbitMQ implementation, 3-layer Decorator       ✅ done
+  eShop.ServiceDefaults/   Aspire telemetry/health-check/resilience         ✅ done
+  IntegrationEventLogEF/  EF Core transactional outbox                     🚧 5 of 7 files
+  Identity.API/            Duende IdentityServer (OIDC)                     ⬜ not started
+  Catalog.API/             product catalog                                 ⬜ not started
+  Basket.API/              Redis-backed cart (gRPC)                        ⬜ not started
+  Ordering.Domain/.Infrastructure/.API/  order placement (DDD split)        ⬜ not started
+  OrderProcessor/          background worker                               ⬜ not started
+  PaymentProcessor/        background worker                               ⬜ not started
+  Webhooks.API/            outbound webhook notifications                  ⬜ not started
+  WebApp/                  React storefront (not Blazor — see below)       ⬜ not started
+  WebBFF/                  Backend-for-Frontend, Duende.BFF (new)          ⬜ not started
+  ClientApp/               native .NET MAUI                                ⬜ not started
+  eShop.AppHost/           Aspire orchestrator, added last                 ⬜ not started
+```
+
+## 🖥 Getting Started
+
+**Not runnable end-to-end yet** — `eShop.AppHost` (the Aspire orchestrator every service registers with) is deliberately the last project added, since it can't meaningfully exist until the things it orchestrates do. See [`todo.md`](todo.md) for the honest current state. What follows is prerequisite setup, useful today regardless of how much of the app exists.
+
+- Clone this repository: `https://github.com/Terrence721/eshop-full`
 - [Install & start Docker Desktop](https://docs.docker.com/engine/install/)
+- Install the latest [.NET 10 SDK](https://dot.net/download?cid=eshop)
 
-#### Windows with Visual Studio
-- Install [Visual Studio 2022 version 17.10 or newer](https://visualstudio.microsoft.com/vs/).
-  - Select the following workloads:
-    - `ASP.NET and web development` workload.
-    - `.NET Aspire SDK` component in `Individual components`.
-    - Optional: `.NET Multi-platform App UI development` to run client apps
+### Windows with Visual Studio
 
-Or
-
-- Run the following commands in a Powershell & Terminal running as `Administrator` to automatically configure your environment with the required tools to build and run this application. (Note: A restart is required and included in the script below.)
+Install [Visual Studio 2022 version 17.10 or newer](https://visualstudio.microsoft.com/vs/) with the `ASP.NET and web development` workload and the `.NET Aspire SDK` component (`Individual components`) — or run the WinGet configuration script:
 
 ```powershell
 install-Module -Name Microsoft.WinGet.Configuration -AllowPrerelease -AcceptLicense -Force
@@ -43,99 +73,25 @@ $env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";"
 get-WinGetConfiguration -file .\.config\configuration.vs.winget | Invoke-WinGetConfiguration -AcceptConfigurationAgreements
 ```
 
-Or
+### Mac, Linux, and Windows without Visual Studio
 
-- From Dev Home go to `Machine Configuration -> Clone repositories`. Enter the URL for this repository. In the confirmation screen look for the section `Configuration File Detected` and click `Run File`.
+[Visual Studio Code with C# Dev Kit](https://code.visualstudio.com/docs/csharp/get-started) is recommended — see [`.vscode/extensions.json`](.vscode/extensions.json) for the exact set this repo uses. Or run the equivalent WinGet configuration script on Windows:
 
-#### Mac, Linux, & Windows without Visual Studio
-- Install the latest [.NET 10 SDK](https://dot.net/download?cid=eshop)
-
-Or
-
-- Run the following commands in a Powershell & Terminal running as `Administrator` to automatically configuration your environment with the required tools to build and run this application. (Note: A restart is required after running the script below.)
-
-##### Install Visual Studio Code and related extensions
 ```powershell
-install-Module -Name Microsoft.WinGet.Configuration -AllowPrerelease -AcceptLicense  -Force
+install-Module -Name Microsoft.WinGet.Configuration -AllowPrerelease -AcceptLicense -Force
 $env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path","User")
 get-WinGetConfiguration -file .\.config\configuration.vsCode.winget | Invoke-WinGetConfiguration -AcceptConfigurationAgreements
 ```
 
-> Note: These commands may require `sudo`
+> On Mac with Apple Silicon, Rosetta 2 is needed for `grpc-tools`.
 
-- Optional: Install [Visual Studio Code with C# Dev Kit](https://code.visualstudio.com/docs/csharp/get-started)
-- Optional: Install [.NET MAUI Workload](https://learn.microsoft.com/dotnet/maui/get-started/installation?tabs=visual-studio-code)
+### Building what exists today
 
-> Note: When running on Mac with Apple Silicon (M series processor), Rosetta 2 for grpc-tools. 
-
-### Running the solution
-
-> [!WARNING]
-> Remember to ensure that Docker is started
-
-* (Windows only) Run the application from Visual Studio:
- - Open the `eShop.Web.slnf` file in Visual Studio
- - Ensure that `eShop.AppHost.csproj` is your startup project
- - Hit Ctrl-F5 to launch Aspire
-
-* Or run the application from your terminal:
 ```powershell
-dotnet run --project src/eShop.AppHost/eShop.AppHost.csproj
-```
-then look for lines like this in the console output in order to find the URL to open the Aspire dashboard:
-```sh
-Login to the dashboard at: http://localhost:19888/login?t=uniquelogincodeforyou
+dotnet build eShop.Web.slnf
 ```
 
-> You may need to install ASP.NET Core HTTPS development certificates first, and then close all browser tabs. Learn more at https://aka.ms/aspnet/https-trust-dev-cert
-
-### Azure Open AI
-
-When using Azure OpenAI, inside *eShop.AppHost/appsettings.json*, add the following section:
-
-```json
-  "ConnectionStrings": {
-    "OpenAi": "Endpoint=xxx;Key=xxx;"
-  }
-```
-
-Replace the values with your own. Then, in the eShop.AppHost *Program.cs*, set this value to **true**
-
-```csharp
-bool useOpenAI = false;
-```
-
-Here's additional guidance on the [.NET Aspire OpenAI component](https://learn.microsoft.com/dotnet/aspire/azureai/azureai-openai-component?tabs=dotnet-cli). 
-
-### Use Azure Developer CLI
-
-You can use the [Azure Developer CLI](https://aka.ms/azd) to run this project on Azure with only a few commands. Follow the next instructions:
-
-- Install the latest or update to the latest [Azure Developer CLI (azd)](https://aka.ms/azure-dev/install).
-- Log in `azd` (if you haven't done it before) to your Azure account:
-```sh
-azd auth login
-```
-- Initialize `azd` from the root of the repo.
-```sh
-azd init
-```
-- During init:
-  - Select `Use code in the current directory`. Azd will automatically detect the .NET Aspire project.
-  - Confirm `.NET (Aspire)` and continue.
-  - Select which services to expose to the Internet (exposing `webapp` is enough to test the sample).
-  - Finalize the initialization by giving a name to your environment.
-
-- Create Azure resources and deploy the sample by running:
-```sh
-azd up
-```
-Notes:
-  - The operation takes a few minutes the first time it is ever run for an environment.
-  - At the end of the process, `azd` will display the `url` for the webapp. Follow that link to test the sample.
-  - You can run `azd up` after saving changes to the sample to re-deploy and update the sample.
-  - Report any issues to [azure-dev](https://github.com/Azure/azure-dev/issues) repo.
-  - [FAQ and troubleshoot](https://learn.microsoft.com/azure/developer/azure-developer-cli/troubleshoot?tabs=Browser) for azd.
+`eShop.slnx`/`eShop.Web.slnf` only ever list projects that actually exist on disk, so this builds cleanly against the 4 done + 1 in-progress projects above without failing on anything not yet added.
 
 ## Contributing
 
@@ -145,6 +101,6 @@ For more information on contributing to this repo, read [the contribution docume
 
 The sample catalog data is defined in [catalog.json](https://github.com/dotnet/eShop/blob/main/src/Catalog.API/Setup/catalog.json). Those product names, descriptions, and brand names are fictional and were generated using [GPT-35-Turbo](https://learn.microsoft.com/en-us/azure/ai-services/openai/how-to/chatgpt), and the corresponding [product images](https://github.com/dotnet/eShop/tree/main/src/Catalog.API/Pics) were generated using [DALL·E 3](https://openai.com/dall-e-3).
 
-## eShop on Azure
+## Acknowledgment
 
-For a version of this app configured for deployment on Azure, please view [the eShop on Azure](https://github.com/Azure-Samples/eShopOnAzure) repo.
+Built from Microsoft's [dotnet/eShop](https://github.com/dotnet/eShop) reference application. For the original, upstream-maintained version — including Azure OpenAI integration and Azure Developer CLI deployment, both out of scope until this fork is runnable end-to-end — see the source repo directly.
