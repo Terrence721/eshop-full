@@ -1,7 +1,7 @@
 # 📝 TODO
 
 <!-- markdownlint-disable-next-line MD036 -->
-**Last Updated: August 18, 2026**
+**Last Updated: August 20, 2026**
 
 A living list of what's done and what's left on this build. This is an independently modernized version of Microsoft's [dotnet/eShop](https://github.com/dotnet/eShop) reference app — a .NET Aspire microservices e-commerce platform added **one file at a time**, evaluated and upgraded as it comes in, not a wholesale copy of the source repo. See [docs/architecturedesign.md](docs/architecturedesign.md) for how it's put together and the [project board](https://github.com/users/Terrence721/projects/5) for the live per-project Kanban view of the migration itself.
 
@@ -21,6 +21,7 @@ A living list of what's done and what's left on this build. This is an independe
 | `EventBusRabbitMQ` | All 6 source files added, two real bugs found and fixed — see "EventBusRabbitMQ" below |
 | `eShop.ServiceDefaults` | All 7 source files added, several real fixes found and made — see "eShop.ServiceDefaults" below |
 | Test coverage | `eShop.ServiceDefaults.UnitTests` (33 tests), `EventBus.UnitTests` (16 tests), `EventBusRabbitMQ.UnitTests` (17 tests) — all applicable files covered, 66 tests total, added ahead of the `tests/` migration slot — see "Testing strategy" below |
+| Portfolio page + diagrams | `portfolio.html` and `diagrams/{system-architecture,event-flow,projects-reference,testing-strategy}.html`, published via GitHub Pages at [terrence721.github.io/eshop-full](https://terrence721.github.io/eshop-full/) — see "Portfolio page and diagrams" below |
 
 **Still to do:** 16 of 20 `.csproj` projects, plus `build/` — see the "Still to do" table below and [project board](https://github.com/users/Terrence721/projects/5) for the live board. Project count changed 2026-08-15: `WebAppComponents`/`HybridApp` dropped, `WebBFF` added — see the "Frontend and API layer" section below.
 
@@ -242,6 +243,20 @@ Commits: `79727c6`, `1cff7a0`, `43f0a6e`, `0589fc9`, `4ab0639`, `e5b6e74`, `067b
 **📍 Paused here 2026-08-15** to plan testing strategy before continuing. Next file when work resumes: `Services/IntegrationEventLogService.cs` (needs `global using System.Reflection;` re-added alongside it — see above).
 
 Commits: `0e6e311`, `21c9deb`, `848efca`, `d4f9b3b`, `756f227`, `fb33711`.
+
+### Portfolio page and diagrams
+
+`portfolio.html` (repo root) and four pages under `diagrams/` — `system-architecture.html`, `event-flow.html`, `projects-reference.html`, `testing-strategy.html` — added, matching the same design-system family already used across the user's other portfolio repos (saga-full, platform-main, conduit-full). Published live via GitHub Pages, enabled on `main`/`/` (previously not configured for this repo): [terrence721.github.io/eshop-full](https://terrence721.github.io/eshop-full/), [portfolio.html](https://terrence721.github.io/eshop-full/portfolio.html).
+
+- `portfolio.html` — the case-study page: a numbered ledger of 10 real bugs found and fixed so far (curated from the "real bug" findings already documented per-project above, not the DRY/SOLID-only cleanups), the manifest stat strip, and the "judgment calls" framing already established in this project's own review history.
+- `diagrams/system-architecture.html` — the 20-project target layout as a 4-layer diagram (Frontends/Domain APIs/Background workers/Foundation/Orchestration), status-coded done/in-progress/not-started against the real repo state.
+- `diagrams/event-flow.html` — the `EventBus`/`EventBusRabbitMQ` Decorator chain (`ResilientEventBusDecorator` → `TelemetryEventBusDecorator` → `RabbitMQEventBus`) zoomed in, plus a before/after code comparison for the Polly `Execute`-vs-`ExecuteAsync` bug and the null-conditional dead-code bug.
+- `diagrams/projects-reference.html` — all 20 projects grouped by layer, each with its real one-line role and any "flag when reached" caveat already tracked in the "Still to do" table above.
+- `diagrams/testing-strategy.html` — the coverage table (66 tests across 3 projects), the four testing patterns (Decorator-enabled fake-bus testing, `InternalsVisibleTo`, `NSubstitute`, real `ActivityListener`), and the honest `HtmlReport` gap.
+
+`README.md` also redesigned in the same pass: added the portfolio-page link and diagram links up top, replaced the "Running the solution" instructions (which described running `eShop.AppHost` as if it already existed) with an honest "not runnable end-to-end yet" note, and trimmed the Azure OpenAI/Azure Developer CLI deployment sections — out of scope until this fork is actually runnable, previously presented as if immediately usable.
+
+Commits: `54aadc5`, `498d4c2`, `63f4f24`, `0b97fe2`, `c9de63b`, `47c5a43`.
 
 ### Frontend and API layer (decided 2026-08-15, not built yet)
 
