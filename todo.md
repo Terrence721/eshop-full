@@ -311,6 +311,18 @@ Much larger than every project migrated so far — a full MVC app (Duende Identi
 
 Registered in `eShop.slnx`/`eShop.Web.slnf`. Full solution build and all 83 existing tests confirmed still green after this addition.
 
+### Pre-commit build-check hook
+
+Added `.claude/settings.json` + `.claude/hooks/pre-commit-build-check.js` (committed, project-scoped — applies to anyone working in this repo, not just one session): a `PreToolUse` hook on `Bash` that runs `dotnet build eShop.Web.slnf` before any `git commit` and blocks the commit if it fails. Direct response to a real process failure earlier the same day — a project scaffold (`Identity.API.csproj`) got committed before `GlobalUsings.cs`/`Program.cs` existed to make it actually compile.
+
+Three non-obvious things found while building it, all worth remembering for any future Claude Code hook on this machine (a general Windows/Claude-Code lesson, not eShop-full-specific — also saved to memory):
+
+- **The documented `if` filter never fired**, even using the exact pattern from Claude Code's own docs (`"Bash(git *)"`) against a plain `git status`. Gave up on it and moved the filtering *inside* the script instead — it reads the hook's stdin JSON directly and checks `tool_input.command` against `/^\s*git\s+commit\b/`, fast-path-allowing everything else without touching the build. Slightly more overhead (the script starts for every Bash call, not just commits) but actually works.
+- **Windows backslash paths silently break when embedded in an inline `node -e "..."` string** passed through the Bash tool — the escaping chain (Bash-tool's own command string → shell double-quote interpretation → JS string literal) strips backslashes without erroring, and the resulting `spawnSync` error printed the mangled path with no separators at all (`C:WINDOWSsystem32cmd.exe`). Fixed by writing a real `.js` file instead of an inline `-e` string, and using forward slashes for the path (`c:/Users/...` — Node/Windows accepts these fine, no escaping needed).
+- **`/hooks` does not live-reload `.claude/settings.json`** — it's a one-time snapshot taken when the menu is opened, not continuous watching. Every edit needs a fresh `/hooks` open to take effect, and even that didn't reliably work here (reopened twice, still didn't pick up the latest script). Verification ended up resting on directly pipe-testing the hook script's logic (both the allow and deny paths, confirmed against real build states) rather than proving it fires live in a running session — trustworthy since the script is what actually runs, but worth knowing this path exists if `/hooks` reopening doesn't seem to be working.
+
+Commit: `a87e627`.
+
 ## 🚧 Still to do
 
 Migration order is **foundation first**: shared/foundation projects, then the services that depend on them, then the web frontends, then `eShop.AppHost` (references everything, so it goes last), then `tests/` and `build/`. See [project board](https://github.com/users/Terrence721/projects/5) for the live board — this table is the flat list.
