@@ -457,10 +457,10 @@
   <div class="wrap">
     <div class="manifest-row">
       <div class="manifest-cell">
-        <span class="v">3 of 20</span><span class="k">projects done</span>
+        <span class="v">4 of 21</span><span class="k">projects done</span>
       </div>
       <div class="manifest-cell">
-        <span class="v">66/66</span><span class="k">tests passing</span>
+        <span class="v">83/83</span><span class="k">tests passing</span>
       </div>
       <div class="manifest-cell">
         <span class="v">10</span><span class="k">real bugs found &amp; fixed</span>
@@ -509,20 +509,21 @@
   </section>
 
   <section>
-    <h2>Foundation first, four projects deep</h2>
+    <h2>Foundation first, five projects deep</h2>
     <p class="h2-sub">
-      Shared → EventBus → EventBusRabbitMQ → eShop.ServiceDefaults, then the transactional outbox
+      Shared → EventBus → EventBusRabbitMQ → eShop.ServiceDefaults → the transactional outbox, then Identity.API
     </p>
     <p class="lede">
       Migration order is deliberate: shared/foundation projects first, since
       everything else depends on them. <code>src/Shared/</code>'s two
       linked-source files, <code>EventBus</code>'s abstractions,
-      <code>EventBusRabbitMQ</code>'s RabbitMQ implementation, and
+      <code>EventBusRabbitMQ</code>'s RabbitMQ implementation,
       <code>eShop.ServiceDefaults</code>'s Aspire telemetry/health-check/resilience
-      defaults are done and reviewed. <code>IntegrationEventLogEF</code> — the
-      EF Core-backed transactional outbox every event-publishing service will
-      write through — is in progress at 5 of 7 source files. The other 16
-      projects don't exist on disk yet; see
+      defaults, and <code>IntegrationEventLogEF</code> — the EF Core-backed
+      transactional outbox every event-publishing service will write through —
+      are all done and reviewed. <code>Identity.API</code> (Duende
+      IdentityServer) is now in progress. The other 15 projects don't exist on
+      disk yet; see
       <a href="https://github.com/Terrence721/eshop-full/blob/main/todo.md">todo.md</a>
       for the honest current state rather than assuming more is done.
     </p>
@@ -750,7 +751,7 @@
   <section>
     <h2>Verifying it actually works</h2>
     <p class="h2-sub">
-      66 tests, and a Decorator split that finally let the flagship fix get proven
+      83 tests, and a Decorator split that finally let the flagship fix get proven
     </p>
     <p class="lede">
       <code>MSTest.Sdk</code> on .NET's newer
@@ -763,7 +764,7 @@
     </p>
     <div class="twocol">
       <div class="card">
-        <h3>66/66 tests, decorators make it possible</h3>
+        <h3>83/83 tests, decorators make it possible</h3>
         <p>
           <code>ResilientEventBusDecoratorTests.cs</code> verifies bug #01
           end-to-end for the first time in this project's history — a fake
@@ -835,7 +836,7 @@
       number on this page is reproducible from the repository's own
       <code>todo.md</code> evidence trail, commit history, and CI runs —
       nothing here is asserted without a link to check it against. This one's
-      still early — 3 of 20 projects done — see <code>todo.md</code> for the
+      still early — 4 of 21 projects done — see <code>todo.md</code> for the
       honest current state rather than assuming it's further along.
     </p>
   </div>
