@@ -37,6 +37,7 @@ eShop-full/
 │   ├── eShop.ServiceDefaults/    ✅ added and reviewed
 │   ├── IntegrationEventLogEF/   ✅ added and reviewed
 │   ├── Identity.API/
+│   ├── Identity.WebApp/           # new, not in upstream (working name) — see Section 9
 │   ├── Catalog.API/
 │   ├── Basket.API/
 │   ├── Ordering.Domain/
@@ -50,7 +51,7 @@ eShop-full/
 │   ├── WebBFF/                    # new, not in upstream — see Section 9
 │   ├── ClientApp/                # .NET MAUI
 │   └── eShop.AppHost/             # Aspire orchestrator — added last, references everything
-├── tests/                        ✅ eShop.ServiceDefaults.UnitTests added (26 tests) — see Section 11.
+├── tests/                        ✅ 4 test projects added (83 tests total) — see Section 11.
 │                                   # Upstream's own 5 (Basket.UnitTests, Catalog.FunctionalTests,
 │                                   # Ordering.FunctionalTests, Ordering.UnitTests, ClientApp.UnitTests)
 │                                   # land alongside the projects they test, not batched at the end.
@@ -112,6 +113,8 @@ Upstream's `WebApp` is a Blazor storefront, with `WebAppComponents` sharing Razo
 **Why:** a React frontend paired with an ASP.NET Core Web API backend is a far more common, more in-demand combination in the .NET job market than a Blazor frontend — this repo is a job-search portfolio piece, and demonstrating a genuine full-stack split (C# backend, TypeScript frontend) is worth more than staying single-language for its own sake.
 
 **The real technical consequence, not just a frontend swap:** the architecture diagram shows `Basket API` called via **gRPC** directly from the Blazor Web App — something Blazor Server can do natively (the gRPC client runs server-side in .NET) that a browser-based React SPA fundamentally cannot (browsers don't support the HTTP/2 trailers native gRPC needs). Decided **not** to replace gRPC with REST for `Basket.API`, and **not** to duplicate it with a second REST surface — instead, `Basket.API` will add ASP.NET Core's first-party `Grpc.AspNetCore.Web` middleware, letting the same gRPC service handle native gRPC (server-to-server, e.g. `Mobile BFF`/`Ordering.API`) *and* gRPC-Web (the React frontend, via a client like `@connectrpc/connect-web`) without a separate proxy service. This keeps gRPC as `Basket.API`'s genuine service contract — matching the diagram's intent and worth demonstrating on its own — while solving the browser problem with the minimal, Microsoft-supported path rather than guessing at a workaround when `Basket.API` actually gets built.
+
+**The same swap applies to `Identity.API`'s own UI, decided 2026-08-20.** Duende IdentityServer's Quickstart scaffold (`Account`/`Consent`/`Device`/`Diagnostics`/`Grants`) is server-rendered Razor MVC, the same rendering model being dropped everywhere else in this fork's browser-facing surface. All of it goes React, in a new `Identity.WebApp` project (working name) rather than co-located in `Identity.API`'s own `wwwroot` — consistent with the `WebApp`/`WebBFF` split rather than a one-off exception for the login flow. Not yet decided: how `Identity.API` exposes the account/consent/device actions to it, since Duende's Quickstart UI assumes server-rendered forms, anti-forgery tokens, and `TempData`, none of which carry over as-is to a SPA calling a JSON API — left open until that project's work actually starts, tracked in `todo.md`'s "Frontend and API layer" section.
 
 ## 11. Testing strategy
 
