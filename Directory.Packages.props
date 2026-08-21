@@ -102,7 +102,7 @@
          successor (still Apache-2.0). Code using `using IdentityModel;` will need a
          namespace update to `Duende.IdentityModel` when we port the consuming project. -->
     <PackageVersion Include="Duende.IdentityModel" Version="8.1.0" />
-    <PackageVersion Include="Scalar.AspNetCore" Version="2.16.17" />
+    <PackageVersion Include="Scalar.AspNetCore" Version="2.17.1" />
     <!-- Pinned to the last MIT/Apache-2.0 licensed release. v13+ moved to a dual
          RPL-1.5/commercial license (LuckyPenny Software, July 2025) - no further
          updates land on this line, by design. -->
