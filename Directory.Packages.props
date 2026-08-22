@@ -42,7 +42,7 @@
     <PackageVersion Include="Microsoft.AspNetCore.TestHost" Version="$(DotnetPackagesVersion)" />
     <PackageVersion Include="Microsoft.Extensions.ApiDescription.Server" Version="$(DotnetPackagesVersion)" />
     <PackageVersion Include="Microsoft.Extensions.Identity.Stores" Version="$(DotnetPackagesVersion)" />
-    <PackageVersion Include="Microsoft.OpenApi" Version="2.9.0" />
+    <PackageVersion Include="Microsoft.OpenApi" Version="3.10.2" />
     <PackageVersion Include="MSTest" Version="4.3.3" />
     <!-- Microsoft marks this extension experimental: API/CLI options/report format may change without notice. -->
     <PackageVersion Include="Microsoft.Testing.Extensions.HtmlReport" Version="2.3.3" />
