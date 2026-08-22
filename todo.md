@@ -81,7 +81,7 @@ Added as-is (already current): `.editorconfig`, `.gitattributes`, `.gitignore`, 
 - `.github/workflows/*` — `actions/checkout` v4→v5, `actions/setup-dotnet` v3/v4→v5, `actions/setup-node` v4→v6, `actions/upload-artifact` v4→v6; dropped `dotnet-quality: 'preview'` now that .NET 10 is GA; `playwright.yml` switched from `npm ci` to `yarn install --frozen-lockfile`.
 - `.github/dependabot.yml` — kept the existing NuGet grouping, added `npm` and `github-actions` ecosystems so the whole toolchain stays current, not just NuGet.
 
-**Already working as designed:** Dependabot opened 4 real PRs against the actions versions above within hours of them landing — `actions/checkout` v5→v7, `actions/setup-dotnet` v5→v6, `actions/upload-artifact` v6→v7, `actions/setup-node` v4→v6→v7 (superseded twice). 3 remain open, not yet merged; the `actions/upload-artifact` one was auto-closed the same day and hasn't reopened yet — see "Still to do".
+**Already working as designed:** Dependabot opened 4 real PRs against the actions versions above within hours of them landing — `actions/checkout` v5→v7, `actions/setup-dotnet` v5→v6, `actions/upload-artifact` v6→v7, `actions/setup-node` v4→v6→v7 (superseded twice). All 3 mergeable ones merged 2026-08-20; the `actions/upload-artifact` one was auto-closed the same day and hasn't reopened yet — see "Open Dependabot PRs" below for full history and the current NuGet-ecosystem batch.
 
 Commit: `a0c162f`.
 
@@ -353,15 +353,27 @@ Migration order is **foundation first**: shared/foundation projects, then the se
 
 ### Open Dependabot PRs
 
-Not yet merged — opened automatically within hours of `.github/workflows/*` landing, confirming the new `dependabot.yml` ecosystems work as intended:
+**`github-actions` ecosystem, opened 2026-08-20 within hours of `.github/workflows/*` landing** — confirmed the new `dependabot.yml` ecosystems work as intended. [#1](https://github.com/Terrence721/eshop-full/pull/1) `actions/checkout` v5→v7, [#2](https://github.com/Terrence721/eshop-full/pull/2) `actions/setup-dotnet` v5→v6, and [#4](https://github.com/Terrence721/eshop-full/pull/4) `actions/setup-node` v6→v7 all merged 2026-08-20. [#3](https://github.com/Terrence721/eshop-full/pull/3) (`actions/upload-artifact` v6→v7) was auto-closed the same day it opened ("no longer a dependency"), correct at the time since its only reference (`playwright.yml`) was commented out pending `eShop.AppHost` — it came back into real use the very next day (`pr-validation.yml`'s coverage-artifact upload step, added 2026-08-15), but the `github-actions` ecosystem only rescans weekly and no fresh PR has reopened for it since. Worth checking again periodically.
 
-| PR | Change |
-| --- | --- |
-| [#1](https://github.com/Terrence721/eshop-full/pull/1) `dependabot/github_actions/actions/checkout-7` | `actions/checkout` v5 → v7 |
-| [#2](https://github.com/Terrence721/eshop-full/pull/2) `dependabot/github_actions/actions/setup-dotnet-6` | `actions/setup-dotnet` v5 → v6 |
-| [#4](https://github.com/Terrence721/eshop-full/pull/4) `dependabot/github_actions/actions/setup-node-7` | `actions/setup-node` v6 → v7 |
+**`nuget`/`npm` ecosystems, first full batch opened 2026-08-21, reviewed and merged 2026-08-22** — 9 PRs (#12–#20). 8 merged clean or after a real fix; 1 stayed blocked:
 
-**Real drift caught and fixed 2026-08-20:** this table previously listed a 4th PR, [#3](https://github.com/Terrence721/eshop-full/pull/3) bumping `actions/upload-artifact` v6→v7 — Dependabot auto-closed it the same day it was opened ("Looks like actions/upload-artifact is no longer a dependency, so this is no longer needed"), correct at the time since its only reference (`playwright.yml`) was commented out pending `eShop.AppHost`. It came back into active use the very next day (`pr-validation.yml`'s coverage-artifact upload step, added 2026-08-15 — see "Testing strategy" below) but the `github-actions` ecosystem only rescans weekly, so no fresh PR has reopened for it yet. Worth checking again once a week has passed since 2026-08-15.
+| PR | Change | Outcome |
+| --- | --- | --- |
+| [#20](https://github.com/Terrence721/eshop-full/pull/20) | `Scalar.AspNetCore` 2.16.17 → 2.17.1 | ✅ Merged as-is |
+| [#19](https://github.com/Terrence721/eshop-full/pull/19) | `Microsoft.Web.LibraryManager.Build` 3.0.71 → 3.0.114 | ✅ Merged as-is |
+| [#18](https://github.com/Terrence721/eshop-full/pull/18) | `Microsoft.OpenApi` 2.9.0 → 3.10.2 | 🚫 **Blocked upstream, left open** — see below |
+| [#17](https://github.com/Terrence721/eshop-full/pull/17) | `Asp.Versioning.Mvc.ApiExplorer` 10.0.0 → 10.2.1 | ✅ Merged after a real fix — see below |
+| [#16](https://github.com/Terrence721/eshop-full/pull/16) | opentelemetry group (2 updates) | ✅ Merged as-is |
+| [#15](https://github.com/Terrence721/eshop-full/pull/15) | microsoftextensions group (1 update) | ✅ Merged as-is |
+| [#14](https://github.com/Terrence721/eshop-full/pull/14) | aspire group (1 update) | ✅ Merged after resolving a merge conflict — see below |
+| [#13](https://github.com/Terrence721/eshop-full/pull/13) | `github/codeql-action` v3 → v4 | ✅ Merged as-is |
+| [#12](https://github.com/Terrence721/eshop-full/pull/12) | `@types/node` 24.13.3 → 26.2.0 | ✅ Merged as-is |
+
+**[#17](https://github.com/Terrence721/eshop-full/pull/17) fix:** `Asp.Versioning.Mvc.ApiExplorer` 10.2.1 ships a new analyzer rule, `AV0027`, configured as a build error in this repo. It expects `IApiVersionDescriptionProvider` to be resolved via `app.DescribeApiVersions()` after endpoints are mapped, not resolved from services beforehand — but it fired on `OpenApiOptionsExtensions.ApplyApiVersionInfo`'s OpenAPI document transformer, which is a false positive: document transformers run lazily at document-generation time, always after every endpoint is mapped, not at startup. Suppressed with `#pragma warning disable/restore AV0027` at that call site plus a comment explaining why, rather than restructuring code that was already correct. Verified: `dotnet build` clean, all 32 `eShop.ServiceDefaults.UnitTests` pass, full CI (including CodeQL C# analysis, which runs this same analyzer) green before merge.
+
+**[#14](https://github.com/Terrence721/eshop-full/pull/14) conflict:** its one-line `AspireVersion` bump in `Directory.Packages.props` textually collided with #15's `MicrosoftExtensionsVersion` bump on the adjacent line once #15 merged first — Dependabot auto-closed #14 as unmergeable. Merged current `main` into its branch, resolved the conflict (kept both version bumps), verified `dotnet restore` clean across the whole solution, pushed, reopened, merged once CI went green.
+
+**[#18](https://github.com/Terrence721/eshop-full/pull/18) — blocked upstream, not fixable from this repo.** Restore fails with `NU1608` (version-outside-constraint, configured as an error): two packages this repo depends on haven't shipped `Microsoft.OpenApi` 3.x support in any released version. `Asp.Versioning.OpenApi` (even its latest release, 10.2.2, checked directly against its nuspec) still constrains `Microsoft.OpenApi` to `[2.7.5, 3.0.0)`. `Microsoft.AspNetCore.OpenApi` only accepts OpenApi 3.x starting at `11.0.0-preview.*`, which needs .NET 11 — not GA; this repo targets .NET 10 (`DotnetPackagesVersion` 10.0.11). Reasoning posted as a PR comment 2026-08-22. **Nothing to act on here** except re-checking once `Asp.Versioning.OpenApi` ships OpenApi-3.x support or .NET 11 goes GA — Dependabot's weekly NuGet scan keeps the PR open and will re-evaluate automatically. Tracked on the [project board](https://github.com/users/Terrence721/projects/5) (Backlog) so it isn't forgotten.
 
 ### Testing strategy (decided 2026-08-15, not built yet)
 
