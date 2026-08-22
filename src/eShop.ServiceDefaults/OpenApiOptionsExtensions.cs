@@ -15,7 +15,12 @@ internal static class OpenApiOptionsExtensions
     {
         options.AddDocumentTransformer((document, context, cancellationToken) =>
         {
+            // AV0027 assumes the provider is resolved before endpoints are mapped. Document
+            // transformers instead run lazily when the OpenAPI document is generated, which is
+            // always after every endpoint has been mapped, so resolving it here is safe.
+#pragma warning disable AV0027
             var versionedDescriptionProvider = context.ApplicationServices.GetService<IApiVersionDescriptionProvider>();
+#pragma warning restore AV0027
             var apiDescription = versionedDescriptionProvider?.ApiVersionDescriptions
                 .SingleOrDefault(description => description.GroupName == context.DocumentName);
             if (apiDescription is null)
