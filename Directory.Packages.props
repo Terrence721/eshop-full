@@ -9,7 +9,7 @@
     <GrpcVersion>2.83.0</GrpcVersion>
     <DuendeVersion>8.0.6</DuendeVersion>
     <!-- Asp.Versioning.Http/Mvc.ApiExplorer/OpenApi hit a stable 10.0.0 release; Http.Client diverged onto its own 8.x line and is pinned separately below. -->
-    <ApiVersioningVersion>10.0.0</ApiVersioningVersion>
+    <ApiVersioningVersion>10.2.1</ApiVersioningVersion>
   </PropertyGroup>
   <ItemGroup>
     <!-- Version together with Aspire -->
