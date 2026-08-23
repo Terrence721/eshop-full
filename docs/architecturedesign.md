@@ -67,6 +67,8 @@ eShop-full/
 
 ## 4. Services breakdown
 
+See [todo.md's Milestones section](../todo.md#-milestones) for the current done/in-progress/not-started status of each layer below.
+
 - **Foundation/shared** (added or in progress first, everything else depends on these): `Shared` (linked-source utilities, not a standalone project — no `.csproj`, files are compiled directly into consuming projects), `EventBus` (abstractions), `EventBusRabbitMQ` (RabbitMQ implementation), `eShop.ServiceDefaults` (Aspire telemetry/health-check/resilience defaults shared by every service), `IntegrationEventLogEF` (EF Core-backed transactional outbox for integration events).
 - **Domain APIs**: `Identity.API` (Duende IdentityServer — auth/OIDC provider for the whole system), `Catalog.API`, `Basket.API` (Redis-backed), `Ordering.API` + `Ordering.Domain` + `Ordering.Infrastructure` (domain-driven design split: domain model, EF Core persistence, and the API surface are three separate projects), `Webhooks.API`.
 - **Background workers**: `OrderProcessor`, `PaymentProcessor` — queue-driven, no HTTP surface.
