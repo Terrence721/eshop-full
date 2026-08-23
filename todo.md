@@ -329,6 +329,18 @@ Three non-obvious things found while building it, all worth remembering for any 
 
 Commit: `a87e627`.
 
+## 🏁 Milestones
+
+Phase-level rollup of the 21-project migration, grouped by architectural layer (see [architecturedesign.md Section 4](docs/architecturedesign.md#4-services-breakdown)). Each project's own detail lives in its "Done" section above or the "Still to do" table below — this is the summary view.
+
+| Milestone | Projects | Status |
+| --- | --- | --- |
+| **Foundation** | `Shared`, `EventBus`, `EventBusRabbitMQ`, `eShop.ServiceDefaults`, `IntegrationEventLogEF` | ✅ **Complete** — all 4 real projects done, reviewed, 83 tests passing |
+| **Domain APIs** | `Identity.API`, `Catalog.API`, `Basket.API`, `Ordering.Domain`, `Ordering.Infrastructure`, `Ordering.API`, `Webhooks.API`, `WebhookClient` | 🚧 In progress — `Identity.API` scaffold added (1 of 8), rest not started |
+| **Background Workers** | `OrderProcessor`, `PaymentProcessor` | ⬜ Not started |
+| **Web Frontends** | `Identity.WebApp`, `WebApp`, `WebBFF`, `ClientApp` | ⬜ Not started |
+| **Orchestration & Tests** | `eShop.AppHost`, `tests/`, `build/` | ⬜ Not started |
+
 ## 🚧 Still to do
 
 Migration order is **foundation first**: shared/foundation projects, then the services that depend on them, then the web frontends, then `eShop.AppHost` (references everything, so it goes last), then `tests/` and `build/`. See [project board](https://github.com/users/Terrence721/projects/5) for the live board — this table is the flat list.
