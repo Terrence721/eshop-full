@@ -279,6 +279,12 @@ Commits: `1c477ba`, `fced1b9`, `493fb50`, `2a83acd`, `6d673e5`, `3eb66ee`.
 
 Commits: `54aadc5`, `498d4c2`, `63f4f24`, `0b97fe2`, `c9de63b`, `47c5a43`.
 
+**Drift-fix sweep, 2026-08-20:** once `IntegrationEventLogEF` finished and `Identity.API` started the same day, `portfolio.html`, all four `diagrams/*.html` pages, and `docs/architecturedesign.md` were each updated to say "4 of 21 projects done, 83 tests, `IntegrationEventLogEF` done, `Identity.API` in progress" instead of the pre-`IntegrationEventLogEF`-completion numbers above. `README.md` was missed from that sweep — it still said "3 of 20 projects done... 66/66 tests passing" and its `src/` tree still listed `IntegrationEventLogEF` at 5/7 files and `Identity.API` as not started, three days stale. Found and fixed 2026-08-23: `README.md`'s progress line, "At a glance" test count, "Start Here" diagram links, "What's Here So Far" paragraph, and the `src/` tree (which was also missing `Identity.WebApp`/`WebhookClient` entirely, added to the plan 2026-08-20 and 2026-08-15 respectively but never added to this specific tree) all brought in line with the rest.
+
+Commit: `bb37e05`.
+
+**Known gap, left open 2026-08-23:** the AI-assisted-development disclosure line added to `README.md` directly on GitHub (commit `cd519cf`, outside this session — see `Terrence721/eshop-full`'s commit history) points to `docs/code-review.md` for the review process. That file doesn't exist. Decided not to fix this session — either write the file (documenting the per-file correctness/SOLID/DRY review process already described throughout this document) or drop the reference; revisit when picked back up.
+
 ### Frontend and API layer (decided 2026-08-15, not built yet)
 
 Three related decisions made while planning `WebApp`, ahead of actually building it — recorded here so they aren't lost before that work starts. Full reasoning in [architecturedesign.md Section 9](docs/architecturedesign.md#9-frontend-react-instead-of-blazor).
