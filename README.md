@@ -28,6 +28,8 @@ The [wiki](https://github.com/Terrence721/eshop-full/wiki) goes deeper per compl
 - **[`portfolio.html`](https://terrence721.github.io/eshop-full/portfolio.html)** — this repo as a portfolio piece: real bugs found, real design decisions made, and why, for anyone scanning it rather than reading it as documentation.
 - **[CONTRIBUTING.md](./CONTRIBUTING.md)** — development setup and contribution principles.
 
+On AI-assisted development: Commits co-authored as Claude are AI-assisted implementations directed, reviewed, and merged by Terrence Daniels — same process as every other change, documented in docs/code-review.md.
+
 ## 🧭 Why This Matters
 
 .NET Aspire microservices, event-driven integration through a message bus, and a transactional outbox pattern show up constantly on resumes and rarely get built end-to-end with the reasoning behind each decision written down. `dotnet/eShop` is Microsoft's own teaching reference for exactly this shape — a genuinely useful thing to rebuild file by file rather than fork wholesale, since it means every package version gets re-verified, every file gets read closely enough to catch what's actually wrong with it, and every design choice that diverges from upstream is a deliberate call, not an oversight.
