@@ -5,20 +5,20 @@
 
 **[📜 View the portfolio page →](https://terrence721.github.io/eshop-full/portfolio.html)**
 
-Last updated: August 20, 2026 (3 of 20 projects done — `EventBus`, `EventBusRabbitMQ`, `eShop.ServiceDefaults`, plus `Shared` — `IntegrationEventLogEF` 5/7 source files in progress; 66/66 tests passing)
+Last updated: August 20, 2026 (4 of 21 projects done — `EventBus`, `EventBusRabbitMQ`, `eShop.ServiceDefaults`, `IntegrationEventLogEF`, plus `Shared` — `Identity.API` in progress (scaffold added); 83/83 tests passing)
 
 This is an independently modernized version of Microsoft's [dotnet/eShop](https://github.com/dotnet/eShop) reference app — a .NET Aspire microservices e-commerce platform (product catalog, basket, ordering, identity, payments, outbound webhooks) added **one file at a time**, each file evaluated and upgraded against actual current-latest package versions rather than copied over wholesale.
 
 Not a fork left as-is. Every package version was individually re-researched, several real bugs were found and fixed in Microsoft's own reference source (verified against real assemblies and real builds, not assumed), and a handful of deliberate design departures — a Decorator split for `EventBusRabbitMQ`, React instead of Blazor for the web frontend — were made and recorded as this fork's own choices.
 
-**At a glance:** 66/66 tests passing across `eShop.ServiceDefaults.UnitTests` + `EventBus.UnitTests` + `EventBusRabbitMQ.UnitTests`, added ahead of the `tests/` migration slot so every completed project ships with full coverage rather than deferring it to the end — see the **[Testing Strategy diagram](https://terrence721.github.io/eshop-full/diagrams/testing-strategy.html)**.
+**At a glance:** 83/83 tests passing across `eShop.ServiceDefaults.UnitTests` + `EventBus.UnitTests` + `EventBusRabbitMQ.UnitTests` + `IntegrationEventLogEF.UnitTests`, added ahead of the `tests/` migration slot so every completed project ships with full coverage rather than deferring it to the end — see the **[Testing Strategy diagram](https://terrence721.github.io/eshop-full/diagrams/testing-strategy.html)**.
 
 ## 🧭 Start Here
 
-- **[System Architecture](https://terrence721.github.io/eshop-full/diagrams/system-architecture.html)** — the 20-project target layout, four layers, and exactly what's real today
+- **[System Architecture](https://terrence721.github.io/eshop-full/diagrams/system-architecture.html)** — the 21-project target layout, four layers, and exactly what's real today
 - **[Event Flow](https://terrence721.github.io/eshop-full/diagrams/event-flow.html)** — the `EventBus`/`EventBusRabbitMQ` Decorator chain, and the two real bugs found while building it
 - **[Projects Reference](https://terrence721.github.io/eshop-full/diagrams/projects-reference.html)** — every project, its real one-line role, and its status
-- **[Testing Strategy](https://terrence721.github.io/eshop-full/diagrams/testing-strategy.html)** — the patterns behind 66 passing tests, and the fix a Decorator split finally let get proven end-to-end
+- **[Testing Strategy](https://terrence721.github.io/eshop-full/diagrams/testing-strategy.html)** — the patterns behind 83 passing tests, and the fix a Decorator split finally let get proven end-to-end
 
 The [wiki](https://github.com/Terrence721/eshop-full/wiki) goes deeper per completed piece of work, each page linking back to the real source rather than repeating it.
 
@@ -36,21 +36,23 @@ On AI-assisted development: Commits co-authored as Claude are AI-assisted implem
 
 ## 🏗 What's Here So Far
 
-`Shared` (linked-source utilities), `EventBus` (transport-agnostic event abstractions), `EventBusRabbitMQ` (the RabbitMQ implementation, split into a 3-layer Decorator chain after two real bugs turned up in the original single-class version), and `eShop.ServiceDefaults` (Aspire telemetry/health-check/resilience defaults) are complete, reviewed, and fully tested. `IntegrationEventLogEF` — the EF Core-backed transactional outbox every event-publishing service will write through — is in progress at 5 of 7 source files. The other 16 projects don't exist on disk yet. See [`todo.md`](todo.md) for the full build-out plan and the honest current state.
+`Shared` (linked-source utilities), `EventBus` (transport-agnostic event abstractions), `EventBusRabbitMQ` (the RabbitMQ implementation, split into a 3-layer Decorator chain after two real bugs turned up in the original single-class version), `eShop.ServiceDefaults` (Aspire telemetry/health-check/resilience defaults), and `IntegrationEventLogEF` (the EF Core-backed transactional outbox every event-publishing service will write through) are complete, reviewed, and fully tested. `Identity.API` (Duende IdentityServer) is in progress — scaffold added, source review not yet started. The other 15 projects don't exist on disk yet. See [`todo.md`](todo.md) for the full build-out plan and the honest current state.
 
 ```text
   Shared/                 linked-source utilities                          ✅ done
   EventBus/                transport-agnostic event abstractions            ✅ done
   EventBusRabbitMQ/        RabbitMQ implementation, 3-layer Decorator       ✅ done
   eShop.ServiceDefaults/   Aspire telemetry/health-check/resilience         ✅ done
-  IntegrationEventLogEF/  EF Core transactional outbox                     🚧 5 of 7 files
-  Identity.API/            Duende IdentityServer (OIDC)                     ⬜ not started
+  IntegrationEventLogEF/  EF Core transactional outbox                     ✅ done
+  Identity.API/            Duende IdentityServer (OIDC)                     🚧 scaffold added
+  Identity.WebApp/         React replacement for Quickstart UI (new)        ⬜ not started
   Catalog.API/             product catalog                                 ⬜ not started
   Basket.API/              Redis-backed cart (gRPC)                        ⬜ not started
   Ordering.Domain/.Infrastructure/.API/  order placement (DDD split)        ⬜ not started
   OrderProcessor/          background worker                               ⬜ not started
   PaymentProcessor/        background worker                               ⬜ not started
   Webhooks.API/            outbound webhook notifications                  ⬜ not started
+  WebhookClient/           sample Webhooks.API consumer                    ⬜ not started
   WebApp/                  React storefront (not Blazor — see below)       ⬜ not started
   WebBFF/                  Backend-for-Frontend, Duende.BFF (new)          ⬜ not started
   ClientApp/               native .NET MAUI                                ⬜ not started
