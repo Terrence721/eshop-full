@@ -145,7 +145,7 @@ public class ConsentController : ControllerBase
         return result;
     }
 
-    private async Task<ConsentViewModel?> BuildViewModelAsync(string returnUrl, ConsentInputModel? model = null, CancellationToken cancellationToken = default)
+    private async Task<ConsentViewModel?> BuildViewModelAsync(string? returnUrl, ConsentInputModel? model = null, CancellationToken cancellationToken = default)
     {
         var request = await _interaction.GetAuthorizationContextAsync(returnUrl, cancellationToken);
         if (request != null)
@@ -161,7 +161,7 @@ public class ConsentController : ControllerBase
     }
 
     private ConsentViewModel CreateConsentViewModel(
-        ConsentInputModel? model, string returnUrl,
+        ConsentInputModel? model, string? returnUrl,
         AuthorizationRequest request)
     {
         var scopesConsented = model?.ScopesConsented ?? Enumerable.Empty<string>();
