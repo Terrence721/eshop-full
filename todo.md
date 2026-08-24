@@ -362,6 +362,24 @@ An Explore agent read all 27 upstream Quickstart C#/Razor files to find every pl
 
 Full reasoning and the file-by-file execution order are in the approved plan this pivot was designed from (not committed to the repo — a Claude Code planning artifact); this log records the outcome per file as each one lands, same as every other project in this migration.
 
+**Cross-cutting pattern established by `HomeController.cs` (first converted controller), applies to every controller from here on:**
+
+- **`ControllerBase` instead of `Controller`** — nothing calls `View(...)` anymore; `Redirect`/`Challenge`/`SignOut` (`ExternalController` needs these later) live on `ControllerBase` too, so this removes a now-unused dependency on the Razor view engine.
+- **`[ApiController]` + `[Route("[controller]/[action]")]`** — not a style choice, a hard build requirement from the `Asp.Versioning` analyzer already active in this project (same analyzer family as the earlier `AV0027` fix). The route pattern mirrors each controller's original implicit conventional-routing URLs (`/Home/Index`, `/Home/Error`, etc.) rather than inventing a new URL scheme now — `Program.cs`'s real routing setup doesn't exist yet.
+- **`IIdentityServerInteractionService`'s interaction methods now require a `CancellationToken` argument** (`GetErrorContextAsync` confirmed; expect the same for `GetAuthorizationContextAsync`/`GetLogoutContextAsync`/`GetAllUserGrantsAsync`/etc. when those files are reached) — a real signature difference in `Duende.IdentityServer 8.0.6` vs. whatever version upstream was written against, caught by the build each time, not assumed upfront.
+
+### Home area
+
+**`Quickstart/Home/ErrorViewModel.cs` added:** upstream types `Error` as non-nullable `ErrorMessage`, but `HomeController.Error` (the only caller) leaves it unset via the parameterless constructor whenever `GetErrorContextAsync` returns null — retyped `ErrorMessage?` to match. Dropped the `ErrorViewModel(string error)` constructor overload entirely — grepped the whole upstream repo, zero callers, genuinely dead code (same class of finding as the unreachable test-only constructor already removed from `eShop.ServiceDefaults`). Confirmed via reflection against the real `Duende.IdentityServer 8.0.6` assembly that `ErrorMessage` is a plain, fully JSON-serializable DTO (9 string properties, no circular references).
+
+**`Quickstart/Home/IndexViewModel.cs` added — new type, no upstream equivalent:** `Home/Index.cshtml` had no bound model at all, just hardcoded HTML (a "Welcome to IdentityServer4" page with the assembly version and links to the discovery document, diagnostics, and grants pages). Carries the same info as a JSON payload instead (`Version`, `WellKnownConfigurationUrl`, `DiagnosticsUrl`, `GrantsUrl`, all `required`). No copyright header — nothing upstream to attribute.
+
+**`Quickstart/Home/HomeController.cs` added:** `Index`/`Error` converted from `View(...)` to `ActionResult<T>`/`Ok(...)` — same dev-only-welcome-payload and non-Development `ErrorDescription` redaction behavior as upstream, just JSON instead of HTML. `FileVersionInfo.ProductVersion` is genuinely nullable (verified via reflection) — used `?? "unknown"` rather than the null-forgiving `!`.
+
+Verified: `dotnet build` — 0 errors. `dotnet test` — 83/83 still passing.
+
+Commits: `db3a6da`, `959130c`, `4674cd0`.
+
 **`SecurityHeadersAttribute.cs` added:** sets 6 security-relevant response headers (`X-Content-Type-Options`, `X-Frame-Options`, CSP + a legacy `X-Content-Security-Policy` variant for IE, `Referrer-Policy`) unconditionally in `OnResultExecuting`, each gated behind a `ContainsKey` check so nothing gets double-set if upstream middleware already set one — upstream only applied these to `ViewResult`, which would have silently stopped firing the moment any action returns `ActionResult<T>`/`Ok(...)` instead of `View(...)`, i.e. every Quickstart action under the JSON-API pivot; removed that guard rather than special-case `ObjectResult`, since these headers are safe on any response type. Other changes: the local `using` this fork's trimmed `GlobalUsings.cs` requires, and a `referrer_policy` → `referrerPolicy` naming-convention fix (upstream's only C# naming-convention slip found in this file). **Deliberately kept as-is:** the third-party copyright header (Brock Allen & Dominick Baier, IdentityServer's original authors — real attribution, not this fork's own code) and the `IdentityServerHost.Quickstart.UI` namespace, which doesn't match this fork's usual `eShop.Identity.API.*` pattern. That's Duende's own convention for marking Quickstart files as replaceable template scaffold.
 
 Verified: `dotnet build` — 0 errors. `dotnet test` — 83/83 still passing.
