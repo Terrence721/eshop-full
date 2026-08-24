@@ -154,7 +154,7 @@ public class ConsentController : ControllerBase
         }
         else
         {
-            _logger.LogError("No consent request matching request: {0}", returnUrl);
+            _logger.LogError("No consent request matching request: {ReturnUrl}", returnUrl?.ReplaceLineEndings("_"));
         }
 
         return null;
