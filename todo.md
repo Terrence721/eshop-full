@@ -344,6 +344,20 @@ Verified: `dotnet build` — 0 errors. `dotnet test` — 83/83 still passing.
 
 Commit: `851c86d`.
 
+### Quickstart UI (in progress)
+
+Duende IdentityServer's Quickstart Razor UI — 26 C# files (`Account`/`Consent`/`Device`/`Diagnostics`/`Grants`/`Home` controllers + their input/view models, plus `Extensions.cs`/`SecurityHeadersAttribute.cs`), 17 Razor views, and 86 `wwwroot` static assets (fonts/CSS/JS/favicon). By far the largest single chunk of this project so far — every prior project combined was under 20 files total.
+
+**Plan agreed 2026-08-24**, since one-file-at-a-time as applied to source logic doesn't map cleanly onto static assets with nothing to review: `SecurityHeadersAttribute.cs`/`Extensions.cs` first (foundational, no area-specific deps), then `Views/Shared/*` + all of `wwwroot` bundled into one commit (since `_Layout.cshtml` is what actually consumes those 86 static files), then each real area worked as — that area's models reviewed and committed individually (same discipline as every source file so far), then its controller(s), then **one commit per area** for that area's views plus any static-asset dependencies specific to it. C# logic still gets full individual review; only the views/static-asset bundling is the deliberate, scoped exception.
+
+**`SecurityHeadersAttribute.cs` added — clean upstream file, no bugs:** sets 6 security-relevant response headers (`X-Content-Type-Options`, `X-Frame-Options`, CSP + a legacy `X-Content-Security-Policy` variant for IE, `Referrer-Policy`) on any `ViewResult`, each gated behind a `ContainsKey` check so nothing gets double-set if upstream middleware already set one. Only changes: the two local `using`s this fork's trimmed `GlobalUsings.cs` requires, and a `referrer_policy` → `referrerPolicy` naming-convention fix (upstream's only C# naming-convention slip found in this file). **Deliberately kept as-is:** the third-party copyright header (Brock Allen & Dominick Baier, IdentityServer's original authors — real attribution, not this fork's own code) and the `IdentityServerHost.Quickstart.UI` namespace, which doesn't match this fork's usual `eShop.Identity.API.*` pattern. That's Duende's own convention for marking Quickstart files as replaceable template scaffold — renaming it to fit this fork's namespace would mean touching all 26 C# files plus every Razor view's `@model`/`@using` directive for zero functional gain, and would blur the "this gets replaced by `Identity.WebApp`" signal already established in this project's plan.
+
+Verified: `dotnet build` — 0 errors. `dotnet test` — 83/83 still passing.
+
+Commit: `2a06aa3`.
+
+**Test coverage timing, decided 2026-08-24:** unlike every prior project (`EventBus`/`EventBusRabbitMQ`/`eShop.ServiceDefaults`/`IntegrationEventLogEF`, each of which got its test project built in the same unit of work as its source files, per the 2026-08-15 testing-strategy decision), `tests/Identity.API.UnitTests` is deferred until **every** `Identity.API` source file — all 129 across `Models`/`Configuration`/`Data`/`Quickstart`/`Services`, ending with the real (non-placeholder) `Program.cs` — is done. Explicit user decision, justified by file count: per-file test coverage that worked fine for single-digit-to-low-teens-file projects isn't practical applied to a 129-file MVC app. Don't start the test project before then.
+
 ### Pre-commit build-check hook
 
 Added `.claude/settings.json` + `.claude/hooks/pre-commit-build-check.js` (committed, project-scoped — applies to anyone working in this repo, not just one session): a `PreToolUse` hook on `Bash` that runs `dotnet build eShop.Web.slnf` before any `git commit` and blocks the commit if it fails. Direct response to a real process failure earlier the same day — a project scaffold (`Identity.API.csproj`) got committed before `GlobalUsings.cs`/`Program.cs` existed to make it actually compile.
