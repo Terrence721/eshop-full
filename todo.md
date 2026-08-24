@@ -561,3 +561,16 @@ Current state:
 - All four workflows also picked up explicit `permissions: contents: read` after CodeQL's `actions` language scan flagged `pr-validation.yml`, `pr-validation-maui.yml`, and `playwright.yml` for not declaring permissions (default `GITHUB_TOKEN` scope is broader than any of them need).
 
 Every currently-red step in the two commented-out sections above is an honest, tracked gap, not a bug — they'll come back once `ClientApp` and `eShop.AppHost` respectively exist.
+
+### Fourth full drift sweep, 2026-08-24
+
+Prompted by the JSON-API pivot (see "Quickstart UI" above) — a real narrative change (Identity.API's Quickstart controllers converting straight to JSON, never adding Razor UI at all) that had only ever landed in `todo.md` itself. Checked `todo.md`, the scrum board, `docs/architecturedesign.md`, `portfolio.html`, all 4 `diagrams/*.html` pages, the wiki, the GitHub profile README, and the portfolio hub. Real drift found and fixed in 4 of those 9:
+
+- **`docs/architecturedesign.md`** — "Current status" line said `Identity.API` source review "not yet started"; Section 9 still framed the Quickstart-to-React conversion as deferred until `Identity.WebApp` starts. Fixed to reflect the actual pivot and progress (`Models`/`Configuration`/`Data` + 5 of 6 Quickstart areas done).
+- **`diagrams/projects-reference.html`** — `Identity.WebApp`'s card said "React replacement for Duende's Quickstart Razor UI," implying Razor UI exists. Fixed.
+- **Scrum board** — `Identity.WebApp` (issue [#11](https://github.com/Terrence721/eshop-full/issues/11)) had no card at all, a pre-existing gap unrelated to today's pivot, never caught by any prior sweep. Added to the board (Backlog). Issue #11's own body was also stale (same "deferred until this project starts" framing) — updated to match.
+- **Wiki** (`eshop-full.wiki`, separate repo) — `Home.md`, `⭐-Architecture-Overview.md`, and `⭐-Identity.API.md` all said source review hadn't started and framed the conversion as deferred. Fixed all three. `Home.md` also claimed the portfolio hub links to this project's case-study page — see below.
+
+**Checked, no drift found:** `portfolio.html`, `diagrams/event-flow.html`, `diagrams/system-architecture.html`, `diagrams/testing-strategy.html` (test/project counts still accurate, no work happened on tests today), the GitHub profile README (already said "4 of 21... a 5th (Identity.API) in progress," already accurate).
+
+**Portfolio hub (`terrence721.github.io`) — investigated, no fix applied by user's explicit choice.** eShop-full's card was missing a "Case study" link to `portfolio.html` — traced via git history to a real fix (`da7f4ab`, 2026-08-20) that got lost in an unrelated merge in that repo's own history, unconnected to today's session. Verified the target page is live and accurate before proposing to re-add the link (matching the pattern already used on `AxonFramework-Full`'s card). **User declined**: "I do not want a case study link on that card." Left as-is — not drift to fix, the intended state.
