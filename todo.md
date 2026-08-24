@@ -323,6 +323,19 @@ Registered in `eShop.slnx`/`eShop.Web.slnf`. Full solution build and all 83 exis
 
 Commit: `b44e24b`.
 
+**`Configuration/Config.cs` added 2026-08-24 — IdentityServer client/resource/scope definitions, one real fix plus three deferred findings:**
+
+- **Real fix:** every `configuration["Key"]` indexer lookup (6 distinct keys, used 2–3 times each across the 6 `Client` entries) replaced with `configuration.GetRequiredValue("Key")` — the fail-fast extension this fork already built and tested in `eShop.ServiceDefaults`. Upstream's raw indexer returns `string?`; under this repo's `Nullable enable` it wouldn't have compiled cleanly against `RedirectUris`' `ICollection<string>`, and at runtime a missing config key would have silently produced a malformed redirect URI (e.g. `"/Account/Redirecting"` with no host) instead of failing loudly at startup. Each client's callback URL is now read once into a local variable and reused, rather than looked up 2–3 times.
+- **Real fix:** the `60*60*2` (2-hour) token-lifetime magic number, repeated 6 times across 3 clients, extracted to one `TokenLifetimeSeconds` constant. No behavior change.
+- **Deferred, flagged against the rows below rather than fixed now** (fixing any of these would mean guessing at how not-yet-built projects will actually authenticate):
+  - `basketswaggerui`/`orderingswaggerui`/`webhooksswaggerui` all use OAuth2 **Implicit flow** — a known-deprecated pattern (token exposed in the URL fragment) vs. Authorization Code + PKCE. Flagged on `Basket.API`/`Ordering.API`/`Webhooks.API`'s rows below.
+  - `webapp` client explicitly sets `RequirePkce = false` — verified via reflection against the real `Duende.IdentityServer.Storage 8.0.6` assembly that `Client.RequirePkce` defaults to `true`. Defensible under upstream's original Blazor-Server architecture (server-side, could hold a confidential secret); this fork's already-decided `Duende.BFF` plan conventionally keeps PKCE on even for confidential clients. Flagged on `WebBFF`'s row below.
+  - `maui`/`webapp` clients' `AllowedScopes` include `mobileshoppingagg`/`webshoppingagg` — leftover scope names from upstream's aggregator-API architecture, which this fork replaced with `Duende.BFF`. No compile-time or startup-time error (an unregistered scope just silently fails to grant at runtime), but the names don't match anything this fork's `GetApiScopes()` registers. Correct replacement scope name not decided yet — flagged on `WebBFF`'s row below, alongside the still-open items in "Frontend and API layer" above.
+
+Verified: `dotnet build` — 0 errors. `dotnet test` — 83/83 still passing.
+
+Commit: `5464f5b`.
+
 ### Pre-commit build-check hook
 
 Added `.claude/settings.json` + `.claude/hooks/pre-commit-build-check.js` (committed, project-scoped — applies to anyone working in this repo, not just one session): a `PreToolUse` hook on `Bash` that runs `dotnet build eShop.Web.slnf` before any `git commit` and blocks the commit if it fails. Direct response to a real process failure earlier the same day — a project scaffold (`Identity.API.csproj`) got committed before `GlobalUsings.cs`/`Program.cs` existed to make it actually compile.
@@ -360,16 +373,16 @@ Migration order is **foundation first**: shared/foundation projects, then the se
 | 5 | `Identity.API` | 🚧 In progress — see "Identity.API" below. **⚠️ Program.cs is a placeholder** (just `WebApplication.CreateBuilder(args).Build().Run()`) added only to satisfy Web SDK's Main-method build requirement — not reviewed yet, must be replaced with the real thing before this project is "done". **flag when reached**: verify `Duende.IdentityServer` 7.x→8.x breaking API/DB-schema changes against actual usage; verify `AuthenticationExtensions.AddDefaultAuthentication`'s `ValidateAudience = true` (re-enabled 2026-08-15, was disabled in source) actually validates cleanly against real issued tokens — see "eShop.ServiceDefaults" above; also, the Quickstart UI's account/consent/device actions need to be exposed for `Identity.WebApp` to call — see "Frontend and API layer" below |
 | 6 | `Identity.WebApp` (working name) | Not started — **new project, not in upstream** — React replacement for Duende's Quickstart Razor UI (`Account`/`Consent`/`Device`/`Diagnostics`/`Grants`), decided 2026-08-20 — see "Frontend and API layer" below |
 | 7 | `Catalog.API` | Not started |
-| 8 | `Basket.API` | Not started — **flag when reached**: add `Grpc.AspNetCore.Web` middleware so its gRPC service also serves gRPC-Web for `WebApp`/`WebBFF` — see "Frontend and API layer" below |
+| 8 | `Basket.API` | Not started — **flag when reached**: add `Grpc.AspNetCore.Web` middleware so its gRPC service also serves gRPC-Web for `WebApp`/`WebBFF` — see "Frontend and API layer" below. Also, `Config.cs`'s `basketswaggerui` client uses deprecated OAuth2 Implicit flow — see "Identity.API" above |
 | 9 | `Ordering.Domain` | Not started |
 | 10 | `Ordering.Infrastructure` | Not started |
-| 11 | `Ordering.API` | Not started — **flag when reached**: verify `MediatR` 12.5.0 usage compiles clean (pinned below source's original 13.0.0 per the license decision above) |
+| 11 | `Ordering.API` | Not started — **flag when reached**: verify `MediatR` 12.5.0 usage compiles clean (pinned below source's original 13.0.0 per the license decision above). Also, `Config.cs`'s `orderingswaggerui` client uses deprecated OAuth2 Implicit flow — see "Identity.API" above |
 | 12 | `OrderProcessor` | Not started |
 | 13 | `PaymentProcessor` | Not started |
-| 14 | `Webhooks.API` | Not started |
+| 14 | `Webhooks.API` | Not started — **flag when reached**: `Config.cs`'s `webhooksswaggerui` client uses deprecated OAuth2 Implicit flow — see "Identity.API" above |
 | 15 | `WebhookClient` | Not started |
 | 16 | `WebApp` | Not started — **React, not Blazor** (upstream: Blazor storefront) — see "Frontend and API layer" below |
-| 17 | `WebBFF` | Not started — **new project, not in upstream** — Backend-for-Frontend for `WebApp` using `Duende.BFF`, targeted for the week after 2026-08-14 — see "Frontend and API layer" below |
+| 17 | `WebBFF` | Not started — **new project, not in upstream** — Backend-for-Frontend for `WebApp` using `Duende.BFF`, targeted for the week after 2026-08-14 — see "Frontend and API layer" below. Also, `Config.cs`'s `webapp` client sets `RequirePkce = false` and carries stale `mobileshoppingagg`/`webshoppingagg` scope names from upstream's dropped aggregator-API architecture — both need revisiting once this project's real client ID/redirect URIs/scopes are built — see "Identity.API" above |
 | 18 | `ClientApp` (.NET MAUI) | Not started — **flag when reached**: uncomment the `Build`/`Test` steps in `.github/workflows/pr-validation-maui.yml` (commented out since `src/ClientApp/ClientApp.csproj` doesn't exist yet) |
 | 19 | `eShop.AppHost` | Not started — deliberately last, references every other project — **flag when reached**: uncomment the `Install Playwright Browsers`/`Run Playwright tests`/`upload-artifact` steps in `.github/workflows/playwright.yml` (commented out since `playwright.config.ts`'s `webServer` needs this project to launch the app) |
 | 20 | `tests/` (5 test projects, plus `Identity.WebApp.UnitTests`/similar once that project exists) | Not started — **framework decided**: `MSTest.Sdk` on the `Microsoft.Testing.Platform` runner (already pinned in `global.json`, not a new choice) — see "Testing strategy" below |
