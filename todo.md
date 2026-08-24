@@ -390,6 +390,22 @@ Verified: `dotnet build` — 0 errors. `dotnet test` — 83/83 still passing.
 
 Commits: `e0889b6`, `c80e3f5`.
 
+### Diagnostics area
+
+**`Quickstart/Diagnostics/DiagnosticsViewModel.cs` added — real redesign, not a port:** upstream wraps `AuthenticateResult` directly (constructor takes it, exposes it as a property) — not JSON-serializable (`ClaimsPrincipal`/`AuthenticationProperties` have circular refs, no clean serialization contract). Replaced with a flat DTO: `Claims` (a list of `{Type, Value}` pairs — can't be a dictionary since claim types repeat, e.g. multiple `role` claims), `Properties`, and `Clients` (already a plain string list upstream, unchanged). Verified via reflection that `Claim.Type`/`Value` are non-nullable but `AuthenticationProperties.Items`'s dictionary **values** are genuinely `string?` — `Properties` typed `IDictionary<string, string?>` to match, more precise than a plain `IDictionary<string,string>` guess. The `client_list` base64url-decode logic moved out of the constructor into the controller, keeping this file fully decoupled from ASP.NET Core's auth types.
+
+**`Quickstart/Diagnostics/DiagnosticsController.cs` added — 3 real latent null-reference bugs found, all confirmed via reflection, all silently unguarded in upstream's original code:**
+
+- `Connection.RemoteIpAddress`/`LocalIpAddress` are genuinely nullable — upstream's raw `.ToString()` calls would have thrown `NullReferenceException` instead of returning `NotFound()` on this security-gating localhost-only check. Now fails closed explicitly when `RemoteIpAddress` is null, rather than crashing.
+- `AuthenticateResult.Principal` is nullable — guarded with `?? []` on the claims mapping.
+- `AuthenticateResult.Properties` is nullable too — guarded with an empty-dictionary fallback.
+
+All three "worked" in upstream only because that codebase predates nullable-reference-type checking, not because the risk wasn't real. Also: `Base64Url.Decode` (whatever package upstream originally used) doesn't exist in this fork's already-migrated `Duende.IdentityModel` — confirmed via reflection it's genuinely gone, not renamed within that package. Used **`System.Buffers.Text.Base64Url`** instead, a real BCL type added in .NET 9+ — no third-party dependency needed at all.
+
+Verified: `dotnet build` — 0 errors. `dotnet test` — 83/83 still passing.
+
+Commits: `ffce7af`, `7742650`.
+
 Commits: `db3a6da`, `959130c`, `4674cd0`.
 
 **`SecurityHeadersAttribute.cs` added:** sets 6 security-relevant response headers (`X-Content-Type-Options`, `X-Frame-Options`, CSP + a legacy `X-Content-Security-Policy` variant for IE, `Referrer-Policy`) unconditionally in `OnResultExecuting`, each gated behind a `ContainsKey` check so nothing gets double-set if upstream middleware already set one — upstream only applied these to `ViewResult`, which would have silently stopped firing the moment any action returns `ActionResult<T>`/`Ok(...)` instead of `View(...)`, i.e. every Quickstart action under the JSON-API pivot; removed that guard rather than special-case `ObjectResult`, since these headers are safe on any response type. Other changes: the local `using` this fork's trimmed `GlobalUsings.cs` requires, and a `referrer_policy` → `referrerPolicy` naming-convention fix (upstream's only C# naming-convention slip found in this file). **Deliberately kept as-is:** the third-party copyright header (Brock Allen & Dominick Baier, IdentityServer's original authors — real attribution, not this fork's own code) and the `IdentityServerHost.Quickstart.UI` namespace, which doesn't match this fork's usual `eShop.Identity.API.*` pattern. That's Duende's own convention for marking Quickstart files as replaceable template scaffold.
