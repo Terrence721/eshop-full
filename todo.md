@@ -356,6 +356,14 @@ Verified: `dotnet build` — 0 errors. `dotnet test` — 83/83 still passing.
 
 Commit: `2a06aa3`.
 
+**`Quickstart/Account/RedirectViewModel.cs` and `Quickstart/Extensions.cs` added — pulled `RedirectViewModel.cs` forward out of the Account-area batch**, since `Extensions.cs`'s `LoadingPage` constructs one directly and the project wouldn't build without it. One property, `RedirectUrl`, upstream types as plain non-nullable `string`, uninitialized — checked its only real construction site (`LoadingPage`, always sets it) and only consumer (`Views/Shared/Redirect.cshtml`'s unconditional meta-refresh use) and typed it `required string` rather than nullable, matching the `EventBusOptions.SubscriptionClientName` precedent for genuinely-always-required properties. `Extensions.cs` itself needed no logic changes — `IsNativeClient`'s direct `.StartsWith` call on `AuthorizationRequest.RedirectUri` is safe as-is, confirmed via reflection against the real `Duende.IdentityServer 8.0.6` assembly that the property is non-nullable. `LoadingPage`'s `Headers["Location"] = ""` looked odd at first glance but is a real, intentional Duende pattern (defensively clearing any stale `Location` header before rendering the interim redirect page as a 200), not a bug.
+
+**User asked whether `Redirect.cshtml` needs special "React compatibility" treatment now, given it'll be replaced by `Identity.WebApp` eventually.** Answered no — it falls under the same already-decided umbrella as the rest of the Quickstart UI (add as-is, review like every other file, design the replacement only once `Identity.WebApp` work starts with real context). The one real gap: unlike most Quickstart actions (which just need a controller-action shape change, JSON instead of a view, per the mechanism already confirmed 2026-08-20), `Redirect.cshtml` is actual rendered UI — its React replacement needs real design, not just a route conversion. Flagged in "Frontend and API layer" above rather than treated as a special case in this file's own review.
+
+Verified: `dotnet build` — 0 errors. `dotnet test` — 83/83 still passing.
+
+Commits: `f3390f5`, `547e090`.
+
 **Test coverage timing, decided 2026-08-24:** unlike every prior project (`EventBus`/`EventBusRabbitMQ`/`eShop.ServiceDefaults`/`IntegrationEventLogEF`, each of which got its test project built in the same unit of work as its source files, per the 2026-08-15 testing-strategy decision), `tests/Identity.API.UnitTests` is deferred until **every** `Identity.API` source file — all 129 across `Models`/`Configuration`/`Data`/`Quickstart`/`Services`, ending with the real (non-placeholder) `Program.cs` — is done. Explicit user decision, justified by file count: per-file test coverage that worked fine for single-digit-to-low-teens-file projects isn't practical applied to a 129-file MVC app. Don't start the test project before then.
 
 ### Pre-commit build-check hook
