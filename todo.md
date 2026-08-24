@@ -454,6 +454,20 @@ Verified: `dotnet build` — 0 errors. `dotnet test` — 83/83 still passing.
 
 Commits: `65ac244` (`DeviceAuthorizationInputModel.cs`), `8b81263` (`ConsentInputModel.cs` fix), `df3526c` (`ConsentController.cs` widening), `7197f97` (`DeviceAuthorizationViewModel.cs`).
 
+**`Quickstart/Device/DeviceIndexResult.cs` added — new type, no upstream equivalent:** `GET /Device/Index` has three real outcomes (needs a code / shows the confirmation form / not found), and `DeviceAuthorizationViewModel` alone can't represent "needs a code" (nothing to redisplay yet). `NeedsUserCode` + optional `ViewModel` covers the two success states; a missing/expired code returns `NotFound()` directly rather than being a third field.
+
+**`Quickstart/Device/DeviceController.cs` added, closes out the Device area:** `Index`/`UserCodeCapture`/`Callback` converted to `ActionResult<T>`/`Ok(...)`. `[FromQuery(Name = "userCode")]` replaces the raw `Request.Query` read — verified Duende's real default `DeviceVerificationUserCodeParameter` value (`"userCode"`) via reflection rather than guessed, per the plan. `IOptions<IdentityServerOptions>` dropped from the constructor entirely, since hardcoding the parameter name made it unused.
+
+**Real bug found, not reproduced:** upstream's `Callback` fell through to the same "Success" response even when `ProcessConsent` found no matching device-flow authorization at all (e.g. expired between page load and submit) — silently treating "not found" as "succeeded." Now returns `NotFound()` for that case explicitly.
+
+**`IsRedirect` doesn't work as a success signal for Device flow, unlike Consent:** `ReturnUrl` is never populated (there's no client to redirect back to — the device itself polls the token endpoint separately), so `RedirectUri` stays null even on a successful grant. Used `result.Client != null` instead, which really is set only when consent was granted; removed the now-pointless `result.RedirectUri = model.ReturnUrl` assignment.
+
+Same three fixes as `ConsentController.cs`: `InteractionError` (not `AuthorizationError`), the `EnableOfflineAccess`-is-`const` dead-code removal, `CreateScopeViewModel` overloads both made `private`. Validation-error handling unified with `ConsentController`'s pattern per the approved plan.
+
+Verified: `dotnet build` — 0 errors. `dotnet test` — 83/83 still passing.
+
+Commits: `a01ced9` (`DeviceIndexResult.cs`), `589e440` (`DeviceController.cs`).
+
 **Test coverage timing, decided 2026-08-24:** unlike every prior project (`EventBus`/`EventBusRabbitMQ`/`eShop.ServiceDefaults`/`IntegrationEventLogEF`, each of which got its test project built in the same unit of work as its source files, per the 2026-08-15 testing-strategy decision), `tests/Identity.API.UnitTests` is deferred until **every** `Identity.API` source file — all 129 across `Models`/`Configuration`/`Data`/`Quickstart`/`Services`, ending with the real (non-placeholder) `Program.cs` — is done. Explicit user decision, justified by file count: per-file test coverage that worked fine for single-digit-to-low-teens-file projects isn't practical applied to a 129-file MVC app. Don't start the test project before then.
 
 ### Pre-commit build-check hook
