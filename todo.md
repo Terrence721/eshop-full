@@ -380,6 +380,18 @@ Verified: `dotnet build` — 0 errors. `dotnet test` — 83/83 still passing.
 
 Commits: `db3a6da`, `959130c`, `4674cd0`.
 
+### Grants area
+
+**`Quickstart/Grants/GrantsViewModel.cs` added — 3 real nullable-annotation gaps upstream missed:** `ClientUrl`/`ClientLogoUrl` (from `Client.ClientUri`/`LogoUri`) and `Description` (from `Grant.Description`) are all genuinely nullable in the real `Duende.IdentityServer.Storage 8.0.6` assembly, confirmed via reflection — `GrantsController.BuildViewModelAsync` assigns all three with no fallback, unlike `ClientName` which has a `?? client.ClientId` fallback. Retyped all three `string?`. Everything else (`ClientId`, `ClientName`, `IdentityGrantNames`, `ApiGrantNames`, `GrantsViewModel.Grants` itself) confirmed always populated at the one real construction site, marked `required`. Worth noting: the Explore agent's earlier survey called this file "already clean" — it wasn't specifically checking nullable annotations, so this only surfaced doing the real per-file review against the actual construction site, not from trusting that summary.
+
+**`Quickstart/Grants/GrantsController.cs` added:** `Index`/`Revoke` converted from `View(...)`/`RedirectToAction` to `ActionResult<T>`/`Ok(...)` — `Revoke` returns the updated `GrantsViewModel` directly instead of redirecting back to `Index` (decision above), so the SPA gets the fresh grants list in the same response. `[ValidateAntiForgeryToken]` dropped per the already-tracked anti-forgery gap. `IEventService.RaiseAsync` needed an added `CancellationToken` argument too — another real `Duende.IdentityServer 8.0.6` signature difference caught by the build, same pattern as `GetErrorContextAsync`. Business logic in `BuildViewModelAsync` is otherwise byte-for-byte identical to upstream.
+
+Verified: `dotnet build` — 0 errors. `dotnet test` — 83/83 still passing.
+
+Commits: `e0889b6`, `c80e3f5`.
+
+Commits: `db3a6da`, `959130c`, `4674cd0`.
+
 **`SecurityHeadersAttribute.cs` added:** sets 6 security-relevant response headers (`X-Content-Type-Options`, `X-Frame-Options`, CSP + a legacy `X-Content-Security-Policy` variant for IE, `Referrer-Policy`) unconditionally in `OnResultExecuting`, each gated behind a `ContainsKey` check so nothing gets double-set if upstream middleware already set one — upstream only applied these to `ViewResult`, which would have silently stopped firing the moment any action returns `ActionResult<T>`/`Ok(...)` instead of `View(...)`, i.e. every Quickstart action under the JSON-API pivot; removed that guard rather than special-case `ObjectResult`, since these headers are safe on any response type. Other changes: the local `using` this fork's trimmed `GlobalUsings.cs` requires, and a `referrer_policy` → `referrerPolicy` naming-convention fix (upstream's only C# naming-convention slip found in this file). **Deliberately kept as-is:** the third-party copyright header (Brock Allen & Dominick Baier, IdentityServer's original authors — real attribution, not this fork's own code) and the `IdentityServerHost.Quickstart.UI` namespace, which doesn't match this fork's usual `eShop.Identity.API.*` pattern. That's Duende's own convention for marking Quickstart files as replaceable template scaffold.
 
 Verified: `dotnet build` — 0 errors. `dotnet test` — 83/83 still passing.
