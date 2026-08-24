@@ -336,6 +336,14 @@ Verified: `dotnet build` — 0 errors. `dotnet test` — 83/83 still passing.
 
 Commit: `5464f5b`.
 
+**`Data/ApplicationDbContext.cs` added 2026-08-24 — clean, no changes needed:** `IdentityDbContext<ApplicationUser>` with a constructor forwarding `DbContextOptions` and an `OnModelCreating` override that just calls `base.OnModelCreating(builder)` — upstream's file was already correct and minimal. Only addition: the two local `using`s (`eShop.Identity.API.Models`, `Microsoft.AspNetCore.Identity.EntityFrameworkCore`) this fork's trimmed `GlobalUsings.cs` requires.
+
+**Real consequence flagged, not acted on yet:** upstream ships `Data/Migrations/` (`InitialMigration` + `ApplicationDbContextModelSnapshot`), not added here. Those can't be copied over later as-is — `Models/ApplicationUser.cs`'s review (above) retyped eleven properties from non-nullable `string` to `string?`, which changes the actual EF model (nullable columns instead of `NOT NULL`). A migration generated from upstream's model wouldn't match this fork's. Whenever migrations are added, they need to be freshly generated from this fork's own model, not ported — flagged against `Identity.API`'s row below.
+
+Verified: `dotnet build` — 0 errors. `dotnet test` — 83/83 still passing.
+
+Commit: `851c86d`.
+
 ### Pre-commit build-check hook
 
 Added `.claude/settings.json` + `.claude/hooks/pre-commit-build-check.js` (committed, project-scoped — applies to anyone working in this repo, not just one session): a `PreToolUse` hook on `Bash` that runs `dotnet build eShop.Web.slnf` before any `git commit` and blocks the commit if it fails. Direct response to a real process failure earlier the same day — a project scaffold (`Identity.API.csproj`) got committed before `GlobalUsings.cs`/`Program.cs` existed to make it actually compile.
@@ -370,7 +378,7 @@ Migration order is **foundation first**: shared/foundation projects, then the se
 | 2 | `EventBusRabbitMQ` | ✅ Done — see "EventBusRabbitMQ" above |
 | 3 | `eShop.ServiceDefaults` | ✅ Done — see "eShop.ServiceDefaults" above |
 | 4 | `IntegrationEventLogEF` | ✅ Done — see "IntegrationEventLogEF" above |
-| 5 | `Identity.API` | 🚧 In progress — see "Identity.API" below. **⚠️ Program.cs is a placeholder** (just `WebApplication.CreateBuilder(args).Build().Run()`) added only to satisfy Web SDK's Main-method build requirement — not reviewed yet, must be replaced with the real thing before this project is "done". **flag when reached**: verify `Duende.IdentityServer` 7.x→8.x breaking API/DB-schema changes against actual usage; verify `AuthenticationExtensions.AddDefaultAuthentication`'s `ValidateAudience = true` (re-enabled 2026-08-15, was disabled in source) actually validates cleanly against real issued tokens — see "eShop.ServiceDefaults" above; also, the Quickstart UI's account/consent/device actions need to be exposed for `Identity.WebApp` to call — see "Frontend and API layer" below |
+| 5 | `Identity.API` | 🚧 In progress — see "Identity.API" below. **⚠️ Program.cs is a placeholder** (just `WebApplication.CreateBuilder(args).Build().Run()`) added only to satisfy Web SDK's Main-method build requirement — not reviewed yet, must be replaced with the real thing before this project is "done". **flag when reached**: verify `Duende.IdentityServer` 7.x→8.x breaking API/DB-schema changes against actual usage; verify `AuthenticationExtensions.AddDefaultAuthentication`'s `ValidateAudience = true` (re-enabled 2026-08-15, was disabled in source) actually validates cleanly against real issued tokens — see "eShop.ServiceDefaults" above; also, the Quickstart UI's account/consent/device actions need to be exposed for `Identity.WebApp` to call — see "Frontend and API layer" below; also, EF Core migrations must be freshly generated from this fork's own model (not copied from upstream's `Data/Migrations/`) once they're added — see "Identity.API" above |
 | 6 | `Identity.WebApp` (working name) | Not started — **new project, not in upstream** — React replacement for Duende's Quickstart Razor UI (`Account`/`Consent`/`Device`/`Diagnostics`/`Grants`), decided 2026-08-20 — see "Frontend and API layer" below |
 | 7 | `Catalog.API` | Not started |
 | 8 | `Basket.API` | Not started — **flag when reached**: add `Grpc.AspNetCore.Web` middleware so its gRPC service also serves gRPC-Web for `WebApp`/`WebBFF` — see "Frontend and API layer" below. Also, `Config.cs`'s `basketswaggerui` client uses deprecated OAuth2 Implicit flow — see "Identity.API" above |
