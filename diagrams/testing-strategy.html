@@ -1,4 +1,4 @@
-<title>Testing Strategy — 83 Tests, Four Projects Deep</title>
+<title>Testing Strategy — 174 Tests, Five Projects Deep</title>
 <style>
   :root {
     --ink: #1c1f24;
@@ -198,12 +198,14 @@
 
 <div class="page">
   <p class="eyebrow">eshop-full — testing strategy</p>
-  <h1>83 tests, four projects deep — and the fix decorators finally let get proven.</h1>
+  <h1>174 tests, five projects deep — and the fix decorators finally let get proven.</h1>
   <p class="dek">
     <code>MSTest.Sdk</code> on .NET's newer <code>Microsoft.Testing.Platform</code> (MTP) runner — already
     pinned in <code>global.json</code> from the original SDK research, not a new choice. Testing isn't a
     batched end-of-migration phase: every project gets its own test project in the same unit of work as
-    its source files, before the source migration moves past it. See
+    its source files — except <code>Identity.API</code>, whose ~129-file source tree deferred its test
+    project until the whole <code>.csproj</code> was done, since per-file coverage at that scale isn't
+    practical the way it is for a single-digit-to-low-teens-file project. See
     <a href="event-flow.html">Event Flow</a> for the Decorator split this testing approach depends on.
   </p>
 
@@ -215,12 +217,15 @@
       <tr><td><code>EventBusRabbitMQ.UnitTests</code></td><td class="num">6 of 6 applicable</td><td class="num">17</td></tr>
       <tr><td><code>EventBus.UnitTests</code></td><td class="num">6 of 6 applicable</td><td class="num">16</td></tr>
       <tr><td><code>IntegrationEventLogEF.UnitTests</code></td><td class="num">5 of 5 applicable</td><td class="num">17</td></tr>
-      <tr class="total"><td>Total</td><td></td><td class="num">83</td></tr>
+      <tr><td><code>Identity.API.UnitTests</code></td><td class="num">16 of 16 applicable</td><td class="num">91</td></tr>
+      <tr class="total"><td>Total</td><td></td><td class="num">174</td></tr>
     </tbody>
   </table>
   <p class="dek" style="margin: 0.6rem 0 0; font-size: 0.86rem;">
-    "Applicable" excludes pure interfaces with zero behavior of their own (<code>IEventBus</code>,
-    <code>IEventBusBuilder</code>) — stated explicitly per file, not silently assumed clean.
+    "Applicable" means a file with a real contract to guard. Pure interfaces with zero behavior of their
+    own (<code>IEventBus</code>, <code>IEventBusBuilder</code>) get skipped — but "simple" alone isn't the
+    bar: a bare <code>enum</code> guarding persisted DB ordinals and a single-default-value POCO both get
+    real tests elsewhere in this repo. Stated explicitly per file, not silently assumed clean.
   </p>
 
   <h2>Patterns worth carrying forward</h2>
@@ -306,5 +311,5 @@
     </p>
   </div>
 
-  <footer>eshop-full · MSTest.Sdk 4.3.3 on Microsoft.Testing.Platform · 83/83 passing · decorator-enabled fake-bus testing</footer>
+  <footer>eshop-full · MSTest.Sdk 4.3.3 on Microsoft.Testing.Platform · 174/174 passing · decorator-enabled fake-bus testing</footer>
 </div>
