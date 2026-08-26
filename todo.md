@@ -492,7 +492,7 @@ Commits: `a01ced9` (`DeviceIndexResult.cs`), `589e440` (`DeviceController.cs`).
 
 **`Quickstart/Account/LoginPostResult.cs` added — new type, no upstream equivalent:** same reasoning as `ConsentPostResult`. `POST /Account/Login` either redirects (cancelled or succeeded) or redisplays `LoginViewModel` with a validation error — never both, so a pure-redirect outcome shouldn't need a placeholder view-model.
 
-**`Quickstart/Account/AccountController.cs` added, closes out the Account area:** `Login`/`Logout`/`AccessDenied` converted to `ActionResult<T>`/`Ok(...)`. `[ValidateAntiForgeryToken]` dropped per the already-tracked anti-forgery gap. Real findings from the build, all reflection-confirmed rather than assumed:
+**`Quickstart/Account/AccountController.cs` added:** `Login`/`Logout`/`AccessDenied` converted to `ActionResult<T>`/`Ok(...)`. `[ValidateAntiForgeryToken]` dropped per the already-tracked anti-forgery gap. Real findings from the build, all reflection-confirmed rather than assumed:
 
 - `UserManager.FindByNameAsync` returns a nullable user (`Task<TUser?>`); upstream dereferences the post-sign-in lookup (`user.UserName`, `user.Id`) unconditionally. Guarded with a null check; the login-success event's username/name arguments fall back to `model.Username` since `IdentityUser.UserName` is itself nullable (`string?`), even though `Duende.IdentityServer.Events`' own event constructors turned out to be nullable-oblivious (`[Unknown]`, not `[NotNull]`) and wouldn't have flagged it themselves.
 - `IClientStoreExtensions.FindEnabledClientByIdAsync` now requires a `CancellationToken` — same category of signature drift already seen in `GetErrorContextAsync`/`IEventService.RaiseAsync`.
@@ -500,9 +500,15 @@ Commits: `a01ced9` (`DeviceIndexResult.cs`), `589e440` (`DeviceController.cs`).
 
 **Left as-is, flagged rather than changed:** the `if (ModelState.IsValid)` guard around the sign-in logic is very likely always-true for this specific action — `[ApiController]`'s automatic-400 behavior should short-circuit before the action body ever runs for a `ModelState` invalidated by JSON binding or `[Required]`. Not removed, because asserting that's safe rests on cross-cutting framework request-pipeline behavior that hasn't actually been integration-tested against this controller yet (unlike the `ConsentOptions.EnableOfflineAccess` dead-code removal, which was a pure compile-time constant fact). Revisit once real integration tests exist for `Identity.API`.
 
+**`Quickstart/Account/ExternalController.cs` added, closes out the Account area:** `Challenge`/`Callback` stay redirect-based per the approved plan (decision #1) — inherently browser-navigation operations, not something a SPA reaches via `fetch`. `Callback`'s native-client `LoadingPage` branch collapses to a plain `Redirect(returnUrl)`: with no HTML interim page anymore, there's nothing to choose between (decision #2). Real nullability findings, all reflection-confirmed against the actual `Duende.IdentityServer 8.0.6` / ASP.NET Core Authentication assemblies rather than assumed:
+
+- `AuthenticateResult.Principal`/`.Properties` are both genuinely nullable even when `Succeeded` is `true` — the BCL's own annotations don't correlate them. Upstream dereferences both unconditionally right after checking only `Succeeded`. Guarded once at the top of `Callback`, then passed down as already-narrowed `ClaimsPrincipal`/`AuthenticationProperties` parameters instead of re-deriving the same nullability checks inside `FindUserFromExternalProviderAsync`/`ProcessLoginCallback`.
+- `AuthenticationProperties.Items` has a nullable string value type, but `UserManager.FindByLoginAsync`'s `loginProvider` parameter is `[NotNull]`. Upstream passes `Items["scheme"]` straight through with no guard — fixed with the same `?? throw` pattern already sitting one line above it for the subject claim.
+- `FindUserFromExternalProviderAsync`'s return tuple typed its `user` element as non-nullable `ApplicationUser`, but `UserManager.FindByLoginAsync` returns `Task<TUser?>` and the null case is handled by the caller (`AutoProvisionUserAsync`) — retyped `ApplicationUser?`.
+
 Verified: `dotnet build` — 0 errors. `dotnet test` — 83/83 still passing, throughout.
 
-Commits: `3b35385` (`ExternalProvider.cs`), `927615e` (`LoginInputModel.cs`), `fbdf37b` (`LoginViewModel.cs`), `e28328a` (`LogoutInputModel.cs`), `3f543d0` (`LogoutViewModel.cs`), `473afa3` (`LoggedOutViewModel.cs`), `74dd114` (`LoginPostResult.cs`), `01ade80` (`AccountController.cs`). `AccountOptions.cs` landed earlier, commit `992722a`.
+Commits: `3b35385` (`ExternalProvider.cs`), `927615e` (`LoginInputModel.cs`), `fbdf37b` (`LoginViewModel.cs`), `e28328a` (`LogoutInputModel.cs`), `3f543d0` (`LogoutViewModel.cs`), `473afa3` (`LoggedOutViewModel.cs`), `74dd114` (`LoginPostResult.cs`), `01ade80` (`AccountController.cs`), `5a01192` (`ExternalController.cs`). `AccountOptions.cs` landed earlier, commit `992722a`.
 
 ### Pre-commit build-check hook
 
