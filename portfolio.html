@@ -416,7 +416,7 @@
 
 <div class="hero">
   <div class="wrap">
-    <p class="eyebrow">Portfolio Manifest — Prepared 2026-08-20</p>
+    <p class="eyebrow">Portfolio Manifest — Prepared 2026-08-20, updated 2026-08-26</p>
     <h1 class="name">Terrence&nbsp;Daniels</h1>
     <p class="role">Full-Stack .NET Engineer</p>
     <p class="thesis">
@@ -424,10 +424,10 @@
       reference app — a .NET Aspire microservices e-commerce platform added
       <strong>one file at a time</strong>, each file evaluated and upgraded
       against actual current-latest versions rather than copied over
-      wholesale. Still early — three foundation projects done, a fourth in
-      progress, sixteen still ahead — but every file that's landed has been
-      reviewed, tested, and, where it mattered, proven wrong in Microsoft's
-      own reference source before being fixed.
+      wholesale. Still early — five projects done, sixteen still ahead — but
+      every file that's landed has been reviewed, tested, and, where it
+      mattered, proven wrong in Microsoft's own reference source before being
+      fixed.
     </p>
     <div class="hero-actions">
       <a class="btn primary" href="https://github.com/Terrence721/eshop-full"
@@ -447,7 +447,7 @@
   </div>
   <div class="stamp" aria-hidden="true">
     <div class="stamp-inner">
-      <span class="n">10</span>
+      <span class="n">14</span>
       <span class="l">REAL BUGS<br />FOUND &amp; FIXED</span>
     </div>
   </div>
@@ -457,13 +457,13 @@
   <div class="wrap">
     <div class="manifest-row">
       <div class="manifest-cell">
-        <span class="v">4 of 21</span><span class="k">projects done</span>
+        <span class="v">5 of 21</span><span class="k">projects done</span>
       </div>
       <div class="manifest-cell">
-        <span class="v">83/83</span><span class="k">tests passing</span>
+        <span class="v">174/174</span><span class="k">tests passing</span>
       </div>
       <div class="manifest-cell">
-        <span class="v">10</span><span class="k">real bugs found &amp; fixed</span>
+        <span class="v">14</span><span class="k">real bugs found &amp; fixed</span>
       </div>
       <div class="manifest-cell">
         <span class="v">3</span><span class="k">decorator layers, one IEventBus</span>
@@ -521,8 +521,8 @@
       <code>eShop.ServiceDefaults</code>'s Aspire telemetry/health-check/resilience
       defaults, and <code>IntegrationEventLogEF</code> — the EF Core-backed
       transactional outbox every event-publishing service will write through —
-      are all done and reviewed. <code>Identity.API</code> (Duende
-      IdentityServer) is now in progress. The other 15 projects don't exist on
+      and <code>Identity.API</code> (Duende IdentityServer) — are all done and
+      reviewed. The other 16 projects don't exist on
       disk yet; see
       <a href="https://github.com/Terrence721/eshop-full/blob/main/todo.md">todo.md</a>
       for the honest current state rather than assuming more is done.
@@ -745,13 +745,85 @@
           <div class="meta"><span class="tag">low · correctness</span></div>
         </div>
       </div>
+      <div class="item">
+        <div class="no">11</div>
+        <div>
+          <div class="file">Identity.API — external-login callback crashed instead of falling back, on a missing value</div>
+          <div class="desc">
+            <code>ExternalController</code> read
+            <code>AuthenticationProperties.Items["scheme"]</code>/<code>["returnUrl"]</code>
+            through the plain <code>IDictionary</code> indexer, which throws
+            <code>KeyNotFoundException</code> on an absent key instead of
+            returning null — so the <code>?? throw new Exception(...)</code>
+            and <code>?? "~/"</code> fallbacks the code was written to lean on
+            never actually ran for a missing key, only for one present but
+            explicitly null. A callback missing either value crashed with an
+            opaque exception instead of the intended message or default.
+            Fixed with <code>TryGetValue</code> at both call sites.
+          </div>
+          <div class="meta"><span class="tag">medium · correctness</span></div>
+        </div>
+      </div>
+      <div class="item">
+        <div class="no">12</div>
+        <div>
+          <div class="file">Identity.API — a device-flow consent error vanished on redisplay</div>
+          <div class="desc">
+            <code>DeviceController.Callback</code>'s own doc comment promised
+            the redisplay-with-error outcome would show "the rebuilt form
+            with the validation error" — but the code only ever returned the
+            bare view-model, never actually including the error in the
+            response. A user who left every scope unchecked saw the form
+            redisplayed with no explanation of what went wrong. Fixed with a
+            new <code>DeviceCallbackResult</code> wrapper carrying the
+            view-model and the validation error together.
+          </div>
+          <div class="meta"><span class="tag">medium · correctness</span></div>
+        </div>
+      </div>
+      <div class="item">
+        <div class="no">13</div>
+        <div>
+          <div class="file">Identity.API — unsanitized client input written straight into a log message</div>
+          <div class="desc">
+            <code>ConsentController.BuildViewModelAsync</code> interpolated a
+            client-supplied <code>returnUrl</code> directly into
+            <code>_logger.LogError</code>, unsanitized — CWE-117 log
+            injection, caught by CodeQL rather than by manual review. A
+            crafted return URL could inject fake lines or newlines into this
+            service's own logs. Fixed with
+            <code>returnUrl?.ReplaceLineEndings("_")</code> and a named log
+            placeholder.
+          </div>
+          <div class="meta"><span class="tag">medium · security</span></div>
+        </div>
+      </div>
+      <div class="item">
+        <div class="no">14</div>
+        <div>
+          <div class="file">Identity.API — claims built from user fields the type system says can be null</div>
+          <div class="desc">
+            <code>ProfileService.GetClaimsFromUser</code> constructed
+            <code>Claim</code>s straight from <code>user.UserName</code>/<code>user.Email</code>
+            with no null guard, but <code>IdentityUser</code>'s own base
+            properties are genuinely nullable (<code>string?</code>,
+            reflection-confirmed against the real
+            <code>Microsoft.Extensions.Identity.Stores</code> assembly) — and
+            <code>Claim</code>'s constructor doesn't accept a null value. A
+            user record with a null email would have thrown at
+            token-issuance time. Fixed with an <code>?? user.Id</code>
+            fallback and an added guard.
+          </div>
+          <div class="meta"><span class="tag">medium · reliability</span></div>
+        </div>
+      </div>
     </div>
   </section>
 
   <section>
     <h2>Verifying it actually works</h2>
     <p class="h2-sub">
-      83 tests, and a Decorator split that finally let the flagship fix get proven
+      174 tests, and a Decorator split that finally let the flagship fix get proven
     </p>
     <p class="lede">
       <code>MSTest.Sdk</code> on .NET's newer
@@ -764,7 +836,7 @@
     </p>
     <div class="twocol">
       <div class="card">
-        <h3>83/83 tests, decorators make it possible</h3>
+        <h3>174/174 tests, decorators make it possible</h3>
         <p>
           <code>ResilientEventBusDecoratorTests.cs</code> verifies bug #01
           end-to-end for the first time in this project's history — a fake
@@ -836,7 +908,7 @@
       number on this page is reproducible from the repository's own
       <code>todo.md</code> evidence trail, commit history, and CI runs —
       nothing here is asserted without a link to check it against. This one's
-      still early — 4 of 21 projects done — see <code>todo.md</code> for the
+      still early — 5 of 21 projects done — see <code>todo.md</code> for the
       honest current state rather than assuming it's further along.
     </p>
   </div>
