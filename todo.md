@@ -1,7 +1,7 @@
 # 📝 TODO
 
 <!-- markdownlint-disable-next-line MD036 -->
-**Last Updated: August 20, 2026**
+**Last Updated: August 26, 2026**
 
 A living list of what's done and what's left on this build. This is an independently modernized version of Microsoft's [dotnet/eShop](https://github.com/dotnet/eShop) reference app — a .NET Aspire microservices e-commerce platform added **one file at a time**, evaluated and upgraded as it comes in, not a wholesale copy of the source repo. See [docs/architecturedesign.md](docs/architecturedesign.md) for how it's put together and the [project board](https://github.com/users/Terrence721/projects/5) for the live per-project Kanban view of the migration itself.
 
@@ -21,10 +21,11 @@ A living list of what's done and what's left on this build. This is an independe
 | `EventBusRabbitMQ` | All 6 source files added, two real bugs found and fixed — see "EventBusRabbitMQ" below |
 | `eShop.ServiceDefaults` | All 7 source files added, several real fixes found and made — see "eShop.ServiceDefaults" below |
 | `IntegrationEventLogEF` | All 7 source files added, several real fixes found and made — see "IntegrationEventLogEF" below |
-| Test coverage | `eShop.ServiceDefaults.UnitTests` (33 tests), `EventBus.UnitTests` (16 tests), `EventBusRabbitMQ.UnitTests` (17 tests), `IntegrationEventLogEF.UnitTests` (17 tests) — all applicable files across all 4 projects covered, 83 tests total — see "Testing strategy" below |
+| `Identity.API` | Full source tree added (`Models`/`Configuration`/`Data`/`Quickstart`/`Services`/`Program.cs`, 129 files), Quickstart UI converted straight to a JSON API — see "Identity.API" below |
+| Test coverage | `eShop.ServiceDefaults.UnitTests` (33 tests), `EventBus.UnitTests` (16 tests), `EventBusRabbitMQ.UnitTests` (17 tests), `IntegrationEventLogEF.UnitTests` (17 tests), `Identity.API.UnitTests` (91 tests) — all applicable files across all 5 projects covered, 174 tests total — see "Testing strategy" below |
 | Portfolio page + diagrams | `portfolio.html` and `diagrams/{system-architecture,event-flow,projects-reference,testing-strategy}.html`, published via GitHub Pages at [terrence721.github.io/eshop-full](https://terrence721.github.io/eshop-full/) — see "Portfolio page and diagrams" below |
 
-**Still to do:** 17 of 21 `.csproj` projects, plus `build/` — see the "Still to do" table below and [project board](https://github.com/users/Terrence721/projects/5) for the live board. Project count changed 2026-08-15 (`WebAppComponents`/`HybridApp` dropped, `WebBFF` added) and again 2026-08-20 (`Identity.WebApp` added) — see the "Frontend and API layer" section below.
+**Still to do:** 16 of 21 `.csproj` projects, plus `build/` — see the "Still to do" table below and [project board](https://github.com/users/Terrence721/projects/5) for the live board. Project count changed 2026-08-15 (`WebAppComponents`/`HybridApp` dropped, `WebBFF` added) and again 2026-08-20 (`Identity.WebApp` added) — see the "Frontend and API layer" section below.
 
 ## ✅ Done
 
