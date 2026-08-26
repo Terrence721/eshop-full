@@ -10,7 +10,8 @@
       "tests\\EventBus.UnitTests\\EventBus.UnitTests.csproj",
       "tests\\EventBusRabbitMQ.UnitTests\\EventBusRabbitMQ.UnitTests.csproj",
       "tests\\eShop.ServiceDefaults.UnitTests\\eShop.ServiceDefaults.UnitTests.csproj",
-      "tests\\IntegrationEventLogEF.UnitTests\\IntegrationEventLogEF.UnitTests.csproj"
+      "tests\\IntegrationEventLogEF.UnitTests\\IntegrationEventLogEF.UnitTests.csproj",
+      "tests\\Identity.API.UnitTests\\Identity.API.UnitTests.csproj"
     ]
   }
 }
