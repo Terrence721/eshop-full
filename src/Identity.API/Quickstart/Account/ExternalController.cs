@@ -122,7 +122,7 @@ public class ExternalController : ControllerBase
         await HttpContext.SignOutAsync(IdentityServerConstants.ExternalCookieAuthenticationScheme);
 
         // retrieve return URL
-        var returnUrl = result.Properties.Items["returnUrl"] ?? "~/";
+        var returnUrl = (result.Properties.Items.TryGetValue("returnUrl", out var storedReturnUrl) ? storedReturnUrl : null) ?? "~/";
 
         // check if external login is in the context of an OIDC request
         var context = await _interaction.GetAuthorizationContextAsync(returnUrl, cancellationToken);
@@ -145,7 +145,8 @@ public class ExternalController : ControllerBase
         var claims = externalUser.Claims.ToList();
         claims.Remove(userIdClaim);
 
-        var provider = properties.Items["scheme"] ?? throw new Exception("Unknown provider scheme");
+        var provider = (properties.Items.TryGetValue("scheme", out var scheme) ? scheme : null)
+            ?? throw new Exception("Unknown provider scheme");
         var providerUserId = userIdClaim.Value;
 
         // find external user
