@@ -1,4 +1,4 @@
-<title>System Architecture — Twenty Projects, Four Layers</title>
+<title>System Architecture — Twenty-One Projects, Four Layers</title>
 <style>
   :root {
     --ink: #1b1f1e;
@@ -236,7 +236,7 @@
 
 <div class="page">
   <p class="eyebrow">eshop-full — system architecture</p>
-  <h1>Twenty projects, four layers — three done, one in progress, sixteen still to come.</h1>
+  <h1>Twenty-one projects, four layers — five done, sixteen still to come.</h1>
   <p class="dek">
     This is the target shape, not a claim that it already runs end-to-end — <code>eShop.AppHost</code>
     (the Aspire orchestrator every service and container dependency registers with) is deliberately the
@@ -262,7 +262,7 @@
     <div class="layer">
       <span class="layer-label">Domain APIs</span>
       <div class="layer-nodes">
-        <span class="node node--progress">Identity.API</span>
+        <span class="node node--done">Identity.API</span>
         <span class="node node--planned">Catalog.API</span>
         <span class="node node--planned">Basket.API</span>
         <span class="node node--planned">Ordering.API</span>
@@ -356,14 +356,14 @@
     </div>
   </div>
 
-  <h2>Domain APIs — first one underway</h2>
+  <h2>Domain APIs — first one done</h2>
   <div class="grid">
-    <div class="card card--progress">
-      <span class="card-tag">In progress</span>
+    <div class="card card--done">
+      <span class="card-tag">Done</span>
       <p class="card-title">Identity.API</p>
       <ul>
         <li>Duende IdentityServer + ASP.NET Core Identity, EF Core-backed</li>
-        <li>Scaffold added; source review still underway</li>
+        <li>129 source files reviewed; Quickstart UI converted straight to JSON, no Razor added; 91 tests</li>
       </ul>
       <div class="card-link"><a href="projects-reference.html">→ Projects reference</a></div>
     </div>
@@ -379,5 +379,5 @@
     </p>
   </div>
 
-  <footer>eshop-full · .NET 10 / Aspire 13.4 · 4 of 21 projects done · foundation-first migration order</footer>
+  <footer>eshop-full · .NET 10 / Aspire 13.4 · 5 of 21 projects done · foundation-first migration order</footer>
 </div>
