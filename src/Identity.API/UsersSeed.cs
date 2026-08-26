@@ -7,52 +7,55 @@ namespace eShop.Identity.API;
 
 public class UsersSeed(ILogger<UsersSeed> logger, UserManager<ApplicationUser> userManager) : IDbSeeder<ApplicationDbContext>
 {
+    private const string SeedPassword = "Pass123$";
+
     public async Task SeedAsync(ApplicationDbContext context)
     {
-        await EnsureUserAsync("alice", "Pass123$", new ApplicationUser
+        foreach (var (userName, user) in GetSeedUsers())
         {
-            UserName = "alice",
-            Email = "AliceSmith@email.com",
-            EmailConfirmed = true,
-            CardHolderName = "Alice Smith",
-            CardNumber = "XXXXXXXXXXXX1881",
-            CardType = 1,
-            City = "Redmond",
-            Country = "U.S.",
-            Expiration = "12/24",
-            Id = Guid.NewGuid().ToString(),
-            LastName = "Smith",
-            Name = "Alice",
-            PhoneNumber = "1234567890",
-            ZipCode = "98052",
-            State = "WA",
-            Street = "15703 NE 61st Ct",
-            SecurityNumber = "123"
-        });
-
-        await EnsureUserAsync("bob", "Pass123$", new ApplicationUser
-        {
-            UserName = "bob",
-            Email = "BobSmith@email.com",
-            EmailConfirmed = true,
-            CardHolderName = "Bob Smith",
-            CardNumber = "XXXXXXXXXXXX1881",
-            CardType = 1,
-            City = "Redmond",
-            Country = "U.S.",
-            Expiration = "12/24",
-            Id = Guid.NewGuid().ToString(),
-            LastName = "Smith",
-            Name = "Bob",
-            PhoneNumber = "1234567890",
-            ZipCode = "98052",
-            State = "WA",
-            Street = "15703 NE 61st Ct",
-            SecurityNumber = "456"
-        });
+            await EnsureUserAsync(userName, user);
+        }
     }
 
-    private async Task EnsureUserAsync(string userName, string password, ApplicationUser user)
+    private static IEnumerable<(string UserName, ApplicationUser User)> GetSeedUsers()
+    {
+        yield return ("alice", CreateUser("alice", "Alice", "Smith", "AliceSmith@email.com", "Redmond", "WA", "15703 NE 61st Ct", "98052", "1881", "123"));
+        yield return ("bob", CreateUser("bob", "Bob", "Smith", "BobSmith@email.com", "Redmond", "WA", "15703 NE 61st Ct", "98052", "1881", "456"));
+        yield return ("charlie", CreateUser("charlie", "Charlie", "Davis", "CharlieDavis@email.com", "Seattle", "WA", "400 Broad St", "98109", "2004", "789"));
+        yield return ("diana", CreateUser("diana", "Diana", "Evans", "DianaEvans@email.com", "Portland", "OR", "1120 SW 5th Ave", "97204", "3157", "234"));
+        yield return ("ethan", CreateUser("ethan", "Ethan", "Foster", "EthanFoster@email.com", "San Francisco", "CA", "1 Market St", "94105", "4488", "567"));
+        yield return ("fiona", CreateUser("fiona", "Fiona", "Garcia", "FionaGarcia@email.com", "Austin", "TX", "500 Congress Ave", "78701", "5729", "890"));
+        yield return ("george", CreateUser("george", "George", "Harris", "GeorgeHarris@email.com", "Chicago", "IL", "233 S Wacker Dr", "60606", "6031", "345"));
+        yield return ("hannah", CreateUser("hannah", "Hannah", "Irving", "HannahIrving@email.com", "Denver", "CO", "1144 15th St", "80202", "7362", "678"));
+        yield return ("ian", CreateUser("ian", "Ian", "Johnson", "IanJohnson@email.com", "Boston", "MA", "1 Federal St", "02110", "8493", "901"));
+        yield return ("julia", CreateUser("julia", "Julia", "King", "JuliaKing@email.com", "New York", "NY", "350 5th Ave", "10118", "9624", "112"));
+    }
+
+    private static ApplicationUser CreateUser(
+        string userName, string firstName, string lastName, string email,
+        string city, string state, string street, string zipCode,
+        string cardNumberLastFour, string securityNumber) => new()
+    {
+        Id = Guid.NewGuid().ToString(),
+        UserName = userName,
+        Email = email,
+        EmailConfirmed = true,
+        Name = firstName,
+        LastName = lastName,
+        CardHolderName = $"{firstName} {lastName}",
+        CardNumber = $"XXXXXXXXXXXX{cardNumberLastFour}",
+        CardType = 1,
+        Expiration = "12/24",
+        SecurityNumber = securityNumber,
+        PhoneNumber = "1234567890",
+        City = city,
+        State = state,
+        Street = street,
+        ZipCode = zipCode,
+        Country = "U.S."
+    };
+
+    private async Task EnsureUserAsync(string userName, ApplicationUser user)
     {
         var existing = await userManager.FindByNameAsync(userName);
         if (existing != null)
@@ -64,7 +67,7 @@ public class UsersSeed(ILogger<UsersSeed> logger, UserManager<ApplicationUser> u
             return;
         }
 
-        var result = await userManager.CreateAsync(user, password);
+        var result = await userManager.CreateAsync(user, SeedPassword);
         if (!result.Succeeded)
         {
             throw new Exception(result.Errors.First().Description);
