@@ -56,35 +56,20 @@ public class AccountController : ControllerBase
     }
 
     /// <summary>
-    /// Handle postback from username/password login
+    /// Handle postback from username/password login. Split from the cancel flow
+    /// (see LoginCancel) rather than dispatched via a shared "which button did you
+    /// click" form field - that pattern only existed because a single Razor
+    /// &lt;form&gt; can have two submit buttons sharing one postback target. A JSON
+    /// API has no such constraint, and the split also resolves a real CodeQL
+    /// finding (cs/user-controlled-bypass, alert #7): a user-controlled value was
+    /// gating whether IIdentityServerInteractionService.DenyAuthorizationAsync
+    /// ran. It's not reachable by any value now, ever, from this action.
     /// </summary>
     [HttpPost]
-    public async Task<ActionResult<LoginPostResult>> Login(LoginInputModel model, string button, CancellationToken cancellationToken)
+    public async Task<ActionResult<LoginPostResult>> Login(LoginInputModel model, CancellationToken cancellationToken)
     {
         // check if we are in the context of an authorization request
         var context = await _interaction.GetAuthorizationContextAsync(model.ReturnUrl, cancellationToken);
-
-        // the user clicked the "cancel" button
-        if (button != "login")
-        {
-            if (context != null)
-            {
-                // if the user cancels, send a result back into IdentityServer as if they
-                // denied the consent (even if this client does not require consent).
-                // this will send back an access denied OIDC error response to the client.
-                await _interaction.DenyAuthorizationAsync(context, InteractionError.AccessDenied, cancellationToken);
-
-                // we can trust model.ReturnUrl since GetAuthorizationContextAsync returned non-null
-                return Ok(new LoginPostResult
-                {
-                    RedirectUrl = model.ReturnUrl,
-                    IsNativeClient = context.IsNativeClient()
-                });
-            }
-
-            // since we don't have a valid context, then we just go back to the home page
-            return Ok(new LoginPostResult { RedirectUrl = "~/" });
-        }
 
         // [ApiController] returns an automatic 400 for a ModelState made invalid by
         // binding/[Required] before this action ever runs, so this is always true by
@@ -134,6 +119,34 @@ public class AccountController : ControllerBase
         // something went wrong, redisplay form with error
         var vm = await BuildLoginViewModelAsync(model, cancellationToken);
         return Ok(new LoginPostResult { ViewModel = vm });
+    }
+
+    /// <summary>
+    /// Handle the user clicking "cancel" on the login page - split out from Login
+    /// (see its doc comment) since there's no longer a shared postback target to
+    /// dispatch on.
+    /// </summary>
+    [HttpPost]
+    public async Task<ActionResult<LoginPostResult>> LoginCancel(string? returnUrl, CancellationToken cancellationToken)
+    {
+        var context = await _interaction.GetAuthorizationContextAsync(returnUrl, cancellationToken);
+        if (context != null)
+        {
+            // if the user cancels, send a result back into IdentityServer as if they
+            // denied the consent (even if this client does not require consent).
+            // this will send back an access denied OIDC error response to the client.
+            await _interaction.DenyAuthorizationAsync(context, InteractionError.AccessDenied, cancellationToken);
+
+            // we can trust returnUrl since GetAuthorizationContextAsync returned non-null
+            return Ok(new LoginPostResult
+            {
+                RedirectUrl = returnUrl,
+                IsNativeClient = context.IsNativeClient()
+            });
+        }
+
+        // since we don't have a valid context, then we just go back to the home page
+        return Ok(new LoginPostResult { RedirectUrl = "~/" });
     }
 
     /// <summary>
