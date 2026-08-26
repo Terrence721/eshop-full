@@ -60,7 +60,7 @@ public class DeviceController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<ActionResult<DeviceAuthorizationViewModel>> Callback(DeviceAuthorizationInputModel model, CancellationToken cancellationToken)
+    public async Task<ActionResult<DeviceCallbackResult>> Callback(DeviceAuthorizationInputModel model, CancellationToken cancellationToken)
     {
         var result = await ProcessConsent(model, cancellationToken);
 
@@ -70,7 +70,15 @@ public class DeviceController : ControllerBase
             // with the validation error instead of a generic failure. Upstream fell
             // back to a generic error page here regardless of validation vs. hard
             // failure, unlike ConsentController, which already redisplayed the form.
-            return Ok(result.ViewModel);
+            // ProcessConsentResult.ViewModel is typed as the shared base
+            // ConsentViewModel? (also used by ConsentController), but
+            // BuildViewModelAsync below only ever assigns it a real
+            // DeviceAuthorizationViewModel - safe to cast back.
+            return Ok(new DeviceCallbackResult
+            {
+                ValidationError = result.ValidationError,
+                ViewModel = (DeviceAuthorizationViewModel?)result.ViewModel
+            });
         }
 
         if (result.Client != null)
