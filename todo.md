@@ -715,3 +715,25 @@ Prompted by the JSON-API pivot (see "Quickstart UI" above) — a real narrative 
 **Checked, no drift found:** `portfolio.html`, `diagrams/event-flow.html`, `diagrams/system-architecture.html`, `diagrams/testing-strategy.html` (test/project counts still accurate, no work happened on tests today), the GitHub profile README (already said "4 of 21... a 5th (Identity.API) in progress," already accurate).
 
 **Portfolio hub (`terrence721.github.io`) — investigated, no fix applied by user's explicit choice.** eShop-full's card was missing a "Case study" link to `portfolio.html` — traced via git history to a real fix (`da7f4ab`, 2026-08-20) that got lost in an unrelated merge in that repo's own history, unconnected to today's session. Verified the target page is live and accurate before proposing to re-add the link (matching the pattern already used on `AxonFramework-Full`'s card). **User declined**: "I do not want a case study link on that card." Left as-is — not drift to fix, the intended state.
+
+### Fifth full drift sweep, 2026-08-26
+
+Prompted directly by the user, listing all 11 surfaces by name right after `Identity.API` finished (source + tests both done, see above). Real drift found and fixed in **10 of 11** — every surface except `diagrams/event-flow.html`, which never makes project-count claims in the first place:
+
+- **`todo.md` itself** — the top-of-file "At a glance" table (the first thing a reader sees) never had `Identity.API` added to the "Done, in full" list, even though the detail sections further down already said otherwise. Test-coverage row and remaining-project count were stale too.
+- **`portfolio.html`** — manifest stats, and a pre-existing self-inconsistency in the thesis paragraph ("three foundation projects done, a fourth in progress" directly contradicting the manifest strip's own "4 done" one paragraph above). Added 4 new numbered bug-ledger entries (11–14) for real bugs found in Duende's own shipped Quickstart source while writing `Identity.API`'s tests — held to the same "present verbatim before this fork touched it" bar the existing 10 entries use, not padding.
+- **`docs/architecturedesign.md`** — status paragraph, repo tree, Section 9's Quickstart-conversion summary, Section 11's test counts and scope-rule wording.
+- **`diagrams/projects-reference.html`, `diagrams/system-architecture.html`, `diagrams/testing-strategy.html`** — `Identity.API` flipped to Done, counts updated. Also fixed a `<title>`/`<h1>` mismatch predating this session in the first two ("Twenty Projects" vs. the body's own "Twenty-one") — found in the same pass, fixed alongside.
+- **Wiki** (4 of 12 pages: `Home.md`, `⭐-Architecture-Overview.md`, `⭐-Identity.API.md` — rewritten in full — `⭐-Testing.md`).
+- **GitHub Projects board** — `Identity.API`'s own card (issue #10) was still "In Progress" with a body that only said "Flag: verify 7.x→8.x breaking changes"; rewritten and closed. Found board drift a *previous* sweep had already missed: `IntegrationEventLogEF`'s card body still said "2 source files remain" despite the card itself reading Done, and the `Test coverage: eShop.ServiceDefaults` sub-issue (#6) still said "6 of 7 covered, 30 tests" (real final: 7 of 7, 33) — both fixed. Added `Test coverage: Identity.API` (#21) as a real sub-issue of #5, matching the one-issue-per-done-project pattern every prior project already had — this one had simply never been created.
+- **`Terrence721/Terrence721`** (profile README, renders as the GitHub profile page) and **`terrence721.github.io`** (portfolio hub) — both just needed their eshop-full stat lines synced; no CI in either repo, pushed directly.
+
+Commits: `39975cf` (architecturedesign.md), `4627c6c` (portfolio.html), `03cb156`/`d2b959f`/`05c3c85` (the 3 diagrams), `43856fd` (todo.md's own table) — each individually confirmed CI-green before the next per the standing wait-for-CI rule. Wiki `d5fe113`. Portfolio hub `c1e70f0`, profile-readme `e694cd8`.
+
+**Not in this sweep's explicit scope, not checked:** `README.md` (main repo) — the one surface the 2026-08-23 sweep found stale after being missed entirely. Worth a look next time drift is suspected.
+
+---
+
+**⏸️ Checkpoint, 2026-08-26 — session paused here at the user's request.** Working tree clean across all 4 repos touched today (`eShop-full`, `eshop-full.wiki`, `Terrence721.github.io`, `Terrence721`/profile-readme), everything pushed, latest `eShop-full` commit (`43856fd`) CI-green on all 3 applicable checks. `Identity.API` is fully ✅ done — source and tests both complete, every tracking surface now says so consistently.
+
+**Resume point, per the standing "stop after we finish this project" instruction:** the next `.csproj` in the migration order is `Identity.WebApp` (row 6 in the "Still to do" table above) — a new React project, not in upstream, replacing Duende's Quickstart Razor UI now that `Identity.API`'s Quickstart controllers all speak JSON. Do not start it without the user's direction. If instead resuming general upkeep, the untouched `README.md` drift check above is the one known loose end.
