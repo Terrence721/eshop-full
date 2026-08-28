@@ -9,6 +9,9 @@
   "workspaces": [
     "src/Identity.WebApp"
   ],
+  "scripts": {
+    "clean:logs": "node scripts/clean-logs.mjs"
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",
