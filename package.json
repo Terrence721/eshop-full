@@ -1,10 +1,14 @@
 {
   "name": "eshop",
   "version": "1.0.0",
+  "private": true,
   "description": "A reference .NET application implementing an eCommerce web site using a services-based architecture.",
   "directories": {
     "test": "tests"
   },
+  "workspaces": [
+    "src/Identity.WebApp"
+  ],
   "keywords": [],
   "author": "",
   "license": "ISC",
