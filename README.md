@@ -5,7 +5,7 @@
 
 **[📜 View the portfolio page →](https://terrence721.github.io/eshop-full/portfolio.html)**
 
-Last updated: August 26, 2026 (5 of 21 projects done — `EventBus`, `EventBusRabbitMQ`, `eShop.ServiceDefaults`, `IntegrationEventLogEF`, `Identity.API`, plus `Shared` — 174/174 tests passing)
+Last updated: August 28, 2026 (5 of 21 projects done — `EventBus`, `EventBusRabbitMQ`, `eShop.ServiceDefaults`, `IntegrationEventLogEF`, `Identity.API`, plus `Shared` — 174/174 tests passing; `Identity.WebApp` scaffold added, its `Home` page in progress)
 
 This is an independently modernized version of Microsoft's [dotnet/eShop](https://github.com/dotnet/eShop) reference app — a .NET Aspire microservices e-commerce platform (product catalog, basket, ordering, identity, payments, outbound webhooks) added **one file at a time**, each file evaluated and upgraded against actual current-latest package versions rather than copied over wholesale.
 
@@ -36,7 +36,7 @@ On AI-assisted development: Commits co-authored as Claude are AI-assisted implem
 
 ## 🏗 What's Here So Far
 
-`Shared` (linked-source utilities), `EventBus` (transport-agnostic event abstractions), `EventBusRabbitMQ` (the RabbitMQ implementation, split into a 3-layer Decorator chain after two real bugs turned up in the original single-class version), `eShop.ServiceDefaults` (Aspire telemetry/health-check/resilience defaults), `IntegrationEventLogEF` (the EF Core-backed transactional outbox every event-publishing service will write through), and `Identity.API` (Duende IdentityServer, its Quickstart UI converted straight to a JSON API rather than shipping Razor views) are complete, reviewed, and fully tested. The other 14 projects don't exist on disk yet. See [`todo.md`](todo.md) for the full build-out plan and the honest current state.
+`Shared` (linked-source utilities), `EventBus` (transport-agnostic event abstractions), `EventBusRabbitMQ` (the RabbitMQ implementation, split into a 3-layer Decorator chain after two real bugs turned up in the original single-class version), `eShop.ServiceDefaults` (Aspire telemetry/health-check/resilience defaults), `IntegrationEventLogEF` (the EF Core-backed transactional outbox every event-publishing service will write through), and `Identity.API` (Duende IdentityServer, its Quickstart UI converted straight to a JSON API rather than shipping Razor views) are complete, reviewed, and fully tested. `Identity.WebApp` (React, replacing Duende's Quickstart Razor UI) has its scaffold added and its `Home` page working against a real dev-proxy to `Identity.API` — the rest of its pages are still open. The other 13 projects don't exist on disk yet. See [`todo.md`](todo.md) for the full build-out plan and the honest current state.
 
 ```text
   Shared/                 linked-source utilities                          ✅ done
@@ -45,7 +45,7 @@ On AI-assisted development: Commits co-authored as Claude are AI-assisted implem
   eShop.ServiceDefaults/   Aspire telemetry/health-check/resilience         ✅ done
   IntegrationEventLogEF/  EF Core transactional outbox                     ✅ done
   Identity.API/            Duende IdentityServer (OIDC)                     ✅ done
-  Identity.WebApp/         React replacement for Quickstart UI (new)        ⬜ not started
+  Identity.WebApp/         React replacement for Quickstart UI (new)        🚧 scaffold added
   Catalog.API/             product catalog                                 ⬜ not started
   Basket.API/              Redis-backed cart (gRPC)                        ⬜ not started
   Ordering.Domain/.Infrastructure/.API/  order placement (DDD split)        ⬜ not started
