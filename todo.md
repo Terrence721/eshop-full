@@ -341,7 +341,11 @@ Real feature work started same session, right after the infrastructure chain abo
 
 **Still open, not yet done:** `main.tsx` doesn't use the router yet — `App.tsx`'s placeholder is still what actually renders. Next file is wiring `createBrowserRouter`/`RouterProvider` into `main.tsx` (retiring `App.tsx`, which was always meant to be temporary — see its own commit message), mapping `/Home/Index` and `/Home/Error` as real routes. Route paths mirror `Identity.API`'s own controller/action casing exactly (not lowercase conventional SPA routes) — deliberate, since Duende IdentityServer's default interaction URLs (login/consent/error redirect targets) already match these exact path conventions; the SPA's routes have to line up with where Duende will actually redirect the browser.
 
-Session paused here at the user's request ("this is the last cadence"). Working tree clean, everything pushed, CI green throughout. Local dev environment left running for next time: `eshop-identity-postgres` Docker container still up (port `5433`), `user-secrets` for `Identity.API` already configured — a fresh `dotnet run --launch-profile http` (Identity.API) + `yarn dev` (Identity.WebApp) should work immediately without repeating any of this session's setup chain.
+**⏸️ Checkpoint, 2026-08-28 — session paused here at the user's request.** Since the "last cadence" note above: a full drift sweep ran across every tracking surface (`README.md`, `docs/architecturedesign.md`, both diagrams with dangling `--progress`/"in progress" legend entries fixed, the wiki, issues `#11`/`#24`) — see the sweep summary for the full list of what was found and fixed. Dependabot PRs `#22`/`#23` were reviewed for real (genuinely clean CI, not just no-conflicts) and squash-merged, then re-verified locally together (`dotnet build`/`yarn install --immutable` both clean).
+
+Working tree clean, everything pushed, CI green throughout. Dev server processes (`dotnet run`, `yarn dev`) stopped at session end — restart both when resuming. `eshop-identity-postgres` Docker container left running (port `5433`), `user-secrets` for `Identity.API` still configured — no need to repeat any of this session's setup chain, just `dotnet run --launch-profile http` (Identity.API) + `yarn dev` (Identity.WebApp).
+
+**Exact resume point, unchanged from above:** `main.tsx` still doesn't use `react-router` — `App.tsx`'s placeholder still renders. That's the very next file.
 
 ### Identity.API (complete)
 
