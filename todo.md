@@ -330,7 +330,18 @@ Verified end-to-end, not assumed: real `dotnet run` against the isolated Postgre
 
 Commits: `e77deab` (`.gitignore` — also caught `tempkey.jwk`, Duende's auto-generated dev signing key, real private key material that was about to be committed by accident) → `744d7fe` (launchSettings.json) → `dd76bd9` (ApplicationDbContext fix) → `32ced7d` (the migration itself).
 
-**Next up:** the actual Vite dev-proxy config (`vite.config.ts`) pointing at `http://localhost:5223`, now that there's a genuinely live `Identity.API` to verify it against — then a first API-client module for `Home`, then the `Home` (#24) page itself.
+### Home (#24) — Index/Error pages done, router wiring still open
+
+Real feature work started same session, right after the infrastructure chain above unblocked a genuinely live `Identity.API` to build and verify against:
+
+- `vite.config.ts` (`7606998`) — dev-proxy forwarding the Quickstart routes plus Duende's `/connect`/`/.well-known` endpoints to `localhost:5223`. Verified end-to-end: `curl` through Vite's dev server returns the same response as hitting `Identity.API` directly.
+- `src/api/home.ts` (`3db85ca`) — typed `fetch` client for `HomeController`'s two actions. `Home/Index`'s Development-only `404` handled as a real non-error case; `HomeError.error` left honestly typed as an opaque object since Duende's `ErrorMessage` shape hit real reflection friction rather than resolving cleanly.
+- `react-router` `8.3.0` added (`cec9918`) — **exact-pinned, not this project's usual `^` range**: `8.3.1` (the real latest) was published only ~3 hours before this session reached it and Yarn's quarantine feature blocked it outright as a routine new-package supply-chain safeguard, not a known vulnerability. Also real, not assumed: v8 removed `react-router-dom` entirely — `RouterProvider` now imports from a separate `react-router/dom` subpath.
+- `pages/Home/Index.tsx` (`95935cf`) / `pages/Home/Error.tsx` (`f85d620`) — the two real page components, calling the API client above.
+
+**Still open, not yet done:** `main.tsx` doesn't use the router yet — `App.tsx`'s placeholder is still what actually renders. Next file is wiring `createBrowserRouter`/`RouterProvider` into `main.tsx` (retiring `App.tsx`, which was always meant to be temporary — see its own commit message), mapping `/Home/Index` and `/Home/Error` as real routes. Route paths mirror `Identity.API`'s own controller/action casing exactly (not lowercase conventional SPA routes) — deliberate, since Duende IdentityServer's default interaction URLs (login/consent/error redirect targets) already match these exact path conventions; the SPA's routes have to line up with where Duende will actually redirect the browser.
+
+Session paused here at the user's request ("this is the last cadence"). Working tree clean, everything pushed, CI green throughout. Local dev environment left running for next time: `eshop-identity-postgres` Docker container still up (port `5433`), `user-secrets` for `Identity.API` already configured — a fresh `dotnet run --launch-profile http` (Identity.API) + `yarn dev` (Identity.WebApp) should work immediately without repeating any of this session's setup chain.
 
 ### Identity.API (complete)
 
