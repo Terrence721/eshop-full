@@ -1,0 +1,32 @@
+<Project>
+  <!-- Can't use the Project Sdk="..." shorthand: this repo uses Yarn 4.18
+       (Berry), not npm, and the JS Project System's built-in install target
+       assumes npm. Importing Sdk.props/Sdk.targets manually lets
+       RunNpmInstall be overridden before the SDK's own targets run.
+       See https://github.com/dotnet/sdk/issues/44516. -->
+  <Import Project="Sdk.props" Sdk="Microsoft.VisualStudio.JavaScript.Sdk" Version="1.0.6537497" />
+
+  <PropertyGroup>
+    <StartupCommand>yarn dev</StartupCommand>
+    <BuildCommand>yarn build</BuildCommand>
+    <ShouldRunNpmInstall>false</ShouldRunNpmInstall>
+    <!-- yarn.lock lives at the workspace root, not next to this
+         package.json. Tracked here so the install target only reruns
+         when it actually changes. -->
+    <YarnLockFile>$(MSBuildProjectDirectory)\..\..\yarn.lock</YarnLockFile>
+  </PropertyGroup>
+
+  <Import Project="Sdk.targets" Sdk="Microsoft.VisualStudio.JavaScript.Sdk" Version="1.0.6537497" />
+
+  <Target Name="RunNpmInstall" DependsOnTargets="PreNpmInstallCheck" Inputs="$(MSBuildProjectDirectory)\package.json" Outputs="$(YarnLockFile)">
+    <Exec Command="node --version" ContinueOnError="true">
+      <Output TaskParameter="ExitCode" PropertyName="ErrorCodeNodeVersion" />
+    </Exec>
+    <Error Condition="'$(ErrorCodeNodeVersion)' != '0'" Text="Node.js is required to build and run this project. Install it from https://nodejs.org/, then restart your command prompt or IDE." />
+    <Message Importance="high" Text="Restoring dependencies using 'yarn'. This may take several minutes..." />
+    <Exec WorkingDirectory="$(MSBuildProjectDirectory)" Command="yarn install">
+      <Output TaskParameter="ExitCode" PropertyName="ErrorCodeYarnInstall" />
+    </Exec>
+    <Touch Files="$(YarnLockFile)" Condition="'$(ErrorCodeYarnInstall)' == '0'" AlwaysCreate="true" />
+  </Target>
+</Project>
