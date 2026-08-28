@@ -498,3 +498,7 @@ $RECYCLE.BIN/
 !.yarn/plugins
 !.yarn/versions
 .pnp.*
+
+# Duende IdentityServer AddDeveloperSigningCredential() -- auto-generated
+# locally on first run, real private key material, never shared/committed
+tempkey.jwk
