@@ -71,13 +71,13 @@
     <PackageVersion Include="CommunityToolkit.Aspire.OllamaSharp" Version="13.4.0" />
     <!-- Open Telemetry: core packages (OpenTelemetry.*) and contrib instrumentation packages
          (OpenTelemetry.Instrumentation.*) release on independent cadences. -->
-    <PackageVersion Include="OpenTelemetry.Exporter.OpenTelemetryProtocol" Version="1.17.0" />
-    <PackageVersion Include="OpenTelemetry.Extensions.Hosting" Version="1.17.0" />
-    <PackageVersion Include="OpenTelemetry.Instrumentation.AspNetCore" Version="1.17.0" />
+    <PackageVersion Include="OpenTelemetry.Exporter.OpenTelemetryProtocol" Version="1.18.0" />
+    <PackageVersion Include="OpenTelemetry.Extensions.Hosting" Version="1.18.0" />
+    <PackageVersion Include="OpenTelemetry.Instrumentation.AspNetCore" Version="1.18.0" />
     <!-- Still beta upstream; no stable release exists. -->
     <PackageVersion Include="OpenTelemetry.Instrumentation.GrpcNetClient" Version="1.16.0-beta.1" />
-    <PackageVersion Include="OpenTelemetry.Instrumentation.Http" Version="1.17.0" />
-    <PackageVersion Include="OpenTelemetry.Instrumentation.Runtime" Version="1.17.0" />
+    <PackageVersion Include="OpenTelemetry.Instrumentation.Http" Version="1.18.0" />
+    <PackageVersion Include="OpenTelemetry.Instrumentation.Runtime" Version="1.18.0" />
     <!-- IdentityServer -->
     <PackageVersion Include="Duende.IdentityServer" Version="$(DuendeVersion)" />
     <PackageVersion Include="Duende.IdentityServer.AspNetIdentity" Version="$(DuendeVersion)" />
