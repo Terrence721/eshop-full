@@ -6,15 +6,18 @@ function HomeError() {
   const [searchParams] = useSearchParams()
   const errorId = searchParams.get('errorId') ?? ''
   const [data, setData] = useState<HomeErrorData | null>(null)
+  const [fetchError, setFetchError] = useState<Error | null>(null)
 
   useEffect(() => {
-    getHomeError(errorId).then(setData)
+    getHomeError(errorId).then(setData).catch(setFetchError)
   }, [errorId])
 
   return (
     <div>
       <h1>Error</h1>
-      {data?.error ? (
+      {fetchError ? (
+        <p>Could not load error details: {fetchError.message}</p>
+      ) : data?.error ? (
         <pre>{JSON.stringify(data.error, null, 2)}</pre>
       ) : (
         <p>No error information is available.</p>
