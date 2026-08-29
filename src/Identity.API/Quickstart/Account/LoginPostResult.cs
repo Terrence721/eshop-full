@@ -9,4 +9,5 @@ public class LoginPostResult
     public string? RedirectUrl { get; set; }
     public bool IsNativeClient { get; set; }
     public LoginViewModel? ViewModel { get; set; }
+    public string? ValidationError { get; set; }
 }
