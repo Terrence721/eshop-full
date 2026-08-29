@@ -1,7 +1,7 @@
 # 📝 TODO
 
 <!-- markdownlint-disable-next-line MD036 -->
-**Last Updated: August 26, 2026**
+**Last Updated: August 29, 2026**
 
 A living list of what's done and what's left on this build. This is an independently modernized version of Microsoft's [dotnet/eShop](https://github.com/dotnet/eShop) reference app — a .NET Aspire microservices e-commerce platform added **one file at a time**, evaluated and upgraded as it comes in, not a wholesale copy of the source repo. See [docs/architecturedesign.md](docs/architecturedesign.md) for how it's put together and the [project board](https://github.com/users/Terrence721/projects/5) for the live per-project Kanban view of the migration itself.
 
@@ -695,7 +695,7 @@ Migration order is **foundation first**: shared/foundation projects, then the se
 | 3 | `eShop.ServiceDefaults` | ✅ Done — see "eShop.ServiceDefaults" above |
 | 4 | `IntegrationEventLogEF` | ✅ Done — see "IntegrationEventLogEF" above |
 | 5 | `Identity.API` | ✅ **Done as of 2026-08-26**, now also verified genuinely running standalone (2026-08-28) — source (`Models`/`Configuration`/`Data`/`Quickstart`/`Services`/`Program.cs`, 129 files) and `tests/Identity.API.UnitTests` (every file with a real contract, 16 test files) both complete — see "Identity.API" and "tests/Identity.API.UnitTests" below. The Quickstart UI's account/consent/device actions are exposed for `Identity.WebApp` to call now (all converted to JSON, see "Quickstart UI" below). `launchSettings.json`, `user-secrets`-based local config, and this project's first real EF Core migration all added — see "Getting Identity.API to actually run standalone" above; a real schema/model mismatch bug found and fixed along the way. **Still flagged, genuinely can't verify yet**: `AuthenticationExtensions.AddDefaultAuthentication`'s `ValidateAudience = true` actually validating cleanly needs real issued tokens from a running instance — see "eShop.ServiceDefaults" above — waits on real infrastructure (`eShop.AppHost`) that doesn't exist yet, not on more source-file work |
-| 6 | `Identity.WebApp` | 🚧 **Scaffold added, 2026-08-28** — new project, not in upstream — React replacement for Duende's Quickstart Razor UI (`Account`/`Consent`/`Device`/`Diagnostics`/`Grants`), decided 2026-08-20. Pure Yarn workspace, no `.csproj`/`.esproj` referenced from `eShop.slnx` — see "Identity.WebApp scaffold" above for why. Real feature pages not started yet — see "Frontend and API layer" below |
+| 6 | `Identity.WebApp` | 🚧 **In progress** — new project, not in upstream — React replacement for Duende's Quickstart Razor UI (`Account`/`Consent`/`Device`/`Diagnostics`/`Grants`), decided 2026-08-20. Pure Yarn workspace, no `.csproj`/`.esproj` referenced from `eShop.slnx` — see "Identity.WebApp scaffold" above for why. **`Home` area (#24) done** as of 2026-08-29 (router wired, `App.tsx` retired); **`Account` area (#25)**: 2 real backend bugs fixed in `Identity.API`, frontend pages not started, and a real architectural gap (dev-proxy vs. Duende's top-level redirects) found and flagged — see "Account (#25)" above. `Consent`/`Device`/`Diagnostics`/`Grants` frontends not started — see "Frontend and API layer" below |
 | 7 | `Catalog.API` | Not started |
 | 8 | `Basket.API` | Not started — **flag when reached**: add `Grpc.AspNetCore.Web` middleware so its gRPC service also serves gRPC-Web for `WebApp`/`WebBFF` — see "Frontend and API layer" below. Also, `Config.cs`'s `basketswaggerui` client uses deprecated OAuth2 Implicit flow — see "Identity.API" above |
 | 9 | `Ordering.Domain` | Not started |
