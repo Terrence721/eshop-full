@@ -330,22 +330,28 @@ Verified end-to-end, not assumed: real `dotnet run` against the isolated Postgre
 
 Commits: `e77deab` (`.gitignore` — also caught `tempkey.jwk`, Duende's auto-generated dev signing key, real private key material that was about to be committed by accident) → `744d7fe` (launchSettings.json) → `dd76bd9` (ApplicationDbContext fix) → `32ced7d` (the migration itself).
 
-### Home (#24) — Index/Error pages done, router wiring still open
+### Home (#24) — complete
 
 Real feature work started same session, right after the infrastructure chain above unblocked a genuinely live `Identity.API` to build and verify against:
 
 - `vite.config.ts` (`7606998`) — dev-proxy forwarding the Quickstart routes plus Duende's `/connect`/`/.well-known` endpoints to `localhost:5223`. Verified end-to-end: `curl` through Vite's dev server returns the same response as hitting `Identity.API` directly.
 - `src/api/home.ts` (`3db85ca`) — typed `fetch` client for `HomeController`'s two actions. `Home/Index`'s Development-only `404` handled as a real non-error case; `HomeError.error` left honestly typed as an opaque object since Duende's `ErrorMessage` shape hit real reflection friction rather than resolving cleanly.
-- `react-router` `8.3.0` added (`cec9918`) — **exact-pinned, not this project's usual `^` range**: `8.3.1` (the real latest) was published only ~3 hours before this session reached it and Yarn's quarantine feature blocked it outright as a routine new-package supply-chain safeguard, not a known vulnerability. Also real, not assumed: v8 removed `react-router-dom` entirely — `RouterProvider` now imports from a separate `react-router/dom` subpath.
+- `react-router` `8.3.0` added (`cec9918`) — **exact-pinned, not this project's usual `^` range**: `8.3.1` (the real latest) was published only ~3 hours before this session reached it and Yarn's quarantine feature blocked it outright as a routine new-package supply-chain safeguard, not a known vulnerability.
 - `pages/Home/Index.tsx` (`95935cf`) / `pages/Home/Error.tsx` (`f85d620`) — the two real page components, calling the API client above.
-
-**Still open, not yet done:** `main.tsx` doesn't use the router yet — `App.tsx`'s placeholder is still what actually renders. Next file is wiring `createBrowserRouter`/`RouterProvider` into `main.tsx` (retiring `App.tsx`, which was always meant to be temporary — see its own commit message), mapping `/Home/Index` and `/Home/Error` as real routes. Route paths mirror `Identity.API`'s own controller/action casing exactly (not lowercase conventional SPA routes) — deliberate, since Duende IdentityServer's default interaction URLs (login/consent/error redirect targets) already match these exact path conventions; the SPA's routes have to line up with where Duende will actually redirect the browser.
 
 **⏸️ Checkpoint, 2026-08-28 — session paused here at the user's request.** Since the "last cadence" note above: a full drift sweep ran across every tracking surface (`README.md`, `docs/architecturedesign.md`, both diagrams with dangling `--progress`/"in progress" legend entries fixed, the wiki, issues `#11`/`#24`) — see the sweep summary for the full list of what was found and fixed. Dependabot PRs `#22`/`#23` were reviewed for real (genuinely clean CI, not just no-conflicts) and squash-merged, then re-verified locally together (`dotnet build`/`yarn install --immutable` both clean).
 
 Working tree clean, everything pushed, CI green throughout. Dev server processes (`dotnet run`, `yarn dev`) stopped at session end — restart both when resuming. `eshop-identity-postgres` Docker container left running (port `5433`), `user-secrets` for `Identity.API` still configured — no need to repeat any of this session's setup chain, just `dotnet run --launch-profile http` (Identity.API) + `yarn dev` (Identity.WebApp).
 
-**Exact resume point, unchanged from above:** `main.tsx` still doesn't use `react-router` — `App.tsx`'s placeholder still renders. That's the very next file.
+**Resumed 2026-08-29 — router wiring finished, plus two real bugs found and fixed along the way:**
+
+- **Correction to the `react-router` note above**: checked the installed `8.3.0` package's actual export map and runtime `dist/production` output (not just assumed from the changelog) — `createBrowserRouter` and `RouterProvider` are both genuine exports of the main `react-router` package. The `/dom` subpath only carries `HydratedRouter` and RSC-streaming APIs for framework-mode SSR hydration, which doesn't apply here; this is a plain client-only Vite SPA. `HomeError.tsx`'s existing `useSearchParams` import from `'react-router'` (not `/dom`) was already correct.
+- **Real bug in `pages/Home/Index.tsx`, fixed (`3c9b662`)**: `getHomeIndex().then(setData).finally(...)` had no `.catch()` — a genuine fetch failure (e.g. a real 500 from `Identity.API`) became an unhandled promise rejection, and the UI silently fell through to "This page is only available in Development," misrepresenting a real error as the expected Development-only-404 case. Added an `error` state with a distinct message.
+- **Same bug, same fix, in `pages/Home/Error.tsx` (`22ee07e`)**: doubly worth catching since it's the *error* page itself silently swallowing its own fetch errors, falling through to "No error information is available" — now distinguished with a `fetchError` state.
+- **`main.tsx` wired (`0d54878`)**: `createBrowserRouter`/`RouterProvider` map `/Home/Index` and `/Home/Error` to the two page components above, using `Component:` (not `element:`) per the v8 data-router idiom. Route paths mirror `Identity.API`'s own controller/action casing exactly (not lowercase conventional SPA routes) — deliberate, since Duende IdentityServer's redirect targets already match these exact path conventions.
+- **`App.tsx` retired (`810d06e`)**: its placeholder stopped rendering the moment `main.tsx` switched to the router; deleted once confirmed to have zero remaining references (`yarn build` bundle size unchanged, confirming it was truly dead).
+
+All 4 commits individually CI-green (`dotnet build`/`yarn lint`/`yarn build` verified locally before each push too). **`Home` (#24) is now fully done — next up per the plan is `Account` (#25), the largest area (`AccountController` + `ExternalController`).**
 
 ### Identity.API (complete)
 
