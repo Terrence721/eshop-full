@@ -655,6 +655,8 @@ Commit: `a87e627`.
 
 Phase-level rollup of the 21-project migration, grouped by architectural layer (see [architecturedesign.md Section 4](docs/architecturedesign.md#4-services-breakdown)). Each project's own detail lives in its "Done" section above or the "Still to do" table below — this is the summary view.
 
+These 5 also exist as real [GitHub Milestones](https://github.com/Terrence721/eshop-full/milestones) with the same names/descriptions, added 2026-08-29. `Foundation` also holds all 15 closed Dependabot dependency/CI-bump PRs and [issue #5 "Testing"](https://github.com/Terrence721/eshop-full/issues/5) — none of these belong to any of the 5 layers on their own (issue #5 is the cross-layer parent tracking issue for test coverage across the whole migration), but the user chose `Foundation` as the closest fit rather than leaving them unmilestoned. Every other tracking issue was assigned to the milestone matching its own project: `Identity.API`/its test-coverage issue (#10, #21) to `Domain APIs`; `Identity.WebApp`, its 6 area sub-issues, and the `clean-logs.mjs` script wired into its dev startup (#11, #24-30) to `Web Frontends`.
+
 | Milestone | Projects | Status |
 | --- | --- | --- |
 | **Foundation** | `Shared`, `EventBus`, `EventBusRabbitMQ`, `eShop.ServiceDefaults`, `IntegrationEventLogEF` | ✅ **Complete** — all 4 real projects done, reviewed, 83 tests passing |
