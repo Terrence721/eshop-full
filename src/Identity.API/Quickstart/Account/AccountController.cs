@@ -115,7 +115,10 @@ public class AccountController : ControllerBase
             await _events.RaiseAsync(new UserLoginFailureEvent(model.Username, "invalid credentials", clientId: context?.Client.ClientId), cancellationToken);
         }
 
-        // something went wrong, redisplay form with error
+        // something went wrong, redisplay form with error. Given the always-true
+        // ModelState.IsValid above, the only real path here is invalid credentials,
+        // so ValidationError can be set unconditionally rather than tracked through
+        // a separate flag.
         var vm = await BuildLoginViewModelAsync(model, cancellationToken);
         return Ok(new LoginPostResult { ViewModel = vm, ValidationError = AccountOptions.InvalidCredentialsErrorMessage });
     }
