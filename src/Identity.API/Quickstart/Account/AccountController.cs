@@ -320,8 +320,20 @@ public class AccountController : ControllerBase
             return vm;
         }
 
-        // show the logout prompt. this prevents attacks where the user
-        // is automatically signed out by another malicious web page.
+        if (context?.ShowSignoutPrompt == true)
+        {
+            // IdentityServer itself determined a prompt is warranted for this
+            // specific logout request -- a genuine security signal (this
+            // prevents attacks where the user is automatically signed out by
+            // another malicious web page) that shouldn't be silently
+            // overridden by the site-wide AccountOptions.ShowLogoutPrompt
+            // convenience toggle above.
+            vm.ShowLogoutPrompt = true;
+            return vm;
+        }
+
+        // no real logout context at all (e.g. a stale/fake logoutId, or a
+        // direct visit with none) -- fall back to the site-wide default.
         return vm;
     }
 
