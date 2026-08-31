@@ -152,7 +152,7 @@ public class AccountControllerTests
         var result = await controller.Login(new LoginInputModel { Username = "alice", Password = "pw" }, CancellationToken.None);
 
         var body = ((OkObjectResult)result.Result!).Value as LoginPostResult;
-        Assert.AreEqual("~/", body!.RedirectUrl);
+        Assert.AreEqual("/", body!.RedirectUrl);
     }
 
     [TestMethod]
@@ -220,7 +220,7 @@ public class AccountControllerTests
         var result = await controller.LoginCancel(null, CancellationToken.None);
 
         var body = ((OkObjectResult)result.Result!).Value as LoginPostResult;
-        Assert.AreEqual("~/", body!.RedirectUrl);
+        Assert.AreEqual("/", body!.RedirectUrl);
     }
 
     // ---- Logout GET ----
