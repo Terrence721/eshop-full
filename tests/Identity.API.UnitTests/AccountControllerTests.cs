@@ -257,7 +257,7 @@ public class AccountControllerTests
         var identity = new ClaimsIdentity([new Claim("sub", "user-1")], "auth-type");
         var controller = CreateController(userManager: userManager, signInManager: signInManager, interaction: interaction, events: events, user: new ClaimsPrincipal(identity));
 
-        var result = await controller.Logout(new LogoutInputModel { LogoutId = "logout-1" }, CancellationToken.None);
+        var result = await controller.LogoutPost("logout-1", CancellationToken.None);
 
         await signInManager.Received(1).SignOutAsync();
         await events.Received(1).RaiseAsync(Arg.Any<UserLogoutSuccessEvent>(), Arg.Any<CancellationToken>());

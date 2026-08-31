@@ -169,13 +169,23 @@ public class AccountController : ControllerBase
     /// case) or a genuine cross-origin one (external-IdP sign-out), and
     /// only a real redirect lets the browser handle either uniformly.
     /// fetch() follows a same-origin redirect transparently; a cross-origin
-    /// one needs a real full-page POST, which only the browser can do.
+    /// one needs a real full-page POST, which only the browser can do --
+    /// which is also why logoutId is a plain query parameter here (matching
+    /// LoginCancel below) rather than a LogoutInputModel JSON body: a real
+    /// &lt;form&gt; submission can only send application/x-www-form-urlencoded,
+    /// which [FromBody] JSON binding rejects outright (confirmed for real:
+    /// a form-encoded POST against the JSON-bound version came back 415).
+    /// Named LogoutPost, not Logout -- now that both actions share the
+    /// identical (string?, CancellationToken) signature, C# overload
+    /// resolution (unaware of [HttpGet]/[HttpPost]) can't tell them apart
+    /// by method name alone. [ActionName] keeps the route /Account/Logout.
     /// </summary>
     [HttpPost]
-    public async Task<IActionResult> Logout(LogoutInputModel model, CancellationToken cancellationToken)
+    [ActionName("Logout")]
+    public async Task<IActionResult> LogoutPost(string? logoutId, CancellationToken cancellationToken)
     {
         // build a model so we know whether an external IdP is involved
-        var vm = await BuildLoggedOutViewModelAsync(model.LogoutId, cancellationToken);
+        var vm = await BuildLoggedOutViewModelAsync(logoutId, cancellationToken);
 
         if (User.Identity?.IsAuthenticated == true)
         {
