@@ -236,13 +236,29 @@ public class AccountControllerTests
         Assert.IsFalse(vm!.ShowLogoutPrompt);
     }
 
+    [TestMethod]
+    public async Task Get_Logout_shows_the_prompt_when_interaction_context_says_so()
+    {
+        var interaction = Substitute.For<IIdentityServerInteractionService>();
+        interaction.GetLogoutContextAsync(Arg.Any<string?>(), Arg.Any<CancellationToken>()).Returns(new LogoutRequest("iframe-url", null));
+        var identity = new ClaimsIdentity([new Claim("sub", "user-1")], "auth-type");
+        var controller = CreateController(interaction: interaction, user: new ClaimsPrincipal(identity));
+
+        var result = await controller.Logout((string?)null, CancellationToken.None);
+
+        var vm = ((OkObjectResult)result.Result!).Value as LogoutViewModel;
+        Assert.IsTrue(vm!.ShowLogoutPrompt);
+    }
+
     // Get_Logout's "interaction says it's safe to auto-signout" branch
     // (LogoutRequest.ShowSignoutPrompt == false) isn't covered here -
     // ShowSignoutPrompt is derived internally by Duende and isn't settable
     // through any publicly constructible LogoutRequest/LogoutMessage path
     // (verified empirically: RequiresConfirmation true/false/message-null all
     // produced ShowSignoutPrompt == true). The "not authenticated" branch
-    // above exercises the same vm.ShowLogoutPrompt = false assignment.
+    // above exercises the same vm.ShowLogoutPrompt = false assignment; the
+    // test above exercises the ShowSignoutPrompt == true override instead,
+    // since that's the value every real, constructible LogoutRequest produces.
 
     // ---- Logout POST ----
 
