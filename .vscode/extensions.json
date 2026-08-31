@@ -3,12 +3,15 @@
     "ms-dotnettools.csdevkit",
     "microsoft-aspire.aspire-vscode",
     "ms-playwright.playwright",
-    "dbaeumer.vscode-eslint",
-    "esbenp.prettier-vscode",
+    "oxc.oxc-vscode",
     "editorconfig.editorconfig",
     "redhat.vscode-yaml",
     "davidanson.vscode-markdownlint",
     "github.vscode-github-actions",
     "ms-azuretools.vscode-docker"
+  ],
+  "unwantedRecommendations": [
+    "dbaeumer.vscode-eslint",
+    "esbenp.prettier-vscode"
   ]
 }
