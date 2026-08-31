@@ -103,7 +103,17 @@ public class AccountController : ControllerBase
                 }
                 else if (string.IsNullOrEmpty(model.ReturnUrl))
                 {
-                    return Ok(new LoginPostResult { RedirectUrl = "~/" });
+                    // Plain "/" -- upstream's "~/" is ASP.NET's server-side
+                    // tilde-root syntax, meaningless to a JSON client that
+                    // just assigns this to window.location.href (confirmed
+                    // for real: the browser navigated to a literal, nonexistent
+                    // "/Account/~/" path instead of the site root). Url.Content("~/")
+                    // was tried and reverted -- it needs a real IUrlHelper,
+                    // which isn't reliably available (a real NullReferenceException
+                    // in one code path here, silently empty in another,
+                    // depending on unrelated test/request setup) for a
+                    // sub-path-hosting scenario this app has no evidence of needing.
+                    return Ok(new LoginPostResult { RedirectUrl = "/" });
                 }
                 else
                 {
@@ -147,8 +157,9 @@ public class AccountController : ControllerBase
             });
         }
 
-        // since we don't have a valid context, then we just go back to the home page
-        return Ok(new LoginPostResult { RedirectUrl = "~/" });
+        // since we don't have a valid context, then we just go back to the home page.
+        // Plain "/", not "~/" -- see the Login action's own comment for why.
+        return Ok(new LoginPostResult { RedirectUrl = "/" });
     }
 
     /// <summary>
