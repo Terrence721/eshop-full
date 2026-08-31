@@ -121,3 +121,12 @@ export async function postLogout(logoutId: string | null): Promise<LoggedOutView
   }
   return response.json()
 }
+
+// The real fallback for postLogout's cross-origin case: a <form> submitted
+// to this same URL, letting the browser follow the whole external-IdP
+// round trip natively. Matches buildExternalChallengeUrl's precedent --
+// URLs meant for real navigation, not fetch(), still live in api/.
+export function buildLogoutFormAction(logoutId: string | null): string {
+  const query = logoutId ? `?logoutId=${encodeURIComponent(logoutId)}` : ''
+  return `/Account/Logout${query}`
+}
