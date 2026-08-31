@@ -163,12 +163,18 @@ public class AccountController : ControllerBase
     }
 
     /// <summary>
-    /// Handle logout page postback
+    /// Handle logout page postback. Always redirects rather than ever
+    /// returning the LoggedOutViewModel directly -- a caller can't know in
+    /// advance whether this ends in a same-origin redirect (the common
+    /// case) or a genuine cross-origin one (external-IdP sign-out), and
+    /// only a real redirect lets the browser handle either uniformly.
+    /// fetch() follows a same-origin redirect transparently; a cross-origin
+    /// one needs a real full-page POST, which only the browser can do.
     /// </summary>
     [HttpPost]
-    public async Task<ActionResult<LoggedOutViewModel>> Logout(LogoutInputModel model, CancellationToken cancellationToken)
+    public async Task<IActionResult> Logout(LogoutInputModel model, CancellationToken cancellationToken)
     {
-        // build a model so the caller knows what to display
+        // build a model so we know whether an external IdP is involved
         var vm = await BuildLoggedOutViewModelAsync(model.LogoutId, cancellationToken);
 
         if (User.Identity?.IsAuthenticated == true)
@@ -188,12 +194,25 @@ public class AccountController : ControllerBase
             // build a return URL so the upstream provider will redirect back
             // to us after the user has logged out. this allows us to then
             // complete our single sign-out processing.
-            var url = Url.Action(nameof(Logout), new { logoutId = vm.LogoutId });
+            var url = Url.Action(nameof(LoggedOut), new { logoutId = vm.LogoutId });
 
             // this triggers a redirect to the external provider for sign-out
             return SignOut(new AuthenticationProperties { RedirectUri = url }, vm.ExternalAuthenticationScheme);
         }
 
+        return RedirectToAction(nameof(LoggedOut), new { logoutId = vm.LogoutId });
+    }
+
+    /// <summary>
+    /// Show the logged-out confirmation. The one real landing point for both
+    /// of Logout(POST)'s outcomes -- the direct case redirects here itself,
+    /// the external-IdP case lands here after the upstream provider's own
+    /// sign-out redirects back.
+    /// </summary>
+    [HttpGet]
+    public async Task<ActionResult<LoggedOutViewModel>> LoggedOut(string? logoutId, CancellationToken cancellationToken)
+    {
+        var vm = await BuildLoggedOutViewModelAsync(logoutId, cancellationToken);
         return Ok(vm);
     }
 
