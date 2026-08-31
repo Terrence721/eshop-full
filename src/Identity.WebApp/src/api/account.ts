@@ -92,26 +92,30 @@ export async function getLoggedOut(logoutId: string | null): Promise<LoggedOutVi
   return response.json()
 }
 
-// AccountController.Logout(POST) now always redirects rather than ever
-// returning LoggedOutViewModel directly (fixed 2026-08-31, see todo.md) --
-// the common case (no external identity provider on the session) redirects
-// same-origin to /Account/LoggedOut, which fetch() follows transparently
-// per the Fetch spec (verified for real against the live server: a POST
-// redirected 302 comes back as a 200 with redirected:true and the real
-// LoggedOutViewModel body, method correctly rewritten POST->GET). The rare
-// case (an external IdP attached) redirects cross-origin instead, which a
-// browser's fetch() cannot follow under its default 'cors' mode without
-// the external provider granting CORS -- foundational, long-standing Fetch
-// spec behavior, not something this session re-verified in an actual
-// browser. Callers must catch a thrown error here and fall back to a real
-// <form> POST (full navigation) to let the browser handle that case
-// natively -- not yet needed since no page calls this yet.
+// AccountController.LogoutPost (routed to /Account/Logout) now always
+// redirects rather than ever returning LoggedOutViewModel directly (fixed
+// 2026-08-31, see todo.md) -- the common case (no external identity
+// provider on the session) redirects same-origin to /Account/LoggedOut,
+// which fetch() follows transparently per the Fetch spec (verified for
+// real against the live server: a POST redirected 302 comes back as a 200
+// with redirected:true and the real LoggedOutViewModel body, method
+// correctly rewritten POST->GET). The rare case (an external IdP attached)
+// redirects cross-origin instead, which a browser's fetch() cannot follow
+// under its default 'cors' mode without the external provider granting
+// CORS -- foundational, long-standing Fetch spec behavior, not something
+// this session re-verified in an actual browser. Callers must catch a
+// thrown error here and fall back to a real <form> POST (full navigation)
+// to let the browser handle that case natively.
+//
+// logoutId is a query parameter, not a JSON body -- deliberately, so that
+// exact same fallback <form> (which can only send
+// application/x-www-form-urlencoded, never JSON) hits the identical URL
+// this function does and binds correctly. Verified for real: a
+// form-urlencoded POST against the old JSON-bound version came back 415;
+// against this query-string version it redirects correctly, same as fetch().
 export async function postLogout(logoutId: string | null): Promise<LoggedOutViewModel> {
-  const response = await fetch('/Account/Logout', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ logoutId }),
-  })
+  const query = logoutId ? `?logoutId=${encodeURIComponent(logoutId)}` : ''
+  const response = await fetch(`/Account/Logout${query}`, { method: 'POST' })
   if (!response.ok) {
     throw new Error(`POST /Account/Logout failed: ${response.status}`)
   }
