@@ -257,11 +257,26 @@ public class AccountControllerTests
         var identity = new ClaimsIdentity([new Claim("sub", "user-1")], "auth-type");
         var controller = CreateController(userManager: userManager, signInManager: signInManager, interaction: interaction, events: events, user: new ClaimsPrincipal(identity));
 
-        var result = await controller.Logout(new LogoutInputModel(), CancellationToken.None);
+        var result = await controller.Logout(new LogoutInputModel { LogoutId = "logout-1" }, CancellationToken.None);
 
         await signInManager.Received(1).SignOutAsync();
         await events.Received(1).RaiseAsync(Arg.Any<UserLogoutSuccessEvent>(), Arg.Any<CancellationToken>());
-        Assert.IsInstanceOfType<OkObjectResult>(result.Result);
+        var redirect = (RedirectToActionResult)result;
+        Assert.AreEqual(nameof(AccountController.LoggedOut), redirect.ActionName);
+        Assert.AreEqual("logout-1", redirect.RouteValues!["logoutId"]);
+    }
+
+    // ---- LoggedOut GET ----
+
+    [TestMethod]
+    public async Task Get_LoggedOut_returns_the_view_model()
+    {
+        var controller = CreateController();
+
+        var result = await controller.LoggedOut("logout-1", CancellationToken.None);
+
+        var vm = ((OkObjectResult)result.Result!).Value as LoggedOutViewModel;
+        Assert.AreEqual("logout-1", vm!.LogoutId);
     }
 
     [TestMethod]
