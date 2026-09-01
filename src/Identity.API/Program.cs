@@ -35,6 +35,22 @@ builder.Services.AddIdentityServer(options =>
 
     // TODO: Remove this line in production.
     options.KeyManagement.Enabled = false;
+
+    // Duende's compiled-in default (confirmed via reflection: new
+    // IdentityServerOptions().UserInteraction.ConsentUrl == "/consent")
+    // doesn't match ConsentController's real [Route("[controller]/[action]")]
+    // route. Confirmed live and load-bearing, not theoretical: with a real
+    // client's RequireConsent set to true, an authenticated /connect/authorize
+    // request actually redirected to "/consent" -- a route that structurally
+    // cannot match "/Consent/Index" (a missing second segment, not just a
+    // case difference; ASP.NET routing is case-insensitive, confirmed
+    // separately for ErrorUrl's own "/home/error" default, which needed no
+    // fix). LoginUrl/LogoutUrl needed no equivalent fix -- verified live via
+    // real /connect/authorize and /connect/endsession requests, both already
+    // correctly target /Account/Login and /Account/Logout respectively
+    // (via ASP.NET Core Identity's own cookie-scheme convention, not this
+    // options object at all).
+    options.UserInteraction.ConsentUrl = "/Consent/Index";
 })
 .AddInMemoryIdentityResources(Config.GetResources())
 .AddInMemoryApiScopes(Config.GetApiScopes())
