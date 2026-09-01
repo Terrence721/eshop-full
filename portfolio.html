@@ -416,7 +416,7 @@
 
 <div class="hero">
   <div class="wrap">
-    <p class="eyebrow">Portfolio Manifest — Prepared 2026-08-20, updated 2026-08-29</p>
+    <p class="eyebrow">Portfolio Manifest — Prepared 2026-08-20, updated 2026-08-31</p>
     <h1 class="name">Terrence&nbsp;Daniels</h1>
     <p class="role">Full-Stack .NET Engineer</p>
     <p class="thesis">
@@ -447,7 +447,7 @@
   </div>
   <div class="stamp" aria-hidden="true">
     <div class="stamp-inner">
-      <span class="n">14</span>
+      <span class="n">20</span>
       <span class="l">REAL BUGS<br />FOUND &amp; FIXED</span>
     </div>
   </div>
@@ -463,7 +463,7 @@
         <span class="v">174/174</span><span class="k">tests passing</span>
       </div>
       <div class="manifest-cell">
-        <span class="v">14</span><span class="k">real bugs found &amp; fixed</span>
+        <span class="v">20</span><span class="k">real bugs found &amp; fixed</span>
       </div>
       <div class="manifest-cell">
         <span class="v">3</span><span class="k">decorator layers, one IEventBus</span>
@@ -523,10 +523,10 @@
       transactional outbox every event-publishing service will write through —
       and <code>Identity.API</code> (Duende IdentityServer) — are all done and
       reviewed. <code>Identity.WebApp</code> (React, replacing Duende's
-      Quickstart Razor UI) is in progress next — its <code>Home</code> page
-      is done, and two real backend bugs were found and fixed in
-      <code>Identity.API</code> while starting its <code>Account</code> area.
-      The other 15 projects don't exist on
+      Quickstart Razor UI) is in progress — its <code>Home</code> and
+      <code>Account</code> areas are both done, verified end-to-end with a
+      real browser; its <code>Consent</code> area is next, with a real
+      routing bug already found and fixed. The other 15 projects don't exist on
       disk yet; see
       <a href="https://github.com/Terrence721/eshop-full/blob/main/todo.md">todo.md</a>
       for the honest current state rather than assuming more is done.
@@ -819,6 +819,116 @@
             fallback and an added guard.
           </div>
           <div class="meta"><span class="tag">medium · reliability</span></div>
+        </div>
+      </div>
+      <div class="item">
+        <div class="no">15</div>
+        <div>
+          <div class="file">Identity.API — LoginPostResult never carried the validation error it promised</div>
+          <div class="desc">
+            Its own doc comment already promised "the redisplayed form with
+            a validation error," but the type never actually included one.
+            <code>AccountController.Login</code>'s invalid-credentials path
+            called <code>ModelState.AddModelError(...)</code>, which has
+            zero effect on a JSON response — <code>[ApiController]</code>'s
+            automatic 400 only fires from pre-action binding validation,
+            never a manual call inside the action. The client got
+            <code>200 OK</code> with a redisplayed form and no indication
+            why. Fixed by adding a real <code>ValidationError</code> field
+            and setting it directly.
+          </div>
+          <div class="meta"><span class="tag">medium · correctness</span></div>
+        </div>
+      </div>
+      <div class="item">
+        <div class="no">16</div>
+        <div>
+          <div class="file">Identity.API — a real &lt;form&gt; POST to /Account/Logout came back 415</div>
+          <div class="desc">
+            <code>LogoutInputModel</code>'s JSON-body binding rejected
+            <code>application/x-www-form-urlencoded</code> outright — a real
+            HTML form can only send that or multipart, never JSON, so the
+            external-IdP sign-out fallback (a genuine full-page POST, since
+            <code>fetch()</code> can't follow a cross-origin redirect) would
+            have failed every time. Fixed by switching <code>logoutId</code>
+            to a plain query parameter, which then created a genuine C#
+            overload conflict between the GET and POST <code>Logout</code>
+            actions, resolved with <code>[ActionName("Logout")]</code>.
+          </div>
+          <div class="meta"><span class="tag">medium · correctness</span></div>
+        </div>
+      </div>
+      <div class="item">
+        <div class="no">17</div>
+        <div>
+          <div class="file">Identity.API — the logout confirmation prompt could never actually show</div>
+          <div class="desc">
+            <code>BuildLogoutViewModelAsync</code>'s own comment says it
+            "prevents attacks where the user is automatically signed out by
+            another malicious web page" — but <code>ShowLogoutPrompt</code>
+            was only ever explicitly forced <code>false</code>, never set
+            <code>true</code> anywhere in the method, in this fork and in
+            Microsoft's own real shipped Quickstart source. Fixed with an
+            explicit override so Duende's own
+            <code>context.ShowSignoutPrompt == true</code> security signal
+            can't be silently demoted by the site-wide convenience toggle.
+          </div>
+          <div class="meta"><span class="tag">low · security</span></div>
+        </div>
+      </div>
+      <div class="item">
+        <div class="no">18</div>
+        <div>
+          <div class="file">Identity.WebApp — a successful login redirected the browser to a URL that doesn't exist</div>
+          <div class="desc">
+            <code>AccountController.Login</code>/<code>LoginCancel</code>
+            returned <code>RedirectUrl: "~/"</code> for the no-return-URL
+            case — ASP.NET's server-side tilde-root syntax, meaningless to a
+            JSON client doing <code>window.location.href = redirectUrl</code>.
+            Confirmed live with a real browser: it navigated to a literal,
+            nonexistent <code>/Account/~/</code> path instead of the site
+            root. Fixed with a plain <code>"/"</code> literal, after
+            <code>Url.Content("~/")</code> itself proved fragile (a real
+            <code>NullReferenceException</code> in one test context,
+            silently empty in another) for a sub-path-hosting scenario this
+            app has no evidence of needing.
+          </div>
+          <div class="meta"><span class="tag">high · correctness</span></div>
+        </div>
+      </div>
+      <div class="item">
+        <div class="no">19</div>
+        <div>
+          <div class="file">Identity.WebApp — the site's own root path was a dead end</div>
+          <div class="desc">
+            Nothing in the SPA's router was ever mapped to bare
+            <code>"/"</code> — so the fix above (a genuine, correct redirect
+            target) still hit React Router's own 404 the moment a real
+            browser reached it. Confirmed live via Playwright. Fixed with a
+            route redirecting <code>"/"</code> to <code>/Home/Index</code>,
+            this SPA's one real landing page.
+          </div>
+          <div class="meta"><span class="tag">medium · correctness</span></div>
+        </div>
+      </div>
+      <div class="item">
+        <div class="no">20</div>
+        <div>
+          <div class="file">Identity.API — Duende's own consent-screen redirect targeted a route that doesn't exist</div>
+          <div class="desc">
+            <code>IdentityServerOptions.UserInteraction.ConsentUrl</code>'s
+            compiled-in default is <code>/consent</code>
+            (reflection-confirmed), but <code>ConsentController</code>'s
+            real route is <code>/Consent/Index</code> — a missing segment,
+            not a case difference. Confirmed live and load-bearing: with a
+            real client's <code>RequireConsent</code> temporarily set to
+            <code>true</code>, an authenticated <code>/connect/authorize</code>
+            request genuinely redirected to <code>/consent</code>. Currently
+            latent (no registered client requires consent today), but would
+            have silently broken the instant one did. Fixed with an explicit
+            <code>ConsentUrl</code> override.
+          </div>
+          <div class="meta"><span class="tag">medium · correctness</span></div>
         </div>
       </div>
     </div>
