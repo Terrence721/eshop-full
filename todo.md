@@ -407,6 +407,22 @@ Read `ConsentController.cs`/its models before writing any frontend code, same di
 
 **⏸️ Checkpoint, 2026-08-31 — session paused here at the user's request.** Working tree clean, all commits pushed and CI-green (verified via the same background-Monitor wait-for-completion discipline used throughout this session). All temporary test state cleanly reverted: `Config.cs`'s `RequireConsent` test flag, `Program.cs`'s diagnostic middleware, throwaway verification scripts (never committed). `eshop-identity-postgres` Docker container still up, `user-secrets` still configured — no setup needed on resume. No dev servers currently running; one orphaned Vite process (a `TaskStop` that didn't fully kill its child, same class of issue hit twice before this session) was found and force-stopped during cleanup.
 
+**Full drift sweep completed the same day, after the checkpoint above** (todo.md, docs/architecturedesign.md, README.md, portfolio.html, all 4 diagrams, the wiki, the GitHub Projects board, the GitHub Issues, the portfolio hub, the profile README) — real drift found and fixed in most of them, all sharing the same root cause: they were last touched when Account (#25) still had "backend fixes landed, frontend not started," which the actual work since then made false.
+
+- **Issue #25 rewritten and closed** (was still open with a stale body); board status corrected `In Progress` → `Done`.
+- **Issue #26 rewritten** with real Consent progress and the Host-header finding; board status corrected `Backlog` → `In Progress`.
+- **Issue #11 (parent) rewritten** to reflect both.
+- **Issue #10 (Identity.API)** — a second pass after the main sweep caught its portfolio case-study reference still saying "items 11–14," stale now that portfolio.html's ledger runs through 20. Fixed. Checked every other completed-project issue (`#6`/`#7`/`#8`/`#9`/`#21`/`#24`/`#30`) for the same kind of reference — none of them had it.
+- **Wiki** (`Home.md`, `⭐-Architecture-Overview.md`, `⭐-Identity.API.md`) — same core drift, one combined commit.
+- **README.md, docs/architecturedesign.md, portfolio.html, diagrams/projects-reference.html** — same core drift, fixed individually. `portfolio.html` also got 6 new numbered bug-ledger entries (15–20, one per real bug found this session) since its count was still stuck at 14; `README.md` also got a VS Code install section retitled from the odd negative "...without Visual Studio" framing to a direct "VS Code (Windows, Mac, or Linux)" heading, since that's the IDE this repo is actually developed in.
+- **Checked, confirmed already consistent, no changes needed:** portfolio hub (`terrence721.github.io`, re-verified against the live page directly, not just its source), profile README, `diagrams/system-architecture.html`, `diagrams/event-flow.html`, `diagrams/testing-strategy.html`.
+
+All commits individually pushed and CI-verified (local repo + wiki repo, two separate git histories). Rechecked the full board's Status field across all 60 items (not just #25/#26) — everything else was already accurate.
+
+**⏸️ Checkpoint, 2026-08-31 (second one today) — session paused here at the user's request, immediately after the drift sweep above.** Working tree clean, nothing pending. The Vite proxy Host-header fix (see above) is still the next real work item whenever this resumes — the drift sweep didn't touch that, only documentation/tracking surfaces.
+
+**Scrum board cleanup, 2026-08-31 (same day):** all 29 remaining draft-issue cards on the board converted to real GitHub Issues via `convertProjectV2DraftIssueItemToIssue`, preserving each card's existing board position and Status. Became Issues #31–#60 (`EventBus` through the Dependabot #18 tracking card). The board now has zero draft items — every card is a real, linkable Issue.
+
 ### Identity.API (complete)
 
 Much larger than every project migrated so far — a full MVC app (Duende IdentityServer's Quickstart UI, ASP.NET Core Identity, EF Core-backed user/client/grant storage), not a small library. Migration order and a few scoping decisions made before touching individual files:
