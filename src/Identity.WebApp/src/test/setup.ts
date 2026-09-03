@@ -1,3 +1,4 @@
+import { cleanup } from '@testing-library/react'
 import { afterEach, vi } from 'vitest'
 import '@testing-library/jest-dom/vitest'
 
@@ -6,4 +7,12 @@ import '@testing-library/jest-dom/vitest'
 // test file since vitest doesn't reset globals between files on its own.
 afterEach(() => {
   vi.unstubAllGlobals()
+})
+
+// React Testing Library normally auto-registers this cleanup itself, but
+// only when it detects a global afterEach -- this project uses explicit
+// imports (globals: false), so nothing unmounted components between tests,
+// and every render() call accumulated in the same DOM across a test file.
+afterEach(() => {
+  cleanup()
 })
