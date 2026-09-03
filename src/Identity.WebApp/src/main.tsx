@@ -8,6 +8,7 @@ import Login from './pages/Account/Login.tsx'
 import Logout from './pages/Account/Logout.tsx'
 import LoggedOut from './pages/Account/LoggedOut.tsx'
 import Consent from './pages/Consent/Index.tsx'
+import Diagnostics from './pages/Diagnostics/Index.tsx'
 
 // Route paths mirror Identity.API's own controller/action casing (e.g.
 // /Home/Index, not /home/index) since Duende's redirect targets already
@@ -24,6 +25,7 @@ const router = createBrowserRouter([
   { path: '/Account/Logout', Component: Logout },
   { path: '/Account/LoggedOut', Component: LoggedOut },
   { path: '/Consent/Index', Component: Consent },
+  { path: '/Diagnostics/Index', Component: Diagnostics },
 ])
 
 createRoot(document.getElementById('root')!).render(
