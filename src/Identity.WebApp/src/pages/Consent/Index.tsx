@@ -1,41 +1,8 @@
 import { useEffect, useState, type SubmitEvent } from 'react'
 import { useSearchParams } from 'react-router'
-import { getConsent, postConsent, type ConsentViewModel, type ScopeViewModel } from '../../api/consent'
-
-function scopeCheckedMap(vm: ConsentViewModel): Record<string, boolean> {
-  const map: Record<string, boolean> = {}
-  for (const scope of [...vm.identityScopes, ...vm.apiScopes]) {
-    map[scope.value] = scope.checked
-  }
-  return map
-}
-
-function ScopeCheckbox({
-  scope,
-  checked,
-  onChange,
-}: {
-  scope: ScopeViewModel
-  checked: boolean
-  onChange: (value: string, checked: boolean) => void
-}) {
-  return (
-    <li>
-      <label htmlFor={`scope-${scope.value}`}>
-        <input
-          id={`scope-${scope.value}`}
-          type="checkbox"
-          checked={checked}
-          disabled={scope.required}
-          onChange={(event) => onChange(scope.value, event.target.checked)}
-        />
-        {scope.displayName}
-        {scope.required && ' (required)'}
-      </label>
-      {scope.description && <p>{scope.description}</p>}
-    </li>
-  )
-}
+import { getConsent, postConsent, type ConsentViewModel } from '../../api/consent'
+import { ScopeCheckbox } from '../../components/ScopeSelection'
+import { scopeCheckedMap } from '../../lib/scopeCheckedMap'
 
 function ConsentPage() {
   const [searchParams] = useSearchParams()
