@@ -447,7 +447,7 @@
   </div>
   <div class="stamp" aria-hidden="true">
     <div class="stamp-inner">
-      <span class="n">20</span>
+      <span class="n">21</span>
       <span class="l">REAL BUGS<br />FOUND &amp; FIXED</span>
     </div>
   </div>
@@ -457,13 +457,13 @@
   <div class="wrap">
     <div class="manifest-row">
       <div class="manifest-cell">
-        <span class="v">5 of 21</span><span class="k">projects done</span>
+        <span class="v">6 of 21</span><span class="k">projects done</span>
       </div>
       <div class="manifest-cell">
-        <span class="v">174/174</span><span class="k">tests passing</span>
+        <span class="v">262/262</span><span class="k">tests passing</span>
       </div>
       <div class="manifest-cell">
-        <span class="v">20</span><span class="k">real bugs found &amp; fixed</span>
+        <span class="v">21</span><span class="k">real bugs found &amp; fixed</span>
       </div>
       <div class="manifest-cell">
         <span class="v">3</span><span class="k">decorator layers, one IEventBus</span>
@@ -521,12 +521,14 @@
       <code>eShop.ServiceDefaults</code>'s Aspire telemetry/health-check/resilience
       defaults, and <code>IntegrationEventLogEF</code> — the EF Core-backed
       transactional outbox every event-publishing service will write through —
-      and <code>Identity.API</code> (Duende IdentityServer) — are all done and
-      reviewed. <code>Identity.WebApp</code> (React, replacing Duende's
-      Quickstart Razor UI) is in progress — its <code>Home</code> and
-      <code>Account</code> areas are both done, verified end-to-end with a
-      real browser; its <code>Consent</code> area is next, with a real
-      routing bug already found and fixed. The other 15 projects don't exist on
+      <code>Identity.API</code> (Duende IdentityServer), and
+      <code>Identity.WebApp</code> (React, replacing Duende's Quickstart
+      Razor UI) — are all done and reviewed. <code>Identity.WebApp</code>'s
+      six areas — <code>Home</code>, <code>Account</code>,
+      <code>Consent</code>, <code>Diagnostics</code>, <code>Grants</code>,
+      <code>Device</code> — are all built, wired, and verified end-to-end
+      with a real browser, including a real Vite dev-proxy bug that broke
+      every OIDC redirect Duende itself triggers. The other 15 projects don't exist on
       disk yet; see
       <a href="https://github.com/Terrence721/eshop-full/blob/main/todo.md">todo.md</a>
       for the honest current state rather than assuming more is done.
@@ -931,6 +933,28 @@
           <div class="meta"><span class="tag">medium · correctness</span></div>
         </div>
       </div>
+      <div class="item">
+        <div class="no">21</div>
+        <div>
+          <div class="file">Identity.WebApp — the dev proxy forwarded the wrong Host header, breaking every Duende-triggered redirect</div>
+          <div class="desc">
+            Vite's dev-server proxy defaults (<code>changeOrigin: false</code>)
+            are documented to preserve the browser's original
+            <code>Host</code> header, but that didn't hold up empirically: a
+            temporary diagnostic middleware confirmed Identity.API genuinely
+            received its own address instead of the SPA's real origin. Every
+            real, top-level browser navigation Duende itself triggers —
+            Login's cookie-auth challenge, Consent's own redirect, Logout's
+            <code>/connect/endsession</code> — sent the browser off the SPA
+            entirely, onto Identity.API's raw port. Fixed with a
+            <code>proxyReq</code> hook forcing the outgoing Host header back
+            to the original, verified live against all three redirect
+            chains plus a full device-flow round trip ending in a real token
+            issued to the device.
+          </div>
+          <div class="meta"><span class="tag">high · correctness</span></div>
+        </div>
+      </div>
     </div>
   </section>
 
@@ -1022,7 +1046,7 @@
       number on this page is reproducible from the repository's own
       <code>todo.md</code> evidence trail, commit history, and CI runs —
       nothing here is asserted without a link to check it against. This one's
-      still early — 5 of 21 projects done — see <code>todo.md</code> for the
+      still early — 6 of 21 projects done — see <code>todo.md</code> for the
       honest current state rather than assuming it's further along.
     </p>
   </div>
