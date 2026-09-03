@@ -1,3 +1,4 @@
+/// <reference types="vitest/config" />
 import type { IncomingMessage } from 'node:http'
 import react from '@vitejs/plugin-react'
 import { defineConfig, type ProxyOptions } from 'vite'
@@ -69,5 +70,9 @@ export default defineConfig({
       '/connect': identityServerProxy,
       '/.well-known': identityServerProxy,
     },
+  },
+  test: {
+    environment: 'jsdom',
+    setupFiles: ['./src/test/setup.ts'],
   },
 })
