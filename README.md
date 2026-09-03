@@ -5,13 +5,13 @@
 
 **[📜 View the portfolio page →](https://terrence721.github.io/eshop-full/portfolio.html)**
 
-Last updated: August 31, 2026 (5 of 21 projects done — `EventBus`, `EventBusRabbitMQ`, `eShop.ServiceDefaults`, `IntegrationEventLogEF`, `Identity.API`, plus `Shared` — 174/174 tests passing; `Identity.WebApp` in progress — its `Home` and `Account` areas both done, `Consent` in progress, `Device`/`Diagnostics`/`Grants` not started)
+Last updated: September 3, 2026 (6 of 21 projects done — `EventBus`, `EventBusRabbitMQ`, `eShop.ServiceDefaults`, `IntegrationEventLogEF`, `Identity.API`, `Identity.WebApp`, plus `Shared` — 262/262 tests passing, 174 .NET + 88 new `Identity.WebApp` frontend tests)
 
 This is an independently modernized version of Microsoft's [dotnet/eShop](https://github.com/dotnet/eShop) reference app — a .NET Aspire microservices e-commerce platform (product catalog, basket, ordering, identity, payments, outbound webhooks) added **one file at a time**, each file evaluated and upgraded against actual current-latest package versions rather than copied over wholesale.
 
 Not a fork left as-is. Every package version was individually re-researched, several real bugs were found and fixed in Microsoft's own reference source (verified against real assemblies and real builds, not assumed), and a handful of deliberate design departures — a Decorator split for `EventBusRabbitMQ`, React instead of Blazor for the web frontend — were made and recorded as this fork's own choices.
 
-**At a glance:** 174/174 tests passing across `eShop.ServiceDefaults.UnitTests` + `EventBus.UnitTests` + `EventBusRabbitMQ.UnitTests` + `IntegrationEventLogEF.UnitTests` + `Identity.API.UnitTests`, added ahead of the `tests/` migration slot so every completed project ships with full coverage rather than deferring it to the end — see the **[Testing Strategy diagram](https://terrence721.github.io/eshop-full/diagrams/testing-strategy.html)**.
+**At a glance:** 262/262 tests passing — 174 across `eShop.ServiceDefaults.UnitTests` + `EventBus.UnitTests` + `EventBusRabbitMQ.UnitTests` + `IntegrationEventLogEF.UnitTests` + `Identity.API.UnitTests` (added ahead of the `tests/` migration slot so every completed project ships with full coverage rather than deferring it to the end), plus 88 in `Identity.WebApp`'s own new Vitest + React Testing Library suite, its first frontend test coverage — see the **[Testing Strategy diagram](https://terrence721.github.io/eshop-full/diagrams/testing-strategy.html)**.
 
 ## 🧭 Start Here
 
@@ -36,7 +36,7 @@ On AI-assisted development: Commits co-authored as Claude are AI-assisted implem
 
 ## 🏗 What's Here So Far
 
-`Shared` (linked-source utilities), `EventBus` (transport-agnostic event abstractions), `EventBusRabbitMQ` (the RabbitMQ implementation, split into a 3-layer Decorator chain after two real bugs turned up in the original single-class version), `eShop.ServiceDefaults` (Aspire telemetry/health-check/resilience defaults), `IntegrationEventLogEF` (the EF Core-backed transactional outbox every event-publishing service will write through), and `Identity.API` (Duende IdentityServer, its Quickstart UI converted straight to a JSON API rather than shipping Razor views) are complete, reviewed, and fully tested. `Identity.WebApp` (React, replacing Duende's Quickstart Razor UI) has its `Home` and `Account` areas both fully done (router wired, verified end-to-end with a real browser); its `Consent` area is in progress — a real routing bug found and fixed, its page built and functionally verified, but blocked on a newly-found dev-proxy bug affecting Duende's own redirect chain. `Device`/`Diagnostics`/`Grants` are still open. The other 13 projects don't exist on disk yet. See [`todo.md`](todo.md) for the full build-out plan and the honest current state.
+`Shared` (linked-source utilities), `EventBus` (transport-agnostic event abstractions), `EventBusRabbitMQ` (the RabbitMQ implementation, split into a 3-layer Decorator chain after two real bugs turned up in the original single-class version), `eShop.ServiceDefaults` (Aspire telemetry/health-check/resilience defaults), `IntegrationEventLogEF` (the EF Core-backed transactional outbox every event-publishing service will write through), `Identity.API` (Duende IdentityServer, its Quickstart UI converted straight to a JSON API rather than shipping Razor views), and `Identity.WebApp` (React, replacing Duende's Quickstart Razor UI) are complete, reviewed, and fully tested. `Identity.WebApp`'s six areas — `Home`, `Account`, `Consent`, `Diagnostics`, `Grants`, `Device` — are all built, wired into the router, and verified end-to-end with a real browser. A real, significant bug turned up along the way: the Vite dev proxy wasn't preserving the original `Host` header, breaking every OIDC redirect Duende itself triggers (login, consent, logout) — found, fixed, and reverified against all three flows, including a full device-flow round trip. `Identity.WebApp` also just got its first frontend test suite (Vitest + React Testing Library, 88 tests and growing). The other 13 projects don't exist on disk yet. See [`todo.md`](todo.md) for the full build-out plan and the honest current state.
 
 ```text
   Shared/                 linked-source utilities                          ✅ done
@@ -45,7 +45,7 @@ On AI-assisted development: Commits co-authored as Claude are AI-assisted implem
   eShop.ServiceDefaults/   Aspire telemetry/health-check/resilience         ✅ done
   IntegrationEventLogEF/  EF Core transactional outbox                     ✅ done
   Identity.API/            Duende IdentityServer (OIDC)                     ✅ done
-  Identity.WebApp/         React replacement for Quickstart UI (new)        🚧 Home + Account done
+  Identity.WebApp/         React replacement for Quickstart UI (new)        ✅ done
   Catalog.API/             product catalog                                 ⬜ not started
   Basket.API/              Redis-backed cart (gRPC)                        ⬜ not started
   Ordering.Domain/.Infrastructure/.API/  order placement (DDD split)        ⬜ not started
