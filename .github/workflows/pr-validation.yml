@@ -70,5 +70,15 @@ jobs:
         run: yarn install --immutable
       - name: Lint
         run: yarn workspace identity-webapp lint
+      - name: Test
+        run: yarn workspace identity-webapp test:ci
+      - name: Publish test results
+        uses: dorny/test-reporter@v3
+        if: always()
+        with:
+          name: Identity.WebApp Test Results
+          path: 'src/Identity.WebApp/test-results/junit.xml'
+          reporter: jest-junit
+          fail-on-empty: false
       - name: Build
         run: yarn workspace identity-webapp build
