@@ -308,10 +308,10 @@
       <p class="card-title">WebBFF</p>
       <p class="card-desc">New project, not in upstream — Backend-for-Frontend using <code>Duende.BFF</code>, keeps OAuth tokens server-side instead of in browser JS.</p>
     </div>
-    <div class="card card--progress">
-      <span class="card-tag">In progress</span>
+    <div class="card card--done">
+      <span class="card-tag">Done</span>
       <p class="card-title">Identity.WebApp</p>
-      <p class="card-desc">New project, not in upstream — React frontend for Duende's Quickstart UI (Account/Consent/Device/Diagnostics/Grants), converted straight to a JSON API rather than added as Razor first. Hosted separately from <code>Identity.API</code>. Scaffold added; <code>Home</code> and <code>Account</code> areas done against a real dev-proxy, verified end-to-end with a real browser; <code>Consent</code> in progress (routing bug found and fixed); <code>Device</code>/<code>Diagnostics</code>/<code>Grants</code> still open.</p>
+      <p class="card-desc">New project, not in upstream — React frontend for Duende's Quickstart UI (Account/Consent/Device/Diagnostics/Grants), converted straight to a JSON API rather than added as Razor first. Hosted separately from <code>Identity.API</code>. All six areas built, wired into the router, and verified end-to-end with a real browser. A real Vite dev-proxy Host-header bug (breaking every Duende-triggered redirect: login, consent, logout) found and fixed along the way. Has its own frontend test suite now too — Vitest + React Testing Library.</p>
     </div>
     <div class="card card--planned">
       <span class="card-tag">Not started</span>
@@ -335,5 +335,5 @@
     </p>
   </div>
 
-  <footer>eshop-full · 21 projects target · 5 done, 1 in progress · foundation-first migration order</footer>
+  <footer>eshop-full · 21 projects target · 6 done · foundation-first migration order</footer>
 </div>
