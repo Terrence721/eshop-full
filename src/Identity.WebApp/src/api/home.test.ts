@@ -1,16 +1,6 @@
-import { afterEach, describe, expect, it, vi } from 'vitest'
+import { describe, expect, it } from 'vitest'
+import { mockFetchOnce } from '../test/mockFetch'
 import { getHomeError, getHomeIndex, type HomeIndex } from './home'
-
-function mockFetchOnce(status: number, body?: unknown) {
-  const json = vi.fn().mockResolvedValue(body)
-  const fetchMock = vi.fn().mockResolvedValue({ ok: status >= 200 && status < 300, status, json })
-  vi.stubGlobal('fetch', fetchMock)
-  return fetchMock
-}
-
-afterEach(() => {
-  vi.unstubAllGlobals()
-})
 
 describe('getHomeIndex', () => {
   it('returns the parsed view model on success', async () => {
