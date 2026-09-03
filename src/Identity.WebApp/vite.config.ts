@@ -26,9 +26,32 @@ function bypassTopLevelNavigation(req: IncomingMessage) {
   }
 }
 
+// `changeOrigin: false` (the default) is documented to leave the Host header
+// alone, but that doesn't hold up empirically here: a temporary diagnostic
+// middleware on Identity.API confirmed it still receives Host:
+// localhost:5223 (its own address) even when the browser's real request came
+// in through this proxy at localhost:5177. Duende builds its own absolute
+// redirect URLs (e.g. /connect/authorize -> /Account/Login) from
+// Request.Host, so a real top-level browser navigation through this proxy
+// got redirected off the SPA's origin entirely. Forcing the outgoing
+// request's Host header back to the original one fixes it.
+function preserveOriginalHost(proxy: Parameters<NonNullable<ProxyOptions['configure']>>[0]) {
+  proxy.on('proxyReq', (proxyReq, req) => {
+    if (req.headers.host) {
+      proxyReq.setHeader('host', req.headers.host)
+    }
+  })
+}
+
 const quickstartAreaProxy: ProxyOptions = {
   target: identityApiTarget,
   bypass: bypassTopLevelNavigation,
+  configure: preserveOriginalHost,
+}
+
+const identityServerProxy: ProxyOptions = {
+  target: identityApiTarget,
+  configure: preserveOriginalHost,
 }
 
 // https://vite.dev/config/
@@ -43,8 +66,8 @@ export default defineConfig({
       '/Device': quickstartAreaProxy,
       '/Diagnostics': quickstartAreaProxy,
       '/Grants': quickstartAreaProxy,
-      '/connect': identityApiTarget,
-      '/.well-known': identityApiTarget,
+      '/connect': identityServerProxy,
+      '/.well-known': identityServerProxy,
     },
   },
 })
