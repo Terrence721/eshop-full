@@ -3,6 +3,7 @@
     "ms-dotnettools.csdevkit",
     "microsoft-aspire.aspire-vscode",
     "ms-playwright.playwright",
+    "vitest.explorer",
     "oxc.oxc-vscode",
     "editorconfig.editorconfig",
     "redhat.vscode-yaml",
