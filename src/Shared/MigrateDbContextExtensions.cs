@@ -80,15 +80,24 @@ internal static class MigrateDbContextExtensions
         }
     }
 
+    // Composition-over-inheritance fix: this used to inherit BackgroundService
+    // purely for its IHostedService plumbing, then discarded the one method
+    // (ExecuteAsync) BackgroundService exists to provide, overriding it as a
+    // bare no-op. StartAsync already fully overrode BackgroundService's own
+    // StartAsync without calling base.StartAsync(), so BackgroundService's
+    // internal _executeTask was never populated -- meaning its inherited
+    // StopAsync always hit its own early-exit-on-null-_executeTask path
+    // anyway. A plain IHostedService with an honest no-op StopAsync is
+    // therefore behavior-identical, not just a smaller type.
     private class MigrationHostedService<TContext>(IServiceProvider serviceProvider, Func<TContext, IServiceProvider, Task> seeder)
-        : BackgroundService where TContext : DbContext
+        : IHostedService where TContext : DbContext
     {
-        public override Task StartAsync(CancellationToken cancellationToken)
+        public Task StartAsync(CancellationToken cancellationToken)
         {
             return serviceProvider.MigrateDbContextAsync(seeder);
         }
 
-        protected override Task ExecuteAsync(CancellationToken stoppingToken)
+        public Task StopAsync(CancellationToken cancellationToken)
         {
             return Task.CompletedTask;
         }
