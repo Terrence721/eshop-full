@@ -1,6 +1,7 @@
 global using Asp.Versioning;
 global using Asp.Versioning.Conventions;
 global using eShop.Catalog.API.Infrastructure.Exceptions;
+global using eShop.Catalog.API.Model;
 global using eShop.EventBus.Abstractions;
 global using eShop.EventBus.Events;
 global using eShop.IntegrationEventLogEF;
@@ -21,4 +22,4 @@ global using Npgsql;
 // eShop.Catalog.API.Infrastructure.EntityConfigurations,
 // eShop.Catalog.API.IntegrationEvents,
 // eShop.Catalog.API.IntegrationEvents.EventHandling,
-// eShop.Catalog.API.IntegrationEvents.Events, eShop.Catalog.API.Model.
+// eShop.Catalog.API.IntegrationEvents.Events.
