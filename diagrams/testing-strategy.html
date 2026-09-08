@@ -79,7 +79,10 @@
     line-height: 1.15;
     margin: 0 0 0.5rem;
     letter-spacing: -0.01em;
-    text-wrap: balance;
+  }
+
+  @supports (text-wrap: balance) {
+    h1 { text-wrap: balance; }
   }
 
   .dek {
@@ -91,6 +94,8 @@
   }
   .dek code { font-family: var(--mono); font-size: 0.9em; color: var(--ink); }
   .dek a { color: var(--ink); }
+  .dek--footnote { margin: 0.6rem 0 0; font-size: 0.86rem; }
+  .dek--tight { margin-bottom: 0.6rem; }
 
   h2 {
     font-size: 0.72rem;
@@ -159,6 +164,7 @@
   .card--d .card-tag { color: var(--d); background: var(--d-bg); }
   .card-title { font-size: 0.95rem; font-weight: 600; margin: 0; }
   .card p.body { font-size: 0.85rem; line-height: 1.6; color: var(--ink-soft); margin: 0; }
+  .card p.body--tight { margin-top: -0.2rem; }
   .card code { font-family: var(--mono); font-size: 0.9em; color: var(--ink); }
   .card .proof {
     font-size: 0.78rem;
@@ -221,7 +227,7 @@
       <tr class="total"><td>Total</td><td></td><td class="num">186</td></tr>
     </tbody>
   </table>
-  <p class="dek" style="margin: 0.6rem 0 0; font-size: 0.86rem;">
+  <p class="dek dek--footnote">
     "Applicable" means a file with a real contract to guard. Pure interfaces with zero behavior of their
     own (<code>IEventBus</code>, <code>IEventBusBuilder</code>) get skipped — but "simple" alone isn't the
     bar: a bare <code>enum</code> guarding persisted DB ordinals and a single-default-value POCO both get
@@ -252,7 +258,7 @@
     </div>
     <div class="card card--c">
       <span class="card-tag">NSubstitute</span>
-      <p class="body" style="margin-top: -0.2rem;">Already centrally pinned (upstream's own <code>Ordering.UnitTests</code> uses it) — first real use in this fork.</p>
+      <p class="body body--tight">Already centrally pinned (upstream's own <code>Ordering.UnitTests</code> uses it) — first real use in this fork.</p>
       <p class="card-title">Mock the pipeline, not the class under test</p>
       <p class="body">
         <code>HttpClientExtensions</code>'s bearer-token-injecting handler is a private nested class —
@@ -274,7 +280,7 @@
   </div>
 
   <h2>CI, verified not assumed</h2>
-  <p class="dek" style="margin-bottom: 0.6rem;">
+  <p class="dek dek--tight">
     MTP is a genuinely different CLI surface from legacy VSTest-based <code>dotnet test</code> — its own
     <code>--help</code> states plainly it "doesn't support VSTest," so the familiar
     <code>--collect:"XPlat Code Coverage"</code>/<code>--logger trx</code> flags don't apply. Every flag
