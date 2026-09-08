@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import { MemoryRouter } from 'react-router'
@@ -106,7 +106,12 @@ describe('LoginPage', () => {
       renderAt('/Account/Login')
 
       expect(await screen.findByText('Redirecting to sign-in...')).toBeInTheDocument()
-      expect(mockedLocation.location.href).toBe('/External/Challenge?scheme=Google&returnUrl=%2Fconnect%2Fauthorize%2Fcallback')
+      // The actual navigation is a separate effect watching vm, not something
+      // findByText's resolution guarantees has already run -- wait for it
+      // directly instead of asserting immediately after the text appears.
+      await waitFor(() => {
+        expect(mockedLocation.location.href).toBe('/External/Challenge?scheme=Google&returnUrl=%2Fconnect%2Fauthorize%2Fcallback')
+      })
     })
   })
 
