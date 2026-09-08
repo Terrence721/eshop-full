@@ -73,7 +73,10 @@
     line-height: 1.15;
     margin: 0 0 0.5rem;
     letter-spacing: -0.01em;
-    text-wrap: balance;
+  }
+
+  @supports (text-wrap: balance) {
+    h1 { text-wrap: balance; }
   }
 
   .dek {
