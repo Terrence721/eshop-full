@@ -460,10 +460,10 @@
         <span class="v">6 of 21</span><span class="k">projects done</span>
       </div>
       <div class="manifest-cell">
-        <span class="v">262/262</span><span class="k">tests passing</span>
+        <span class="v">303/303</span><span class="k">tests passing</span>
       </div>
       <div class="manifest-cell">
-        <span class="v">21</span><span class="k">real bugs found &amp; fixed</span>
+        <span class="v">23</span><span class="k">real bugs found &amp; fixed</span>
       </div>
       <div class="manifest-cell">
         <span class="v">3</span><span class="k">decorator layers, one IEventBus</span>
@@ -955,13 +955,56 @@
           <div class="meta"><span class="tag">high · correctness</span></div>
         </div>
       </div>
+      <div class="item">
+        <div class="no">22</div>
+        <div>
+          <div class="file">Identity.API — Device's consent screen silently dropped the parameter suffix on parameterized scopes</div>
+          <div class="desc">
+            <code>ConsentController</code> and <code>DeviceController</code>
+            each had their own near-verbatim private
+            <code>CreateScopeViewModel</code> helper, and the copies had
+            drifted: Consent's appended a scope's parsed parameter (e.g.
+            <code>resource1.scope1:42</code>) to the display name,
+            Device's silently didn't. Confirmed this exact inconsistency
+            exists in real upstream Duende source too — this fork had
+            faithfully reproduced an upstream bug, not introduced a new
+            one. Fixed by extracting one shared
+            <code>ScopeViewModelFactory</code> both controllers call,
+            with the correct behavior, plus a direct regression test —
+            the total lack of any prior test on this logic is exactly
+            why the drift went unnoticed.
+          </div>
+          <div class="meta"><span class="tag">medium · correctness</span></div>
+        </div>
+      </div>
+      <div class="item">
+        <div class="no">23</div>
+        <div>
+          <div class="file">Identity.WebApp — Device's confirm screen silently dropped a validation error on redisplay</div>
+          <div class="desc">
+            Device's local <code>Step</code> union's <code>confirm</code>
+            variant had no field to carry a validation error at all, so
+            when <code>DeviceCallbackResult.validationError</code> came
+            back on a failed submission, the form redisplayed with zero
+            indication of what went wrong — unlike
+            <code>ConsentPage</code>'s equivalent redisplay path, which
+            already showed the message correctly. Surfaced while
+            extracting the shared <code>ScopeConsentForm</code> component
+            both pages' confirm screens needed; fixed by adding
+            <code>error: string | null</code> to the <code>confirm</code>
+            step and threading the real value through instead of
+            discarding it.
+          </div>
+          <div class="meta"><span class="tag">medium · correctness</span></div>
+        </div>
+      </div>
     </div>
   </section>
 
   <section>
     <h2>Verifying it actually works</h2>
     <p class="h2-sub">
-      174 tests, and a Decorator split that finally let the flagship fix get proven
+      186 tests, and a Decorator split that finally let the flagship fix get proven
     </p>
     <p class="lede">
       <code>MSTest.Sdk</code> on .NET's newer
@@ -974,7 +1017,7 @@
     </p>
     <div class="twocol">
       <div class="card">
-        <h3>174/174 tests, decorators make it possible</h3>
+        <h3>186/186 tests, decorators make it possible</h3>
         <p>
           <code>ResilientEventBusDecoratorTests.cs</code> verifies bug #01
           end-to-end for the first time in this project's history — a fake
