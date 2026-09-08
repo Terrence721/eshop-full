@@ -7,7 +7,7 @@ namespace eShop.Catalog.API.Infrastructure;
 /// </remarks>
 public class CatalogContext : DbContext
 {
-    public CatalogContext(DbContextOptions<CatalogContext> options, IConfiguration configuration) : base(options)
+    public CatalogContext(DbContextOptions<CatalogContext> options) : base(options)
     {
     }
 
