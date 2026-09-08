@@ -17,7 +17,8 @@ public class RabbitMQEventBusTests
         new ServiceCollection().BuildServiceProvider(),
         Options.Create(new EventBusOptions { SubscriptionClientName = "test" }),
         Options.Create(new EventBusSubscriptionInfo()),
-        new RabbitMQTelemetry());
+        new RabbitMQTelemetry(),
+        new SystemTextJsonEventSerializer(Options.Create(new EventBusSubscriptionInfo())));
 
     [TestMethod]
     public async Task PublishAsync_throws_InvalidOperationException_when_connection_is_not_open()
