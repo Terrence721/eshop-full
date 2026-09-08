@@ -1,28 +1,20 @@
 import { useEffect, useState, type SubmitEvent } from 'react'
 import { useSearchParams } from 'react-router'
-import { getLogin, postLogin, postLoginCancel, type LoginViewModel } from '../../api/account'
+import { getLogin, postLogin, postLoginCancel } from '../../api/account'
 import { buildExternalChallengeUrl } from '../../api/external'
+import { useAsync } from '../../lib/useAsync'
 
 function LoginPage() {
   const [searchParams] = useSearchParams()
   const returnUrl = searchParams.get('returnUrl')
 
-  const [vm, setVm] = useState<LoginViewModel | null>(null)
-  const [loading, setLoading] = useState(true)
-  const [loadError, setLoadError] = useState<Error | null>(null)
+  const { data: vm, loading, error: loadError, setData: setVm } = useAsync(() => getLogin(returnUrl), [returnUrl])
 
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [rememberLogin, setRememberLogin] = useState(false)
   const [submitting, setSubmitting] = useState(false)
   const [validationError, setValidationError] = useState<string | null>(null)
-
-  useEffect(() => {
-    getLogin(returnUrl)
-      .then(setVm)
-      .catch(setLoadError)
-      .finally(() => setLoading(false))
-  }, [returnUrl])
 
   // Duende short-circuits the UI to the one external IdP a client
   // restricts login to -- there's no local form to show at all here.

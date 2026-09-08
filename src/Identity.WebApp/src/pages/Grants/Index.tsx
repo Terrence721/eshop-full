@@ -1,5 +1,6 @@
-import { useEffect, useState } from 'react'
-import { getGrants, revokeGrant, type GrantViewModel, type GrantsViewModel } from '../../api/grants'
+import { useState } from 'react'
+import { getGrants, revokeGrant, type GrantViewModel } from '../../api/grants'
+import { useAsync } from '../../lib/useAsync'
 
 function GrantRow({ grant, onRevoke, revoking }: { grant: GrantViewModel; onRevoke: (clientId: string) => void; revoking: boolean }) {
   return (
@@ -28,24 +29,16 @@ function GrantRow({ grant, onRevoke, revoking }: { grant: GrantViewModel; onRevo
 }
 
 function GrantsPage() {
-  const [vm, setVm] = useState<GrantsViewModel | null>(null)
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<Error | null>(null)
+  const { data: vm, loading, error, setData: setVm } = useAsync(getGrants, [])
+  const [revokeError, setRevokeError] = useState<Error | null>(null)
   const [revokingClientId, setRevokingClientId] = useState<string | null>(null)
-
-  useEffect(() => {
-    getGrants()
-      .then(setVm)
-      .catch(setError)
-      .finally(() => setLoading(false))
-  }, [])
 
   async function handleRevoke(clientId: string) {
     setRevokingClientId(clientId)
     try {
       setVm(await revokeGrant(clientId))
-    } catch (revokeError) {
-      setError(revokeError instanceof Error ? revokeError : new Error('Revoke failed.'))
+    } catch (err) {
+      setRevokeError(err instanceof Error ? err : new Error('Revoke failed.'))
     } finally {
       setRevokingClientId(null)
     }
@@ -67,6 +60,7 @@ function GrantsPage() {
     <div>
       <h1>Grants</h1>
       <p>Below is the list of applications you have given access to, and what they have access to.</p>
+      {revokeError && <p role="alert">Could not revoke access: {revokeError.message}</p>}
       <ul>
         {vm.grants.map((grant) => (
           <GrantRow key={grant.clientId} grant={grant} onRevoke={(clientId) => void handleRevoke(clientId)} revoking={revokingClientId === grant.clientId} />

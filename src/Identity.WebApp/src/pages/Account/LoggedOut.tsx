@@ -1,21 +1,13 @@
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import { useSearchParams } from 'react-router'
-import { getLoggedOut, type LoggedOutViewModel } from '../../api/account'
+import { getLoggedOut } from '../../api/account'
+import { useAsync } from '../../lib/useAsync'
 
 function LoggedOutPage() {
   const [searchParams] = useSearchParams()
   const logoutId = searchParams.get('logoutId')
 
-  const [vm, setVm] = useState<LoggedOutViewModel | null>(null)
-  const [loading, setLoading] = useState(true)
-  const [loadError, setLoadError] = useState<Error | null>(null)
-
-  useEffect(() => {
-    getLoggedOut(logoutId)
-      .then(setVm)
-      .catch(setLoadError)
-      .finally(() => setLoading(false))
-  }, [logoutId])
+  const { data: vm, loading, error: loadError } = useAsync(() => getLoggedOut(logoutId), [logoutId])
 
   useEffect(() => {
     if (vm?.automaticRedirectAfterSignOut && vm.postLogoutRedirectUri) {

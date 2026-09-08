@@ -1,17 +1,8 @@
-import { useEffect, useState } from 'react'
-import { getHomeIndex, type HomeIndex as HomeIndexData } from '../../api/home'
+import { getHomeIndex } from '../../api/home'
+import { useAsync } from '../../lib/useAsync'
 
 function HomeIndex() {
-  const [data, setData] = useState<HomeIndexData | null>(null)
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<Error | null>(null)
-
-  useEffect(() => {
-    getHomeIndex()
-      .then(setData)
-      .catch(setError)
-      .finally(() => setLoading(false))
-  }, [])
+  const { data, loading, error } = useAsync(getHomeIndex, [])
 
   if (loading) {
     return <p>Loading...</p>

@@ -1,34 +1,26 @@
-import { useEffect, useState, type SubmitEvent } from 'react'
+import { useState, type SubmitEvent } from 'react'
 import { useSearchParams } from 'react-router'
 import { getConsent, postConsent, type ConsentViewModel } from '../../api/consent'
 import { ScopeCheckbox } from '../../components/ScopeSelection'
 import { scopeCheckedMap } from '../../lib/scopeCheckedMap'
+import { useAsync } from '../../lib/useAsync'
 
 function ConsentPage() {
   const [searchParams] = useSearchParams()
   const returnUrl = searchParams.get('returnUrl') ?? ''
 
-  const [vm, setVm] = useState<ConsentViewModel | null>(null)
   const [checkedScopes, setCheckedScopes] = useState<Record<string, boolean>>({})
-  const [loading, setLoading] = useState(true)
-  const [loadError, setLoadError] = useState<Error | null>(null)
-  const [notFound, setNotFound] = useState(false)
+  const { data: vm, loading, error: loadError, setData: setVm } = useAsync(
+    () => getConsent(returnUrl),
+    [returnUrl],
+    (result: ConsentViewModel | null) => {
+      if (result) {
+        setCheckedScopes(scopeCheckedMap(result))
+      }
+    },
+  )
   const [submitting, setSubmitting] = useState(false)
   const [validationError, setValidationError] = useState<string | null>(null)
-
-  useEffect(() => {
-    getConsent(returnUrl)
-      .then((result) => {
-        if (result === null) {
-          setNotFound(true)
-          return
-        }
-        setVm(result)
-        setCheckedScopes(scopeCheckedMap(result))
-      })
-      .catch(setLoadError)
-      .finally(() => setLoading(false))
-  }, [returnUrl])
 
   if (loading) {
     return <p>Loading...</p>
@@ -38,7 +30,7 @@ function ConsentPage() {
     return <p>Could not load the consent page: {loadError.message}</p>
   }
 
-  if (notFound || !vm) {
+  if (!vm) {
     return <p>No matching authorization request was found. It may have expired -- please try again.</p>
   }
 
@@ -56,14 +48,13 @@ function ConsentPage() {
         description: vm!.description,
       })
       if (result === null) {
-        setNotFound(true)
+        setVm(null)
         return
       }
       if (result.validationError) {
         setValidationError(result.validationError)
         if (result.viewModel) {
           setVm(result.viewModel)
-          setCheckedScopes(scopeCheckedMap(result.viewModel))
         }
         return
       }
