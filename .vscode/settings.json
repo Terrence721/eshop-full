@@ -1,3 +1,4 @@
 {
-  "dotnet.defaultSolution": "eShop.slnx"
+  "dotnet.defaultSolution": "eShop.slnx",
+  "tsimporter.noStatusBar": true
 }
