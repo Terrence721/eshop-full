@@ -19,7 +19,7 @@ public class ProfileService : IProfileService
 
     public async Task GetProfileDataAsync(ProfileDataRequestContext context, CancellationToken cancellationToken)
     {
-        var subjectId = context.Subject.Claims.Where(x => x.Type == "sub").FirstOrDefault()?.Value
+        var subjectId = context.Subject.Claims.Where(x => x.Type == JwtClaimTypes.Subject).FirstOrDefault()?.Value
             ?? throw new ArgumentException("Invalid subject identifier");
 
         var user = await _userManager.FindByIdAsync(subjectId)
@@ -33,7 +33,7 @@ public class ProfileService : IProfileService
     {
         context.IsActive = false;
 
-        var subjectId = context.Subject.Claims.Where(x => x.Type == "sub").FirstOrDefault()?.Value;
+        var subjectId = context.Subject.Claims.Where(x => x.Type == JwtClaimTypes.Subject).FirstOrDefault()?.Value;
         if (subjectId == null)
         {
             return;
