@@ -1,24 +1,8 @@
-import { useEffect, useState } from 'react'
-import { getDiagnostics, type DiagnosticsViewModel } from '../../api/diagnostics'
+import { getDiagnostics } from '../../api/diagnostics'
+import { useAsync } from '../../lib/useAsync'
 
 function DiagnosticsPage() {
-  const [vm, setVm] = useState<DiagnosticsViewModel | null>(null)
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<Error | null>(null)
-  const [notFound, setNotFound] = useState(false)
-
-  useEffect(() => {
-    getDiagnostics()
-      .then((result) => {
-        if (result === null) {
-          setNotFound(true)
-          return
-        }
-        setVm(result)
-      })
-      .catch(setError)
-      .finally(() => setLoading(false))
-  }, [])
+  const { data: vm, loading, error } = useAsync(getDiagnostics, [])
 
   if (loading) {
     return <p>Loading...</p>
@@ -28,7 +12,7 @@ function DiagnosticsPage() {
     return <p>Could not load this page: {error.message}</p>
   }
 
-  if (notFound || !vm) {
+  if (!vm) {
     return <p>This page is only available from localhost.</p>
   }
 
