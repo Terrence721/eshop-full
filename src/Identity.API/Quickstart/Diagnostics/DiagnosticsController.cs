@@ -7,11 +7,8 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace IdentityServerHost.Quickstart.UI;
 
-[ApiController]
-[Route("[controller]/[action]")]
-[SecurityHeaders]
 [Authorize]
-public class DiagnosticsController : ControllerBase
+public class DiagnosticsController : QuickstartControllerBase
 {
     [HttpGet]
     public async Task<ActionResult<DiagnosticsViewModel>> Index()

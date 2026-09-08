@@ -11,11 +11,8 @@ using eShop.Identity.API.Models;
 
 namespace IdentityServerHost.Quickstart.UI;
 
-[ApiController]
-[Route("[controller]/[action]")]
-[SecurityHeaders]
 [AllowAnonymous]
-public class ExternalController : ControllerBase
+public class ExternalController : QuickstartControllerBase
 {
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly SignInManager<ApplicationUser> _signInManager;

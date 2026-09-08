@@ -9,11 +9,8 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace IdentityServerHost.Quickstart.UI;
 
-[ApiController]
-[Route("[controller]/[action]")]
 [Authorize]
-[SecurityHeaders]
-public class DeviceController : ControllerBase
+public class DeviceController : QuickstartControllerBase
 {
     private readonly IDeviceFlowInteractionService _interaction;
     private readonly IEventService _events;

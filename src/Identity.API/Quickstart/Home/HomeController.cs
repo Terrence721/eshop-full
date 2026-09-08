@@ -6,11 +6,8 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace IdentityServerHost.Quickstart.UI;
 
-[ApiController]
-[Route("[controller]/[action]")]
-[SecurityHeaders]
 [AllowAnonymous]
-public class HomeController : ControllerBase
+public class HomeController : QuickstartControllerBase
 {
     private readonly IIdentityServerInteractionService _interaction;
     private readonly IWebHostEnvironment _environment;
