@@ -63,13 +63,10 @@ public class ConsentController : QuickstartControllerBase
 
         if (result.ShowView)
         {
-            // ProcessConsentResult.ViewModel is typed as the shared base
-            // ConsentScopesViewModel? (also used by DeviceController); BuildViewModelAsync
-            // above only ever assigns it a real ConsentViewModel - safe to cast back.
             return Ok(new ConsentPostResult
             {
                 ValidationError = result.ValidationError,
-                ViewModel = (ConsentViewModel?)result.ViewModel
+                ViewModel = result.ViewModel
             });
         }
 
@@ -79,9 +76,9 @@ public class ConsentController : QuickstartControllerBase
     /*****************************************/
     /* helper APIs for the ConsentController */
     /*****************************************/
-    private async Task<ProcessConsentResult> ProcessConsent(ConsentInputModel model, CancellationToken cancellationToken)
+    private async Task<ProcessConsentResult<ConsentViewModel>> ProcessConsent(ConsentInputModel model, CancellationToken cancellationToken)
     {
-        var result = new ProcessConsentResult();
+        var result = new ProcessConsentResult<ConsentViewModel>();
 
         // validate return url is still valid
         var request = await _interaction.GetAuthorizationContextAsync(model.ReturnUrl, cancellationToken);
