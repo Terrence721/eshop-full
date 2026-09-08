@@ -13,6 +13,14 @@
   ],
   "unwantedRecommendations": [
     "dbaeumer.vscode-eslint",
-    "esbenp.prettier-vscode"
+    "esbenp.prettier-vscode",
+    "jakethashi.vscode-angular2-emmet",
+    "john-crowson.angular-file-changer",
+    "alexiv.vscode-angular2-files",
+    "infinity1207.angular2-switcher",
+    "nrwl.angular-console",
+    "johnpapa.vscode-peacock",
+    "PKief.material-icon-theme",
+    "ms-edgedevtools.vscode-edge-devtools"
   ]
 }
