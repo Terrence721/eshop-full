@@ -1,5 +1,6 @@
 global using Asp.Versioning;
 global using Asp.Versioning.Conventions;
+global using eShop.Catalog.API.Infrastructure.Exceptions;
 global using eShop.EventBus.Abstractions;
 global using eShop.EventBus.Events;
 global using eShop.IntegrationEventLogEF;
@@ -18,7 +19,6 @@ global using Npgsql;
 // not just "empty of members". Add each one back as its real folder lands:
 // eShop.Catalog.API, eShop.Catalog.API.Infrastructure,
 // eShop.Catalog.API.Infrastructure.EntityConfigurations,
-// eShop.Catalog.API.Infrastructure.Exceptions,
 // eShop.Catalog.API.IntegrationEvents,
 // eShop.Catalog.API.IntegrationEvents.EventHandling,
 // eShop.Catalog.API.IntegrationEvents.Events, eShop.Catalog.API.Model.
