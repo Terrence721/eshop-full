@@ -5,6 +5,7 @@
     <Project Path="src/eShop.ServiceDefaults/eShop.ServiceDefaults.csproj" />
     <Project Path="src/IntegrationEventLogEF/IntegrationEventLogEF.csproj" />
     <Project Path="src/Identity.API/Identity.API.csproj" />
+    <Project Path="src/Catalog.API/Catalog.API.csproj" />
   </Folder>
   <Folder Name="/tests/">
     <Project Path="tests/EventBus.UnitTests/EventBus.UnitTests.csproj" />
