@@ -167,7 +167,7 @@ public class ConsentController : ControllerBase
         var scopesConsented = model?.ScopesConsented ?? Enumerable.Empty<string>();
 
         var identityScopes = request.ValidatedResources.Resources.IdentityResources
-            .Select(x => CreateScopeViewModel(x, scopesConsented.Contains(x.Name) || model == null))
+            .Select(x => ScopeViewModelFactory.CreateScopeViewModel(x, scopesConsented.Contains(x.Name) || model == null))
             .ToArray();
 
         var apiScopes = new List<ScopeViewModel>();
@@ -176,13 +176,13 @@ public class ConsentController : ControllerBase
             var apiScope = request.ValidatedResources.Resources.FindApiScope(parsedScope.ParsedName);
             if (apiScope != null)
             {
-                var scopeVm = CreateScopeViewModel(parsedScope, apiScope, scopesConsented.Contains(parsedScope.RawValue) || model == null);
+                var scopeVm = ScopeViewModelFactory.CreateScopeViewModel(parsedScope, apiScope, scopesConsented.Contains(parsedScope.RawValue) || model == null);
                 apiScopes.Add(scopeVm);
             }
         }
         if (ConsentOptions.EnableOfflineAccess && request.ValidatedResources.Resources.OfflineAccess)
         {
-            apiScopes.Add(GetOfflineAccessScope(scopesConsented.Contains(IdentityServerConstants.StandardScopes.OfflineAccess) || model == null));
+            apiScopes.Add(ScopeViewModelFactory.GetOfflineAccessScope(scopesConsented.Contains(IdentityServerConstants.StandardScopes.OfflineAccess) || model == null));
         }
 
         return new ConsentViewModel
@@ -200,50 +200,6 @@ public class ConsentController : ControllerBase
 
             IdentityScopes = identityScopes,
             ApiScopes = apiScopes
-        };
-    }
-
-    private ScopeViewModel CreateScopeViewModel(IdentityResource identity, bool check)
-    {
-        return new ScopeViewModel
-        {
-            Value = identity.Name,
-            DisplayName = identity.DisplayName ?? identity.Name,
-            Description = identity.Description,
-            Emphasize = identity.Emphasize,
-            Required = identity.Required,
-            Checked = check || identity.Required
-        };
-    }
-
-    private ScopeViewModel CreateScopeViewModel(ParsedScopeValue parsedScopeValue, ApiScope apiScope, bool check)
-    {
-        var displayName = apiScope.DisplayName ?? apiScope.Name;
-        if (!string.IsNullOrWhiteSpace(parsedScopeValue.ParsedParameter))
-        {
-            displayName += ":" + parsedScopeValue.ParsedParameter;
-        }
-
-        return new ScopeViewModel
-        {
-            Value = parsedScopeValue.RawValue,
-            DisplayName = displayName,
-            Description = apiScope.Description,
-            Emphasize = apiScope.Emphasize,
-            Required = apiScope.Required,
-            Checked = check || apiScope.Required
-        };
-    }
-
-    private ScopeViewModel GetOfflineAccessScope(bool check)
-    {
-        return new ScopeViewModel
-        {
-            Value = IdentityServerConstants.StandardScopes.OfflineAccess,
-            DisplayName = ConsentOptions.OfflineAccessDisplayName,
-            Description = ConsentOptions.OfflineAccessDescription,
-            Emphasize = true,
-            Checked = check
         };
     }
 }
