@@ -62,8 +62,8 @@ public static partial class Extensions
             var identitySection = builder.Configuration.GetSection("Identity");
 
             var scopes = identitySection.Exists()
-                ? identitySection.GetRequiredSection("Scopes").GetChildren().ToDictionary(p => p.Key, p => p.Value)
-                : new Dictionary<string, string?>();
+                ? identitySection.GetScopes()
+                : [];
 
             // the default format will just be ApiVersion.ToString(); for example, 1.0.
             // this will format the version as "'v'major[.minor][-status]"

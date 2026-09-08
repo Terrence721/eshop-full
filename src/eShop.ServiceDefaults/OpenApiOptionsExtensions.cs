@@ -110,6 +110,9 @@ internal static class OpenApiOptionsExtensions
         return options;
     }
 
+    internal static Dictionary<string, string> GetScopes(this IConfigurationSection identitySection) =>
+        identitySection.GetRequiredSection("Scopes").GetChildren().ToDictionary(p => p.Key, p => p.Value ?? string.Empty);
+
     public static OpenApiOptions ApplyAuthorizationChecks(this OpenApiOptions options, string[] scopes)
     {
         options.AddOperationTransformer((operation, context, cancellationToken) =>
@@ -183,7 +186,7 @@ internal static class OpenApiOptionsExtensions
             }
 
             var identityUrlExternal = identitySection.GetRequiredValue("Url");
-            var scopes = identitySection.GetRequiredSection("Scopes").GetChildren().ToDictionary(p => p.Key, p => p.Value ?? string.Empty);
+            var scopes = identitySection.GetScopes();
             var securityScheme = new OpenApiSecurityScheme
             {
                 Type = SecuritySchemeType.OAuth2,
