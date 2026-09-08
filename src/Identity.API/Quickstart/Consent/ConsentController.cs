@@ -12,11 +12,8 @@ namespace IdentityServerHost.Quickstart.UI;
 /// <summary>
 /// This controller processes the consent UI
 /// </summary>
-[ApiController]
-[Route("[controller]/[action]")]
-[SecurityHeaders]
 [Authorize]
-public class ConsentController : ControllerBase
+public class ConsentController : QuickstartControllerBase
 {
     private readonly IIdentityServerInteractionService _interaction;
     private readonly IEventService _events;
