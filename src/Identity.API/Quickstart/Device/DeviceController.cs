@@ -71,7 +71,7 @@ public class DeviceController : ControllerBase
             // back to a generic error page here regardless of validation vs. hard
             // failure, unlike ConsentController, which already redisplayed the form.
             // ProcessConsentResult.ViewModel is typed as the shared base
-            // ConsentViewModel? (also used by ConsentController), but
+            // ConsentScopesViewModel? (also used by ConsentController), but
             // BuildViewModelAsync below only ever assigns it a real
             // DeviceAuthorizationViewModel - safe to cast back.
             return Ok(new DeviceCallbackResult

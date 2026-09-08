@@ -1,10 +1,8 @@
 import type { ScopeViewModel } from './consent'
 
 export interface DeviceAuthorizationViewModel {
-  button: string | null
   scopesConsented: string[] | null
   rememberConsent: boolean
-  returnUrl: string | null
   description: string | null
   clientName: string
   clientUrl: string | null

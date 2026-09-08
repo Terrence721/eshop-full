@@ -4,10 +4,8 @@ import { captureUserCode, getDeviceIndex, postDeviceCallback, type DeviceAuthori
 
 function deviceViewModel(): DeviceAuthorizationViewModel {
   return {
-    button: null,
     scopesConsented: [],
     rememberConsent: true,
-    returnUrl: null,
     description: null,
     clientName: 'SCRATCH-DIAGNOSTIC Device Test Client',
     clientUrl: null,

@@ -8,7 +8,6 @@ export interface ScopeViewModel {
 }
 
 export interface ConsentViewModel {
-  button: string | null
   scopesConsented: string[] | null
   rememberConsent: boolean
   returnUrl: string | null
