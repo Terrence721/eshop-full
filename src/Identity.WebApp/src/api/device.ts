@@ -1,16 +1,7 @@
 import { apiGet, apiPost } from '../lib/apiFetch'
-import type { ScopeViewModel } from './consent'
+import type { ScopeConsentRequest, ScopeConsentViewModel } from './consent'
 
-export interface DeviceAuthorizationViewModel {
-  scopesConsented: string[] | null
-  rememberConsent: boolean
-  description: string | null
-  clientName: string
-  clientUrl: string | null
-  clientLogoUrl: string | null
-  allowRememberConsent: boolean
-  identityScopes: ScopeViewModel[]
-  apiScopes: ScopeViewModel[]
+export interface DeviceAuthorizationViewModel extends ScopeConsentViewModel {
   userCode: string
   confirmUserCode: boolean
 }
@@ -25,12 +16,8 @@ export interface DeviceCallbackResult {
   viewModel: DeviceAuthorizationViewModel | null
 }
 
-export interface DeviceCallbackRequest {
+export interface DeviceCallbackRequest extends ScopeConsentRequest {
   userCode: string
-  button: 'yes' | 'no'
-  scopesConsented: string[]
-  rememberConsent: boolean
-  description: string | null
 }
 
 // Real behavior: a missing/expired userCode returns NotFound() for both

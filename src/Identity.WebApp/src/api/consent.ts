@@ -9,10 +9,13 @@ export interface ScopeViewModel {
   checked: boolean
 }
 
-export interface ConsentViewModel {
+// Shared by ConsentViewModel and DeviceAuthorizationViewModel - mirrors the
+// backend's ConsentScopesViewModel split (see Identity.API/Quickstart/Consent),
+// which exists for the same reason: these are the fields both GET-response
+// shapes need, independent of which flow (Consent vs Device) is showing them.
+export interface ScopeConsentViewModel {
   scopesConsented: string[] | null
   rememberConsent: boolean
-  returnUrl: string | null
   description: string | null
   clientName: string
   clientUrl: string | null
@@ -22,6 +25,10 @@ export interface ConsentViewModel {
   apiScopes: ScopeViewModel[]
 }
 
+export interface ConsentViewModel extends ScopeConsentViewModel {
+  returnUrl: string | null
+}
+
 export interface ConsentPostResult {
   redirectUrl: string | null
   isNativeClient: boolean
@@ -29,12 +36,17 @@ export interface ConsentPostResult {
   viewModel: ConsentViewModel | null
 }
 
-export interface ConsentRequest {
+// Shared by ConsentRequest and DeviceCallbackRequest, same reasoning as
+// ScopeConsentViewModel above.
+export interface ScopeConsentRequest {
   button: 'yes' | 'no'
   scopesConsented: string[]
   rememberConsent: boolean
-  returnUrl: string
   description: string | null
+}
+
+export interface ConsentRequest extends ScopeConsentRequest {
+  returnUrl: string
 }
 
 // Real behavior for both actions below: a 404 means no authorization
