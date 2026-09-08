@@ -1,3 +1,5 @@
+import { apiGet, apiPost } from '../lib/apiFetch'
+
 export interface ExternalProvider {
   displayName: string | null
   authenticationScheme: string
@@ -34,43 +36,23 @@ export interface LogoutViewModel {
   showLogoutPrompt: boolean
 }
 
-export async function getLogin(returnUrl: string | null): Promise<LoginViewModel> {
+export function getLogin(returnUrl: string | null): Promise<LoginViewModel> {
   const query = returnUrl ? `?returnUrl=${encodeURIComponent(returnUrl)}` : ''
-  const response = await fetch(`/Account/Login${query}`)
-  if (!response.ok) {
-    throw new Error(`GET /Account/Login failed: ${response.status}`)
-  }
-  return response.json()
+  return apiGet<LoginViewModel>(`/Account/Login${query}`)
 }
 
-export async function postLogin(request: LoginRequest): Promise<LoginPostResult> {
-  const response = await fetch('/Account/Login', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(request),
-  })
-  if (!response.ok) {
-    throw new Error(`POST /Account/Login failed: ${response.status}`)
-  }
-  return response.json()
+export function postLogin(request: LoginRequest): Promise<LoginPostResult> {
+  return apiPost<LoginPostResult>('/Account/Login', { body: request })
 }
 
-export async function postLoginCancel(returnUrl: string | null): Promise<LoginPostResult> {
+export function postLoginCancel(returnUrl: string | null): Promise<LoginPostResult> {
   const query = returnUrl ? `?returnUrl=${encodeURIComponent(returnUrl)}` : ''
-  const response = await fetch(`/Account/LoginCancel${query}`, { method: 'POST' })
-  if (!response.ok) {
-    throw new Error(`POST /Account/LoginCancel failed: ${response.status}`)
-  }
-  return response.json()
+  return apiPost<LoginPostResult>(`/Account/LoginCancel${query}`)
 }
 
-export async function getLogout(logoutId: string | null): Promise<LogoutViewModel> {
+export function getLogout(logoutId: string | null): Promise<LogoutViewModel> {
   const query = logoutId ? `?logoutId=${encodeURIComponent(logoutId)}` : ''
-  const response = await fetch(`/Account/Logout${query}`)
-  if (!response.ok) {
-    throw new Error(`GET /Account/Logout failed: ${response.status}`)
-  }
-  return response.json()
+  return apiGet<LogoutViewModel>(`/Account/Logout${query}`)
 }
 
 export interface LoggedOutViewModel {
@@ -83,13 +65,9 @@ export interface LoggedOutViewModel {
   externalAuthenticationScheme: string | null
 }
 
-export async function getLoggedOut(logoutId: string | null): Promise<LoggedOutViewModel> {
+export function getLoggedOut(logoutId: string | null): Promise<LoggedOutViewModel> {
   const query = logoutId ? `?logoutId=${encodeURIComponent(logoutId)}` : ''
-  const response = await fetch(`/Account/LoggedOut${query}`)
-  if (!response.ok) {
-    throw new Error(`GET /Account/LoggedOut failed: ${response.status}`)
-  }
-  return response.json()
+  return apiGet<LoggedOutViewModel>(`/Account/LoggedOut${query}`)
 }
 
 // AccountController.LogoutPost (routed to /Account/Logout) now always
@@ -113,13 +91,9 @@ export async function getLoggedOut(logoutId: string | null): Promise<LoggedOutVi
 // this function does and binds correctly. Verified for real: a
 // form-urlencoded POST against the old JSON-bound version came back 415;
 // against this query-string version it redirects correctly, same as fetch().
-export async function postLogout(logoutId: string | null): Promise<LoggedOutViewModel> {
+export function postLogout(logoutId: string | null): Promise<LoggedOutViewModel> {
   const query = logoutId ? `?logoutId=${encodeURIComponent(logoutId)}` : ''
-  const response = await fetch(`/Account/Logout${query}`, { method: 'POST' })
-  if (!response.ok) {
-    throw new Error(`POST /Account/Logout failed: ${response.status}`)
-  }
-  return response.json()
+  return apiPost<LoggedOutViewModel>(`/Account/Logout${query}`)
 }
 
 // The real fallback for postLogout's cross-origin case: a <form> submitted

@@ -1,3 +1,5 @@
+import { apiGet, apiPost } from '../lib/apiFetch'
+
 export interface ScopeViewModel {
   value: string
   displayName: string
@@ -41,28 +43,10 @@ export interface ConsentRequest {
 // both GET and POST, not a validation error. Treated as null, not thrown,
 // matching getHomeIndex's precedent for a real non-error 404.
 
-export async function getConsent(returnUrl: string): Promise<ConsentViewModel | null> {
-  const response = await fetch(`/Consent/Index?returnUrl=${encodeURIComponent(returnUrl)}`)
-  if (response.status === 404) {
-    return null
-  }
-  if (!response.ok) {
-    throw new Error(`GET /Consent/Index failed: ${response.status}`)
-  }
-  return response.json()
+export function getConsent(returnUrl: string): Promise<ConsentViewModel | null> {
+  return apiGet<ConsentViewModel>(`/Consent/Index?returnUrl=${encodeURIComponent(returnUrl)}`, { treatAsNull: [404] })
 }
 
-export async function postConsent(request: ConsentRequest): Promise<ConsentPostResult | null> {
-  const response = await fetch('/Consent/Index', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(request),
-  })
-  if (response.status === 404) {
-    return null
-  }
-  if (!response.ok) {
-    throw new Error(`POST /Consent/Index failed: ${response.status}`)
-  }
-  return response.json()
+export function postConsent(request: ConsentRequest): Promise<ConsentPostResult | null> {
+  return apiPost<ConsentPostResult>('/Consent/Index', { body: request, treatAsNull: [404] })
 }

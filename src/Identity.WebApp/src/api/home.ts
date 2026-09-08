@@ -1,3 +1,5 @@
+import { apiGet } from '../lib/apiFetch'
+
 export interface HomeIndex {
   version: string
   wellKnownConfigurationUrl: string
@@ -13,23 +15,12 @@ export interface HomeError {
   error: Record<string, unknown> | null
 }
 
-export async function getHomeIndex(): Promise<HomeIndex | null> {
-  const response = await fetch('/Home/Index')
-  // Real behavior, not a guess: this action returns 404 outside Development
-  // (Duende recommends disabling it in production) -- that's not an error.
-  if (response.status === 404) {
-    return null
-  }
-  if (!response.ok) {
-    throw new Error(`GET /Home/Index failed: ${response.status}`)
-  }
-  return response.json()
+// Real behavior, not a guess: this action returns 404 outside Development
+// (Duende recommends disabling it in production) -- that's not an error.
+export function getHomeIndex(): Promise<HomeIndex | null> {
+  return apiGet<HomeIndex>('/Home/Index', { treatAsNull: [404] })
 }
 
-export async function getHomeError(errorId: string): Promise<HomeError> {
-  const response = await fetch(`/Home/Error?errorId=${encodeURIComponent(errorId)}`)
-  if (!response.ok) {
-    throw new Error(`GET /Home/Error failed: ${response.status}`)
-  }
-  return response.json()
+export function getHomeError(errorId: string): Promise<HomeError> {
+  return apiGet<HomeError>(`/Home/Error?errorId=${encodeURIComponent(errorId)}`)
 }

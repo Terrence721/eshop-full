@@ -1,3 +1,4 @@
+import { apiGet, apiPost } from '../lib/apiFetch'
 import type { ScopeViewModel } from './consent'
 
 export interface DeviceAuthorizationViewModel {
@@ -36,31 +37,17 @@ export interface DeviceCallbackRequest {
 // GET /Device/Index (when a code IS supplied) and POST
 // /Device/UserCodeCapture -- there's no third "invalid code" state to
 // represent, matching DeviceIndexResult's own doc comment.
-export async function getDeviceIndex(userCode?: string): Promise<DeviceIndexResult | null> {
+export function getDeviceIndex(userCode?: string): Promise<DeviceIndexResult | null> {
   const query = userCode ? `?userCode=${encodeURIComponent(userCode)}` : ''
-  const response = await fetch(`/Device/Index${query}`)
-  if (response.status === 404) {
-    return null
-  }
-  if (!response.ok) {
-    throw new Error(`GET /Device/Index failed: ${response.status}`)
-  }
-  return response.json()
+  return apiGet<DeviceIndexResult>(`/Device/Index${query}`, { treatAsNull: [404] })
 }
 
 // userCode binds from the query string, not JSON -- same [ApiController]
 // simple-type inference already relied on for Logout/Grants.Revoke.
-export async function captureUserCode(userCode: string): Promise<DeviceAuthorizationViewModel | null> {
-  const response = await fetch(`/Device/UserCodeCapture?userCode=${encodeURIComponent(userCode)}`, {
-    method: 'POST',
+export function captureUserCode(userCode: string): Promise<DeviceAuthorizationViewModel | null> {
+  return apiPost<DeviceAuthorizationViewModel>(`/Device/UserCodeCapture?userCode=${encodeURIComponent(userCode)}`, {
+    treatAsNull: [404],
   })
-  if (response.status === 404) {
-    return null
-  }
-  if (!response.ok) {
-    throw new Error(`POST /Device/UserCodeCapture failed: ${response.status}`)
-  }
-  return response.json()
 }
 
 // Real behavior, not a guess: DeviceController.Callback has three genuinely
