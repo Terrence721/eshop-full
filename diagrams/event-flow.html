@@ -85,7 +85,10 @@
     line-height: 1.15;
     margin: 0 0 0.5rem;
     letter-spacing: -0.01em;
-    text-wrap: balance;
+  }
+
+  @supports (text-wrap: balance) {
+    h1 { text-wrap: balance; }
   }
 
   .dek {
@@ -97,6 +100,7 @@
   }
   .dek code { font-family: var(--mono); font-size: 0.9em; color: var(--ink); }
   .dek a { color: var(--ink); }
+  .dek--footnote { margin: 0.6rem 0 0; font-size: 0.86rem; }
 
   h2 {
     font-size: 0.72rem;
@@ -237,7 +241,7 @@
     <span class="step step--zoomed z-transport">RabbitMQEventBus</span><span class="arrow">→</span>
     <span class="step">RabbitMQ broker</span>
   </div>
-  <p class="dek" style="margin: 0.6rem 0 0; font-size: 0.86rem;">
+  <p class="dek dek--footnote">
     Three separate <code>IEventBus</code> implementations, composed by wrapping — a caller only ever sees
     <code>IEventBus</code>, and doesn't know or care how many layers are behind it.
   </p>
