@@ -67,10 +67,13 @@ public class ConsentController : ControllerBase
 
         if (result.ShowView)
         {
+            // ProcessConsentResult.ViewModel is typed as the shared base
+            // ConsentScopesViewModel? (also used by DeviceController); BuildViewModelAsync
+            // above only ever assigns it a real ConsentViewModel - safe to cast back.
             return Ok(new ConsentPostResult
             {
                 ValidationError = result.ValidationError,
-                ViewModel = result.ViewModel
+                ViewModel = (ConsentViewModel?)result.ViewModel
             });
         }
 

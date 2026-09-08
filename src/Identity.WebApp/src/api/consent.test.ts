@@ -4,7 +4,6 @@ import { getConsent, postConsent, type ConsentViewModel } from './consent'
 
 function scopelessViewModel(): ConsentViewModel {
   return {
-    button: null,
     scopesConsented: null,
     rememberConsent: true,
     returnUrl: '/connect/authorize/callback',
