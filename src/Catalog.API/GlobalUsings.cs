@@ -1,5 +1,6 @@
 global using Asp.Versioning;
 global using Asp.Versioning.Conventions;
+global using eShop.Catalog.API.Infrastructure;
 global using eShop.Catalog.API.Infrastructure.EntityConfigurations;
 global using eShop.Catalog.API.Infrastructure.Exceptions;
 global using eShop.Catalog.API.Model;
@@ -19,7 +20,6 @@ global using Npgsql;
 // have any files yet -- C# genuinely can't resolve a `global using` for a
 // namespace with zero declarations anywhere in the compilation (CS0234),
 // not just "empty of members". Add each one back as its real folder lands:
-// eShop.Catalog.API, eShop.Catalog.API.Infrastructure,
-// eShop.Catalog.API.IntegrationEvents,
+// eShop.Catalog.API, eShop.Catalog.API.IntegrationEvents,
 // eShop.Catalog.API.IntegrationEvents.EventHandling,
 // eShop.Catalog.API.IntegrationEvents.Events.
