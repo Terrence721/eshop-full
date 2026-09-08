@@ -33,6 +33,7 @@ public static class RabbitMqDependencyInjectionExtensions
 
         // Abstractions on top of the core client API
         builder.Services.AddSingleton<RabbitMQTelemetry>();
+        builder.Services.AddSingleton<IEventSerializer, SystemTextJsonEventSerializer>();
         builder.Services.AddSingleton<RabbitMQEventBus>();
 
         // IEventBus resolves to a Decorator chain wrapping the bare RabbitMQEventBus:

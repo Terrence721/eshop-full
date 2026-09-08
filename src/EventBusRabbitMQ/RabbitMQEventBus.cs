@@ -1,7 +1,6 @@
 namespace eShop.EventBusRabbitMQ;
 
 using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -14,7 +13,8 @@ public sealed class RabbitMQEventBus(
     IServiceProvider serviceProvider,
     IOptions<EventBusOptions> options,
     IOptions<EventBusSubscriptionInfo> subscriptionOptions,
-    RabbitMQTelemetry rabbitMQTelemetry) : IEventBus, IDisposable, IHostedService
+    RabbitMQTelemetry rabbitMQTelemetry,
+    IEventSerializer eventSerializer) : IEventBus, IDisposable, IHostedService
 {
     private const string ExchangeName = "eshop_event_bus";
 
@@ -51,7 +51,7 @@ public sealed class RabbitMQEventBus(
             exchange: ExchangeName,
             type: "direct");
 
-        var body = SerializeMessage(@event);
+        var body = eventSerializer.Serialize(@event);
 
         var properties = new BasicProperties()
         {
@@ -155,7 +155,7 @@ public sealed class RabbitMQEventBus(
         }
 
         // Deserialize the event
-        var integrationEvent = DeserializeMessage(message, eventType);
+        var integrationEvent = eventSerializer.Deserialize(message, eventType);
 
         if (integrationEvent is null)
         {
@@ -170,22 +170,6 @@ public sealed class RabbitMQEventBus(
         {
             await handler.Handle(integrationEvent);
         }
-    }
-
-    [UnconditionalSuppressMessage("Trimming", "IL2026:RequiresUnreferencedCode",
-        Justification = "The 'JsonSerializer.IsReflectionEnabledByDefault' feature switch, which is set to false by default for trimmed .NET apps, ensures the JsonSerializer doesn't use Reflection.")]
-    [UnconditionalSuppressMessage("AOT", "IL3050:RequiresDynamicCode", Justification = "See above.")]
-    private IntegrationEvent? DeserializeMessage(string message, Type eventType)
-    {
-        return JsonSerializer.Deserialize(message, eventType, _subscriptionInfo.JsonSerializerOptions) as IntegrationEvent;
-    }
-
-    [UnconditionalSuppressMessage("Trimming", "IL2026:RequiresUnreferencedCode",
-        Justification = "The 'JsonSerializer.IsReflectionEnabledByDefault' feature switch, which is set to false by default for trimmed .NET apps, ensures the JsonSerializer doesn't use Reflection.")]
-    [UnconditionalSuppressMessage("AOT", "IL3050:RequiresDynamicCode", Justification = "See above.")]
-    private byte[] SerializeMessage(IntegrationEvent @event)
-    {
-        return JsonSerializer.SerializeToUtf8Bytes(@event, @event.GetType(), _subscriptionInfo.JsonSerializerOptions);
     }
 
     public Task StartAsync(CancellationToken cancellationToken)
