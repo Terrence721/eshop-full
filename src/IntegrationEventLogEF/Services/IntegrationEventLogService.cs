@@ -1,6 +1,6 @@
 namespace eShop.IntegrationEventLogEF.Services;
 
-public class IntegrationEventLogService<TContext> : IIntegrationEventLogService, IDisposable
+public sealed class IntegrationEventLogService<TContext> : IIntegrationEventLogService, IDisposable
     where TContext : DbContext
 {
     private volatile bool _disposedValue;
@@ -61,22 +61,22 @@ public class IntegrationEventLogService<TContext> : IIntegrationEventLogService,
         await _context.SaveChangesAsync();
     }
 
-    protected virtual void Dispose(bool disposing)
-    {
-        if (!_disposedValue)
-        {
-            if (disposing)
-            {
-                _context.Dispose();
-            }
-
-            _disposedValue = true;
-        }
-    }
-
+    // Composition-over-inheritance fix: the full protected-virtual Dispose(bool)
+    // template-method pattern (plus GC.SuppressFinalize) exists to let a
+    // subclass release its own unmanaged resources or a finalizer clean up
+    // safely -- this class has neither (no derived types, no finalizer), so
+    // the virtual extension point served no purpose. Dispose() still guards
+    // against a second call: IDisposable.Dispose() is conventionally
+    // idempotent but that's not a guaranteed contract, so this keeps the
+    // real safety property while dropping the unused override hook.
     public void Dispose()
     {
-        Dispose(disposing: true);
-        GC.SuppressFinalize(this);
+        if (_disposedValue)
+        {
+            return;
+        }
+
+        _context.Dispose();
+        _disposedValue = true;
     }
 }
