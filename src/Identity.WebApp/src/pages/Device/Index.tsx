@@ -1,7 +1,7 @@
 import { useEffect, useState, type SubmitEvent } from 'react'
 import { useSearchParams } from 'react-router'
 import { captureUserCode, getDeviceIndex, postDeviceCallback, type DeviceAuthorizationViewModel } from '../../api/device'
-import { ScopeCheckbox } from '../../components/ScopeSelection'
+import { ScopeFieldsets } from '../../components/ScopeSelection'
 import { scopeCheckedMap } from '../../lib/scopeCheckedMap'
 
 type Step =
@@ -136,37 +136,12 @@ function DevicePage() {
               void submitConsent(vm, 'yes')
             }}
           >
-            {vm.identityScopes.length > 0 && (
-              <fieldset>
-                <legend>Identity</legend>
-                <ul>
-                  {vm.identityScopes.map((scope) => (
-                    <ScopeCheckbox
-                      key={scope.value}
-                      scope={scope}
-                      checked={checkedScopes[scope.value] ?? false}
-                      onChange={(value, checked) => setCheckedScopes((prev) => ({ ...prev, [value]: checked }))}
-                    />
-                  ))}
-                </ul>
-              </fieldset>
-            )}
-
-            {vm.apiScopes.length > 0 && (
-              <fieldset>
-                <legend>Application access</legend>
-                <ul>
-                  {vm.apiScopes.map((scope) => (
-                    <ScopeCheckbox
-                      key={scope.value}
-                      scope={scope}
-                      checked={checkedScopes[scope.value] ?? false}
-                      onChange={(value, checked) => setCheckedScopes((prev) => ({ ...prev, [value]: checked }))}
-                    />
-                  ))}
-                </ul>
-              </fieldset>
-            )}
+            <ScopeFieldsets
+              identityScopes={vm.identityScopes}
+              apiScopes={vm.apiScopes}
+              checkedScopes={checkedScopes}
+              onChange={(value, checked) => setCheckedScopes((prev) => ({ ...prev, [value]: checked }))}
+            />
 
             {vm.allowRememberConsent && (
               <div>

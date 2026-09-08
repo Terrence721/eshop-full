@@ -1,7 +1,7 @@
 import { useState, type SubmitEvent } from 'react'
 import { useSearchParams } from 'react-router'
 import { getConsent, postConsent, type ConsentViewModel } from '../../api/consent'
-import { ScopeCheckbox } from '../../components/ScopeSelection'
+import { ScopeFieldsets } from '../../components/ScopeSelection'
 import { scopeCheckedMap } from '../../lib/scopeCheckedMap'
 import { useAsync } from '../../lib/useAsync'
 
@@ -84,37 +84,12 @@ function ConsentPage() {
       {validationError && <p role="alert">{validationError}</p>}
 
       <form onSubmit={handleSubmit}>
-        {vm.identityScopes.length > 0 && (
-          <fieldset>
-            <legend>Identity</legend>
-            <ul>
-              {vm.identityScopes.map((scope) => (
-                <ScopeCheckbox
-                  key={scope.value}
-                  scope={scope}
-                  checked={checkedScopes[scope.value] ?? false}
-                  onChange={(value, checked) => setCheckedScopes((prev) => ({ ...prev, [value]: checked }))}
-                />
-              ))}
-            </ul>
-          </fieldset>
-        )}
-
-        {vm.apiScopes.length > 0 && (
-          <fieldset>
-            <legend>Application access</legend>
-            <ul>
-              {vm.apiScopes.map((scope) => (
-                <ScopeCheckbox
-                  key={scope.value}
-                  scope={scope}
-                  checked={checkedScopes[scope.value] ?? false}
-                  onChange={(value, checked) => setCheckedScopes((prev) => ({ ...prev, [value]: checked }))}
-                />
-              ))}
-            </ul>
-          </fieldset>
-        )}
+        <ScopeFieldsets
+          identityScopes={vm.identityScopes}
+          apiScopes={vm.apiScopes}
+          checkedScopes={checkedScopes}
+          onChange={(value, checked) => setCheckedScopes((prev) => ({ ...prev, [value]: checked }))}
+        />
 
         {vm.allowRememberConsent && (
           <div>

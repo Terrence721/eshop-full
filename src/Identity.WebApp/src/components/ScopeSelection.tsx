@@ -29,3 +29,44 @@ export function ScopeCheckbox({
     </li>
   )
 }
+
+// Also shared by Consent and Device -- both render the same two fieldsets
+// (Identity / Application access) around a list of ScopeCheckbox, differing
+// only in which state setter backs onChange.
+export function ScopeFieldsets({
+  identityScopes,
+  apiScopes,
+  checkedScopes,
+  onChange,
+}: {
+  identityScopes: ScopeViewModel[]
+  apiScopes: ScopeViewModel[]
+  checkedScopes: Record<string, boolean>
+  onChange: (value: string, checked: boolean) => void
+}) {
+  return (
+    <>
+      {identityScopes.length > 0 && (
+        <fieldset>
+          <legend>Identity</legend>
+          <ul>
+            {identityScopes.map((scope) => (
+              <ScopeCheckbox key={scope.value} scope={scope} checked={checkedScopes[scope.value] ?? false} onChange={onChange} />
+            ))}
+          </ul>
+        </fieldset>
+      )}
+
+      {apiScopes.length > 0 && (
+        <fieldset>
+          <legend>Application access</legend>
+          <ul>
+            {apiScopes.map((scope) => (
+              <ScopeCheckbox key={scope.value} scope={scope} checked={checkedScopes[scope.value] ?? false} onChange={onChange} />
+            ))}
+          </ul>
+        </fieldset>
+      )}
+    </>
+  )
+}
