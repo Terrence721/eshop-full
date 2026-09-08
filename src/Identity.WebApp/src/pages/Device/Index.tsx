@@ -1,13 +1,13 @@
 import { useEffect, useState, type SubmitEvent } from 'react'
 import { useSearchParams } from 'react-router'
 import { captureUserCode, getDeviceIndex, postDeviceCallback, type DeviceAuthorizationViewModel } from '../../api/device'
-import { ScopeFieldsets } from '../../components/ScopeSelection'
+import { ScopeConsentForm } from '../../components/ScopeConsentForm'
 import { scopeCheckedMap } from '../../lib/scopeCheckedMap'
 
 type Step =
   | { kind: 'loading' }
   | { kind: 'needsCode'; error: string | null }
-  | { kind: 'confirm'; vm: DeviceAuthorizationViewModel }
+  | { kind: 'confirm'; vm: DeviceAuthorizationViewModel; error: string | null }
   | { kind: 'success' }
   | { kind: 'notFound' }
   | { kind: 'error'; message: string }
@@ -28,7 +28,7 @@ function DevicePage() {
           return
         }
         if (result.viewModel) {
-          setStep({ kind: 'confirm', vm: result.viewModel })
+          setStep({ kind: 'confirm', vm: result.viewModel, error: null })
           setCheckedScopes(scopeCheckedMap(result.viewModel))
           return
         }
@@ -48,7 +48,7 @@ function DevicePage() {
         setStep({ kind: 'needsCode', error: 'Invalid code -- please check it and try again.' })
         return
       }
-      setStep({ kind: 'confirm', vm })
+      setStep({ kind: 'confirm', vm, error: null })
       setCheckedScopes(scopeCheckedMap(vm))
     } catch (error) {
       setStep({ kind: 'error', message: error instanceof Error ? error.message : 'Could not verify this code.' })
@@ -79,7 +79,10 @@ function DevicePage() {
       }
       // redisplay
       if (outcome.result.viewModel) {
-        setStep({ kind: 'confirm', vm: outcome.result.viewModel })
+        // Real gap fixed here: this used to drop outcome.result.validationError
+        // entirely, unlike ConsentPage's equivalent redisplay path -- the form
+        // redisplayed with no indication of what went wrong.
+        setStep({ kind: 'confirm', vm: outcome.result.viewModel, error: outcome.result.validationError })
         setCheckedScopes(scopeCheckedMap(outcome.result.viewModel))
       }
     } catch (error) {
@@ -124,47 +127,26 @@ function DevicePage() {
       )
 
     case 'confirm': {
-      const { vm } = step
+      const { vm, error } = step
       return (
-        <div>
-          <h1>{vm.clientUrl ? <a href={vm.clientUrl}>{vm.clientName}</a> : vm.clientName}</h1>
-          <p>{vm.clientName} is requesting access to the following:</p>
-
-          <form
-            onSubmit={(event: SubmitEvent) => {
-              event.preventDefault()
-              void submitConsent(vm, 'yes')
-            }}
-          >
-            <ScopeFieldsets
-              identityScopes={vm.identityScopes}
-              apiScopes={vm.apiScopes}
-              checkedScopes={checkedScopes}
-              onChange={(value, checked) => setCheckedScopes((prev) => ({ ...prev, [value]: checked }))}
-            />
-
-            {vm.allowRememberConsent && (
-              <div>
-                <label htmlFor="rememberConsent">
-                  <input
-                    id="rememberConsent"
-                    type="checkbox"
-                    checked={vm.rememberConsent}
-                    onChange={(event) => setStep({ kind: 'confirm', vm: { ...vm, rememberConsent: event.target.checked } })}
-                  />
-                  Remember my decision
-                </label>
-              </div>
-            )}
-
-            <button type="submit" disabled={submitting}>
-              Yes, Allow
-            </button>
-            <button type="button" disabled={submitting} onClick={() => void submitConsent(vm, 'no')}>
-              No, Do Not Allow
-            </button>
-          </form>
-        </div>
+        <ScopeConsentForm
+          clientName={vm.clientName}
+          clientUrl={vm.clientUrl}
+          identityScopes={vm.identityScopes}
+          apiScopes={vm.apiScopes}
+          checkedScopes={checkedScopes}
+          onScopeChange={(value, checked) => setCheckedScopes((prev) => ({ ...prev, [value]: checked }))}
+          allowRememberConsent={vm.allowRememberConsent}
+          rememberConsent={vm.rememberConsent}
+          onRememberChange={(checked) => setStep({ kind: 'confirm', vm: { ...vm, rememberConsent: checked }, error })}
+          validationError={error}
+          submitting={submitting}
+          onSubmit={(event) => {
+            event.preventDefault()
+            void submitConsent(vm, 'yes')
+          }}
+          onDeny={() => void submitConsent(vm, 'no')}
+        />
       )
     }
   }

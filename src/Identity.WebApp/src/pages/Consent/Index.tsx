@@ -1,7 +1,7 @@
 import { useState, type SubmitEvent } from 'react'
 import { useSearchParams } from 'react-router'
 import { getConsent, postConsent, type ConsentViewModel } from '../../api/consent'
-import { ScopeFieldsets } from '../../components/ScopeSelection'
+import { ScopeConsentForm } from '../../components/ScopeConsentForm'
 import { scopeCheckedMap } from '../../lib/scopeCheckedMap'
 import { useAsync } from '../../lib/useAsync'
 
@@ -78,41 +78,21 @@ function ConsentPage() {
   }
 
   return (
-    <div>
-      <h1>{vm.clientUrl ? <a href={vm.clientUrl}>{vm.clientName}</a> : vm.clientName}</h1>
-      <p>{vm.clientName} is requesting access to the following:</p>
-      {validationError && <p role="alert">{validationError}</p>}
-
-      <form onSubmit={handleSubmit}>
-        <ScopeFieldsets
-          identityScopes={vm.identityScopes}
-          apiScopes={vm.apiScopes}
-          checkedScopes={checkedScopes}
-          onChange={(value, checked) => setCheckedScopes((prev) => ({ ...prev, [value]: checked }))}
-        />
-
-        {vm.allowRememberConsent && (
-          <div>
-            <label htmlFor="rememberConsent">
-              <input
-                id="rememberConsent"
-                type="checkbox"
-                checked={vm.rememberConsent}
-                onChange={(event) => setVm({ ...vm, rememberConsent: event.target.checked })}
-              />
-              Remember my decision
-            </label>
-          </div>
-        )}
-
-        <button type="submit" disabled={submitting}>
-          Yes, Allow
-        </button>
-        <button type="button" disabled={submitting} onClick={() => void submit('no')}>
-          No, Do Not Allow
-        </button>
-      </form>
-    </div>
+    <ScopeConsentForm
+      clientName={vm.clientName}
+      clientUrl={vm.clientUrl}
+      identityScopes={vm.identityScopes}
+      apiScopes={vm.apiScopes}
+      checkedScopes={checkedScopes}
+      onScopeChange={(value, checked) => setCheckedScopes((prev) => ({ ...prev, [value]: checked }))}
+      allowRememberConsent={vm.allowRememberConsent}
+      rememberConsent={vm.rememberConsent}
+      onRememberChange={(checked) => setVm({ ...vm, rememberConsent: checked })}
+      validationError={validationError}
+      submitting={submitting}
+      onSubmit={handleSubmit}
+      onDeny={() => void submit('no')}
+    />
   )
 }
 
