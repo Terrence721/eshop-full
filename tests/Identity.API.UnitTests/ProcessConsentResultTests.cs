@@ -6,7 +6,7 @@ public class ProcessConsentResultTests
     [TestMethod]
     public void IsRedirect_false_when_RedirectUri_not_set()
     {
-        var result = new ProcessConsentResult();
+        var result = new ProcessConsentResult<ConsentViewModel>();
 
         Assert.IsFalse(result.IsRedirect);
     }
@@ -14,7 +14,7 @@ public class ProcessConsentResultTests
     [TestMethod]
     public void IsRedirect_true_when_RedirectUri_set()
     {
-        var result = new ProcessConsentResult { RedirectUri = "https://client.example/callback" };
+        var result = new ProcessConsentResult<ConsentViewModel> { RedirectUri = "https://client.example/callback" };
 
         Assert.IsTrue(result.IsRedirect);
     }
@@ -22,7 +22,7 @@ public class ProcessConsentResultTests
     [TestMethod]
     public void ShowView_false_when_ViewModel_not_set()
     {
-        var result = new ProcessConsentResult();
+        var result = new ProcessConsentResult<ConsentViewModel>();
 
         Assert.IsFalse(result.ShowView);
     }
@@ -30,7 +30,7 @@ public class ProcessConsentResultTests
     [TestMethod]
     public void ShowView_true_when_ViewModel_set()
     {
-        var result = new ProcessConsentResult
+        var result = new ProcessConsentResult<ConsentViewModel>
         {
             ViewModel = new ConsentViewModel
             {
@@ -46,7 +46,7 @@ public class ProcessConsentResultTests
     [TestMethod]
     public void HasValidationError_false_when_ValidationError_not_set()
     {
-        var result = new ProcessConsentResult();
+        var result = new ProcessConsentResult<ConsentViewModel>();
 
         Assert.IsFalse(result.HasValidationError);
     }
@@ -54,7 +54,7 @@ public class ProcessConsentResultTests
     [TestMethod]
     public void HasValidationError_true_when_ValidationError_set()
     {
-        var result = new ProcessConsentResult { ValidationError = "must choose one" };
+        var result = new ProcessConsentResult<ConsentViewModel> { ValidationError = "must choose one" };
 
         Assert.IsTrue(result.HasValidationError);
     }

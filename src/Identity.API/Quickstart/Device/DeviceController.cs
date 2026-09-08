@@ -66,14 +66,10 @@ public class DeviceController : QuickstartControllerBase
             // with the validation error instead of a generic failure. Upstream fell
             // back to a generic error page here regardless of validation vs. hard
             // failure, unlike ConsentController, which already redisplayed the form.
-            // ProcessConsentResult.ViewModel is typed as the shared base
-            // ConsentScopesViewModel? (also used by ConsentController), but
-            // BuildViewModelAsync below only ever assigns it a real
-            // DeviceAuthorizationViewModel - safe to cast back.
             return Ok(new DeviceCallbackResult
             {
                 ValidationError = result.ValidationError,
-                ViewModel = (DeviceAuthorizationViewModel?)result.ViewModel
+                ViewModel = result.ViewModel
             });
         }
 
@@ -93,9 +89,9 @@ public class DeviceController : QuickstartControllerBase
         return NotFound();
     }
 
-    private async Task<ProcessConsentResult> ProcessConsent(DeviceAuthorizationInputModel model, CancellationToken cancellationToken)
+    private async Task<ProcessConsentResult<DeviceAuthorizationViewModel>> ProcessConsent(DeviceAuthorizationInputModel model, CancellationToken cancellationToken)
     {
-        var result = new ProcessConsentResult();
+        var result = new ProcessConsentResult<DeviceAuthorizationViewModel>();
 
         var request = await _interaction.GetAuthorizationContextAsync(model.UserCode, cancellationToken);
         if (request == null) return result;
