@@ -29,7 +29,7 @@ public class ConsentControllerTests
 
     private static ConsentController CreateController(IIdentityServerInteractionService interaction, IEventService? events = null)
     {
-        var controller = new ConsentController(interaction, events ?? Substitute.For<IEventService>(), Substitute.For<ILogger<ConsentController>>());
+        var controller = new ConsentController(interaction, new ConsentResponseBuilder(events ?? Substitute.For<IEventService>()), Substitute.For<ILogger<ConsentController>>());
         controller.ControllerContext = new ControllerContext
         {
             HttpContext = new DefaultHttpContext

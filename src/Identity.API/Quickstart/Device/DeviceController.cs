@@ -1,5 +1,4 @@
 using Duende.IdentityServer;
-using Duende.IdentityServer.Events;
 using Duende.IdentityServer.Extensions;
 using Duende.IdentityServer.Models;
 using Duende.IdentityServer.Services;
@@ -13,16 +12,16 @@ namespace IdentityServerHost.Quickstart.UI;
 public class DeviceController : QuickstartControllerBase
 {
     private readonly IDeviceFlowInteractionService _interaction;
-    private readonly IEventService _events;
+    private readonly ConsentResponseBuilder _responseBuilder;
     private readonly ILogger<DeviceController> _logger;
 
     public DeviceController(
         IDeviceFlowInteractionService interaction,
-        IEventService eventService,
+        ConsentResponseBuilder responseBuilder,
         ILogger<DeviceController> logger)
     {
         _interaction = interaction;
-        _events = eventService;
+        _responseBuilder = responseBuilder;
         _logger = logger;
     }
 
@@ -101,44 +100,9 @@ public class DeviceController : QuickstartControllerBase
         var request = await _interaction.GetAuthorizationContextAsync(model.UserCode, cancellationToken);
         if (request == null) return result;
 
-        ConsentResponse? grantedConsent = null;
-
-        // user clicked 'no' - send back the standard 'access_denied' response
-        if (model.Button == "no")
-        {
-            grantedConsent = new ConsentResponse { Error = InteractionError.AccessDenied };
-
-            // emit event
-            await _events.RaiseAsync(new ConsentDeniedEvent(User.GetSubjectId(), request.Client.ClientId, request.ValidatedResources.RawScopeValues), cancellationToken);
-        }
-        // user clicked 'yes' - validate the data
-        else if (model.Button == "yes")
-        {
-            // if the user consented to some scope, build the response model
-            if (model.ScopesConsented != null && model.ScopesConsented.Any())
-            {
-                // ConsentOptions.EnableOfflineAccess is const true, so filtering
-                // offline_access out here (upstream's original behavior when it's
-                // disabled) is unreachable - removed rather than kept as dead code.
-                grantedConsent = new ConsentResponse
-                {
-                    RememberConsent = model.RememberConsent,
-                    ScopesValuesConsented = model.ScopesConsented.ToArray(),
-                    Description = model.Description
-                };
-
-                // emit event
-                await _events.RaiseAsync(new ConsentGrantedEvent(User.GetSubjectId(), request.Client.ClientId, request.ValidatedResources.RawScopeValues, grantedConsent.ScopesValuesConsented, grantedConsent.RememberConsent), cancellationToken);
-            }
-            else
-            {
-                result.ValidationError = ConsentOptions.MustChooseOneErrorMessage;
-            }
-        }
-        else
-        {
-            result.ValidationError = ConsentOptions.InvalidSelectionErrorMessage;
-        }
+        var (grantedConsent, validationError) = await _responseBuilder.BuildAsync(
+            model, User.GetSubjectId(), request.Client.ClientId, request.ValidatedResources.RawScopeValues, cancellationToken);
+        result.ValidationError = validationError;
 
         if (grantedConsent != null)
         {

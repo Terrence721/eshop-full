@@ -1,5 +1,6 @@
 using Duende.IdentityServer.Services;
 using eShop.Identity.API;
+using IdentityServerHost.Quickstart.UI;
 using eShop.Identity.API.Configuration;
 using eShop.Identity.API.Data;
 using eShop.Identity.API.Models;
@@ -61,6 +62,7 @@ builder.Services.AddIdentityServer(options =>
 .AddDeveloperSigningCredential();
 
 builder.Services.AddTransient<IProfileService, ProfileService>();
+builder.Services.AddTransient<ConsentResponseBuilder>();
 
 var app = builder.Build();
 

@@ -22,7 +22,7 @@ public class DeviceControllerTests
 
     private static DeviceController CreateController(IDeviceFlowInteractionService interaction, IEventService? events = null)
     {
-        var controller = new DeviceController(interaction, events ?? Substitute.For<IEventService>(), Substitute.For<ILogger<DeviceController>>());
+        var controller = new DeviceController(interaction, new ConsentResponseBuilder(events ?? Substitute.For<IEventService>()), Substitute.For<ILogger<DeviceController>>());
         controller.ControllerContext = new ControllerContext
         {
             HttpContext = new DefaultHttpContext
