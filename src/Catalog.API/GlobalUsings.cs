@@ -5,6 +5,7 @@ global using eShop.Catalog.API.Infrastructure;
 global using eShop.Catalog.API.Infrastructure.EntityConfigurations;
 global using eShop.Catalog.API.Infrastructure.Exceptions;
 global using eShop.Catalog.API.IntegrationEvents.Events;
+global using eShop.Catalog.API.IntegrationEvents.EventHandling;
 global using eShop.Catalog.API.Model;
 global using eShop.EventBus.Abstractions;
 global using eShop.EventBus.Events;
@@ -17,10 +18,10 @@ global using Microsoft.EntityFrameworkCore.Metadata.Builders;
 global using Microsoft.Extensions.Options;
 global using Npgsql;
 
-// The following upstream global usings reference this project's own
-// namespaces (Infrastructure/, IntegrationEvents/, Model/), which don't
-// have any files yet -- C# genuinely can't resolve a `global using` for a
-// namespace with zero declarations anywhere in the compilation (CS0234),
-// not just "empty of members". Add each one back as its real folder lands:
-// eShop.Catalog.API.IntegrationEvents,
-// eShop.Catalog.API.IntegrationEvents.EventHandling.
+// The following upstream global using references this project's own
+// eShop.Catalog.API.IntegrationEvents namespace, which doesn't have any
+// files yet -- C# genuinely can't resolve a `global using` for a namespace
+// with zero declarations anywhere in the compilation (CS0234), not just
+// "empty of members". Add it back once ICatalogIntegrationEventService.cs/
+// CatalogIntegrationEventService.cs land there:
+// eShop.Catalog.API.IntegrationEvents.
