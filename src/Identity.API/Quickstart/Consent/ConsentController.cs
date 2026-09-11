@@ -121,46 +121,30 @@ public class ConsentController : QuickstartControllerBase
         return null;
     }
 
-    private ConsentViewModel CreateConsentViewModel(
+    private static ConsentViewModel CreateConsentViewModel(
         ConsentInputModel? model, string? returnUrl,
         AuthorizationRequest request)
     {
         var scopesConsented = model?.ScopesConsented ?? Enumerable.Empty<string>();
-
-        var identityScopes = request.ValidatedResources.Resources.IdentityResources
-            .Select(x => ScopeViewModelFactory.CreateScopeViewModel(x, scopesConsented.Contains(x.Name) || model == null))
-            .ToArray();
-
-        var apiScopes = new List<ScopeViewModel>();
-        foreach (var parsedScope in request.ValidatedResources.ParsedScopes)
-        {
-            var apiScope = request.ValidatedResources.Resources.FindApiScope(parsedScope.ParsedName);
-            if (apiScope != null)
-            {
-                var scopeVm = ScopeViewModelFactory.CreateScopeViewModel(parsedScope, apiScope, scopesConsented.Contains(parsedScope.RawValue) || model == null);
-                apiScopes.Add(scopeVm);
-            }
-        }
-        if (ConsentOptions.EnableOfflineAccess && request.ValidatedResources.Resources.OfflineAccess)
-        {
-            apiScopes.Add(ScopeViewModelFactory.GetOfflineAccessScope(scopesConsented.Contains(IdentityServerConstants.StandardScopes.OfflineAccess) || model == null));
-        }
+        var scopes = ScopeViewModelFactory.BuildScopesViewModel(
+            request.ValidatedResources, request.Client, scopesConsented, model == null,
+            model?.RememberConsent ?? true, model?.Description);
 
         return new ConsentViewModel
         {
-            RememberConsent = model?.RememberConsent ?? true,
-            ScopesConsented = scopesConsented,
-            Description = model?.Description,
-
             ReturnUrl = returnUrl,
 
-            ClientName = request.Client.ClientName ?? request.Client.ClientId,
-            ClientUrl = request.Client.ClientUri,
-            ClientLogoUrl = request.Client.LogoUri,
-            AllowRememberConsent = request.Client.AllowRememberConsent,
+            RememberConsent = scopes.RememberConsent,
+            ScopesConsented = scopes.ScopesConsented,
+            Description = scopes.Description,
 
-            IdentityScopes = identityScopes,
-            ApiScopes = apiScopes
+            ClientName = scopes.ClientName,
+            ClientUrl = scopes.ClientUrl,
+            ClientLogoUrl = scopes.ClientLogoUrl,
+            AllowRememberConsent = scopes.AllowRememberConsent,
+
+            IdentityScopes = scopes.IdentityScopes,
+            ApiScopes = scopes.ApiScopes
         };
     }
 }
