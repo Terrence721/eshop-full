@@ -3,7 +3,7 @@
     <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
     <CentralPackageTransitivePinningEnabled>true</CentralPackageTransitivePinningEnabled>
     <DotnetPackagesVersion>10.0.12</DotnetPackagesVersion>
-    <MicrosoftExtensionsVersion>10.9.0</MicrosoftExtensionsVersion>
+    <MicrosoftExtensionsVersion>10.10.0</MicrosoftExtensionsVersion>
     <AspireVersion>13.5.3</AspireVersion>
     <AspireUnstablePackagesVersion>13.4.6-preview.1.26319.6</AspireUnstablePackagesVersion>
     <GrpcVersion>2.83.0</GrpcVersion>
