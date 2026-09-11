@@ -20,7 +20,7 @@ namespace IdentityServerHost.Quickstart.UI;
 public class ConsentResponseBuilder(IEventService events)
 {
     public async Task<(ConsentResponse? GrantedConsent, string? ValidationError)> BuildAsync(
-        ConsentInputModel model,
+        ConsentDecisionInputModel model,
         string? subjectId,
         string clientId,
         IEnumerable<string> rawScopeValues,
