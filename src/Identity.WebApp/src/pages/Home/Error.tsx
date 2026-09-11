@@ -1,22 +1,21 @@
-import { useEffect, useState } from 'react'
 import { useSearchParams } from 'react-router'
-import { getHomeError, type HomeError as HomeErrorData } from '../../api/home'
+import { getHomeError } from '../../api/home'
+import { useAsync } from '../../lib/useAsync'
 
 function HomeError() {
   const [searchParams] = useSearchParams()
   const errorId = searchParams.get('errorId') ?? ''
-  const [data, setData] = useState<HomeErrorData | null>(null)
-  const [fetchError, setFetchError] = useState<Error | null>(null)
+  const { data, loading, error } = useAsync(() => getHomeError(errorId), [errorId])
 
-  useEffect(() => {
-    getHomeError(errorId).then(setData).catch(setFetchError)
-  }, [errorId])
+  if (loading) {
+    return <p>Loading...</p>
+  }
 
   return (
     <div>
       <h1>Error</h1>
-      {fetchError ? (
-        <p>Could not load error details: {fetchError.message}</p>
+      {error ? (
+        <p>Could not load error details: {error.message}</p>
       ) : data?.error ? (
         <pre>{JSON.stringify(data.error, null, 2)}</pre>
       ) : (
