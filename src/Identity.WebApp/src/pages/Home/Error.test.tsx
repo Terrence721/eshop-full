@@ -13,6 +13,14 @@ function renderAt(path: string) {
 }
 
 describe('HomeError', () => {
+  it('shows a loading state before the fetch resolves', () => {
+    mockFetchOnce(200, { error: null })
+
+    renderAt('/Home/Error')
+
+    expect(screen.getByText('Loading...')).toBeInTheDocument()
+  })
+
   it('shows "no error information" when there is no error payload', async () => {
     mockFetchOnce(200, { error: null })
 
