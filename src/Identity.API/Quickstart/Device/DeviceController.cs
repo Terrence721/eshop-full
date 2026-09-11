@@ -127,44 +127,28 @@ public class DeviceController : QuickstartControllerBase
         return null;
     }
 
-    private DeviceAuthorizationViewModel CreateConsentViewModel(string userCode, DeviceAuthorizationInputModel? model, DeviceFlowAuthorizationRequest request)
+    private static DeviceAuthorizationViewModel CreateConsentViewModel(string userCode, DeviceAuthorizationInputModel? model, DeviceFlowAuthorizationRequest request)
     {
         var scopesConsented = model?.ScopesConsented ?? Enumerable.Empty<string>();
-
-        var identityScopes = request.ValidatedResources.Resources.IdentityResources
-            .Select(x => ScopeViewModelFactory.CreateScopeViewModel(x, scopesConsented.Contains(x.Name) || model == null))
-            .ToArray();
-
-        var apiScopes = new List<ScopeViewModel>();
-        foreach (var parsedScope in request.ValidatedResources.ParsedScopes)
-        {
-            var apiScope = request.ValidatedResources.Resources.FindApiScope(parsedScope.ParsedName);
-            if (apiScope != null)
-            {
-                var scopeVm = ScopeViewModelFactory.CreateScopeViewModel(parsedScope, apiScope, scopesConsented.Contains(parsedScope.RawValue) || model == null);
-                apiScopes.Add(scopeVm);
-            }
-        }
-        if (ConsentOptions.EnableOfflineAccess && request.ValidatedResources.Resources.OfflineAccess)
-        {
-            apiScopes.Add(ScopeViewModelFactory.GetOfflineAccessScope(scopesConsented.Contains(IdentityServerConstants.StandardScopes.OfflineAccess) || model == null));
-        }
+        var scopes = ScopeViewModelFactory.BuildScopesViewModel(
+            request.ValidatedResources, request.Client, scopesConsented, model == null,
+            model?.RememberConsent ?? true, model?.Description);
 
         return new DeviceAuthorizationViewModel
         {
             UserCode = userCode,
-            Description = model?.Description,
 
-            RememberConsent = model?.RememberConsent ?? true,
-            ScopesConsented = scopesConsented,
+            RememberConsent = scopes.RememberConsent,
+            ScopesConsented = scopes.ScopesConsented,
+            Description = scopes.Description,
 
-            ClientName = request.Client.ClientName ?? request.Client.ClientId,
-            ClientUrl = request.Client.ClientUri,
-            ClientLogoUrl = request.Client.LogoUri,
-            AllowRememberConsent = request.Client.AllowRememberConsent,
+            ClientName = scopes.ClientName,
+            ClientUrl = scopes.ClientUrl,
+            ClientLogoUrl = scopes.ClientLogoUrl,
+            AllowRememberConsent = scopes.AllowRememberConsent,
 
-            IdentityScopes = identityScopes,
-            ApiScopes = apiScopes
+            IdentityScopes = scopes.IdentityScopes,
+            ApiScopes = scopes.ApiScopes
         };
     }
 }
