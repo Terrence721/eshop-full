@@ -1121,3 +1121,33 @@ Requested directly, immediately after the `Catalog.API` progress above landed. G
 - **Wiki** (`eshop-full.wiki`) — asked to fix stale test counts and any `Catalog.API` status description across all pages, plus stale dates.
 - **Portfolio hub** (`terrence721.github.io`) — asked to fix eshop-full's card test counts only; explicitly told not to touch the deliberate no-case-study-link decision or the correct "6 of 21" figure.
 - **Profile README** (`Terrence721/Terrence721`) — asked to fix eshop-full's test counts only, told not to add anything new.
+
+All three came back clean: wiki fixed `Home.md`/`⭐-Architecture-Overview.md`/`⭐-Testing.md` (independently re-ran the test suites itself before trusting the briefing, confirmed the same 304), portfolio hub and profile README each fixed their one stale test-count line. Verified all three live afterward rather than trusting the reports alone. Also verified the GitHub Projects board directly via GraphQL: issue #35 (`Catalog.API`) correctly still shows "In Progress" — no move needed since `Program.cs` wiring isn't done yet.
+
+### Repo metadata brought in line with real scope, 2026-09-12
+
+User-initiated, prompted by looking at the repo's "Edit repository details" dialog. The description and topic list still reflected upstream's full 21-project target rather than what's actually on disk. Verified directly (no Dockerfile/docker-compose anywhere in the repo, `ClientApp`/MAUI not started at all — 0 files) before touching anything:
+- **Topics removed** (nothing on disk yet): `docker`, `docker-compose`, `docker-container`, `docker-image`, `dockerfile`, `maui`, `maui-android`.
+- **Topics added** (real, currently in the repo): `typescript`, `postgresql`, `entity-framework-core`, `identityserver`, `pgvector`.
+- **Description rewritten** to state real current scope plainly: 6 of 21 projects done, 304 tests passing, real bugs found and fixed in upstream, plus the actual stack (.NET 10, Aspire 13, React 19, Duende IdentityServer, PostgreSQL/pgvector, RabbitMQ) — verified each version against the real files (React 19.2.8 at the time, Aspire 13.5.3) rather than assumed.
+
+Applied directly via the GitHub API after the user confirmed the proposed wording; verified live afterward.
+
+### Nine Dependabot PRs reviewed one at a time, 2026-09-18
+
+User's explicit instruction for this session: share PRs one at a time, review and act on each before moving to the next, no batching ahead. Followed strictly — each PR's real content, mergeable state, and CI status checked before recommending, merge only on explicit "proceed."
+
+- **#86** `MSTest.Sdk` 4.4.0→4.4.1 — patch, merged clean.
+- **#85** `duende` group (`Duende.IdentityServer`+`.Storage`) 8.0.7→8.0.8 — patch, SAML fixes unrelated to this repo's usage, merged clean.
+- **#84** `vite` 8.2.2→8.3.0 — merged, then `identity-webapp` failed on the merge commit. Investigated rather than assumed transient: real error was `Error: The 'onCancel' handler was attached after the promise settled.`, thrown from inside Yarn 4.18.0's own bundled network-fetch layer during `yarn install`'s Fetch step — a race in Yarn's internal promise-cancellation handling, not anything in this repo's dependency graph. Re-ran just the failed job via the Actions API; it passed cleanly on retry, confirming it was genuinely transient rather than dismissing it without action.
+- **#83** `aspire` group — bumps the shared `AspireVersion` MSBuild property 13.5.3→13.5.4 (confirmed via the actual diff, not just the one package Dependabot named), patch release, merged clean.
+- **#82 + #78 — a real cross-PR issue caught, not a false alarm.** `#82` ("Bump react and @types/react") and `#78` ("Bump react-dom and @types/react-dom") were separate Dependabot PRs both targeting 19.3.0, same split-group pattern seen before with .NET packages. Merging `#82` alone left `react-dom` at the old 19.2.8, and React hard-fails at runtime on any version mismatch between the two packages (not a warning) — confirmed via each PR's own failing `identity-webapp` job log: `Error: Incompatible React versions ... react: 19.3.0, react-dom: 19.2.8` (and the mirror-image error on `#78`'s own branch). All 15 Identity.WebApp test suites failed for this one shared reason, not 15 separate bugs. Resolved by merging `#82` first (expected red on `main` briefly), triggering `@dependabot rebase` on `#78` to rebase it onto the new `main`, then merging `#78` once its rebased commit ran fully green — verified the final combined `main` state green end-to-end afterward.
+- **#81** `@testing-library/dom` 10.4.1→10.4.2 — patch, merged clean.
+- **#79** `oxlint` 1.82.0→1.83.0 — feature/bugfix release, notably updates its own React lint rules for React 19.3 (relevant given the bump above), merged clean.
+- **#80** `@types/node` 26.5.0→26.5.1 — patch, types-only, merged clean.
+
+All 9 merged via the GitHub API (not local commits) — local `main` pulled and fast-forwarded afterward to sync. Real current versions confirmed post-merge: `MSTest.Sdk` 4.4.1, `AspireVersion` 13.5.4, `DuendeVersion` 8.0.8, `react`/`react-dom`/`@types/react`/`@types/react-dom` all 19.3.0, `vite` 8.3.0, `@testing-library/dom` 10.4.2, `@types/node` 26.5.1, `oxlint` 1.83.0.
+
+**New standing memory saved:** `feedback_curl_json_payload_escaping.md` — hand-written JSON with backslashes for `curl -d` gets silently mangled by the Bash-tool pipeline; build the payload via `node -e` `JSON.stringify` from a plain text file instead. Hit this twice in one session (a PR comment, then the issue #35 body update) before fixing it for good.
+
+**⏸️ Checkpoint, 2026-09-18 — session paused here at the user's request.** No `Catalog.API` source changes this session — purely Dependabot PR review plus the repo-metadata cleanup above. **Resume point unchanged from the last checkpoint:** `Catalog.API`'s entire domain-logic layer and the real `Apis/CatalogApi.cs` v1/v2 endpoint surface are on disk; what's left is `HostEnvironmentExtensions.cs`, `Extensions.cs` (`AddApplicationServices` — DB context registration, migration/seeding wiring, RabbitMQ subscriptions, the AI-backend conditional registration), and replacing `Program.cs`'s placeholder with real startup wiring calling into both. Working tree clean, everything pushed, CI-green on every commit.
