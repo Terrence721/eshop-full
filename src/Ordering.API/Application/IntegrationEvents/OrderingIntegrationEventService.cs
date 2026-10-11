@@ -21,7 +21,10 @@ public class OrderingIntegrationEventService(IEventBus eventBus,
             try
             {
                 await _eventLogService.MarkEventAsInProgressAsync(logEvt.EventId);
-                await _eventBus.PublishAsync(logEvt.IntegrationEvent);
+                // Every entry yielded by RetrieveEventLogsPendingToPublishAsync already went
+                // through DeserializeJsonContent() in its query projection, so IntegrationEvent
+                // is always populated here despite the property's nullable declared type.
+                await _eventBus.PublishAsync(logEvt.IntegrationEvent!);
                 await _eventLogService.MarkEventAsPublishedAsync(logEvt.EventId);
             }
             catch (Exception ex)
