@@ -6,9 +6,9 @@ public class OrderItem
     : Entity
 {
     [Required]
-    public string ProductName { get; private set; }
-    
-    public string PictureUrl { get; private set;}
+    public string ProductName { get; private set; } = null!;
+
+    public string PictureUrl { get; private set;} = null!;
     
     public decimal UnitPrice { get; private set;}
     
