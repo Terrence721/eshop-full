@@ -1,4 +1,4 @@
-using System.Text.Json.Serialization;
+﻿using System.Text.Json;
 using eShop.Basket.API.Model;
 
 namespace eShop.Basket.API.Repositories;
@@ -6,6 +6,7 @@ namespace eShop.Basket.API.Repositories;
 public class RedisBasketRepository(ILogger<RedisBasketRepository> logger, IConnectionMultiplexer redis) : IBasketRepository
 {
     private readonly IDatabase _database = redis.GetDatabase();
+    private static readonly JsonSerializerOptions JsonOptions = new(JsonSerializerDefaults.Web);
 
     // implementation:
 
@@ -28,14 +29,15 @@ public class RedisBasketRepository(ILogger<RedisBasketRepository> logger, IConne
         {
             return null;
         }
-        return JsonSerializer.Deserialize(data.Span, BasketSerializationContext.Default.CustomerBasket);
+
+        return JsonSerializer.Deserialize<CustomerBasket>(data.Span, JsonOptions);
     }
 
     public async Task<CustomerBasket?> UpdateBasketAsync(CustomerBasket basket)
     {
         ArgumentException.ThrowIfNullOrEmpty(basket.BuyerId);
 
-        var json = JsonSerializer.SerializeToUtf8Bytes(basket, BasketSerializationContext.Default.CustomerBasket);
+        var json = JsonSerializer.SerializeToUtf8Bytes(basket, JsonOptions);
         var created = await _database.StringSetAsync(GetBasketKey(basket.BuyerId), json);
 
         if (!created)
@@ -48,11 +50,4 @@ public class RedisBasketRepository(ILogger<RedisBasketRepository> logger, IConne
         logger.LogInformation("Basket item persisted successfully.");
         return await GetBasketAsync(basket.BuyerId);
     }
-}
-
-[JsonSerializable(typeof(CustomerBasket))]
-[JsonSourceGenerationOptions(PropertyNameCaseInsensitive = true)]
-public partial class BasketSerializationContext : JsonSerializerContext
-{
-
 }
