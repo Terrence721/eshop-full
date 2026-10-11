@@ -9,6 +9,10 @@
   "workspaces": [
     "src/Identity.WebApp"
   ],
+  "resolutions": {
+    "undici": "^8.10.2",
+    "source-map-js": "^1.2.2"
+  },
   "scripts": {
     "clean:logs": "node scripts/clean-logs.mjs"
   },
