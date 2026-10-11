@@ -2,7 +2,7 @@ namespace eShop.IntegrationEventLogEF.Services;
 
 public interface IIntegrationEventLogService
 {
-    Task<IReadOnlyList<IntegrationEventLogEntry>> RetrievePendingEventLogsAsync(Guid transactionId);
+    Task<IReadOnlyList<IntegrationEventLogEntry>> RetrieveEventLogsPendingToPublishAsync(Guid transactionId);
     Task SaveEventAsync(IntegrationEvent @event, IDbContextTransaction transaction);
     Task MarkEventAsPublishedAsync(Guid eventId);
     Task MarkEventAsInProgressAsync(Guid eventId);
