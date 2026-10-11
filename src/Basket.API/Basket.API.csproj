@@ -3,6 +3,18 @@
     <TargetFramework>net10.0</TargetFramework>
     <UserSecretsId>2964ec8e-0d48-4541-b305-94cab537f867</UserSecretsId>
     <PublishAot Condition="'$(EnableAotPublishing)' == 'true'">true</PublishAot>
+    <!--
+      Works around a VS Code C# extension false positive: its live analyzer
+      sometimes reports "Did not generate serialization metadata for type
+      'CustomerBasket'" even though a real dotnet build succeeds with 0
+      warnings and the System.Text.Json source generator's actual output
+      (verified directly) contains a correct JsonTypeInfo<CustomerBasket>.
+      Emitting the generator's output to disk lets the IDE resolve it from
+      real files instead of its own possibly-stale in-memory generator
+      cache.
+    -->
+    <EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>
+    <CompilerGeneratedFilesOutputPath>$(BaseIntermediateOutputPath)Generated</CompilerGeneratedFilesOutputPath>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Aspire.StackExchange.Redis" />
