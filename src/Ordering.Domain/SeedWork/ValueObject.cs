@@ -39,6 +39,6 @@ public abstract class ValueObject
 
     public ValueObject GetCopy()
     {
-        return this.MemberwiseClone() as ValueObject;
+        return (this.MemberwiseClone() as ValueObject)!;
     }
 }
