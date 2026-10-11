@@ -6,9 +6,9 @@ public class Buyer
     : Entity, IAggregateRoot
 {
     [Required]
-    public string IdentityGuid { get; private set; }
+    public string IdentityGuid { get; private set; } = null!;
 
-    public string Name { get; private set; }
+    public string Name { get; private set; } = null!;
 
     private List<PaymentMethod> _paymentMethods;
 
