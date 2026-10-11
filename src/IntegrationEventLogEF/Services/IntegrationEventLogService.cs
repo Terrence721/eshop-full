@@ -11,7 +11,7 @@ public sealed class IntegrationEventLogService<TContext> : IIntegrationEventLogS
         _context = context;
     }
 
-    public async Task<IReadOnlyList<IntegrationEventLogEntry>> RetrievePendingEventLogsAsync(Guid transactionId)
+    public async Task<IReadOnlyList<IntegrationEventLogEntry>> RetrieveEventLogsPendingToPublishAsync(Guid transactionId)
     {
         var result = await _context.Set<IntegrationEventLogEntry>()
             .Where(e => e.TransactionId == transactionId && e.State == EventState.NotPublished)
