@@ -12,17 +12,8 @@
     <Compile Include="..\Shared\ActivityExtensions.cs" Link="Extensions\ActivityExtensions.cs" />
   </ItemGroup>
 
-  <!--
-    OpenApiGenerateDocumentsOnBuild/OpenApiDocumentsDirectory deliberately deferred:
-    Microsoft.Extensions.ApiDescription.Server's GenerateOpenApiDocuments target runs the
-    compiled assembly at build time to reflect out its real OpenAPI documents (upstream's
-    checked-in Catalog.API.json/Catalog.API_v2.json are that target's own output, not
-    hand-written); it needs real API-versioning/OpenAPI wiring in Program.cs to succeed, which
-    this placeholder doesn't have yet. Turn this back on (and add OpenApiDocumentsDirectory)
-    once Program.cs's real startup wiring lands.
-  -->
   <PropertyGroup>
-    <OpenApiGenerateDocumentsOnBuild>false</OpenApiGenerateDocumentsOnBuild>
+    <OpenApiDocumentsDirectory>$(MSBuildProjectDirectory)</OpenApiDocumentsDirectory>
   </PropertyGroup>
 
   <ItemGroup>
