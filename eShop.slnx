@@ -8,6 +8,7 @@
     <Project Path="src/Catalog.API/Catalog.API.csproj" />
     <Project Path="src/Basket.API/Basket.API.csproj" />
     <Project Path="src/Ordering.Domain/Ordering.Domain.csproj" />
+    <Project Path="src/Ordering.Infrastructure/Ordering.Infrastructure.csproj" />
   </Folder>
   <Folder Name="/tests/">
     <Project Path="tests/EventBus.UnitTests/EventBus.UnitTests.csproj" />
