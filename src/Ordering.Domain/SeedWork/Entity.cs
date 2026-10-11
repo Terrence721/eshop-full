@@ -16,8 +16,8 @@ public abstract class Entity
         }
     }
 
-    private List<INotification> _domainEvents;
-    public IReadOnlyCollection<INotification> DomainEvents => _domainEvents?.AsReadOnly();
+    private List<INotification>? _domainEvents;
+    public IReadOnlyCollection<INotification>? DomainEvents => _domainEvents?.AsReadOnly();
 
     public void AddDomainEvent(INotification eventItem)
     {
@@ -72,7 +72,7 @@ public abstract class Entity
             return base.GetHashCode();
 
     }
-    public static bool operator ==(Entity left, Entity right)
+    public static bool operator ==(Entity? left, Entity? right)
     {
         if (Object.Equals(left, null))
             return (Object.Equals(right, null)) ? true : false;
@@ -80,7 +80,7 @@ public abstract class Entity
             return left.Equals(right);
     }
 
-    public static bool operator !=(Entity left, Entity right)
+    public static bool operator !=(Entity? left, Entity? right)
     {
         return !(left == right);
     }
