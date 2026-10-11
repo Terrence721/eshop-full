@@ -16,7 +16,9 @@ public record Order
     public int OrderNumber { get; init; }
     public DateTime Date { get; init; }
     public string Status { get; init; } = null!;
-    public string Description { get; init; } = null!;
+    // Genuinely optional: order.Description stays null until the order progresses past
+    // Submitted status (see Order.cs's SetAwaitingValidationStatus/SetPaidStatus/etc.).
+    public string? Description { get; init; }
     public string Street { get; init; } = null!;
     public string City { get; init; } = null!;
     public string State { get; init; } = null!;
