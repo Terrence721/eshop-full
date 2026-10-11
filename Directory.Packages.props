@@ -88,6 +88,7 @@
     <PackageVersion Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="10.0.2" />
     <!-- Grpc -->
     <PackageVersion Include="Grpc.AspNetCore" Version="$(GrpcVersion)" />
+    <PackageVersion Include="Grpc.AspNetCore.Web" Version="$(GrpcVersion)" />
     <PackageVersion Include="Grpc.Net.ClientFactory" Version="$(GrpcVersion)" />
     <PackageVersion Include="Grpc.Tools" Version="$(GrpcVersion)" PrivateAssets="All" />
     <!-- Miscellaneous -->
