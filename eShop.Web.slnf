@@ -10,6 +10,7 @@
       "src\\Catalog.API\\Catalog.API.csproj",
       "src\\Basket.API\\Basket.API.csproj",
       "src\\Ordering.Domain\\Ordering.Domain.csproj",
+      "src\\Ordering.Infrastructure\\Ordering.Infrastructure.csproj",
       "tests\\EventBus.UnitTests\\EventBus.UnitTests.csproj",
       "tests\\EventBusRabbitMQ.UnitTests\\EventBusRabbitMQ.UnitTests.csproj",
       "tests\\eShop.ServiceDefaults.UnitTests\\eShop.ServiceDefaults.UnitTests.csproj",
