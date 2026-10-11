@@ -11,6 +11,7 @@
     <Project Path="src/Ordering.Infrastructure/Ordering.Infrastructure.csproj" />
     <Project Path="src/Ordering.API/Ordering.API.csproj" />
     <Project Path="src/Webhooks.API/Webhooks.API.csproj" />
+    <Project Path="src/WebhookClient/WebhookClient.csproj" />
   </Folder>
   <Folder Name="/tests/">
     <Project Path="tests/EventBus.UnitTests/EventBus.UnitTests.csproj" />
