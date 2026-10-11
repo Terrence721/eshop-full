@@ -98,7 +98,11 @@ public abstract class IdentifiedCommandHandler<T, R> : IRequestHandler<Identifie
             }
             catch
             {
-                return default;
+                // Intentionally swallows the exception and returns the type's default --
+                // matches upstream's exact behavior. R is unconstrained, so default(R) can
+                // genuinely be null for a reference type; null-forgiving preserves that
+                // behavior rather than changing the MediatR-mandated Task<R> contract.
+                return default!;
             }
         }
     }
