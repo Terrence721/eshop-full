@@ -54,7 +54,11 @@ public class TransactionBehavior<TRequest, TResponse> : IPipelineBehavior<TReque
                 await _orderingIntegrationEventService.PublishEventsThroughEventBusAsync(transactionId);
             });
 
-            return response;
+            // response is always set by strategy.ExecuteAsync's lambda on the success path --
+            // any failure inside it propagates as an exception to the catch block below instead,
+            // which rethrows without reaching this line. The compiler can't see across that
+            // lambda boundary for an unconstrained TResponse.
+            return response!;
         }
         catch (Exception ex)
         {
