@@ -37,7 +37,11 @@ public class OrderQueries(OrderingContext context)
     public async Task<IEnumerable<OrderSummary>> GetOrdersFromUserAsync(string userId)
     {
         return await context.Orders
-            .Where(o => o.Buyer.IdentityGuid == userId)
+            // Buyer is a genuinely nullable navigation property (new orders have no
+            // BuyerId until linked), but this LINQ expression is translated to SQL --
+            // EF Core's generated query handles the null case there, it never executes
+            // as an in-memory null dereference.
+            .Where(o => o.Buyer!.IdentityGuid == userId)
             .Select(o => new OrderSummary
             {
                 OrderNumber = o.Id,
