@@ -50,6 +50,7 @@
 
   <ItemGroup>
     <InternalsVisibleTo Include="Catalog.FunctionalTests" />
+    <InternalsVisibleTo Include="Catalog.API.UnitTests" />
   </ItemGroup>
 
 </Project>
