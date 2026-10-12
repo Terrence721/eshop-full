@@ -23,9 +23,28 @@ public static class HooksApiEndpoints
         app.MapGet("/api/hooks/default-token", (IOptions<WebhookClientOptions> options) =>
             Results.Ok(new { token = options.Value.Token }));
 
-        app.MapPost("/api/hooks", async (WebhookSubscriptionRequest request, WebhooksClient client) =>
+        // AddWebhook.razor built the GrantUrl/Url from Nav.BaseUri -- the
+        // browser's own origin, which was safe when the Blazor Server app and
+        // its endpoints shared one process. With a separate SPA origin (the
+        // Vite dev server, and no same-origin static-file serving set up for
+        // production either -- see Identity.API, which never wires that up
+        // for Identity.WebApp), that base has to be WebhookClient's own
+        // address instead, built here rather than trusted from the request.
+        app.MapPost("/api/hooks", async (RegisterHookRequest request, WebhooksClient client, IOptions<WebhookClientOptions> options, HttpContext httpContext) =>
         {
-            var response = await client.AddWebHookAsync(request);
+            var baseUrl = !string.IsNullOrEmpty(options.Value.SelfUrl)
+                ? options.Value.SelfUrl
+                : $"{httpContext.Request.Scheme}://{httpContext.Request.Host}/";
+
+            var payload = new WebhookSubscriptionRequest
+            {
+                Event = "OrderPaid",
+                GrantUrl = $"{baseUrl}check",
+                Url = $"{baseUrl}webhook-received",
+                Token = request.Token,
+            };
+
+            var response = await client.AddWebHookAsync(payload);
             return Results.StatusCode((int)response.StatusCode);
         });
 
@@ -64,3 +83,8 @@ public static class HooksApiEndpoints
         return app;
     }
 }
+
+// The SPA only ever supplies the token -- Event/GrantUrl/Url are fixed or
+// server-derived, so WebhookSubscriptionRequest itself (which still needs
+// those) never crosses the HTTP boundary to the frontend.
+public record RegisterHookRequest(string Token);
