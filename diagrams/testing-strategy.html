@@ -1,4 +1,4 @@
-<title>Testing Strategy — 186 Tests, Five Projects Deep</title>
+<title>Testing Strategy — 231 Tests, Six Projects Deep</title>
 <style>
   :root {
     --ink: #1c1f24;
@@ -14,6 +14,8 @@
     --c-bg: #ede4d8;
     --d: #5a2b6e;
     --d-bg: #e6dcee;
+    --e: #8b3d2b;
+    --e-bg: #f0e1dc;
     --mono: ui-monospace, "SF Mono", "Cascadia Mono", "Consolas", "Liberation Mono", monospace;
     --sans: -apple-system, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
   }
@@ -32,6 +34,8 @@
     --c-bg: #2c2419;
     --d: #b98fd4;
     --d-bg: #241a2c;
+    --e: #e0957a;
+    --e-bg: #2c1e17;
   }
 
   @media (prefers-color-scheme: dark) {
@@ -49,6 +53,8 @@
       --c-bg: #2c2419;
       --d: #b98fd4;
       --d-bg: #241a2c;
+      --e: #e0957a;
+      --e-bg: #2c1e17;
     }
   }
 
@@ -162,6 +168,7 @@
   .card--b .card-tag { color: var(--b); background: var(--b-bg); }
   .card--c .card-tag { color: var(--c); background: var(--c-bg); }
   .card--d .card-tag { color: var(--d); background: var(--d-bg); }
+  .card--e .card-tag { color: var(--e); background: var(--e-bg); }
   .card-title { font-size: 0.95rem; font-weight: 600; margin: 0; }
   .card p.body { font-size: 0.85rem; line-height: 1.6; color: var(--ink-soft); margin: 0; }
   .card p.body--tight { margin-top: -0.2rem; }
@@ -204,14 +211,14 @@
 
 <div class="page">
   <p class="eyebrow">eshop-full — testing strategy</p>
-  <h1>186 tests, five projects deep — and the fix decorators finally let get proven.</h1>
+  <h1>231 tests, six projects deep — and the fix decorators finally let get proven.</h1>
   <p class="dek">
     <code>MSTest.Sdk</code> on .NET's newer <code>Microsoft.Testing.Platform</code> (MTP) runner — already
     pinned in <code>global.json</code> from the original SDK research, not a new choice. Testing isn't a
-    batched end-of-migration phase: every project gets its own test project in the same unit of work as
-    its source files — except <code>Identity.API</code>, whose ~129-file source tree deferred its test
-    project until the whole <code>.csproj</code> was done, since per-file coverage at that scale isn't
-    practical the way it is for a single-digit-to-low-teens-file project. See
+    batched end-of-migration phase as a rule: every project gets its own test project in the same unit of
+    work as its source files — except <code>Identity.API</code>, whose ~129-file source tree deferred its
+    test project until the whole <code>.csproj</code> was done, since per-file coverage at that scale
+    isn't practical the way it is for a single-digit-to-low-teens-file project. See
     <a href="event-flow.html">Event Flow</a> for the Decorator split this testing approach depends on.
   </p>
 
@@ -224,7 +231,8 @@
       <tr><td><code>EventBus.UnitTests</code></td><td class="num">6 of 6 applicable</td><td class="num">16</td></tr>
       <tr><td><code>IntegrationEventLogEF.UnitTests</code></td><td class="num">5 of 5 applicable</td><td class="num">17</td></tr>
       <tr><td><code>Identity.API.UnitTests</code></td><td class="num">18 of 18 applicable</td><td class="num">101</td></tr>
-      <tr class="total"><td>Total</td><td></td><td class="num">186</td></tr>
+      <tr><td><code>Catalog.API.UnitTests</code></td><td class="num">8 of 8 applicable</td><td class="num">45</td></tr>
+      <tr class="total"><td>Total</td><td></td><td class="num">231</td></tr>
     </tbody>
   </table>
   <p class="dek dek--footnote">
@@ -232,6 +240,16 @@
     own (<code>IEventBus</code>, <code>IEventBusBuilder</code>) get skipped — but "simple" alone isn't the
     bar: a bare <code>enum</code> guarding persisted DB ordinals and a single-default-value POCO both get
     real tests elsewhere in this repo. Stated explicitly per file, not silently assumed clean.
+  </p>
+  <p class="dek dek--footnote">
+    <strong>Honest gap, not silently left out:</strong> <code>Basket.API</code>, the three
+    <code>Ordering.*</code> projects, <code>Webhooks.API</code>, and <code>WebhookClient</code>'s backend
+    are all feature-complete but don't have their own <code>.UnitTests</code> project yet — a real,
+    acknowledged backlog being closed project by project, not a blanket "every done project has full
+    coverage" claim. Both React frontends (<code>Identity.WebApp</code>, 118 tests;
+    <code>WebhookClient.WebApp</code>, 52 tests) have had full Vitest + React Testing Library coverage
+    from their first commit instead — 170 more tests, 401 total across the repo, not counted in the
+    .NET-only table above.
   </p>
 
   <h2>Patterns worth carrying forward</h2>
@@ -277,6 +295,18 @@
         would do.
       </p>
     </div>
+    <div class="card card--e">
+      <span class="card-tag">Custom IModelCustomizer</span>
+      <p class="card-title">Unit-test a DbContext without a real Postgres</p>
+      <p class="body">
+        <code>Catalog.API</code>'s <code>CatalogItem.Embedding</code> is a <code>Pgvector.Vector</code> —
+        a Postgres-only type EF Core's InMemory provider can't map at all, failing model validation
+        unmodified. A small <code>IModelCustomizer</code> that runs after <code>CatalogContext</code>'s own
+        <code>OnModelCreating</code> and ignores just that one property, the standard EF Core pattern for
+        this exact situation, made real <code>DbSet</code> queries and saves testable in-memory.
+      </p>
+      <p class="proof">Also needed: constructing the context via <code>Activator.CreateInstance</code> instead of <code>new</code> — the <code>required</code> DbSet properties force an object initializer that would otherwise clobber EF's own auto-wired DbSets.</p>
+    </div>
   </div>
 
   <h2>CI, verified not assumed</h2>
@@ -317,5 +347,5 @@
     </p>
   </div>
 
-  <footer>eshop-full · MSTest.Sdk 4.4.0 on Microsoft.Testing.Platform · 186/186 passing · decorator-enabled fake-bus testing</footer>
+  <footer>eshop-full · MSTest 4.3.3 on Microsoft.Testing.Platform · 231/231 .NET passing (401 repo-wide) · decorator-enabled fake-bus testing</footer>
 </div>
