@@ -33,5 +33,6 @@
 
   <ItemGroup>
     <InternalsVisibleTo Include="Basket.FunctionalTests" />
+    <InternalsVisibleTo Include="Basket.API.UnitTests" />
   </ItemGroup>
 </Project>
