@@ -99,6 +99,15 @@
     margin: 0 0 1rem;
   }
 
+  .pipeline-diagram {
+    display: block;
+    width: 100%;
+    max-width: 460px;
+    height: auto;
+    margin: 0 0 2.2rem;
+  }
+  .pipeline-diagram text { font-family: var(--sans); }
+
   /* Layer diagram */
   .layers {
     display: flex;
@@ -239,16 +248,40 @@
 
 <div class="page">
   <p class="eyebrow">eshop-full — system architecture</p>
-  <h1>Twenty-one projects, four layers — six done, one in progress, fourteen still to come.</h1>
+  <h1>Twenty-one projects, four layers — fifteen done, six still to come.</h1>
   <p class="dek">
     This is the target shape, not a claim that it already runs end-to-end — <code>eShop.AppHost</code>
     (the Aspire orchestrator every service and container dependency registers with) is deliberately the
     <strong>last</strong> project added, since it can't meaningfully exist until the things it orchestrates
     do. Migration order is foundation-first: shared/foundation projects, then domain APIs, then background
-    workers, then the two frontends, then <code>eShop.AppHost</code>, then <code>tests/</code> and
+    workers, then the frontends, then <code>eShop.AppHost</code>, then <code>tests/</code> and
     <code>build/</code>. See <a href="event-flow.html">Event Flow</a> for how the foundation layer's
     pieces actually talk to each other today.
   </p>
+
+  <svg class="pipeline-diagram" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 460 440" role="img" aria-labelledby="layers-title">
+    <title id="layers-title">Frontends, 2 of 5 done. Domain APIs, 5 of 5 done. Background Workers, 1 of 3 done. Foundation, 5 of 5 done. Orchestration, 0 of 1 done.</title>
+    <g id="Layer_1" data-name="Layer 1">
+      <path d="M28 20 L432 20 C436.418 20 440 23.582 440 28 L440 67 C440 71.418 436.418 75 432 75 L28 75 C23.582 75 20 71.418 20 67 L20 28 C20 23.582 23.582 20 28 20 Z" fill="var(--progress-bg)" stroke="var(--progress)" stroke-miterlimit="10"/>
+      <text transform="matrix(1 0 0 1 40 52)" x="0" y="0" xml:space="preserve" font-family="Arial" font-size="13" fill="var(--progress)"><tspan x="0" y="0">Frontends — 2 of 5 done</tspan></text>
+      <path d="M230 75 L230 92" fill="none" stroke="var(--ink-soft)" stroke-miterlimit="10"/>
+      <path d="M224 92 L230 100 L236 92 Z" fill="var(--ink-soft)" stroke="var(--ink-soft)" stroke-miterlimit="10"/>
+      <path d="M28 100 L432 100 C436.418 100 440 103.582 440 108 L440 147 C440 151.418 436.418 155 432 155 L28 155 C23.582 155 20 151.418 20 147 L20 108 C20 103.582 23.582 100 28 100 Z" fill="var(--done-bg)" stroke="var(--done)" stroke-miterlimit="10"/>
+      <text transform="matrix(1 0 0 1 40 132)" x="0" y="0" xml:space="preserve" font-family="Arial" font-size="13" fill="var(--done)"><tspan x="0" y="0">Domain APIs — 5 of 5 done</tspan></text>
+      <path d="M230 155 L230 172" fill="none" stroke="var(--ink-soft)" stroke-miterlimit="10"/>
+      <path d="M224 172 L230 180 L236 172 Z" fill="var(--ink-soft)" stroke="var(--ink-soft)" stroke-miterlimit="10"/>
+      <path d="M28 180 L432 180 C436.418 180 440 183.582 440 188 L440 227 C440 231.418 436.418 235 432 235 L28 235 C23.582 235 20 231.418 20 227 L20 188 C20 183.582 23.582 180 28 180 Z" fill="var(--progress-bg)" stroke="var(--progress)" stroke-miterlimit="10"/>
+      <text transform="matrix(1 0 0 1 40 212)" x="0" y="0" xml:space="preserve" font-family="Arial" font-size="13" fill="var(--progress)"><tspan x="0" y="0">Background Workers — 1 of 3 done</tspan></text>
+      <path d="M230 235 L230 252" fill="none" stroke="var(--ink-soft)" stroke-miterlimit="10"/>
+      <path d="M224 252 L230 260 L236 252 Z" fill="var(--ink-soft)" stroke="var(--ink-soft)" stroke-miterlimit="10"/>
+      <path d="M28 260 L432 260 C436.418 260 440 263.582 440 268 L440 307 C440 311.418 436.418 315 432 315 L28 315 C23.582 315 20 311.418 20 307 L20 268 C20 263.582 23.582 260 28 260 Z" fill="var(--done-bg)" stroke="var(--done)" stroke-miterlimit="10"/>
+      <text transform="matrix(1 0 0 1 40 292)" x="0" y="0" xml:space="preserve" font-family="Arial" font-size="13" fill="var(--done)"><tspan x="0" y="0">Foundation — 5 of 5 done</tspan></text>
+      <path d="M230 315 L230 332" fill="none" stroke="var(--ink-soft)" stroke-miterlimit="10"/>
+      <path d="M224 332 L230 340 L236 332 Z" fill="var(--ink-soft)" stroke="var(--ink-soft)" stroke-miterlimit="10"/>
+      <path d="M28 340 L432 340 C436.418 340 440 343.582 440 348 L440 387 C440 391.418 436.418 395 432 395 L28 395 C23.582 395 20 391.418 20 387 L20 348 C20 343.582 23.582 340 28 340 Z" fill="var(--planned-bg)" stroke="var(--line)" stroke-miterlimit="10"/>
+      <text transform="matrix(1 0 0 1 40 372)" x="0" y="0" xml:space="preserve" font-family="Arial" font-size="13" fill="var(--planned)"><tspan x="0" y="0">Orchestration — 0 of 1 done</tspan></text>
+    </g>
+  </svg>
 
   <h2>Layers</h2>
   <div class="layers">
@@ -258,6 +291,7 @@
         <span class="node node--planned">WebApp (React)</span>
         <span class="node node--planned">WebBFF (Duende.BFF)</span>
         <span class="node node--done">Identity.WebApp (React)</span>
+        <span class="node node--done">WebhookClient.WebApp (React)</span>
         <span class="node node--planned">ClientApp (.NET MAUI)</span>
       </div>
     </div>
@@ -266,10 +300,10 @@
       <span class="layer-label">Domain APIs</span>
       <div class="layer-nodes">
         <span class="node node--done">Identity.API</span>
-        <span class="node node--progress">Catalog.API</span>
-        <span class="node node--planned">Basket.API</span>
-        <span class="node node--planned">Ordering.API</span>
-        <span class="node node--planned">Webhooks.API</span>
+        <span class="node node--done">Catalog.API</span>
+        <span class="node node--done">Basket.API</span>
+        <span class="node node--done">Ordering.API</span>
+        <span class="node node--done">Webhooks.API</span>
       </div>
     </div>
     <div class="layer-arrow">↓ publish/consume integration events</div>
@@ -278,7 +312,7 @@
       <div class="layer-nodes">
         <span class="node node--planned">OrderProcessor</span>
         <span class="node node--planned">PaymentProcessor</span>
-        <span class="node node--planned">WebhookClient (sample)</span>
+        <span class="node node--done">WebhookClient (sample)</span>
       </div>
     </div>
     <div class="layer-arrow">↓ every layer above builds on</div>
@@ -359,14 +393,54 @@
     </div>
   </div>
 
-  <h2>Domain APIs — first one done</h2>
+  <h2>Domain APIs — fully done</h2>
   <div class="grid">
     <div class="card card--done">
       <span class="card-tag">Done</span>
       <p class="card-title">Identity.API</p>
       <ul>
         <li>Duende IdentityServer + ASP.NET Core Identity, EF Core-backed</li>
-        <li>129 source files reviewed; Quickstart UI converted straight to JSON, no Razor added; 91 tests</li>
+        <li>129 source files reviewed; Quickstart UI converted straight to JSON, no Razor added; 101 tests</li>
+      </ul>
+      <div class="card-link"><a href="projects-reference.html">→ Projects reference</a></div>
+    </div>
+
+    <div class="card card--done">
+      <span class="card-tag">Done</span>
+      <p class="card-title">Catalog.API</p>
+      <ul>
+        <li>Product catalog, real v1/v2 API surface, AI embedding-based semantic search</li>
+        <li>45 tests; a real upstream validation bug found and documented</li>
+      </ul>
+      <div class="card-link"><a href="projects-reference.html">→ Projects reference</a></div>
+    </div>
+
+    <div class="card card--done">
+      <span class="card-tag">Done</span>
+      <p class="card-title">Basket.API</p>
+      <ul>
+        <li>Redis-backed cart, pure gRPC plus a new gRPC-Web endpoint</li>
+        <li>Two Kestrel endpoints (HTTP/2 native, HTTP/1.1 Web) — Kestrel can't multiplex both on one port without TLS</li>
+      </ul>
+      <div class="card-link"><a href="projects-reference.html">→ Projects reference</a></div>
+    </div>
+
+    <div class="card card--done">
+      <span class="card-tag">Done</span>
+      <p class="card-title">Ordering.Domain / .Infrastructure / .API</p>
+      <ul>
+        <li>DDD split: domain model, EF Core persistence, MediatR CQRS API surface</li>
+        <li>3-stage pipeline behavior chain (Logging → Validator → Transaction), same Decorator shape as <code>EventBusRabbitMQ</code></li>
+      </ul>
+      <div class="card-link"><a href="projects-reference.html">→ Projects reference</a></div>
+    </div>
+
+    <div class="card card--done">
+      <span class="card-tag">Done</span>
+      <p class="card-title">Webhooks.API</p>
+      <ul>
+        <li>Outbound webhook notifications — confirmed Observer pattern over HTTP</li>
+        <li>A real no-op upstream handler and dead exception class found and kept, documented</li>
       </ul>
       <div class="card-link"><a href="projects-reference.html">→ Projects reference</a></div>
     </div>
@@ -382,5 +456,5 @@
     </p>
   </div>
 
-  <footer>eshop-full · .NET 10 / Aspire 13.4 · 6 of 21 projects done · foundation-first migration order</footer>
+  <footer>eshop-full · .NET 10 / Aspire 13.4 · 15 of 21 projects done · foundation-first migration order</footer>
 </div>
