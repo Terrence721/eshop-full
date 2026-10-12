@@ -10,77 +10,85 @@ public static class HooksApiEndpoints
 {
     public static IEndpointRouteBuilder MapHooksApiEndpoints(this IEndpointRouteBuilder app)
     {
-        app.MapGet("/api/hooks", async (WebhooksClient client) =>
-        {
-            var hooks = await client.LoadWebhooks();
-            return Results.Ok(hooks);
-        });
-
-        // AddWebhook.razor pre-fills its token field from this same
-        // IOptions<WebhookClientOptions>.Token -- not just a convenience
-        // default, since it's the shared secret Webhooks.API validates a
-        // registration's token against, so the SPA needs it over HTTP too.
-        app.MapGet("/api/hooks/default-token", (IOptions<WebhookClientOptions> options) =>
-            Results.Ok(new { token = options.Value.Token }));
-
-        // AddWebhook.razor built the GrantUrl/Url from Nav.BaseUri -- the
-        // browser's own origin, which was safe when the Blazor Server app and
-        // its endpoints shared one process. With a separate SPA origin (the
-        // Vite dev server, and no same-origin static-file serving set up for
-        // production either -- see Identity.API, which never wires that up
-        // for Identity.WebApp), that base has to be WebhookClient's own
-        // address instead, built here rather than trusted from the request.
-        app.MapPost("/api/hooks", async (RegisterHookRequest request, WebhooksClient client, IOptions<WebhookClientOptions> options, HttpContext httpContext) =>
-        {
-            var baseUrl = !string.IsNullOrEmpty(options.Value.SelfUrl)
-                ? options.Value.SelfUrl
-                : $"{httpContext.Request.Scheme}://{httpContext.Request.Host}/";
-
-            var payload = new WebhookSubscriptionRequest
-            {
-                Event = "OrderPaid",
-                GrantUrl = $"{baseUrl}check",
-                Url = $"{baseUrl}webhook-received",
-                Token = request.Token,
-            };
-
-            var response = await client.AddWebHookAsync(payload);
-            return Results.StatusCode((int)response.StatusCode);
-        });
-
-        app.MapGet("/api/received", async (HooksRepository repository) =>
-        {
-            var hooks = await repository.GetAll();
-            return Results.Ok(hooks);
-        });
-
-        // HooksRepository.Subscribe's callback is a pure "something changed" signal with
-        // no payload (matches upstream exactly, unchanged) -- re-fetch GetAll() on each
-        // notification and forward just the newest item into this connection's own channel.
-        app.MapGet("/api/received/stream", (HooksRepository repository, CancellationToken cancellationToken) =>
-        {
-            var channel = Channel.CreateUnbounded<WebHookReceived>();
-
-            var subscription = repository.Subscribe(async () =>
-            {
-                var hooks = await repository.GetAll();
-                var latest = hooks.LastOrDefault();
-                if (latest is not null)
-                {
-                    await channel.Writer.WriteAsync(latest, cancellationToken);
-                }
-            });
-
-            cancellationToken.Register(() =>
-            {
-                subscription.Dispose();
-                channel.Writer.TryComplete();
-            });
-
-            return TypedResults.ServerSentEvents(channel.Reader.ReadAllAsync(cancellationToken), eventType: "hook-received");
-        });
+        app.MapGet("/api/hooks", GetHooksAsync);
+        app.MapGet("/api/hooks/default-token", GetDefaultToken);
+        app.MapPost("/api/hooks", RegisterHookAsync);
+        app.MapGet("/api/received", GetReceivedAsync);
+        app.MapGet("/api/received/stream", StreamReceived);
 
         return app;
+    }
+
+    public static async Task<IResult> GetHooksAsync(WebhooksClient client)
+    {
+        var hooks = await client.LoadWebhooks();
+        return Results.Ok(hooks);
+    }
+
+    // AddWebhook.razor pre-fills its token field from this same
+    // IOptions<WebhookClientOptions>.Token -- not just a convenience
+    // default, since it's the shared secret Webhooks.API validates a
+    // registration's token against, so the SPA needs it over HTTP too.
+    public static IResult GetDefaultToken(IOptions<WebhookClientOptions> options) =>
+        Results.Ok(new { token = options.Value.Token });
+
+    public static async Task<IResult> RegisterHookAsync(RegisterHookRequest request, WebhooksClient client, IOptions<WebhookClientOptions> options, HttpContext httpContext)
+    {
+        var baseUrl = BuildBaseUrl(options.Value.SelfUrl, httpContext.Request.Scheme, httpContext.Request.Host.ToString());
+
+        var payload = new WebhookSubscriptionRequest
+        {
+            Event = "OrderPaid",
+            GrantUrl = $"{baseUrl}check",
+            Url = $"{baseUrl}webhook-received",
+            Token = request.Token,
+        };
+
+        var response = await client.AddWebHookAsync(payload);
+        return Results.StatusCode((int)response.StatusCode);
+    }
+
+    // AddWebhook.razor built the GrantUrl/Url from Nav.BaseUri -- the browser's own origin,
+    // which was safe when the Blazor Server app and its endpoints shared one process. With a
+    // separate SPA origin (the Vite dev server, and no same-origin static-file serving set up
+    // for production either -- see Identity.API, which never wires that up for
+    // Identity.WebApp), that base has to be WebhookClient's own address instead, built here
+    // rather than trusted from the request.
+    public static string BuildBaseUrl(string? selfUrl, string requestScheme, string requestHost) =>
+        !string.IsNullOrEmpty(selfUrl) ? selfUrl : $"{requestScheme}://{requestHost}/";
+
+    public static async Task<IResult> GetReceivedAsync(HooksRepository repository)
+    {
+        var hooks = await repository.GetAll();
+        return Results.Ok(hooks);
+    }
+
+    // HooksRepository.Subscribe's callback is a pure "something changed" signal with no
+    // payload (matches upstream exactly, unchanged) -- re-fetch GetAll() on each notification
+    // and forward just the newest item into this connection's own channel. Not unit tested:
+    // it's wired directly to SSE/Channel infrastructure and a live CancellationToken, which is
+    // integration-test territory, not a single pure unit.
+    public static IResult StreamReceived(HooksRepository repository, CancellationToken cancellationToken)
+    {
+        var channel = Channel.CreateUnbounded<WebHookReceived>();
+
+        var subscription = repository.Subscribe(async () =>
+        {
+            var hooks = await repository.GetAll();
+            var latest = hooks.LastOrDefault();
+            if (latest is not null)
+            {
+                await channel.Writer.WriteAsync(latest, cancellationToken);
+            }
+        });
+
+        cancellationToken.Register(() =>
+        {
+            subscription.Dispose();
+            channel.Writer.TryComplete();
+        });
+
+        return TypedResults.ServerSentEvents(channel.Reader.ReadAllAsync(cancellationToken), eventType: "hook-received");
     }
 }
 
