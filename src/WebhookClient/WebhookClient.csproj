@@ -6,6 +6,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Include="..\Shared\LogSanitizer.cs" Link="Extensions\LogSanitizer.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\eShop.ServiceDefaults\eShop.ServiceDefaults.csproj" />
     <PackageReference Include="Asp.Versioning.Http.Client" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" />
