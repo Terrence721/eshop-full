@@ -1,0 +1,13 @@
+{
+  "name": "eshop-full-build-server-cleanup",
+  "displayName": "eShop-full Build Server Cleanup",
+  "description": "Cleans up lingering dotnet build-server processes (MSBuild node-reuse workers, VBCSCompiler) when this workspace closes.",
+  "version": "0.0.1",
+  "publisher": "local",
+  "engines": {
+    "vscode": "^1.90.0"
+  },
+  "categories": ["Other"],
+  "activationEvents": ["onStartupFinished"],
+  "main": "./extension.js"
+}
