@@ -26,4 +26,8 @@
     <ProjectReference Include="..\eShop.ServiceDefaults\eShop.ServiceDefaults.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <InternalsVisibleTo Include="Webhooks.API.UnitTests" />
+  </ItemGroup>
+
 </Project>
