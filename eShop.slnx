@@ -25,6 +25,7 @@
     <Project Path="tests/Ordering.Infrastructure.UnitTests/Ordering.Infrastructure.UnitTests.csproj" />
     <Project Path="tests/Ordering.API.UnitTests/Ordering.API.UnitTests.csproj" />
     <Project Path="tests/Webhooks.API.UnitTests/Webhooks.API.UnitTests.csproj" />
+    <Project Path="tests/WebhookClient.UnitTests/WebhookClient.UnitTests.csproj" />
   </Folder>
   <Folder Name="/Solution Items/">
     <File Path=".editorconfig" />
