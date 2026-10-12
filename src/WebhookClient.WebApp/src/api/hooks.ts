@@ -17,6 +17,13 @@ export function getRegisteredHooks(): Promise<WebhookResponse[]> {
   return apiGet<WebhookResponse[]>('/api/hooks')
 }
 
+// Mirrors AddWebhook.razor's options.Value.Token pre-fill -- the shared
+// secret Webhooks.API validates a registration's token against, not just a
+// default value.
+export function getDefaultToken(): Promise<{ token: string | null }> {
+  return apiGet<{ token: string | null }>('/api/hooks/default-token')
+}
+
 // HooksApiEndpoints.MapPost("/api/hooks") forwards WebhooksClient's raw
 // HttpStatusCode with no response body -- apiPost expects a JSON body on
 // success, so this stays on a plain fetch() instead, same carve-out
