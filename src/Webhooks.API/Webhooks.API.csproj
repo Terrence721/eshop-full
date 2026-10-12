@@ -8,6 +8,7 @@
     <Compile Include="..\Shared\MigrateDbContextExtensions.cs" Link="Extensions\MigrateDbContextExtensions.cs" />
     <Compile Include="..\Shared\Abstractions\IDbSeeder.cs" Link="Abstractions\IDbSeeder.cs" />
     <Compile Include="..\Shared\ActivityExtensions.cs" Link="Extensions\ActivityExtensions.cs" />
+    <Compile Include="..\Shared\LogSanitizer.cs" Link="Extensions\LogSanitizer.cs" />
   </ItemGroup>
 
   <ItemGroup>
