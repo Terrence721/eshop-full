@@ -503,3 +503,7 @@ $RECYCLE.BIN/
 # Duende IdentityServer AddDeveloperSigningCredential() -- auto-generated
 # locally on first run, real private key material, never shared/committed
 tempkey.jwk
+
+# Packaged .vsix build output for .vscode-extension/ -- rebuilt on demand,
+# not source
+.vscode-extension/*.vsix
