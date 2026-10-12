@@ -19,6 +19,7 @@
     <Project Path="tests/eShop.ServiceDefaults.UnitTests/eShop.ServiceDefaults.UnitTests.csproj" />
     <Project Path="tests/IntegrationEventLogEF.UnitTests/IntegrationEventLogEF.UnitTests.csproj" />
     <Project Path="tests/Identity.API.UnitTests/Identity.API.UnitTests.csproj" />
+    <Project Path="tests/Catalog.API.UnitTests/Catalog.API.UnitTests.csproj" />
   </Folder>
   <Folder Name="/Solution Items/">
     <File Path=".editorconfig" />
