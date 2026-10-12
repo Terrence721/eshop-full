@@ -11,34 +11,35 @@ public static class BffEndpoints
 {
     public static IEndpointRouteBuilder MapBffEndpoints(this IEndpointRouteBuilder app)
     {
-        app.MapGet("/bff/login", (string? returnUrl) =>
-        {
-            var properties = new AuthenticationProperties
-            {
-                RedirectUri = SanitizeReturnUrl(returnUrl)
-            };
-
-            return Results.Challenge(properties, [OpenIdConnectDefaults.AuthenticationScheme]);
-        })
-        .AllowAnonymous();
-
-        app.MapGet("/bff/user", (ClaimsPrincipal user) =>
-        {
-            if (user.Identity?.IsAuthenticated != true)
-            {
-                return Results.Unauthorized();
-            }
-
-            var claims = user.Claims.Select(c => new { c.Type, c.Value });
-            return Results.Ok(claims);
-        })
-        .AllowAnonymous();
+        app.MapGet("/bff/login", Login).AllowAnonymous();
+        app.MapGet("/bff/user", GetUser).AllowAnonymous();
 
         return app;
     }
 
+    public static IResult Login(string? returnUrl)
+    {
+        var properties = new AuthenticationProperties
+        {
+            RedirectUri = SanitizeReturnUrl(returnUrl)
+        };
+
+        return Results.Challenge(properties, [OpenIdConnectDefaults.AuthenticationScheme]);
+    }
+
+    public static IResult GetUser(ClaimsPrincipal user)
+    {
+        if (user.Identity?.IsAuthenticated != true)
+        {
+            return Results.Unauthorized();
+        }
+
+        var claims = user.Claims.Select(c => new { c.Type, c.Value });
+        return Results.Ok(claims);
+    }
+
     // Prevent open redirects -- only ever redirect back into this same app.
-    private static string SanitizeReturnUrl(string? returnUrl)
+    public static string SanitizeReturnUrl(string? returnUrl)
     {
         const string fallback = "/";
 
