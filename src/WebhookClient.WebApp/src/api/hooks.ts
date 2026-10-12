@@ -6,13 +6,6 @@ export interface WebhookResponse {
   token: string | null
 }
 
-export interface WebhookSubscriptionRequest {
-  url: string
-  token: string
-  event: string
-  grantUrl: string
-}
-
 export function getRegisteredHooks(): Promise<WebhookResponse[]> {
   return apiGet<WebhookResponse[]>('/api/hooks')
 }
@@ -28,11 +21,15 @@ export function getDefaultToken(): Promise<{ token: string | null }> {
 // HttpStatusCode with no response body -- apiPost expects a JSON body on
 // success, so this stays on a plain fetch() instead, same carve-out
 // apiFetch.ts documents for responses that don't fit its shape.
-export async function registerHook(request: WebhookSubscriptionRequest): Promise<{ ok: boolean; status: number }> {
+//
+// Only the token is sent: Event/GrantUrl/Url are built server-side now
+// (see HooksApiEndpoints.cs), since the SPA's own origin isn't a safe base
+// for the webhook callback URLs in a split frontend/backend deployment.
+export async function registerHook(token: string): Promise<{ ok: boolean; status: number }> {
   const response = await fetch('/api/hooks', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(request),
+    body: JSON.stringify({ token }),
   })
   return { ok: response.ok, status: response.status }
 }
