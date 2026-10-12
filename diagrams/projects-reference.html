@@ -95,6 +95,14 @@
   .dek code { font-family: var(--mono); font-size: 0.9em; color: var(--ink); }
   .dek a { color: var(--ink); }
 
+  .pipeline-diagram {
+    display: block;
+    width: 100%;
+    height: auto;
+    margin-bottom: 1.4rem;
+  }
+  .pipeline-diagram text { font-family: var(--sans); }
+
   .legend {
     display: flex;
     gap: 1.4rem;
@@ -203,6 +211,30 @@
     diagram, and <code>todo.md</code>'s "Still to do" table for the live flat list.
   </p>
 
+  <svg class="pipeline-diagram" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 1060 140" role="img" aria-labelledby="migration-order-title">
+    <title id="migration-order-title">Foundation, done, then Domain APIs, done, then Background Workers, partially done, then Frontends, partially done, then Orchestration, not started.</title>
+    <g id="Layer_1" data-name="Layer 1">
+      <path d="M28 40 L182 40 C186.418 40 190 43.582 190 48 L190 92 C190 96.418 186.418 100 182 100 L28 100 C23.582 100 20 96.418 20 92 L20 48 C20 43.582 23.582 40 28 40 Z" fill="var(--done-bg)" stroke="var(--done)" stroke-miterlimit="10"/>
+      <text transform="matrix(1 0 0 1 60 74)" x="0" y="0" xml:space="preserve" font-family="Arial" font-size="13" fill="var(--done)"><tspan x="0" y="0">Foundation</tspan></text>
+      <path d="M190 70 L222 70" fill="none" stroke="var(--ink-soft)" stroke-miterlimit="10"/>
+      <path d="M222 64 L230 70 L222 76 Z" fill="var(--ink-soft)" stroke="var(--ink-soft)" stroke-miterlimit="10"/>
+      <path d="M238 40 L402 40 C406.418 40 410 43.582 410 48 L410 92 C410 96.418 406.418 100 402 100 L238 100 C233.582 100 230 96.418 230 92 L230 48 C230 43.582 233.582 40 238 40 Z" fill="var(--done-bg)" stroke="var(--done)" stroke-miterlimit="10"/>
+      <text transform="matrix(1 0 0 1 264 74)" x="0" y="0" xml:space="preserve" font-family="Arial" font-size="13" fill="var(--done)"><tspan x="0" y="0">Domain APIs</tspan></text>
+      <path d="M410 70 L442 70" fill="none" stroke="var(--ink-soft)" stroke-miterlimit="10"/>
+      <path d="M442 64 L450 70 L442 76 Z" fill="var(--ink-soft)" stroke="var(--ink-soft)" stroke-miterlimit="10"/>
+      <path d="M458 40 L652 40 C656.418 40 660 43.582 660 48 L660 92 C660 96.418 656.418 100 652 100 L458 100 C453.582 100 450 96.418 450 92 L450 48 C450 43.582 453.582 40 458 40 Z" fill="var(--progress-bg)" stroke="var(--progress)" stroke-miterlimit="10"/>
+      <text transform="matrix(1 0 0 1 477 74)" x="0" y="0" xml:space="preserve" font-family="Arial" font-size="13" fill="var(--progress)"><tspan x="0" y="0">Background Workers</tspan></text>
+      <path d="M660 70 L692 70" fill="none" stroke="var(--ink-soft)" stroke-miterlimit="10"/>
+      <path d="M692 64 L700 70 L692 76 Z" fill="var(--ink-soft)" stroke="var(--ink-soft)" stroke-miterlimit="10"/>
+      <path d="M708 40 L852 40 C856.418 40 860 43.582 860 48 L860 92 C860 96.418 856.418 100 852 100 L708 100 C703.582 100 700 96.418 700 92 L700 48 C700 43.582 703.582 40 708 40 Z" fill="var(--progress-bg)" stroke="var(--progress)" stroke-miterlimit="10"/>
+      <text transform="matrix(1 0 0 1 727 74)" x="0" y="0" xml:space="preserve" font-family="Arial" font-size="13" fill="var(--progress)"><tspan x="0" y="0">Frontends</tspan></text>
+      <path d="M860 70 L892 70" fill="none" stroke="var(--ink-soft)" stroke-miterlimit="10"/>
+      <path d="M892 64 L900 70 L892 76 Z" fill="var(--ink-soft)" stroke="var(--ink-soft)" stroke-miterlimit="10"/>
+      <path d="M908 40 L1032 40 C1036.418 40 1040 43.582 1040 48 L1040 92 C1040 96.418 1036.418 100 1032 100 L908 100 C903.582 100 900 96.418 900 92 L900 48 C900 43.582 903.582 40 908 40 Z" fill="var(--planned-bg)" stroke="var(--line)" stroke-miterlimit="10"/>
+      <text transform="matrix(1 0 0 1 918 74)" x="0" y="0" xml:space="preserve" font-family="Arial" font-size="13" fill="var(--planned)"><tspan x="0" y="0">Orchestration</tspan></text>
+    </g>
+  </svg>
+
   <div class="legend">
     <span><span class="dot dot--done"></span> done</span>
     <span><span class="dot dot--progress"></span> in progress</span>
@@ -243,44 +275,47 @@
     <div class="card card--done">
       <span class="card-tag">Done</span>
       <p class="card-title">Identity.API</p>
-      <p class="card-desc">Duende IdentityServer — the OIDC provider for the whole system. Quickstart UI converted straight to a JSON API; 129 source files, 91 tests.</p>
+      <p class="card-desc">Duende IdentityServer — the OIDC provider for the whole system. Quickstart UI converted straight to a JSON API; 129 source files, 101 tests.</p>
       <div class="card-flag">Still open, waits on <code>eShop.AppHost</code>: that <code>ValidateAudience = true</code> validates cleanly against real issued tokens, and freshly-generated EF Core migrations.</div>
     </div>
-    <div class="card card--progress">
-      <span class="card-tag">In progress</span>
+    <div class="card card--done">
+      <span class="card-tag">Done</span>
       <p class="card-title">Catalog.API</p>
-      <p class="card-desc">Product catalog — read-heavy, scales independently of everything else. Its entire domain-logic layer (model, EF Core infrastructure, integration events, AI embeddings) and the real v1/v2 API surface are on disk; only the real startup wiring remains.</p>
+      <p class="card-desc">Product catalog — read-heavy, scales independently of everything else. Real v1/v2 API surface, AI embedding-based semantic search, pagination/filtering. 45 tests, including a real upstream validation bug (<code>UpdateItemV1</code>'s id check is dead code — <code>CatalogItem.Id</code> is a non-nullable <code>int</code>) found and documented, not silently fixed.</p>
     </div>
-    <div class="card card--planned">
-      <span class="card-tag">Not started</span>
+    <div class="card card--done">
+      <span class="card-tag">Done</span>
       <p class="card-title">Basket.API</p>
-      <p class="card-desc">Redis-backed ephemeral cart state — gRPC service contract.</p>
-      <div class="card-flag">Flag when reached: add <code>Grpc.AspNetCore.Web</code> middleware so the same service serves gRPC-Web for <code>WebApp</code>/<code>WebBFF</code>.</div>
+      <p class="card-desc">Redis-backed ephemeral cart state — pure gRPC, plus a genuinely new <code>Grpc.AspNetCore.Web</code> endpoint so <code>WebApp</code>/<code>WebBFF</code> can consume it directly. Two named Kestrel endpoints (HTTP/2 native gRPC, HTTP/1.1 gRPC-Web) since Kestrel can't multiplex both on one port without TLS — proved both failure modes directly before picking that fix.</p>
+      <div class="card-flag">Dedicated <code>.UnitTests</code> project not added yet — closing this gap is in progress.</div>
     </div>
-    <div class="card card--planned">
-      <span class="card-tag">Not started</span>
+    <div class="card card--done">
+      <span class="card-tag">Done</span>
       <p class="card-title">Ordering.Domain</p>
-      <p class="card-desc">Domain model — the "D" in a domain-driven design split across three projects.</p>
+      <p class="card-desc">Domain model — the "D" in a domain-driven design split across three projects. Two aggregates (<code>Order</code>, <code>Buyer</code>), 7 domain events, a shared <code>SeedWork</code> kit.</p>
+      <div class="card-flag">Dedicated <code>.UnitTests</code> project not added yet — closing this gap is in progress.</div>
     </div>
-    <div class="card card--planned">
-      <span class="card-tag">Not started</span>
+    <div class="card card--done">
+      <span class="card-tag">Done</span>
       <p class="card-title">Ordering.Infrastructure</p>
-      <p class="card-desc">EF Core persistence for the order aggregate.</p>
+      <p class="card-desc">EF Core persistence for the order aggregate — a real Repository layer here, unlike <code>Catalog.API</code>'s deliberate no-repository call.</p>
+      <div class="card-flag">Dedicated <code>.UnitTests</code> project not added yet — closing this gap is in progress.</div>
     </div>
-    <div class="card card--planned">
-      <span class="card-tag">Not started</span>
+    <div class="card card--done">
+      <span class="card-tag">Done</span>
       <p class="card-title">Ordering.API</p>
-      <p class="card-desc">The order-placement API surface — transactional consistency requirements, unlike Catalog/Basket.</p>
-      <div class="card-flag">Flag when reached: verify MediatR 12.5.0 (pinned below source's 13.0.0 for licensing) compiles clean.</div>
+      <p class="card-desc">The order-placement API surface — MediatR CQRS with a 3-stage pipeline behavior chain (<code>Logging</code> → <code>Validator</code> → <code>Transaction</code>), the same Decorator shape <code>EventBusRabbitMQ</code>'s split already established, just expressed through MediatR's own extension point. Pinned to MediatR 12.5.0 (13+ moved to a commercial license).</p>
+      <div class="card-flag">Dedicated <code>.UnitTests</code> project not added yet — closing this gap is in progress.</div>
     </div>
-    <div class="card card--planned">
-      <span class="card-tag">Not started</span>
+    <div class="card card--done">
+      <span class="card-tag">Done</span>
       <p class="card-title">Webhooks.API</p>
-      <p class="card-desc">Outbound webhook notifications for third-party integrations — Observer pattern over HTTP.</p>
+      <p class="card-desc">Outbound webhook notifications for third-party integrations — confirmed textbook Observer pattern over HTTP. A real no-op upstream event handler and a dead exception class found and kept, documented rather than silently fixed.</p>
+      <div class="card-flag">Dedicated <code>.UnitTests</code> project not added yet — closing this gap is in progress.</div>
     </div>
   </div>
 
-  <h2>Background workers — no HTTP surface</h2>
+  <h2>Background workers &amp; sample apps</h2>
   <div class="grid">
     <div class="card card--planned">
       <span class="card-tag">Not started</span>
@@ -292,10 +327,16 @@
       <p class="card-title">PaymentProcessor</p>
       <p class="card-desc">Queue-driven background worker, payment-side of the order lifecycle.</p>
     </div>
-    <div class="card card--planned">
-      <span class="card-tag">Not started</span>
+    <div class="card card--done">
+      <span class="card-tag">Done</span>
       <p class="card-title">WebhookClient</p>
-      <p class="card-desc">Sample app demonstrating consuming <code>Webhooks.API</code>'s outbound notifications.</p>
+      <p class="card-desc">Sample app demonstrating consuming <code>Webhooks.API</code>'s outbound notifications — BFF-style backend (httpOnly session cookie, Server-Sent Events pushing live received-webhook updates to its paired React frontend).</p>
+      <div class="card-flag">Dedicated <code>.UnitTests</code> project not added yet — closing this gap is in progress.</div>
+    </div>
+    <div class="card card--done">
+      <span class="card-tag">Done</span>
+      <p class="card-title">WebhookClient.WebApp</p>
+      <p class="card-desc">New project, not in upstream — React/Vite frontend for <code>WebhookClient</code> (upstream: Blazor Web App). Login, webhook registration, and the live-updating received-messages feed over SSE. 52 tests (Vitest + React Testing Library), full coverage from the first commit.</p>
     </div>
   </div>
 
@@ -332,11 +373,17 @@
     <span class="callout-mark">i</span>
     <p>
       <code>tests/</code> (5 projects, framework already decided) and <code>build/</code> tooling are the
-      last two rows in <code>todo.md</code>'s flat list — but testing itself isn't deferred: every project
-      above marked <strong>Done</strong> already has full test coverage added in the same unit of work as
-      its source files. See <a href="testing-strategy.html">Testing Strategy</a>.
+      last two rows in <code>todo.md</code>'s flat list. Testing isn't deferred as a blanket policy — every
+      foundation project, <code>Identity.API</code>, and <code>Catalog.API</code> shipped with full
+      dedicated <code>.UnitTests</code> coverage in the same unit of work as their source, and both React
+      frontends (<code>Identity.WebApp</code>, <code>WebhookClient.WebApp</code>) have had full test
+      coverage from their first commit. <code>Basket.API</code>, the three <code>Ordering.*</code>
+      projects, <code>Webhooks.API</code>, and <code>WebhookClient</code>'s backend don't have their own
+      <code>.UnitTests</code> project yet though — a real, acknowledged gap being closed project by
+      project (flagged on the cards above), not silently left as a blanket claim. See
+      <a href="testing-strategy.html">Testing Strategy</a>.
     </p>
   </div>
 
-  <footer>eshop-full · 21 projects target · 6 done · foundation-first migration order</footer>
+  <footer>eshop-full · 21 projects target · 15 done · foundation-first migration order</footer>
 </div>
