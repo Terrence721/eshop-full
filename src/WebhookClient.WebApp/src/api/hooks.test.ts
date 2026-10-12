@@ -19,25 +19,22 @@ describe('getRegisteredHooks', () => {
 })
 
 describe('registerHook', () => {
-  it('posts the subscription request as JSON and resolves with ok:true on success', async () => {
+  it('posts just the token as JSON and resolves with ok:true on success', async () => {
     const fetchMock = mockFetchOnce(200)
-    const request = { url: 'https://example.com/webhook-received', token: 'abc', event: 'OrderPaid', grantUrl: 'https://example.com/check' }
 
-    await expect(registerHook(request)).resolves.toEqual({ ok: true, status: 200 })
+    await expect(registerHook('abc')).resolves.toEqual({ ok: true, status: 200 })
 
     expect(fetchMock).toHaveBeenCalledWith('/api/hooks', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(request),
+      body: JSON.stringify({ token: 'abc' }),
     })
   })
 
   it('resolves with ok:false and the status when rejected, without throwing', async () => {
     mockFetchOnce(400)
 
-    await expect(
-      registerHook({ url: 'https://example.com/webhook-received', token: '', event: 'OrderPaid', grantUrl: 'https://example.com/check' }),
-    ).resolves.toEqual({ ok: false, status: 400 })
+    await expect(registerHook('')).resolves.toEqual({ ok: false, status: 400 })
   })
 })
 
