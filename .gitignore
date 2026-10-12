@@ -153,6 +153,9 @@ coverage*.json
 coverage*.xml
 coverage*.info
 
+# Vitest's own coverage report output (@vitest/coverage-v8)
+coverage/
+
 # Visual Studio code coverage results
 *.coverage
 *.coveragexml
