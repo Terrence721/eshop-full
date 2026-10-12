@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { mockFetchOnce } from '../test/mockFetch'
-import { getRegisteredHooks, registerHook } from './hooks'
+import { getDefaultToken, getRegisteredHooks, registerHook } from './hooks'
 
 describe('getRegisteredHooks', () => {
   it('resolves with the list of registered webhooks', async () => {
@@ -38,5 +38,19 @@ describe('registerHook', () => {
     await expect(
       registerHook({ url: 'https://example.com/webhook-received', token: '', event: 'OrderPaid', grantUrl: 'https://example.com/check' }),
     ).resolves.toEqual({ ok: false, status: 400 })
+  })
+})
+
+describe('getDefaultToken', () => {
+  it('resolves with the configured default token', async () => {
+    mockFetchOnce(200, { token: '6168DB8D-DC58-4094-AF24-483278923590' })
+
+    await expect(getDefaultToken()).resolves.toEqual({ token: '6168DB8D-DC58-4094-AF24-483278923590' })
+  })
+
+  it('throws for an unexpected failure status', async () => {
+    mockFetchOnce(500)
+
+    await expect(getDefaultToken()).rejects.toThrow('GET /api/hooks/default-token failed: 500')
   })
 })
