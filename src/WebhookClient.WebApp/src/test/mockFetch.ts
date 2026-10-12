@@ -32,3 +32,21 @@ export function mockFetchSequence(...responses: StubbedResponse[]) {
   vi.stubGlobal('fetch', fetchMock)
   return fetchMock
 }
+
+// For a page that renders independent components each fetching their own
+// endpoint on mount (e.g. Home/Index: useCurrentUser, RegisteredHooks and
+// ReceivedMessages each call their own useAsync) -- their effects fire in
+// React's own scheduling order, not the order a test happens to list
+// responses in, so mockFetchSequence's positional matching isn't reliable
+// here. Dispatches by the exact request path instead.
+export function mockFetchByUrl(responses: Record<string, StubbedResponse>) {
+  const fetchMock = vi.fn((url: string) => {
+    const response = responses[url]
+    if (!response) {
+      throw new Error(`mockFetchByUrl: no stubbed response for ${url}`)
+    }
+    return Promise.resolve(toResponse(response))
+  })
+  vi.stubGlobal('fetch', fetchMock)
+  return fetchMock
+}
