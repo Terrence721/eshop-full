@@ -32,7 +32,7 @@ public static class WebhookEndpoints
         {
             var token = request.Headers[webhookCheckHeader];
 
-            logger.LogInformation("Received hook with token {Token}. My token is {MyToken}. Token validation is set to {ValidateToken}", token, tokenToValidate, validateToken);
+            logger.LogInformation("Received hook with token {Token}. My token is {MyToken}. Token validation is set to {ValidateToken}", LogSanitizer.ForLog(token.ToString()), tokenToValidate, validateToken);
 
             if (!validateToken || tokenToValidate == token)
             {
