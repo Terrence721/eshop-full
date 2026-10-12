@@ -22,7 +22,10 @@ describe('AddWebhook', () => {
 
     renderPage()
 
-    expect(await screen.findByLabelText('Token:')).toHaveValue('default-token-value')
+    // Testing Library's default findBy* timeout (1000ms) is tight enough that this flakes
+    // under v8 coverage instrumentation's added overhead, even though the fetch-then-render
+    // it's waiting on is otherwise fast and reliable.
+    expect(await screen.findByLabelText('Token:', {}, { timeout: 3000 })).toHaveValue('default-token-value')
   })
 
   it('links to home', async () => {
