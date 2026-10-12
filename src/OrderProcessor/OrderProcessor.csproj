@@ -4,6 +4,18 @@
     <TargetFramework>net10.0</TargetFramework>
     <EnableConfigurationBindingGenerator>true</EnableConfigurationBindingGenerator>
     <PublishAot Condition="'$(EnableAotPublishing)' == 'true'">true</PublishAot>
+    <!--
+      Works around a VS Code C# extension false positive: its live analyzer
+      reports IntegrationEventContext as not implementing JsonSerializerContext's
+      abstract members, even though a real dotnet build succeeds with 0 errors
+      (the System.Text.Json source generator's output is only ever produced
+      in-memory during compilation, never written to disk, so the IDE has
+      nothing to resolve it from). Emitting the generator's output to disk lets
+      the IDE resolve it from real files instead, same fix already applied to
+      Basket.API.csproj for the identical underlying cause.
+    -->
+    <EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>
+    <CompilerGeneratedFilesOutputPath>$(BaseIntermediateOutputPath)Generated</CompilerGeneratedFilesOutputPath>
   </PropertyGroup>
 
   <ItemGroup>
