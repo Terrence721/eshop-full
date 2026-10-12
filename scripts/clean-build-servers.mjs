@@ -11,17 +11,26 @@ import { execFileSync } from "node:child_process";
 // nothing matching that shape is still running instead of assuming it
 // worked.
 //
-// Separately, C# Dev Kit's own ServiceHub family (the project-system/test
-// explorer host process tree) can hang mid-session without exiting -
-// confirmed directly on this repo (2026-10-12): the Test Explorer Server
-// process (Microsoft.VisualStudio.Code.ServiceHost.exe) silently stopped
-// pushing test-discovery updates for over two hours while staying alive,
-// so Test Explorer never learned a new test project existed. There's no
-// graceful shutdown command for this family like there is for MSBuild, so
-// those are force-killed outright; VS Code's own controller process
-// transparently respawns a fresh one the next time it's needed (verified:
-// killing the stuck host produced a brand new one with a different pipe
-// name within a second).
+// Separately, C# Dev Kit's Test Explorer Server process
+// (Microsoft.VisualStudio.Code.ServiceHost.exe) can hang mid-session
+// without exiting - confirmed directly on this repo (2026-10-12): it
+// silently stopped pushing test-discovery updates for over two hours while
+// staying alive, so Test Explorer never learned a new test project
+// existed. There's no graceful shutdown command for it like there is for
+// MSBuild, so it's force-killed outright; VS Code's own
+// Microsoft.VisualStudio.Code.ServiceController.exe transparently
+// respawns a fresh one the next time it's needed (verified: killing the
+// stuck host produced a brand new one with a different pipe name within a
+// second).
+//
+// Microsoft.VisualStudio.Code.Server.exe and ServiceController.exe
+// themselves are deliberately NOT in this list, even though they're part
+// of the same process family - confirmed directly on this repo
+// (2026-10-12) the hard way: killing them alongside ServiceHost broke
+// every single project in Test Explorer ("Build failed") until a full VS
+// Code window reload, because they're what respawns ServiceHost in the
+// first place - kill the supervisor and there's nothing left to recover
+// the thing it supervises.
 
 function runBuildServerShutdown() {
   try {
@@ -72,12 +81,14 @@ function findLingeringBuildServers() {
 // Matched by exact binary name (plus the BuildHost dll for the dotnet.exe
 // case), not by a loose "csdevkit" string match - that string also shows up
 // in the command lines of diagnostic commands used to investigate this very
-// issue, which would make the match catch itself.
+// issue, which would make the match catch itself. Deliberately excludes
+// Microsoft.VisualStudio.Code.Server.exe and ServiceController.exe - see
+// the comment above.
 function killCSharpDevKitServiceHub() {
   if (process.platform === "win32") {
     const script =
       "Get-CimInstance Win32_Process | " +
-      "Where-Object { $_.Name -in @('Microsoft.VisualStudio.Code.Server.exe', 'Microsoft.VisualStudio.Code.ServiceController.exe', 'Microsoft.VisualStudio.Code.ServiceHost.exe') -or ($_.Name -eq 'dotnet.exe' -and $_.CommandLine -match 'ProjectSystem\\.Server\\.BuildHost\\.dll') } | " +
+      "Where-Object { $_.Name -eq 'Microsoft.VisualStudio.Code.ServiceHost.exe' -or ($_.Name -eq 'dotnet.exe' -and $_.CommandLine -match 'ProjectSystem\\.Server\\.BuildHost\\.dll') } | " +
       "ForEach-Object { Stop-Process -Id $_.ProcessId -Force -ErrorAction SilentlyContinue; \"$($_.ProcessId) $($_.Name)\" }";
     try {
       const output = execFileSync(
@@ -97,7 +108,7 @@ function killCSharpDevKitServiceHub() {
   try {
     const output = execFileSync(
       "pkill",
-      ["-fl", "Microsoft.VisualStudio.Code.Server|Microsoft.VisualStudio.Code.ServiceController|Microsoft.VisualStudio.Code.ServiceHost|ProjectSystem.Server.BuildHost"],
+      ["-fl", "Microsoft.VisualStudio.Code.ServiceHost|ProjectSystem.Server.BuildHost"],
       { encoding: "utf-8" },
     );
     return output.split("\n").filter(Boolean);
