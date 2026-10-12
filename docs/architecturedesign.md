@@ -1,4 +1,5 @@
-# Architecture Overview
+<!-- markdownlint-disable-next-line MD041 -->
+![Architecture Overview](../img/architecturedesign-banner.png)
 
 <!-- markdownlint-disable-next-line MD036 -->
 **Last Updated: September 11, 2026**
