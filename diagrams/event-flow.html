@@ -113,27 +113,15 @@
   h2:first-of-type { margin-top: 0; }
 
   /* pipeline */
-  .pipeline {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 0.4rem 0.3rem;
+  .pipeline-diagram {
+    display: block;
+    width: 100%;
+    height: auto;
     margin-bottom: 0.6rem;
   }
-  .step {
-    font-family: var(--mono);
-    font-size: 0.78rem;
-    background: var(--surface);
-    border: 1px solid var(--line);
-    border-radius: 7px;
-    padding: 0.5rem 0.8rem;
-  }
-  .step--zoomed.z-transport { border-color: var(--transport); color: var(--transport); background: var(--transport-bg); font-weight: 600; }
-  .step--zoomed.z-telemetry { border-color: var(--telemetry); color: var(--telemetry); background: var(--telemetry-bg); font-weight: 600; }
-  .step--zoomed.z-resilient { border-color: var(--resilient); color: var(--resilient); background: var(--resilient-bg); font-weight: 600; }
+  .pipeline-diagram text { font-family: var(--sans); }
   .step--zoomed.z-outbox { border-color: var(--outbox); color: var(--outbox); background: var(--outbox-bg); font-weight: 600; }
   .step--bug { border-color: var(--bug); color: var(--bug); background: var(--bug-bg); font-weight: 600; }
-  .arrow { color: var(--ink-soft); font-size: 0.8rem; }
 
   /* zoom cards */
   .zoom {
@@ -233,14 +221,33 @@
   </p>
 
   <h2>Publish Path</h2>
-  <div class="pipeline">
-    <span class="step">Ordering.API (planned)</span><span class="arrow">→</span>
-    <span class="step">IEventBus.PublishAsync</span><span class="arrow">→</span>
-    <span class="step step--zoomed z-resilient">ResilientEventBusDecorator</span><span class="arrow">→</span>
-    <span class="step step--zoomed z-telemetry">TelemetryEventBusDecorator</span><span class="arrow">→</span>
-    <span class="step step--zoomed z-transport">RabbitMQEventBus</span><span class="arrow">→</span>
-    <span class="step">RabbitMQ broker</span>
-  </div>
+  <svg class="pipeline-diagram" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 1060 140" role="img" aria-labelledby="pipeline-title">
+    <title id="pipeline-title">Ordering.API calls IEventBus.PublishAsync, which flows through ResilientEventBusDecorator, then TelemetryEventBusDecorator, then RabbitMQEventBus, to the RabbitMQ broker.</title>
+    <g id="Layer_1" data-name="Layer 1">
+      <path d="M28 40 L152 40 C156.418 40 160 43.582 160 48 L160 92 C160 96.418 156.418 100 152 100 L28 100 C23.582 100 20 96.418 20 92 L20 48 C20 43.582 23.582 40 28 40 Z" fill="var(--surface)" stroke="var(--line)" stroke-miterlimit="10"/>
+      <text transform="matrix(1 0 0 1 45 74)" x="0" y="0" xml:space="preserve" font-family="Arial" font-size="13" fill="var(--ink)"><tspan x="0" y="0">Ordering.API</tspan></text>
+      <path d="M160 70 L192 70" fill="none" stroke="var(--ink-soft)" stroke-miterlimit="10"/>
+      <path d="M192 64 L200 70 L192 76 Z" fill="var(--ink-soft)" stroke="var(--ink-soft)" stroke-miterlimit="10"/>
+      <path d="M208 40 L332 40 C336.418 40 340 43.582 340 48 L340 92 C340 96.418 336.418 100 332 100 L208 100 C203.582 100 200 96.418 200 92 L200 48 C200 43.582 203.582 40 208 40 Z" fill="var(--surface)" stroke="var(--line)" stroke-miterlimit="10"/>
+      <text transform="matrix(1 0 0 1 225 74)" x="0" y="0" xml:space="preserve" font-family="Arial" font-size="13" fill="var(--ink)"><tspan x="0" y="0">PublishAsync</tspan></text>
+      <path d="M340 70 L372 70" fill="none" stroke="var(--ink-soft)" stroke-miterlimit="10"/>
+      <path d="M372 64 L380 70 L372 76 Z" fill="var(--ink-soft)" stroke="var(--ink-soft)" stroke-miterlimit="10"/>
+      <path d="M388 40 L492 40 C496.418 40 500 43.582 500 48 L500 92 C500 96.418 496.418 100 492 100 L388 100 C383.582 100 380 96.418 380 92 L380 48 C380 43.582 383.582 40 388 40 Z" fill="var(--resilient-bg)" stroke="var(--resilient)" stroke-miterlimit="10"/>
+      <text transform="matrix(1 0 0 1 406 74)" x="0" y="0" xml:space="preserve" font-family="Arial" font-size="13" fill="var(--resilient)"><tspan x="0" y="0">Resilient</tspan></text>
+      <path d="M500 70 L532 70" fill="none" stroke="var(--ink-soft)" stroke-miterlimit="10"/>
+      <path d="M532 64 L540 70 L532 76 Z" fill="var(--ink-soft)" stroke="var(--ink-soft)" stroke-miterlimit="10"/>
+      <path d="M548 40 L652 40 C656.418 40 660 43.582 660 48 L660 92 C660 96.418 656.418 100 652 100 L548 100 C543.582 100 540 96.418 540 92 L540 48 C540 43.582 543.582 40 548 40 Z" fill="var(--telemetry-bg)" stroke="var(--telemetry)" stroke-miterlimit="10"/>
+      <text transform="matrix(1 0 0 1 566 74)" x="0" y="0" xml:space="preserve" font-family="Arial" font-size="13" fill="var(--telemetry)"><tspan x="0" y="0">Telemetry</tspan></text>
+      <path d="M660 70 L692 70" fill="none" stroke="var(--ink-soft)" stroke-miterlimit="10"/>
+      <path d="M692 64 L700 70 L692 76 Z" fill="var(--ink-soft)" stroke="var(--ink-soft)" stroke-miterlimit="10"/>
+      <path d="M708 40 L862 40 C866.418 40 870 43.582 870 48 L870 92 C870 96.418 866.418 100 862 100 L708 100 C703.582 100 700 96.418 700 92 L700 48 C700 43.582 703.582 40 708 40 Z" fill="var(--transport-bg)" stroke="var(--transport)" stroke-miterlimit="10"/>
+      <text transform="matrix(1 0 0 1 725 74)" x="0" y="0" xml:space="preserve" font-family="Arial" font-size="13" fill="var(--transport)"><tspan x="0" y="0">RabbitMQEventBus</tspan></text>
+      <path d="M870 70 L902 70" fill="none" stroke="var(--ink-soft)" stroke-miterlimit="10"/>
+      <path d="M902 64 L910 70 L902 76 Z" fill="var(--ink-soft)" stroke="var(--ink-soft)" stroke-miterlimit="10"/>
+      <path d="M918 40 L1012 40 C1016.418 40 1020 43.582 1020 48 L1020 92 C1020 96.418 1016.418 100 1012 100 L918 100 C913.582 100 910 96.418 910 92 L910 48 C910 43.582 913.582 40 918 40 Z" fill="var(--surface)" stroke="var(--line)" stroke-miterlimit="10"/>
+      <text transform="matrix(1 0 0 1 935 74)" x="0" y="0" xml:space="preserve" font-family="Arial" font-size="13" fill="var(--ink)"><tspan x="0" y="0">RabbitMQ</tspan></text>
+    </g>
+  </svg>
   <p class="dek dek--footnote">
     Three separate <code>IEventBus</code> implementations, composed by wrapping — a caller only ever sees
     <code>IEventBus</code>, and doesn't know or care how many layers are behind it.
