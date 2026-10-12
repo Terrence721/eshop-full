@@ -23,7 +23,8 @@
       "tests\\Basket.API.UnitTests\\Basket.API.UnitTests.csproj",
       "tests\\Ordering.Domain.UnitTests\\Ordering.Domain.UnitTests.csproj",
       "tests\\Ordering.Infrastructure.UnitTests\\Ordering.Infrastructure.UnitTests.csproj",
-      "tests\\Ordering.API.UnitTests\\Ordering.API.UnitTests.csproj"
+      "tests\\Ordering.API.UnitTests\\Ordering.API.UnitTests.csproj",
+      "tests\\Webhooks.API.UnitTests\\Webhooks.API.UnitTests.csproj"
     ]
   }
 }
