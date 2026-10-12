@@ -1,4 +1,5 @@
-# 🛍️ eShop — A .NET Aspire Microservices Platform
+<!-- markdownlint-disable-next-line MD041 -->
+![eShop — A .NET Aspire Microservices Platform](img/readme-banner.png)
 
 [![eShop Pull Request Validation](https://github.com/Terrence721/eshop-full/actions/workflows/pr-validation.yml/badge.svg)](https://github.com/Terrence721/eshop-full/actions/workflows/pr-validation.yml)
 [![CodeQL](https://github.com/Terrence721/eshop-full/actions/workflows/codeql.yml/badge.svg)](https://github.com/Terrence721/eshop-full/actions/workflows/codeql.yml)
