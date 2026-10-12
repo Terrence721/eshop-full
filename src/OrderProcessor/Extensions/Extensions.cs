@@ -1,4 +1,4 @@
-using System.Text.Json.Serialization;
+﻿using System.Text.Json.Serialization;
 using eShop.OrderProcessor.Events;
 
 namespace eShop.OrderProcessor.Extensions;
@@ -20,7 +20,8 @@ public static class Extensions
 }
 
 [JsonSerializable(typeof(GracePeriodConfirmedIntegrationEvent))]
-partial class IntegrationEventContext : JsonSerializerContext
+[JsonSourceGenerationOptions(GenerationMode = JsonSourceGenerationMode.Metadata)]
+public partial class IntegrationEventContext : JsonSerializerContext
 {
 
 }
