@@ -1,9 +1,5 @@
+import { useLocation } from 'react-router'
 import { useCurrentUser } from '../lib/useCurrentUser'
-
-function logIn() {
-  const returnUrl = window.location.pathname + window.location.search
-  window.location.href = `/bff/login?returnUrl=${encodeURIComponent(returnUrl)}`
-}
 
 // Mirrors Layout/UserMenu.razor. The logout button is a plain uncontrolled
 // <form> (a real browser POST navigation, not a fetch) -- SignOutAsync's
@@ -12,12 +8,17 @@ function logIn() {
 // same reasoning as vite.config.ts's Host-preservation for /bff/login.
 export function UserMenu() {
   const { claims, loading } = useCurrentUser()
+  const location = useLocation()
 
   if (loading) {
     return null
   }
 
   if (!claims) {
+    const returnUrl = location.pathname + location.search
+    const logIn = () => {
+      window.location.href = `/bff/login?returnUrl=${encodeURIComponent(returnUrl)}`
+    }
     return (
       <button className="action" onClick={logIn}>
         Log in
