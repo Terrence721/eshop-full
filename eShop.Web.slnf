@@ -21,7 +21,8 @@
       "tests\\Identity.API.UnitTests\\Identity.API.UnitTests.csproj",
       "tests\\Catalog.API.UnitTests\\Catalog.API.UnitTests.csproj",
       "tests\\Basket.API.UnitTests\\Basket.API.UnitTests.csproj",
-      "tests\\Ordering.Domain.UnitTests\\Ordering.Domain.UnitTests.csproj"
+      "tests\\Ordering.Domain.UnitTests\\Ordering.Domain.UnitTests.csproj",
+      "tests\\Ordering.Infrastructure.UnitTests\\Ordering.Infrastructure.UnitTests.csproj"
     ]
   }
 }
