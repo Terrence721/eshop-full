@@ -19,7 +19,8 @@
       "tests\\eShop.ServiceDefaults.UnitTests\\eShop.ServiceDefaults.UnitTests.csproj",
       "tests\\IntegrationEventLogEF.UnitTests\\IntegrationEventLogEF.UnitTests.csproj",
       "tests\\Identity.API.UnitTests\\Identity.API.UnitTests.csproj",
-      "tests\\Catalog.API.UnitTests\\Catalog.API.UnitTests.csproj"
+      "tests\\Catalog.API.UnitTests\\Catalog.API.UnitTests.csproj",
+      "tests\\Basket.API.UnitTests\\Basket.API.UnitTests.csproj"
     ]
   }
 }
