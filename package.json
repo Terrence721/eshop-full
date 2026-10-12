@@ -15,7 +15,8 @@
     "source-map-js": "^1.2.2"
   },
   "scripts": {
-    "clean:logs": "node scripts/clean-logs.mjs"
+    "clean:logs": "node scripts/clean-logs.mjs",
+    "clean:build-servers": "node scripts/clean-build-servers.mjs"
   },
   "keywords": [],
   "author": "",
