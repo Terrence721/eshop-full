@@ -1,4 +1,5 @@
 using System.Threading.Channels;
+using Microsoft.Extensions.Options;
 
 namespace eShop.WebhookClient.Endpoints;
 
@@ -14,6 +15,13 @@ public static class HooksApiEndpoints
             var hooks = await client.LoadWebhooks();
             return Results.Ok(hooks);
         });
+
+        // AddWebhook.razor pre-fills its token field from this same
+        // IOptions<WebhookClientOptions>.Token -- not just a convenience
+        // default, since it's the shared secret Webhooks.API validates a
+        // registration's token against, so the SPA needs it over HTTP too.
+        app.MapGet("/api/hooks/default-token", (IOptions<WebhookClientOptions> options) =>
+            Results.Ok(new { token = options.Value.Token }));
 
         app.MapPost("/api/hooks", async (WebhookSubscriptionRequest request, WebhooksClient client) =>
         {
