@@ -82,3 +82,29 @@ jobs:
           fail-on-empty: false
       - name: Build
         run: yarn workspace identity-webapp build
+
+  webhookclient-webapp:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: lts/*
+      - name: Enable corepack
+        run: corepack enable
+      - name: Install dependencies
+        run: yarn install --immutable
+      - name: Lint
+        run: yarn workspace webhookclient-webapp lint
+      - name: Test
+        run: yarn workspace webhookclient-webapp test:ci
+      - name: Publish test results
+        uses: dorny/test-reporter@v3
+        if: always()
+        with:
+          name: WebhookClient.WebApp Test Results
+          path: 'src/WebhookClient.WebApp/test-results/junit.xml'
+          reporter: jest-junit
+          fail-on-empty: false
+      - name: Build
+        run: yarn workspace webhookclient-webapp build
