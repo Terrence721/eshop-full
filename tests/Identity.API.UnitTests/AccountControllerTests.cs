@@ -66,7 +66,7 @@ public class AccountControllerTests
         var interaction = Substitute.For<IIdentityServerInteractionService>();
         interaction.GetAuthorizationContextAsync(Arg.Any<string?>(), Arg.Any<CancellationToken>()).Returns((AuthorizationRequest?)null);
         var schemeProvider = Substitute.For<IAuthenticationSchemeProvider>();
-        schemeProvider.GetAllSchemesAsync().Returns(new List<AuthenticationScheme>());
+        schemeProvider.GetAllSchemesAsync().Returns([]);
         var controller = CreateController(interaction: interaction, schemeProvider: schemeProvider);
 
         var result = await controller.Login((string?)null, CancellationToken.None);
@@ -101,7 +101,7 @@ public class AccountControllerTests
         interaction.GetAuthorizationContextAsync("return-url", Arg.Any<CancellationToken>())
             .Returns(new AuthorizationRequest { Client = new Client { ClientId = "client-1" } });
         var schemeProvider = Substitute.For<IAuthenticationSchemeProvider>();
-        schemeProvider.GetAllSchemesAsync().Returns(new List<AuthenticationScheme>());
+        schemeProvider.GetAllSchemesAsync().Returns([]);
         var clientStore = new InMemoryClientStore([new Client { ClientId = "client-1", Enabled = true, EnableLocalLogin = false }]);
         var controller = CreateController(interaction: interaction, schemeProvider: schemeProvider, clientStore: clientStore);
 
@@ -183,7 +183,7 @@ public class AccountControllerTests
         interaction.GetAuthorizationContextAsync(Arg.Any<string?>(), Arg.Any<CancellationToken>()).Returns((AuthorizationRequest?)null);
         var events = Substitute.For<IEventService>();
         var schemeProvider = Substitute.For<IAuthenticationSchemeProvider>();
-        schemeProvider.GetAllSchemesAsync().Returns(new List<AuthenticationScheme>());
+        schemeProvider.GetAllSchemesAsync().Returns([]);
         var controller = CreateController(userManager: userManager, signInManager: signInManager, interaction: interaction, schemeProvider: schemeProvider, events: events);
 
         var result = await controller.Login(new LoginInputModel { Username = "alice", Password = "wrong" }, CancellationToken.None);
