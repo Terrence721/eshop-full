@@ -7,6 +7,7 @@
     <DebugSymbols>true</DebugSymbols>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <RootNamespace>eShop.$(MSBuildProjectName)</RootNamespace>
     <!-- Suppress only low/moderate NuGet audit warnings; high & critical (NU1903/NU1904) must surface. -->
     <NoWarn>NU1901;NU1902</NoWarn>
     <UseArtifactsOutput>true</UseArtifactsOutput>
