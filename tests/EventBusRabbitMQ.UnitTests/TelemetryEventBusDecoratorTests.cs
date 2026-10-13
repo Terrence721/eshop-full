@@ -3,7 +3,7 @@ using eShop.EventBus.Abstractions;
 using eShop.EventBus.Events;
 using eShop.EventBusRabbitMQ;
 
-namespace EventBusRabbitMQ.UnitTests;
+namespace eShop.EventBusRabbitMQ.UnitTests;
 
 [TestClass]
 public class TelemetryEventBusDecoratorTests

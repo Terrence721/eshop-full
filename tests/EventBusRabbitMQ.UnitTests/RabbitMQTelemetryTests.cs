@@ -1,7 +1,7 @@
 using System.Diagnostics;
 using eShop.EventBusRabbitMQ;
 
-namespace EventBusRabbitMQ.UnitTests;
+namespace eShop.EventBusRabbitMQ.UnitTests;
 
 [TestClass]
 public class RabbitMQTelemetryTests
