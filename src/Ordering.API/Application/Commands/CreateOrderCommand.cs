@@ -63,7 +63,7 @@ public class CreateOrderCommand
 
     public CreateOrderCommand()
     {
-        _orderItems = new List<OrderItemDTO>();
+        _orderItems = [];
     }
 
     public CreateOrderCommand(List<BasketItem> basketItems, string userId, string userName, string city, string street, string state, string country, string zipcode,
