@@ -24,7 +24,7 @@ describe('CatalogItemCard', () => {
       </MemoryRouter>,
     )
 
-    expect(screen.getByRole('img', { name: 'Mug' })).toHaveAttribute('src', '/remoteapi/catalog/items/7/pic')
+    expect(screen.getByRole('img', { name: 'Mug' })).toHaveAttribute('src', '/remoteapi/catalog/api/catalog/items/7/pic')
     expect(screen.getByText('Mug')).toBeInTheDocument()
     expect(screen.getByText('$9.50')).toBeInTheDocument()
   })

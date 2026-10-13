@@ -32,7 +32,7 @@ describe('CartIndex', () => {
   it('renders a line per basket item with the resolved catalog details and a running total', async () => {
     mockFetchByUrl({
       '/api/basket': { status: 200, body: [{ productId: 1, quantity: 2 }] },
-      '/remoteapi/catalog/items/1': { status: 200, body: { id: 1, name: 'Mug', description: null, price: 5, catalogTypeId: 1, catalogBrandId: 1 } },
+      '/remoteapi/catalog/api/catalog/items/1': { status: 200, body: { id: 1, name: 'Mug', description: null, price: 5, catalogTypeId: 1, catalogBrandId: 1 } },
     })
 
     renderWithRoutes()
@@ -46,7 +46,7 @@ describe('CartIndex', () => {
   it('links to /checkout', async () => {
     mockFetchByUrl({
       '/api/basket': { status: 200, body: [{ productId: 1, quantity: 1 }] },
-      '/remoteapi/catalog/items/1': { status: 200, body: { id: 1, name: 'Mug', description: null, price: 5, catalogTypeId: 1, catalogBrandId: 1 } },
+      '/remoteapi/catalog/api/catalog/items/1': { status: 200, body: { id: 1, name: 'Mug', description: null, price: 5, catalogTypeId: 1, catalogBrandId: 1 } },
     })
 
     renderWithRoutes()

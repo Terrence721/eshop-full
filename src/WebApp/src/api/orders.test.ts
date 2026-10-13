@@ -12,6 +12,6 @@ describe('getOrders', () => {
   it('throws for an unexpected failure status', async () => {
     mockFetchOnce(500)
 
-    await expect(getOrders()).rejects.toThrow('GET /remoteapi/orders failed: 500')
+    await expect(getOrders()).rejects.toThrow('GET /remoteapi/orders/api/orders failed: 500')
   })
 })
