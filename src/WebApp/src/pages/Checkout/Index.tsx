@@ -29,15 +29,30 @@ export default function CheckoutIndex() {
     [basketItems],
   )
   const navigate = useNavigate()
-  const [address, setAddress] = useState({
-    street: claimValue(claims, 'address_street'),
-    city: claimValue(claims, 'address_city'),
-    state: claimValue(claims, 'address_state'),
-    country: claimValue(claims, 'address_country'),
-    zipCode: claimValue(claims, 'address_zip_code'),
-  })
+  const [address, setAddress] = useState({ street: '', city: '', state: '', country: '', zipCode: '' })
   const [submitting, setSubmitting] = useState(false)
   const [submitError, setSubmitError] = useState<Error | null>(null)
+
+  // claims resolves asynchronously after the initial render (useCurrentUser's
+  // own fetch), so the address state's useState initializer alone can't see
+  // it. Rather than an effect (an extra render-after-render for something
+  // derivable from a value that just changed), this follows React's own
+  // documented "adjusting state when a prop changes" pattern: compare
+  // against the previous claims during render and set state directly, which
+  // React batches into the same render instead of scheduling a second one.
+  const [prevClaims, setPrevClaims] = useState(claims)
+  if (claims !== prevClaims) {
+    setPrevClaims(claims)
+    if (claims) {
+      setAddress({
+        street: claimValue(claims, 'address_street'),
+        city: claimValue(claims, 'address_city'),
+        state: claimValue(claims, 'address_state'),
+        country: claimValue(claims, 'address_country'),
+        zipCode: claimValue(claims, 'address_zip_code'),
+      })
+    }
+  }
 
   if (basketLoading || catalogLoading) {
     return <p>Loading...</p>
