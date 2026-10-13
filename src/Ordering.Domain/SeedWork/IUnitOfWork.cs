@@ -1,4 +1,4 @@
-﻿namespace eShop.Ordering.Domain.Seedwork;
+﻿namespace eShop.Ordering.Domain.SeedWork;
 
 public interface IUnitOfWork : IDisposable
 {

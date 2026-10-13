@@ -1,4 +1,4 @@
-using eShop.Ordering.Domain.Seedwork;
+using eShop.Ordering.Domain.SeedWork;
 using MediatR;
 
 namespace eShop.Ordering.Domain.UnitTests;

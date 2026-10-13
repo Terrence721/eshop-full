@@ -1,6 +1,6 @@
 using eShop.Ordering.API.Application.Commands;
 using eShop.Ordering.Domain.AggregatesModel.OrderAggregate;
-using eShop.Ordering.Domain.Seedwork;
+using eShop.Ordering.Domain.SeedWork;
 using NSubstitute;
 
 namespace eShop.Ordering.API.UnitTests;

@@ -4,7 +4,7 @@ using eShop.Ordering.API.Application.IntegrationEvents.Events;
 using eShop.Ordering.API.Application.Models;
 using eShop.Ordering.API.Infrastructure.Services;
 using eShop.Ordering.Domain.AggregatesModel.OrderAggregate;
-using eShop.Ordering.Domain.Seedwork;
+using eShop.Ordering.Domain.SeedWork;
 using MediatR;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
