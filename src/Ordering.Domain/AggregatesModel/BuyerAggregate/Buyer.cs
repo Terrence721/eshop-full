@@ -17,7 +17,7 @@ public class Buyer
     protected Buyer()
     {
 
-        _paymentMethods = new List<PaymentMethod>();
+        _paymentMethods = [];
     }
 
     public Buyer(string identity, string name) : this()
