@@ -11,6 +11,15 @@ import { execFileSync } from "node:child_process";
 // nothing matching that shape is still running instead of assuming it
 // worked.
 //
+// Previously only ever run by hand (`yarn clean:build-servers`), which
+// meant it only helped if someone remembered to run it - confirmed
+// directly on this repo (2026-10-13): the same 7-MSBuild-node-plus-
+// VBCSCompiler shape recurred and sat idle (zero CPU-time growth) for 30+
+// minutes before anyone noticed Test Explorer had stalled. Now also wired
+// up as a VS Code folderOpen task (.vscode/tasks.json) so it runs
+// automatically before Dev Kit's own project system starts, instead of
+// relying on it being run after the fact.
+//
 // Separately, C# Dev Kit's Test Explorer Server process
 // (Microsoft.VisualStudio.Code.ServiceHost.exe) can hang mid-session
 // without exiting - confirmed directly on this repo (2026-10-12): it
