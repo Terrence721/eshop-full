@@ -1,6 +1,6 @@
 using eShop.EventBus.Events;
 
-namespace EventBus.UnitTests.Events;
+namespace eShop.EventBus.UnitTests.Events;
 
 [TestClass]
 public class IntegrationEventTests

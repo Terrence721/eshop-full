@@ -1,6 +1,6 @@
 using eShop.EventBus.Abstractions;
 
-namespace EventBus.UnitTests.Abstractions;
+namespace eShop.EventBus.UnitTests.Abstractions;
 
 [TestClass]
 public class EventBusSubscriptionInfoTests

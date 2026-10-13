@@ -1,6 +1,6 @@
 using eShop.EventBus.Extensions;
 
-namespace EventBus.UnitTests.Extensions;
+namespace eShop.EventBus.UnitTests.Extensions;
 
 [TestClass]
 public class GenericTypeExtensionsTests
