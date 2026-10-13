@@ -1,9 +1,15 @@
-// Placeholder entry point -- just enough for this Microsoft.NET.Sdk.Web
-// project to build. Real startup wiring (AddServiceDefaults, the RabbitMQ
-// event bus subscription, PaymentOptions) lands file by file as this
-// project's real source is added, matching OrderProcessor's precedent.
 var builder = WebApplication.CreateBuilder(args);
+
+builder.AddServiceDefaults();
+
+builder.AddRabbitMqEventBus("EventBus")
+    .AddSubscription<OrderStatusChangedToStockConfirmedIntegrationEvent, OrderStatusChangedToStockConfirmedIntegrationEventHandler>();
+
+builder.Services.AddOptions<PaymentOptions>()
+    .BindConfiguration(nameof(PaymentOptions));
 
 var app = builder.Build();
 
-app.Run();
+app.MapDefaultEndpoints();
+
+await app.RunAsync();
