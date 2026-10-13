@@ -1,7 +1,7 @@
 using eShop.EventBus.Abstractions;
 using eShop.EventBus.Events;
 
-namespace EventBus.UnitTests.Abstractions;
+namespace eShop.EventBus.UnitTests.Abstractions;
 
 [TestClass]
 public class IIntegrationEventHandlerTests

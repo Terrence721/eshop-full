@@ -3,7 +3,7 @@ using eShop.EventBus.Events;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 
-namespace EventBus.UnitTests.Extensions;
+namespace eShop.EventBus.UnitTests.Extensions;
 
 [TestClass]
 public class EventBusBuilderExtensionsTests
