@@ -4,7 +4,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
-namespace EventBusRabbitMQ.UnitTests;
+namespace eShop.EventBusRabbitMQ.UnitTests;
 
 [TestClass]
 public class RabbitMqDependencyInjectionExtensionsTests

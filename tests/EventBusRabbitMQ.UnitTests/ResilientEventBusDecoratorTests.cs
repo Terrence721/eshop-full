@@ -4,7 +4,7 @@ using eShop.EventBus.Events;
 using eShop.EventBusRabbitMQ;
 using Microsoft.Extensions.Options;
 
-namespace EventBusRabbitMQ.UnitTests;
+namespace eShop.EventBusRabbitMQ.UnitTests;
 
 [TestClass]
 public class ResilientEventBusDecoratorTests
