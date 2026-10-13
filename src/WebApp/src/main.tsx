@@ -1,9 +1,19 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
+import { createBrowserRouter, RouterProvider } from 'react-router'
 import './index.css'
+import { MainLayout } from './components/MainLayout.tsx'
+import CatalogIndex from './pages/Catalog/Index.tsx'
+
+const router = createBrowserRouter([
+  {
+    Component: MainLayout,
+    children: [{ path: '/', Component: CatalogIndex }],
+  },
+])
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <p>WebApp</p>
+    <RouterProvider router={router} />
   </StrictMode>,
 )
