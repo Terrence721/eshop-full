@@ -2,6 +2,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.AddServiceDefaults();
 builder.AddApplicationServices();
+builder.Services.AddProblemDetails();
 
 var withApiVersioning = builder.Services.AddApiVersioning(options =>
 {
@@ -14,6 +15,8 @@ builder.AddDefaultOpenApi(withApiVersioning);
 var app = builder.Build();
 
 app.MapDefaultEndpoints();
+
+app.UseStatusCodePages();
 
 var webHooks = app.NewVersionedApi("Web Hooks");
 
