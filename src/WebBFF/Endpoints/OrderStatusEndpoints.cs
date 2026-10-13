@@ -31,8 +31,13 @@ public static class OrderStatusEndpoints
 
             return TypedResults.ServerSentEvents(channel.Reader.ReadAllAsync(cancellationToken), eventType: "order-status-changed");
         })
-        .RequireAuthorization()
-        .AsBffApiEndpoint();
+        // No .AsBffApiEndpoint() here deliberately: that requires an X-CSRF header on
+        // every request, but the browser's native EventSource API has no mechanism to
+        // set custom request headers, so it could never satisfy that check. This
+        // endpoint has no response payload and no side effects (just a "changed"
+        // signal), so .RequireAuthorization() alone -- still backed by the real BFF
+        // session cookie -- is a deliberately narrow exception, not an oversight.
+        .RequireAuthorization();
 
         return app;
     }
