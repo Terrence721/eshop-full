@@ -86,6 +86,10 @@
     <PackageVersion Include="Duende.IdentityServer.EntityFramework" Version="$(DuendeVersion)" />
     <PackageVersion Include="Duende.IdentityServer.EntityFramework.Storage" Version="$(DuendeVersion)" />
     <PackageVersion Include="Duende.IdentityServer.Storage" Version="$(DuendeVersion)" />
+    <!-- Duende.BFF: a different product line/version cadence from Duende.IdentityServer above,
+         not tied to $(DuendeVersion) -->
+    <PackageVersion Include="Duende.BFF" Version="4.3.1" />
+    <PackageVersion Include="Duende.BFF.Yarp" Version="4.3.1" />
     <!-- Scaffolding -->
     <PackageVersion Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="10.0.2" />
     <!-- Grpc -->
