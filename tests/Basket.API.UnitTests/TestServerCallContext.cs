@@ -24,12 +24,12 @@ internal sealed class TestServerCallContext : ServerCallContext
     protected override string HostCore => "test-host";
     protected override string PeerCore => "test-peer";
     protected override DateTime DeadlineCore => DateTime.MaxValue;
-    protected override Metadata RequestHeadersCore => new();
+    protected override Metadata RequestHeadersCore => [];
     protected override CancellationToken CancellationTokenCore => CancellationToken.None;
-    protected override Metadata ResponseTrailersCore => new();
+    protected override Metadata ResponseTrailersCore => [];
     protected override Status StatusCore { get; set; }
     protected override WriteOptions? WriteOptionsCore { get; set; }
-    protected override AuthContext AuthContextCore => new("test-peer", new Dictionary<string, List<AuthProperty>>());
+    protected override AuthContext AuthContextCore => new("test-peer", []);
 
     protected override Task WriteResponseHeadersAsyncCore(Metadata responseHeaders) => Task.CompletedTask;
 
