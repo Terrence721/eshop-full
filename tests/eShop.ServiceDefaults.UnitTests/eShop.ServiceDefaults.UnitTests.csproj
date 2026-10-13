@@ -6,6 +6,8 @@
     <IsPublishable>false</IsPublishable>
     <IsPackable>false</IsPackable>
     <OutputType>Exe</OutputType>
+    <!-- Project name already starts with "eShop."; avoid Directory.Build.props doubling the prefix. -->
+    <RootNamespace>$(MSBuildProjectName)</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
