@@ -29,7 +29,8 @@
       "tests\\Ordering.API.UnitTests\\Ordering.API.UnitTests.csproj",
       "tests\\Webhooks.API.UnitTests\\Webhooks.API.UnitTests.csproj",
       "tests\\WebhookClient.UnitTests\\WebhookClient.UnitTests.csproj",
-      "tests\\PaymentProcessor.UnitTests\\PaymentProcessor.UnitTests.csproj"
+      "tests\\PaymentProcessor.UnitTests\\PaymentProcessor.UnitTests.csproj",
+      "tests\\WebBFF.UnitTests\\WebBFF.UnitTests.csproj"
     ]
   }
 }

@@ -30,6 +30,7 @@
     <Project Path="tests/Webhooks.API.UnitTests/Webhooks.API.UnitTests.csproj" />
     <Project Path="tests/WebhookClient.UnitTests/WebhookClient.UnitTests.csproj" />
     <Project Path="tests/PaymentProcessor.UnitTests/PaymentProcessor.UnitTests.csproj" />
+    <Project Path="tests/WebBFF.UnitTests/WebBFF.UnitTests.csproj" />
   </Folder>
   <Folder Name="/Solution Items/">
     <File Path=".editorconfig" />
