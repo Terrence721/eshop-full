@@ -5,7 +5,7 @@ using eShop.Identity.API.Services;
 using Microsoft.AspNetCore.Identity;
 using NSubstitute;
 
-namespace eShop.Identity.API.Services.UnitTests;
+namespace eShop.Identity.API.UnitTests;
 
 [TestClass]
 public class ProfileServiceTests
