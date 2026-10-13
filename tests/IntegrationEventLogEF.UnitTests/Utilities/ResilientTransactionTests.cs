@@ -1,6 +1,6 @@
 using eShop.IntegrationEventLogEF.Utilities;
 
-namespace IntegrationEventLogEF.UnitTests.Utilities;
+namespace eShop.IntegrationEventLogEF.UnitTests.Utilities;
 
 [TestClass]
 public class ResilientTransactionTests

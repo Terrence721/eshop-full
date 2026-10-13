@@ -1,6 +1,6 @@
 using eShop.IntegrationEventLogEF;
 
-namespace IntegrationEventLogEF.UnitTests;
+namespace eShop.IntegrationEventLogEF.UnitTests;
 
 [TestClass]
 public class EventStateTests

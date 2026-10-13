@@ -1,7 +1,7 @@
 using eShop.IntegrationEventLogEF;
 using Microsoft.EntityFrameworkCore;
 
-namespace IntegrationEventLogEF.UnitTests;
+namespace eShop.IntegrationEventLogEF.UnitTests;
 
 [TestClass]
 public class IntegrationLogExtensionsTests
