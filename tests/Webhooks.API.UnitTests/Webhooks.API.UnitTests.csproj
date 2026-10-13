@@ -6,6 +6,8 @@
     <IsPublishable>false</IsPublishable>
     <IsPackable>false</IsPackable>
     <OutputType>Exe</OutputType>
+    <!-- Mirrors Webhooks.API's own convention, which has no "eShop." prefix. -->
+    <RootNamespace>$(MSBuildProjectName)</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
