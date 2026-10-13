@@ -47,6 +47,7 @@ public class Config
     {
         var mauiCallback = configuration.GetRequiredValue("MauiCallback");
         var webAppClient = configuration.GetRequiredValue("WebAppClient");
+        var webBffClient = configuration.GetRequiredValue("WebBffClient");
         var webhooksWebClient = configuration.GetRequiredValue("WebhooksWebClient");
         var basketApiClient = configuration.GetRequiredValue("BasketApiClient");
         var orderingApiClient = configuration.GetRequiredValue("OrderingApiClient");
@@ -94,20 +95,24 @@ public class Config
                 {
                     new Secret("secret".Sha256())
                 },
-                ClientUri = webAppClient,                             // public uri of the client
+                ClientUri = webAppClient,                             // public uri of the client (the SPA itself)
                 AllowedGrantTypes = GrantTypes.Code,
                 AllowAccessTokensViaBrowser = false,
                 RequireConsent = false,
                 AllowOfflineAccess = true,
                 AlwaysIncludeUserClaimsInIdToken = true,
-                RequirePkce = false,
+                RequirePkce = true,
+                // WebBFF performs the actual OIDC code exchange -- the browser never leaves
+                // its origin during the redirect dance, so these must point at WebBFF's own
+                // /signin-oidc, not the SPA's. Confirmed via Duende.BFF's real architecture:
+                // the client's server-side session lives in WebBFF, not in the browser.
                 RedirectUris = new List<string>
                 {
-                    $"{webAppClient}/signin-oidc"
+                    $"{webBffClient}/signin-oidc"
                 },
                 PostLogoutRedirectUris = new List<string>
                 {
-                    $"{webAppClient}/signout-callback-oidc"
+                    $"{webBffClient}/signout-callback-oidc"
                 },
                 AllowedScopes = new List<string>
                 {
@@ -115,9 +120,7 @@ public class Config
                     IdentityServerConstants.StandardScopes.Profile,
                     IdentityServerConstants.StandardScopes.OfflineAccess,
                     "orders",
-                    "basket",
-                    "webshoppingagg",
-                    "webhooks"
+                    "basket"
                 },
                 AccessTokenLifetime = TokenLifetimeSeconds,
                 IdentityTokenLifetime = TokenLifetimeSeconds
