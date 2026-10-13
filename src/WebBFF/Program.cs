@@ -1,8 +1,14 @@
+// Basket.API's native gRPC endpoint is plain HTTP/2 (no TLS) -- the .NET gRPC client
+// refuses unencrypted HTTP/2 by default, so this must be set before any channel is
+// created.
+AppContext.SetSwitch("System.Net.Http.SocketsHttpHandler.Http2UnencryptedSupport", true);
+
 var builder = WebApplication.CreateBuilder(args);
 
 builder.AddServiceDefaults();
 
 var identityUrl = builder.Configuration.GetRequiredValue("IdentityUrl");
+var basketUrl = builder.Configuration.GetRequiredValue("BasketUrl");
 
 builder.Services.AddBff()
     .ConfigureOpenIdConnect(options =>
@@ -36,6 +42,9 @@ builder.Services.AddReverseProxy()
 
 builder.Services.AddSingleton<OrderStatusNotifications>();
 
+builder.Services.AddGrpcClient<BasketGrpcClient>(options => options.Address = new Uri(basketUrl));
+builder.Services.AddScoped<BasketService>();
+
 builder.AddRabbitMqEventBus("eventbus")
     .AddSubscription<OrderStatusChangedToSubmittedIntegrationEvent, OrderStatusChangedToSubmittedIntegrationEventHandler>()
     .AddSubscription<OrderStatusChangedToAwaitingValidationIntegrationEvent, OrderStatusChangedToAwaitingValidationIntegrationEventHandler>()
@@ -55,5 +64,6 @@ app.UseAuthorization();
 
 app.MapReverseProxy().AsBffApiEndpoint();
 app.MapOrderStatusEndpoints();
+app.MapBasketEndpoints();
 
 await app.RunAsync();
