@@ -1,6 +1,6 @@
 using eShop.IntegrationEventLogEF.Services;
 
-namespace IntegrationEventLogEF.UnitTests.Services;
+namespace eShop.IntegrationEventLogEF.UnitTests.Services;
 
 [TestClass]
 public class IntegrationEventTypeResolverTests
