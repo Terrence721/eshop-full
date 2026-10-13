@@ -16,6 +16,8 @@ var app = builder.Build();
 
 app.MapDefaultEndpoints();
 
+app.UseStatusCodePages();
+
 var orders = app.NewVersionedApi("Orders");
 
 orders.MapOrdersApiV1()
