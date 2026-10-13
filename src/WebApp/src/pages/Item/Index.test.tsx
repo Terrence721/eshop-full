@@ -9,7 +9,7 @@ const mug = { id: 1, name: 'Mug', description: 'A mug', price: 5, catalogTypeId:
 
 function renderAt(itemId: string, overrides: Record<string, { status: number; body?: unknown }> = {}) {
   mockFetchByUrl({
-    [`/remoteapi/catalog/items/${itemId}`]: { status: 200, body: mug },
+    [`/remoteapi/catalog/api/catalog/items/${itemId}`]: { status: 200, body: mug },
     '/api/basket': { status: 200, body: [] },
     ...overrides,
   })
@@ -32,25 +32,25 @@ describe('ItemIndex', () => {
     expect(await screen.findByText('Mug')).toBeInTheDocument()
     expect(screen.getByText('A mug')).toBeInTheDocument()
     expect(screen.getByText('$5.00')).toBeInTheDocument()
-    expect(screen.getByRole('img', { name: 'Mug' })).toHaveAttribute('src', '/remoteapi/catalog/items/1/pic')
+    expect(screen.getByRole('img', { name: 'Mug' })).toHaveAttribute('src', '/remoteapi/catalog/api/catalog/items/1/pic')
     expect(screen.getByText('2 in your shopping bag')).toBeInTheDocument()
   })
 
   it('shows a not-found message when the item does not exist', async () => {
-    renderAt('999', { '/remoteapi/catalog/items/999': { status: 404 } })
+    renderAt('999', { '/remoteapi/catalog/api/catalog/items/999': { status: 404 } })
 
     expect(await screen.findByText(/couldn't find the item/)).toBeInTheDocument()
   })
 
   it('shows an error message when the fetch fails', async () => {
-    renderAt('1', { '/remoteapi/catalog/items/1': { status: 500 } })
+    renderAt('1', { '/remoteapi/catalog/api/catalog/items/1': { status: 500 } })
 
     expect(await screen.findByText(/failed: 500/)).toBeInTheDocument()
   })
 
   it('clicking Add to shopping bag adds the item and updates the bag count', async () => {
     const fetchMock = mockFetchByUrl({
-      '/remoteapi/catalog/items/1': { status: 200, body: mug },
+      '/remoteapi/catalog/api/catalog/items/1': { status: 200, body: mug },
       '/api/basket': { status: 200, body: [] },
     })
     const router = createMemoryRouter([{ path: '/item/:itemId', Component: ItemIndex }], { initialEntries: ['/item/1'] })

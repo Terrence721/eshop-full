@@ -8,7 +8,7 @@ describe('getCatalogItems', () => {
 
     await getCatalogItems(0, 9)
 
-    expect(fetchMock).toHaveBeenCalledWith('/remoteapi/catalog/items?pageIndex=0&pageSize=9', {
+    expect(fetchMock).toHaveBeenCalledWith('/remoteapi/catalog/api/catalog/items?pageIndex=0&pageSize=9', {
       headers: { 'X-CSRF': '1' },
     })
   })
@@ -18,7 +18,7 @@ describe('getCatalogItems', () => {
 
     await getCatalogItems(1, 9, 2, 3)
 
-    expect(fetchMock).toHaveBeenCalledWith('/remoteapi/catalog/items?pageIndex=1&pageSize=9&brand=2&type=3', {
+    expect(fetchMock).toHaveBeenCalledWith('/remoteapi/catalog/api/catalog/items?pageIndex=1&pageSize=9&brand=2&type=3', {
       headers: { 'X-CSRF': '1' },
     })
   })
@@ -47,7 +47,7 @@ describe('getCatalogItem', () => {
   it('throws for an unexpected failure status', async () => {
     mockFetchOnce(500)
 
-    await expect(getCatalogItem(1)).rejects.toThrow('GET /remoteapi/catalog/items/1 failed: 500')
+    await expect(getCatalogItem(1)).rejects.toThrow('GET /remoteapi/catalog/api/catalog/items/1 failed: 500')
   })
 })
 
@@ -69,6 +69,6 @@ describe('getTypes', () => {
 
 describe('catalogItemPictureUrl', () => {
   it('builds the picture URL for an item id', () => {
-    expect(catalogItemPictureUrl(42)).toBe('/remoteapi/catalog/items/42/pic')
+    expect(catalogItemPictureUrl(42)).toBe('/remoteapi/catalog/api/catalog/items/42/pic')
   })
 })

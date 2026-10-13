@@ -9,7 +9,7 @@ describe('CartLineItem', () => {
   it('shows the picture, name, unit price, quantity, and line total', () => {
     render(<CartLineItem item={item} quantity={3} onQuantityChange={vi.fn()} />)
 
-    expect(screen.getByRole('img', { name: 'Mug' })).toHaveAttribute('src', '/remoteapi/catalog/items/7/pic')
+    expect(screen.getByRole('img', { name: 'Mug' })).toHaveAttribute('src', '/remoteapi/catalog/api/catalog/items/7/pic')
     expect(screen.getByText('Mug')).toBeInTheDocument()
     expect(screen.getByText('$5.00')).toBeInTheDocument()
     expect(screen.getByLabelText('Quantity for Mug')).toHaveValue(3)

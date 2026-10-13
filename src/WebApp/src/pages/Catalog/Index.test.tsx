@@ -6,8 +6,8 @@ import CatalogIndex from './Index'
 
 function stubFiltersFetches() {
   return {
-    '/remoteapi/catalog/catalogbrands': { status: 200, body: [] },
-    '/remoteapi/catalog/catalogtypes': { status: 200, body: [] },
+    '/remoteapi/catalog/api/catalog/catalogbrands': { status: 200, body: [] },
+    '/remoteapi/catalog/api/catalog/catalogtypes': { status: 200, body: [] },
   }
 }
 
@@ -21,7 +21,7 @@ function renderAt(path: string) {
 
 describe('CatalogIndex', () => {
   it('shows a loading state before the fetch resolves', () => {
-    mockFetchByUrl({ ...stubFiltersFetches(), '/remoteapi/catalog/items?pageIndex=0&pageSize=9': { status: 200, body: { pageIndex: 0, pageSize: 9, count: 0, data: [] } } })
+    mockFetchByUrl({ ...stubFiltersFetches(), '/remoteapi/catalog/api/catalog/items?pageIndex=0&pageSize=9': { status: 200, body: { pageIndex: 0, pageSize: 9, count: 0, data: [] } } })
 
     renderAt('/')
 
@@ -32,7 +32,7 @@ describe('CatalogIndex', () => {
     const item = { id: 1, name: 'Mug', description: null, price: 5, catalogTypeId: 1, catalogBrandId: 1 }
     mockFetchByUrl({
       ...stubFiltersFetches(),
-      '/remoteapi/catalog/items?pageIndex=0&pageSize=9': { status: 200, body: { pageIndex: 0, pageSize: 9, count: 1, data: [item] } },
+      '/remoteapi/catalog/api/catalog/items?pageIndex=0&pageSize=9': { status: 200, body: { pageIndex: 0, pageSize: 9, count: 1, data: [item] } },
     })
 
     renderAt('/')
@@ -43,18 +43,18 @@ describe('CatalogIndex', () => {
   it('converts the 1-based ?page= query param to a 0-based pageIndex', async () => {
     const fetchMock = mockFetchByUrl({
       ...stubFiltersFetches(),
-      '/remoteapi/catalog/items?pageIndex=2&pageSize=9': { status: 200, body: { pageIndex: 2, pageSize: 9, count: 0, data: [] } },
+      '/remoteapi/catalog/api/catalog/items?pageIndex=2&pageSize=9': { status: 200, body: { pageIndex: 2, pageSize: 9, count: 0, data: [] } },
     })
 
     renderAt('/?page=3')
 
     await waitFor(() =>
-      expect(fetchMock).toHaveBeenCalledWith('/remoteapi/catalog/items?pageIndex=2&pageSize=9', { headers: { 'X-CSRF': '1' } }),
+      expect(fetchMock).toHaveBeenCalledWith('/remoteapi/catalog/api/catalog/items?pageIndex=2&pageSize=9', { headers: { 'X-CSRF': '1' } }),
     )
   })
 
   it('shows an error message when the fetch fails', async () => {
-    mockFetchByUrl({ ...stubFiltersFetches(), '/remoteapi/catalog/items?pageIndex=0&pageSize=9': { status: 500 } })
+    mockFetchByUrl({ ...stubFiltersFetches(), '/remoteapi/catalog/api/catalog/items?pageIndex=0&pageSize=9': { status: 500 } })
 
     renderAt('/')
 

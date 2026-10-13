@@ -30,8 +30,8 @@ function renderAt(initialPath: string) {
 
 function stubBrandsAndTypes() {
   return mockFetchByUrl({
-    '/remoteapi/catalog/catalogbrands': { status: 200, body: [{ id: 1, brand: 'Adventure Works' }] },
-    '/remoteapi/catalog/catalogtypes': { status: 200, body: [{ id: 2, type: 'Mugs' }] },
+    '/remoteapi/catalog/api/catalog/catalogbrands': { status: 200, body: [{ id: 1, brand: 'Adventure Works' }] },
+    '/remoteapi/catalog/api/catalog/catalogtypes': { status: 200, body: [{ id: 2, type: 'Mugs' }] },
   })
 }
 

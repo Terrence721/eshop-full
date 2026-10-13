@@ -6,33 +6,33 @@ describe('apiGet', () => {
   it('resolves with the parsed JSON body on success', async () => {
     mockFetchOnce(200, { name: 'alice' })
 
-    await expect(apiGet<{ name: string }>('/remoteapi/catalog/items/1')).resolves.toEqual({ name: 'alice' })
+    await expect(apiGet<{ name: string }>('/remoteapi/catalog/api/catalog/items/1')).resolves.toEqual({ name: 'alice' })
   })
 
   it('sends the X-CSRF header', async () => {
     const fetchMock = mockFetchOnce(200, {})
 
-    await apiGet('/remoteapi/catalog/items/1')
+    await apiGet('/remoteapi/catalog/api/catalog/items/1')
 
-    expect(fetchMock).toHaveBeenCalledWith('/remoteapi/catalog/items/1', { headers: { 'X-CSRF': '1' } })
+    expect(fetchMock).toHaveBeenCalledWith('/remoteapi/catalog/api/catalog/items/1', { headers: { 'X-CSRF': '1' } })
   })
 
   it('returns null for a status listed in treatAsNull', async () => {
     mockFetchOnce(404)
 
-    await expect(apiGet('/remoteapi/catalog/items/1', { treatAsNull: [404] })).resolves.toBeNull()
+    await expect(apiGet('/remoteapi/catalog/api/catalog/items/1', { treatAsNull: [404] })).resolves.toBeNull()
   })
 
   it('throws for a non-ok status not listed in treatAsNull', async () => {
     mockFetchOnce(500)
 
-    await expect(apiGet('/remoteapi/catalog/items/1')).rejects.toThrow('GET /remoteapi/catalog/items/1 failed: 500')
+    await expect(apiGet('/remoteapi/catalog/api/catalog/items/1')).rejects.toThrow('GET /remoteapi/catalog/api/catalog/items/1 failed: 500')
   })
 
   it('strips the query string from the error message', async () => {
     mockFetchOnce(500)
 
-    await expect(apiGet('/remoteapi/catalog/items?page=2')).rejects.toThrow('GET /remoteapi/catalog/items failed: 500')
+    await expect(apiGet('/remoteapi/catalog/api/catalog/items?page=2')).rejects.toThrow('GET /remoteapi/catalog/api/catalog/items failed: 500')
   })
 })
 
@@ -48,9 +48,9 @@ describe('apiPost', () => {
   it('sends a JSON body with the content-type and X-CSRF headers when given', async () => {
     const fetchMock = mockFetchOnce(200, { ok: true })
 
-    await apiPost('/remoteapi/orders', { body: { items: [] } })
+    await apiPost('/remoteapi/orders/api/orders', { body: { items: [] } })
 
-    expect(fetchMock).toHaveBeenCalledWith('/remoteapi/orders', {
+    expect(fetchMock).toHaveBeenCalledWith('/remoteapi/orders/api/orders', {
       method: 'POST',
       headers: { 'X-CSRF': '1', 'Content-Type': 'application/json' },
       body: JSON.stringify({ items: [] }),
@@ -60,13 +60,13 @@ describe('apiPost', () => {
   it('returns null for a status listed in treatAsNull', async () => {
     mockFetchOnce(404)
 
-    await expect(apiPost('/remoteapi/orders', { treatAsNull: [404] })).resolves.toBeNull()
+    await expect(apiPost('/remoteapi/orders/api/orders', { treatAsNull: [404] })).resolves.toBeNull()
   })
 
   it('throws for a non-ok status not listed in treatAsNull', async () => {
     mockFetchOnce(500)
 
-    await expect(apiPost('/remoteapi/orders')).rejects.toThrow('POST /remoteapi/orders failed: 500')
+    await expect(apiPost('/remoteapi/orders/api/orders')).rejects.toThrow('POST /remoteapi/orders/api/orders failed: 500')
   })
 })
 

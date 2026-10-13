@@ -29,6 +29,13 @@ export interface PaginatedItems<T> {
   data: T[]
 }
 
+// WebBFF's YARP route only strips the "/remoteapi/catalog" prefix off the
+// client path (see src/WebBFF/appsettings.json's ReverseProxy config) -- it
+// does not also strip "api/catalog", which is Catalog.API's own real route
+// group (confirmed in src/Catalog.API/Apis/CatalogApi.cs). So every call
+// here needs both segments.
+const catalogBase = '/remoteapi/catalog/api/catalog'
+
 export function getCatalogItems(pageIndex: number, pageSize: number, brandId?: number, typeId?: number): Promise<PaginatedItems<CatalogItem>> {
   const params = new URLSearchParams({ pageIndex: String(pageIndex), pageSize: String(pageSize) })
   if (brandId !== undefined) {
@@ -37,21 +44,21 @@ export function getCatalogItems(pageIndex: number, pageSize: number, brandId?: n
   if (typeId !== undefined) {
     params.set('type', String(typeId))
   }
-  return apiGet<PaginatedItems<CatalogItem>>(`/remoteapi/catalog/items?${params}`)
+  return apiGet<PaginatedItems<CatalogItem>>(`${catalogBase}/items?${params}`)
 }
 
 export function getCatalogItem(id: number): Promise<CatalogItem | null> {
-  return apiGet<CatalogItem>(`/remoteapi/catalog/items/${id}`, { treatAsNull: [404] })
+  return apiGet<CatalogItem>(`${catalogBase}/items/${id}`, { treatAsNull: [404] })
 }
 
 export function getBrands(): Promise<CatalogBrand[]> {
-  return apiGet<CatalogBrand[]>('/remoteapi/catalog/catalogbrands')
+  return apiGet<CatalogBrand[]>(`${catalogBase}/catalogbrands`)
 }
 
 export function getTypes(): Promise<CatalogType[]> {
-  return apiGet<CatalogType[]>('/remoteapi/catalog/catalogtypes')
+  return apiGet<CatalogType[]>(`${catalogBase}/catalogtypes`)
 }
 
 export function catalogItemPictureUrl(id: number): string {
-  return `/remoteapi/catalog/items/${id}/pic`
+  return `${catalogBase}/items/${id}/pic`
 }
