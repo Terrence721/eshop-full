@@ -12,6 +12,7 @@ public class ConfigTests
         {
             ["MauiCallback"] = "maui://authcallback",
             ["WebAppClient"] = "https://webapp.example",
+            ["WebBffClient"] = "https://webbff.example",
             ["WebhooksWebClient"] = "https://webhooksclient.example",
             ["BasketApiClient"] = "https://basket-api.example",
             ["OrderingApiClient"] = "https://ordering-api.example",
@@ -48,13 +49,26 @@ public class ConfigTests
     }
 
     [TestMethod]
-    public void GetClients_substitutes_WebAppClient_into_the_webapp_client_redirect_uris()
+    public void GetClients_substitutes_WebAppClient_into_the_webapp_client_uri()
     {
         var clients = Config.GetClients(BuildConfiguration(("WebAppClient", "https://custom-webapp.example")));
 
         var webapp = clients.Single(c => c.ClientId == "webapp");
         Assert.AreEqual("https://custom-webapp.example", webapp.ClientUri);
-        Assert.Contains("https://custom-webapp.example/signin-oidc", webapp.RedirectUris);
+    }
+
+    // WebBFF performs the actual OIDC code exchange (the browser never leaves its origin
+    // during the redirect dance), so the webapp client's redirect URIs substitute
+    // WebBffClient, not WebAppClient -- ClientUri (the SPA's own, user-facing URL) is the
+    // only property that still comes from WebAppClient, covered by the test above.
+    [TestMethod]
+    public void GetClients_substitutes_WebBffClient_into_the_webapp_client_redirect_uris()
+    {
+        var clients = Config.GetClients(BuildConfiguration(("WebBffClient", "https://custom-webbff.example")));
+
+        var webapp = clients.Single(c => c.ClientId == "webapp");
+        Assert.Contains("https://custom-webbff.example/signin-oidc", webapp.RedirectUris);
+        Assert.Contains("https://custom-webbff.example/signout-callback-oidc", webapp.PostLogoutRedirectUris);
     }
 
     [TestMethod]
