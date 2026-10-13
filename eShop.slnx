@@ -15,6 +15,7 @@
     <Project Path="src/OrderProcessor/OrderProcessor.csproj" />
     <Project Path="src/PaymentProcessor/PaymentProcessor.csproj" />
     <Project Path="src/WebBFF/WebBFF.csproj" />
+    <Project Path="src/ClientApp/ClientApp.csproj" />
   </Folder>
   <Folder Name="/tests/">
     <Project Path="tests/EventBus.UnitTests/EventBus.UnitTests.csproj" />
