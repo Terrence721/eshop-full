@@ -4,15 +4,15 @@ public class ValidatableObject<T> : ObservableObject, IValidity
 {
     private IEnumerable<string> _errors;
     private bool _isValid;
-    private T _value;
+    private T _value = default!;
 
     public ValidatableObject()
     {
         _isValid = true;
-        _errors = Enumerable.Empty<string>();
+        _errors = [];
     }
 
-    public List<IValidationRule<T>> Validations { get; } = new();
+    public List<IValidationRule<T>> Validations { get; } = [];
 
     public IEnumerable<string> Errors
     {
