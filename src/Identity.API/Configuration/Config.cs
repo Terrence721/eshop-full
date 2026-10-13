@@ -11,35 +11,35 @@ public class Config
     // ApiResources define the apis in your system
     public static IEnumerable<ApiResource> GetApis()
     {
-        return new List<ApiResource>
-        {
+        return
+        [
             new ApiResource("orders", "Orders Service"),
             new ApiResource("basket", "Basket Service"),
             new ApiResource("webhooks", "Webhooks registration Service"),
-        };
+        ];
     }
 
     // ApiScope is used to protect the API
     // The effect is the same as that of API resources in IdentityServer 3.x
     public static IEnumerable<ApiScope> GetApiScopes()
     {
-        return new List<ApiScope>
-        {
+        return
+        [
             new ApiScope("orders", "Orders Service"),
             new ApiScope("basket", "Basket Service"),
             new ApiScope("webhooks", "Webhooks registration Service"),
-        };
+        ];
     }
 
     // Identity resources are data like user ID, name, or email address of a user
     // see: http://docs.identityserver.io/en/release/configuration/resources.html
     public static IEnumerable<IdentityResource> GetResources()
     {
-        return new List<IdentityResource>
-        {
+        return
+        [
             new IdentityResources.OpenId(),
             new IdentityResources.Profile()
-        };
+        ];
     }
 
     // client want to access resources (aka scopes)
@@ -53,8 +53,8 @@ public class Config
         var orderingApiClient = configuration.GetRequiredValue("OrderingApiClient");
         var webhooksApiClient = configuration.GetRequiredValue("WebhooksApiClient");
 
-        return new List<Client>
-        {
+        return
+        [
             new Client
             {
                 ClientId = "maui",
@@ -70,8 +70,8 @@ public class Config
                 RequirePkce = true,
                 PostLogoutRedirectUris = { $"{mauiCallback}/Account/Redirecting" },
                 //AllowedCorsOrigins = { "http://eshopxamarin" },
-                AllowedScopes = new List<string>
-                {
+                AllowedScopes =
+                [
                     IdentityServerConstants.StandardScopes.OpenId,
                     IdentityServerConstants.StandardScopes.Profile,
                     IdentityServerConstants.StandardScopes.OfflineAccess,
@@ -79,7 +79,7 @@ public class Config
                     "basket",
                     "mobileshoppingagg",
                     "webhooks"
-                },
+                ],
                 //Allow requesting refresh tokens for long lived API access
                 AllowOfflineAccess = true,
                 AllowAccessTokensViaBrowser = true,
@@ -91,10 +91,10 @@ public class Config
             {
                 ClientId = "webapp",
                 ClientName = "WebApp Client",
-                ClientSecrets = new List<Secret>
-                {
+                ClientSecrets =
+                [
                     new Secret("secret".Sha256())
-                },
+                ],
                 ClientUri = webAppClient,                             // public uri of the client (the SPA itself)
                 AllowedGrantTypes = GrantTypes.Code,
                 AllowAccessTokensViaBrowser = false,
@@ -106,22 +106,22 @@ public class Config
                 // its origin during the redirect dance, so these must point at WebBFF's own
                 // /signin-oidc, not the SPA's. Confirmed via Duende.BFF's real architecture:
                 // the client's server-side session lives in WebBFF, not in the browser.
-                RedirectUris = new List<string>
-                {
+                RedirectUris =
+                [
                     $"{webBffClient}/signin-oidc"
-                },
-                PostLogoutRedirectUris = new List<string>
-                {
+                ],
+                PostLogoutRedirectUris =
+                [
                     $"{webBffClient}/signout-callback-oidc"
-                },
-                AllowedScopes = new List<string>
-                {
+                ],
+                AllowedScopes =
+                [
                     IdentityServerConstants.StandardScopes.OpenId,
                     IdentityServerConstants.StandardScopes.Profile,
                     IdentityServerConstants.StandardScopes.OfflineAccess,
                     "orders",
                     "basket"
-                },
+                ],
                 AccessTokenLifetime = TokenLifetimeSeconds,
                 IdentityTokenLifetime = TokenLifetimeSeconds
             },
@@ -129,31 +129,31 @@ public class Config
             {
                 ClientId = "webhooksclient",
                 ClientName = "Webhooks Client",
-                ClientSecrets = new List<Secret>
-                {
+                ClientSecrets =
+                [
                     new Secret("secret".Sha256())
-                },
+                ],
                 ClientUri = webhooksWebClient,                             // public uri of the client
                 AllowedGrantTypes = GrantTypes.Code,
                 AllowAccessTokensViaBrowser = false,
                 RequireConsent = false,
                 AllowOfflineAccess = true,
                 AlwaysIncludeUserClaimsInIdToken = true,
-                RedirectUris = new List<string>
-                {
+                RedirectUris =
+                [
                     $"{webhooksWebClient}/signin-oidc"
-                },
-                PostLogoutRedirectUris = new List<string>
-                {
+                ],
+                PostLogoutRedirectUris =
+                [
                     $"{webhooksWebClient}/signout-callback-oidc"
-                },
-                AllowedScopes = new List<string>
-                {
+                ],
+                AllowedScopes =
+                [
                     IdentityServerConstants.StandardScopes.OpenId,
                     IdentityServerConstants.StandardScopes.Profile,
                     IdentityServerConstants.StandardScopes.OfflineAccess,
                     "webhooks"
-                },
+                ],
                 AccessTokenLifetime = TokenLifetimeSeconds,
                 IdentityTokenLifetime = TokenLifetimeSeconds
             },
@@ -202,6 +202,6 @@ public class Config
                     "webhooks"
                 }
             }
-        };
+        ];
     }
 }
