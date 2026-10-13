@@ -14,6 +14,7 @@
     <Project Path="src/WebhookClient/WebhookClient.csproj" />
     <Project Path="src/OrderProcessor/OrderProcessor.csproj" />
     <Project Path="src/PaymentProcessor/PaymentProcessor.csproj" />
+    <Project Path="src/WebBFF/WebBFF.csproj" />
   </Folder>
   <Folder Name="/tests/">
     <Project Path="tests/EventBus.UnitTests/EventBus.UnitTests.csproj" />

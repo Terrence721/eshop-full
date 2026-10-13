@@ -16,6 +16,7 @@
       "src\\WebhookClient\\WebhookClient.csproj",
       "src\\OrderProcessor\\OrderProcessor.csproj",
       "src\\PaymentProcessor\\PaymentProcessor.csproj",
+      "src\\WebBFF\\WebBFF.csproj",
       "tests\\EventBus.UnitTests\\EventBus.UnitTests.csproj",
       "tests\\EventBusRabbitMQ.UnitTests\\EventBusRabbitMQ.UnitTests.csproj",
       "tests\\eShop.ServiceDefaults.UnitTests\\eShop.ServiceDefaults.UnitTests.csproj",
