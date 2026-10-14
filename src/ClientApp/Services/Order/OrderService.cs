@@ -8,22 +8,15 @@ using eShop.ClientApp.Services.Settings;
 
 namespace eShop.ClientApp.Services.Order;
 
-public class OrderService : IOrderService
+public class OrderService(IIdentityService identityService, ISettingsService settingsService,
+    IRequestProvider requestProvider) : IOrderService
 {
     private const string ApiUrlBase = "api/orders";
     private const string ApiVersion = "api-version=1.0";
 
-    private readonly IIdentityService _identityService;
-    private readonly IRequestProvider _requestProvider;
-    private readonly ISettingsService _settingsService;
-
-    public OrderService(IIdentityService identityService, ISettingsService settingsService,
-        IRequestProvider requestProvider)
-    {
-        _identityService = identityService;
-        _settingsService = settingsService;
-        _requestProvider = requestProvider;
-    }
+    private readonly IIdentityService _identityService = identityService;
+    private readonly IRequestProvider _requestProvider = requestProvider;
+    private readonly ISettingsService _settingsService = settingsService;
 
     public async Task CreateOrderAsync(Models.Orders.Order newOrder)
     {
@@ -36,7 +29,7 @@ public class OrderService : IOrderService
 
         var uri = $"{UriHelper.CombineUri(_settingsService.GatewayOrdersEndpointBase, ApiUrlBase)}?{ApiVersion}";
 
-        var success = await _requestProvider.PostAsync(uri, newOrder, authToken, "x-requestid").ConfigureAwait(false);
+        await _requestProvider.PostAsync(uri, newOrder, authToken, "x-requestid").ConfigureAwait(false);
     }
 
     public async Task<IEnumerable<Models.Orders.Order>> GetOrdersAsync()
@@ -45,7 +38,7 @@ public class OrderService : IOrderService
 
         if (string.IsNullOrEmpty(authToken))
         {
-            return Enumerable.Empty<Models.Orders.Order>();
+            return [];
         }
 
         var uri = $"{UriHelper.CombineUri(_settingsService.GatewayOrdersEndpointBase, ApiUrlBase)}?{ApiVersion}";
@@ -53,7 +46,7 @@ public class OrderService : IOrderService
         var orders =
             await _requestProvider.GetAsync<IEnumerable<Models.Orders.Order>>(uri, authToken).ConfigureAwait(false);
 
-        return orders ?? Enumerable.Empty<Models.Orders.Order>();
+        return orders ?? [];
     }
 
     public async Task<Models.Orders.Order> GetOrderAsync(int orderId)
@@ -114,9 +107,9 @@ public class OrderService : IOrderService
         return new OrderCheckout
         {
             CardExpiration = order.CardExpiration,
-            CardHolderName = order.CardHolderName,
-            CardNumber = order.CardNumber,
-            CardSecurityNumber = order.CardSecurityNumber,
+            CardHolderName = order.CardHolderName ?? string.Empty,
+            CardNumber = order.CardNumber ?? string.Empty,
+            CardSecurityNumber = order.CardSecurityNumber ?? string.Empty,
             CardTypeId = order.CardTypeId,
             City = order.ShippingCity,
             State = order.ShippingState,
