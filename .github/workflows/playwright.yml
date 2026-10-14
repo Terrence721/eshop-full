@@ -5,15 +5,23 @@ on:
     paths-ignore:
       - '**.md'
       - 'src/ClientApp/**'
+      - 'src/ClientApp.Desktop/**'
+      - 'src/ClientApp.Android/**'
+      - 'src/ClientApp.iOS/**'
+      - 'src/ClientApp.Browser/**'
       - 'tests/ClientApp.UnitTests/**'
-      - '.github/workflows/pr-validation-maui.yml'
+      - '.github/workflows/pr-validation-clientapp.yml'
   pull_request:
     branches: [ main ]
     paths-ignore:
       - '**.md'
       - 'src/ClientApp/**'
-      - 'test/ClientApp.UnitTests/**'
-      - '.github/workflows/pr-validation-maui.yml'
+      - 'src/ClientApp.Desktop/**'
+      - 'src/ClientApp.Android/**'
+      - 'src/ClientApp.iOS/**'
+      - 'src/ClientApp.Browser/**'
+      - 'tests/ClientApp.UnitTests/**'
+      - '.github/workflows/pr-validation-clientapp.yml'
 permissions:
   contents: read
 jobs:

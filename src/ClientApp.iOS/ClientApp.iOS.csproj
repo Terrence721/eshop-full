@@ -5,6 +5,7 @@
     <TargetFramework>net10.0-ios</TargetFramework>
     <SupportedOSPlatformVersion>13.0</SupportedOSPlatformVersion>
     <AppIcon>AppIcon</AppIcon>
+    <ApplicationId>com.companyname.eshop</ApplicationId>
   </PropertyGroup>
 
   <ItemGroup>
