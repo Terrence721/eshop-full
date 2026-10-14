@@ -11,5 +11,5 @@ public class ServiceAuthenticationException : Exception
         Content = content;
     }
 
-    public string Content { get; }
+    public string? Content { get; }
 }
