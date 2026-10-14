@@ -10,30 +10,20 @@ using eShop.ClientApp.ViewModels.Base;
 
 namespace eShop.ClientApp.ViewModels;
 
-public partial class CheckoutViewModel : ViewModelBase
+public partial class CheckoutViewModel(
+    BasketViewModel basketViewModel,
+    IAppEnvironmentService appEnvironmentService, IDialogService dialogService, ISettingsService settingsService,
+    INavigationService navigationService) : ViewModelBase(navigationService)
 {
-    private readonly IAppEnvironmentService _appEnvironmentService;
+    private readonly IAppEnvironmentService _appEnvironmentService = appEnvironmentService;
 
-    private readonly BasketViewModel _basketViewModel;
-    private readonly IDialogService _dialogService;
-    private readonly ISettingsService _settingsService;
+    private readonly BasketViewModel _basketViewModel = basketViewModel;
+    private readonly IDialogService _dialogService = dialogService;
+    private readonly ISettingsService _settingsService = settingsService;
 
     [ObservableProperty] public partial Order Order { get; set; }
 
     [ObservableProperty] public partial Address ShippingAddress { get; set; }
-
-    public CheckoutViewModel(
-        BasketViewModel basketViewModel,
-        IAppEnvironmentService appEnvironmentService, IDialogService dialogService, ISettingsService settingsService,
-        INavigationService navigationService)
-        : base(navigationService)
-    {
-        _dialogService = dialogService;
-        _appEnvironmentService = appEnvironmentService;
-        _settingsService = settingsService;
-
-        _basketViewModel = basketViewModel;
-    }
 
     public override async Task InitializeAsync()
     {
