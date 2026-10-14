@@ -16,7 +16,7 @@ public static class DictionaryExtensions
             : defaultValue;
     }
 
-    public static T ValueAs<T>(this IDictionary<string, object> dictionary, string key, T defaultValue = default)
+    public static T ValueAs<T>(this IDictionary<string, object> dictionary, string key, T defaultValue = default!)
     {
         return dictionary.ContainsKey(key) && dictionary[key] is T value
             ? value
