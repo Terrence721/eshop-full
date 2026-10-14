@@ -32,6 +32,23 @@ jobs:
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v7
+
+      # setup-dotnet re-downloads the whole SDK (~300MB) via dotnet-install every run
+      # when global.json's pinned version/rollForward doesn't exactly match whatever the
+      # runner image ships, and dotnet workload install re-downloads every pack it needs
+      # on top of that -- confirmed from this job's own real logs (DOTNET_ROOT resolves to
+      # C:\Program Files\dotnet on windows-latest). Restoring that whole directory from
+      # cache before setup-dotnet/workload install run makes both steps see a matching
+      # install already present and skip the network fetch; they stay correct either way
+      # since dotnet-install and workload install are both version-checked and idempotent.
+      - name: Cache .NET SDK and workloads
+        uses: actions/cache@v6
+        with:
+          path: C:\Program Files\dotnet
+          key: ${{ runner.os }}-dotnet-${{ hashFiles('global.json', '.github/workflows/pr-validation-clientapp.yml') }}
+          restore-keys: |
+            ${{ runner.os }}-dotnet-
+
       - name: Setup .NET (global.json)
         uses: actions/setup-dotnet@v6
 
@@ -73,6 +90,19 @@ jobs:
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v7
+
+      # Same caching rationale as the windows job above -- confirmed from this job's own
+      # real logs that DOTNET_ROOT resolves to /Users/runner/.dotnet on macos-latest (not
+      # /usr/local/share/dotnet, which is only where the runner image's own preinstalled
+      # copy lives; setup-dotnet installs its own under the runner's home directory here).
+      - name: Cache .NET SDK and workloads
+        uses: actions/cache@v6
+        with:
+          path: /Users/runner/.dotnet
+          key: ${{ runner.os }}-dotnet-${{ hashFiles('global.json', '.github/workflows/pr-validation-clientapp.yml') }}
+          restore-keys: |
+            ${{ runner.os }}-dotnet-
+
       - name: Setup .NET (global.json)
         uses: actions/setup-dotnet@v6
 
