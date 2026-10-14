@@ -8,8 +8,7 @@
     <AspireUnstablePackagesVersion>13.4.6-preview.1.26319.6</AspireUnstablePackagesVersion>
     <GrpcVersion>2.83.0</GrpcVersion>
     <DuendeVersion>8.0.9</DuendeVersion>
-    <!-- 11.x only has preview/rc releases as of ClientApp's build (2026-10); latest stable. -->
-    <MauiVersion>10.0.110</MauiVersion>
+    <AvaloniaVersion>12.1.4</AvaloniaVersion>
     <!-- Asp.Versioning.Http/Mvc.ApiExplorer/OpenApi hit a stable 10.0.0 release; Http.Client diverged onto its own 8.x line and is pinned separately below. -->
     <ApiVersioningVersion>10.2.1</ApiVersioningVersion>
   </PropertyGroup>
@@ -117,11 +116,18 @@
          RPL-1.5/commercial license (LuckyPenny Software, July 2025) - no further
          updates land on this line, by design. -->
     <PackageVersion Include="MediatR" Version="12.5.0" />
-    <!-- MAUI -->
-    <PackageVersion Include="Microsoft.Maui.Controls" Version="$(MauiVersion)" />
-    <PackageVersion Include="Microsoft.Maui.Controls.Compatibility" Version="$(MauiVersion)" />
-    <PackageVersion Include="Microsoft.Maui.Controls.Maps" Version="$(MauiVersion)" />
-    <PackageVersion Include="CommunityToolkit.Maui" Version="15.0.1" />
+    <!-- Avalonia (ClientApp) -->
+    <PackageVersion Include="Avalonia" Version="$(AvaloniaVersion)" />
+    <PackageVersion Include="Avalonia.Desktop" Version="$(AvaloniaVersion)" />
+    <PackageVersion Include="Avalonia.Android" Version="$(AvaloniaVersion)" />
+    <PackageVersion Include="Avalonia.iOS" Version="$(AvaloniaVersion)" />
+    <PackageVersion Include="Avalonia.Browser" Version="$(AvaloniaVersion)" />
+    <PackageVersion Include="Avalonia.Themes.Fluent" Version="$(AvaloniaVersion)" />
+    <PackageVersion Include="Avalonia.Fonts.Inter" Version="$(AvaloniaVersion)" />
+    <!-- AvaloniaUI.DiagnosticsSupport is the real current diagnostics package for Avalonia 12 -
+         the older Avalonia.Diagnostics is a stale 11.x-line package, confirmed via NuGet. -->
+    <PackageVersion Include="AvaloniaUI.DiagnosticsSupport" Version="2.2.3" />
+    <PackageVersion Include="Xamarin.AndroidX.Core.SplashScreen" Version="1.0.1.15" />
     <PackageVersion Include="CommunityToolkit.Mvvm" Version="8.4.2" />
     <!-- IdentityModel.OidcClient is archived/renamed upstream, same story as IdentityModel ->
          Duende.IdentityModel above; Duende.IdentityModel.OidcClient is the maintained

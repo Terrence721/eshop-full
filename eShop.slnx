@@ -16,6 +16,10 @@
     <Project Path="src/PaymentProcessor/PaymentProcessor.csproj" />
     <Project Path="src/WebBFF/WebBFF.csproj" />
     <Project Path="src/ClientApp/ClientApp.csproj" />
+    <Project Path="src/ClientApp.Desktop/ClientApp.Desktop.csproj" />
+    <Project Path="src/ClientApp.Android/ClientApp.Android.csproj" />
+    <Project Path="src/ClientApp.iOS/ClientApp.iOS.csproj" />
+    <Project Path="src/ClientApp.Browser/ClientApp.Browser.csproj" />
   </Folder>
   <Folder Name="/tests/">
     <Project Path="tests/EventBus.UnitTests/EventBus.UnitTests.csproj" />
