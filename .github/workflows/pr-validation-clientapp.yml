@@ -1,0 +1,114 @@
+name: eShop Pull Request Validation - ClientApp (Avalonia)
+
+on:
+  pull_request:
+    branches:
+      - '**'
+    paths:
+      - 'src/ClientApp/**'
+      - 'src/ClientApp.Desktop/**'
+      - 'src/ClientApp.Android/**'
+      - 'src/ClientApp.iOS/**'
+      - 'src/ClientApp.Browser/**'
+      - 'tests/ClientApp.UnitTests/**'
+      - '.github/workflows/pr-validation-clientapp.yml'
+  push:
+    branches:
+      - main
+    paths:
+      - 'src/ClientApp/**'
+      - 'src/ClientApp.Desktop/**'
+      - 'src/ClientApp.Android/**'
+      - 'src/ClientApp.iOS/**'
+      - 'src/ClientApp.Browser/**'
+      - 'tests/ClientApp.UnitTests/**'
+      - '.github/workflows/pr-validation-clientapp.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v7
+      - name: Setup .NET (global.json)
+        uses: actions/setup-dotnet@v6
+
+      - name: Update Workloads
+        run: dotnet workload update
+
+      - name: Install Workloads
+        shell: pwsh
+        run: |
+          dotnet workload install android
+          dotnet workload install ios
+
+      # Build/Test steps intentionally still not enabled: ClientApp's business logic
+      # (Services/ViewModels) and real Views are mid-rebuild on Avalonia (replacing MAUI,
+      # 2026-10-14). Enable once that work lands -- the project family itself (ClientApp,
+      # .Desktop, .Android, .iOS, .Browser) and the workload installs above are already real
+      # and worth keeping green in the meantime.
+      # - name: Build Desktop
+      #   run: dotnet build src/ClientApp.Desktop/ClientApp.Desktop.csproj
+      # - name: Build Android (compile-only)
+      #   run: dotnet build src/ClientApp.Android/ClientApp.Android.csproj
+      # - name: Build iOS (compile-only)
+      #   run: dotnet build src/ClientApp.iOS/ClientApp.iOS.csproj
+      # - name: Build Browser
+      #   run: dotnet build src/ClientApp.Browser/ClientApp.Browser.csproj
+      # - name: Test
+      #   run: dotnet test --project tests/ClientApp.UnitTests/ClientApp.UnitTests.csproj --no-progress --output detailed
+
+  ios-simulator:
+    # Real iOS Simulator run, not just a compile check -- GitHub's macOS runners are actual
+    # Macs with Xcode preinstalled, so this builds and genuinely launches the app rather than
+    # only verifying it compiles. Simulator builds don't need a real Apple Developer
+    # certificate/code-signing (unlike device/App Store builds), so no paid account is needed.
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v7
+      - name: Setup .NET (global.json)
+        uses: actions/setup-dotnet@v6
+
+      - name: Install iOS workload
+        run: dotnet workload install ios
+
+      - name: Build for iOS Simulator
+        run: dotnet build src/ClientApp.iOS/ClientApp.iOS.csproj -c Release -p:RuntimeIdentifier=iossimulator-arm64
+
+      - name: Boot simulator, install, and launch
+        run: |
+          set -euo pipefail
+
+          UDID=$(xcrun simctl list devices available -j | python3 -c "
+          import json, sys
+          data = json.load(sys.stdin)
+          for runtime, devices in data['devices'].items():
+              if 'iOS' in runtime:
+                  for d in devices:
+                      if 'iPhone' in d['name']:
+                          print(d['udid'])
+                          sys.exit(0)
+          sys.exit(1)
+          ")
+          echo "Using simulator: $UDID"
+
+          xcrun simctl boot "$UDID"
+          xcrun simctl bootstatus "$UDID" -b
+
+          APP_PATH=$(find src/ClientApp.iOS/bin -name "*.app" -path "*iossimulator-arm64*" | head -n 1)
+          echo "Installing: $APP_PATH"
+          xcrun simctl install "$UDID" "$APP_PATH"
+
+          xcrun simctl launch "$UDID" com.companyname.eshop
+
+          sleep 3
+          mkdir -p artifacts/ios-simulator
+          xcrun simctl io "$UDID" screenshot artifacts/ios-simulator/launch.png
+
+      - name: Upload simulator screenshot
+        uses: actions/upload-artifact@v6
+        with:
+          name: ios-simulator-screenshot
+          path: artifacts/ios-simulator/launch.png
