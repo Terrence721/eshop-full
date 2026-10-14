@@ -1,0 +1,14 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:eShop.ClientApp.ViewModels"
+             x:Class="eShop.ClientApp.Views.MainView"
+             x:DataType="vm:MainViewModel">
+    <Grid Background="#2556CB">
+        <TextBlock Text="{Binding Greeting}"
+                   Foreground="White"
+                   FontSize="24"
+                   FontWeight="SemiBold"
+                   HorizontalAlignment="Center"
+                   VerticalAlignment="Center" />
+    </Grid>
+</UserControl>
