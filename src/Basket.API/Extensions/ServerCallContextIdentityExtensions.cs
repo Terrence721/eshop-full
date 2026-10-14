@@ -1,6 +1,4 @@
-﻿#nullable enable
-
-namespace eShop.Basket.API.Extensions;
+﻿namespace eShop.Basket.API.Extensions;
 
 internal static class ServerCallContextIdentityExtensions
 {
