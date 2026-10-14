@@ -222,3 +222,68 @@ jobs:
         with:
           name: android-emulator-screenshot
           path: artifacts/android-emulator/launch.png
+
+  browser:
+    # Real browser run, mirroring ios-simulator/android-emulator -- publishes the actual WASM
+    # app, serves it, and loads it in a genuine headless Chromium rather than only compiling it.
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      # Same caching rationale as the other jobs above. Same unverified-path caveat as the
+      # android-emulator job's cache step -- not yet confirmed against a real log here either.
+      - name: Cache .NET SDK and workloads
+        uses: actions/cache@v6
+        with:
+          path: /home/runner/.dotnet
+          key: ${{ runner.os }}-dotnet-${{ hashFiles('global.json', '.github/workflows/pr-validation-clientapp.yml') }}
+          restore-keys: |
+            ${{ runner.os }}-dotnet-
+
+      - name: Setup .NET (global.json)
+        uses: actions/setup-dotnet@v6
+
+      # wasm-tools is only needed for *publish* (the AOT/linking step that produces a real,
+      # runnable wwwroot bundle) -- confirmed locally that `dotnet build` alone doesn't need it.
+      - name: Install wasm-tools workload
+        run: dotnet workload install wasm-tools --version 10.0.401
+
+      - name: Publish Browser
+        run: dotnet publish src/ClientApp.Browser/ClientApp.Browser.csproj -c Release
+
+      # Ubuntu 24.04's system Python enforces PEP 668 (externally-managed-environment), so a
+      # bare `pip install` is refused outside a venv. --break-system-packages is the sanctioned
+      # escape hatch for exactly this case -- a single-use CI VM has nothing to protect.
+      - name: Install Playwright
+        run: |
+          pip install --break-system-packages playwright
+          playwright install --with-deps chromium
+
+      - name: Serve and screenshot
+        run: |
+          set -euo pipefail
+
+          python3 -m http.server 8080 --directory artifacts/publish/ClientApp.Browser/release/wwwroot &
+          SERVER_PID=$!
+          sleep 2
+
+          mkdir -p artifacts/browser
+          python3 - <<'PY'
+          from playwright.sync_api import sync_playwright
+
+          with sync_playwright() as p:
+              browser = p.chromium.launch()
+              page = browser.new_page(viewport={"width": 1280, "height": 800})
+              page.goto("http://localhost:8080", wait_until="networkidle")
+              page.wait_for_timeout(5000)
+              page.screenshot(path="artifacts/browser/launch.png")
+              browser.close()
+          PY
+
+          kill $SERVER_PID
+
+      - name: Upload browser screenshot
+        uses: actions/upload-artifact@v6
+        with:
+          name: browser-screenshot
+          path: artifacts/browser/launch.png
