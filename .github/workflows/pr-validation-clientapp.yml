@@ -203,22 +203,18 @@ jobs:
           arch: x86_64
           profile: pixel_7_pro
           # This action runs `script` via /usr/bin/sh (not bash, confirmed from a real failed
-          # run: "sh: 1: set: Illegal option -o pipefail"), and -- confirmed from a second real
-          # failure -- it runs EACH LINE as its own separate `sh -c "<line>"` invocation rather
-          # than the whole block as one script: a multi-line `if/then/fi` here got split across
-          # invocations, so the `if` line ran alone with no matching `fi` ("Syntax error: end of
-          # file unexpected (expecting fi)"). So every line below must be a complete, standalone
-          # statement -- no control structures spanning lines, and `set -eu` on its own line
-          # does nothing across lines anyway; the action's own per-line exit-code check is what
-          # actually makes a failing line abort the rest (confirmed: `adb install ""` on a
-          # separately-failed earlier run aborted immediately with no `set -e` able to cause that
-          # across a process boundary).
+          # run: "sh: 1: set: Illegal option -o pipefail"), and -- confirmed from TWO further
+          # real failures -- it runs EACH LINE as its own separate `sh -c "<line>"` process:
+          # (1) a multi-line if/then/fi got split across invocations, so the `if` line ran alone
+          # with no matching `fi`; (2) even after removing that, `APK_PATH=$(find ...)` set on
+          # one line was gone by the next ("Installing: " with nothing after it) -- a plain
+          # variable assignment can't survive into a separate process. So every line below must
+          # be fully self-contained, and anything that needs a variable set earlier in the same
+          # logical step has to be chained onto that same line with && so it shares one process.
           script: |
             echo "Contents of artifacts/bin/ClientApp.Android:"
             find artifacts/bin/ClientApp.Android -type f
-            APK_PATH=$(find artifacts/bin/ClientApp.Android -name "*-Signed.apk" -path "*release_android-x64*" | head -n 1)
-            echo "Installing: $APK_PATH"
-            adb install "$APK_PATH"
+            APK_PATH=$(find artifacts/bin/ClientApp.Android -name "*-Signed.apk" -path "*release_android-x64*" | head -n 1) && echo "Installing: $APK_PATH" && adb install "$APK_PATH"
 
             # monkey resolves and starts the app's own launcher activity, so nothing here needs
             # to know the mangled Java class name .NET for Android generates for MainActivity.
