@@ -1,25 +1,16 @@
 using eShop.ClientApp.Models.Basket;
 using eShop.ClientApp.Services;
 using eShop.ClientApp.Services.AppEnvironment;
-using eShop.ClientApp.Services.Settings;
 using eShop.ClientApp.ViewModels.Base;
 
 namespace eShop.ClientApp.ViewModels;
 
-public partial class BasketViewModel : ViewModelBase
+public partial class BasketViewModel(
+    IAppEnvironmentService appEnvironmentService,
+    INavigationService navigationService) : ViewModelBase(navigationService)
 {
-    private readonly IAppEnvironmentService _appEnvironmentService;
-    private readonly ObservableCollectionEx<BasketItem> _basketItems = new();
-    private readonly ISettingsService _settingsService;
-
-    public BasketViewModel(
-        IAppEnvironmentService appEnvironmentService,
-        INavigationService navigationService, ISettingsService settingsService)
-        : base(navigationService)
-    {
-        _appEnvironmentService = appEnvironmentService;
-        _settingsService = settingsService;
-    }
+    private readonly IAppEnvironmentService _appEnvironmentService = appEnvironmentService;
+    private readonly ObservableCollectionEx<BasketItem> _basketItems = [];
 
     public int BadgeCount => _basketItems?.Sum(basketItem => basketItem.Quantity) ?? 0;
 
