@@ -6,18 +6,11 @@ using IBrowser = Duende.IdentityModel.OidcClient.Browser.IBrowser;
 
 namespace eShop.ClientApp.Services.Identity;
 
-public class IdentityService : IIdentityService
+public class IdentityService(IBrowser browser, ISettingsService settingsService, HttpMessageHandler? httpMessageHandler) : IIdentityService
 {
-    private readonly IBrowser _browser;
-    private readonly ISettingsService _settingsService;
-    private readonly HttpMessageHandler? _httpMessageHandler;
-
-    public IdentityService(IBrowser browser, ISettingsService settingsService, HttpMessageHandler? httpMessageHandler)
-    {
-        _browser = browser;
-        _settingsService = settingsService;
-        _httpMessageHandler = httpMessageHandler;
-    }
+    private readonly IBrowser _browser = browser;
+    private readonly ISettingsService _settingsService = settingsService;
+    private readonly HttpMessageHandler? _httpMessageHandler = httpMessageHandler;
 
     public async Task<bool> SignInAsync()
     {
@@ -70,7 +63,7 @@ public class IdentityService : IIdentityService
         return
             new UserInfo
             {
-                UserId = userInfoWithClaims.Claims.FirstOrDefault(c => c.Type == "sub")?.Value,
+                UserId = userInfoWithClaims.Claims.FirstOrDefault(c => c.Type == "sub")?.Value!,
                 Email = userInfoWithClaims.Claims.FirstOrDefault(c => c.Type == "email")?.Value,
                 PhoneNumber = userInfoWithClaims.Claims.FirstOrDefault(c => c.Type == "phone_number")?.Value,
                 Street = userInfoWithClaims.Claims.FirstOrDefault(c => c.Type == "address_street")?.Value,
@@ -79,7 +72,7 @@ public class IdentityService : IIdentityService
                 ZipCode = userInfoWithClaims.Claims.FirstOrDefault(c => c.Type == "address_zip_code")?.Value,
                 Country = userInfoWithClaims.Claims.FirstOrDefault(c => c.Type == "address_country")?.Value,
                 PreferredUsername =
-                    userInfoWithClaims.Claims.FirstOrDefault(c => c.Type == "preferred_username")?.Value,
+                    userInfoWithClaims.Claims.FirstOrDefault(c => c.Type == "preferred_username")?.Value!,
                 Name = userInfoWithClaims.Claims.FirstOrDefault(c => c.Type == "name")?.Value,
                 LastName = userInfoWithClaims.Claims.FirstOrDefault(c => c.Type == "last_name")?.Value,
                 CardNumber = userInfoWithClaims.Claims.FirstOrDefault(c => c.Type == "card_number")?.Value,
