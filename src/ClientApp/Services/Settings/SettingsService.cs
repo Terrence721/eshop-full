@@ -11,9 +11,9 @@ public class SettingsService : ISettingsService
     private const string UserAccessToken = "user_token";
     private const string IdUseMocks = "use_mocks";
     private const string IdIdentityBase = "url_base";
-    private const string DefaultClientId = "maui";
+    private const string DefaultClientId = "eshop-client";
     private const string DefaultClientSecret = "secret";
-    private const string DefaultCallbackUri = "maui://authcallback";
+    private const string DefaultCallbackUri = "eshop://authcallback";
     private const string IdGatewayShoppingBase = "url_shopping";
     private const string IdGatewayOrdersBase = "url_orders";
     private const string IdGatewayBasketBase = "url_basket";

@@ -56,7 +56,7 @@ On AI-assisted development: this project is built with Claude Code, directed, re
   WebhookClient/           sample Webhooks.API consumer                    ⬜ not started
   WebApp/                  React storefront (not Blazor — see below)       ⬜ not started
   WebBFF/                  Backend-for-Frontend, Duende.BFF (new)          ⬜ not started
-  ClientApp/               native .NET MAUI                                ⬜ not started
+  ClientApp/               native app, Avalonia UI (not MAUI — see below)   🚧 in progress
   eShop.AppHost/           Aspire orchestrator, added last                 ⬜ not started
 ```
 
