@@ -6,6 +6,14 @@
     <SupportedOSPlatformVersion>13.0</SupportedOSPlatformVersion>
     <AppIcon>AppIcon</AppIcon>
     <ApplicationId>com.companyname.eshop</ApplicationId>
+    <!-- .NET for iOS runs IL trimming as part of its own build pipeline (not a Release-only
+         publish concern the way it is on other platforms), and this repo's global
+         TreatWarningsAsErrors escalates the resulting trim-safety warnings into build
+         failures. Each one here is a known, documented limitation, not a real bug: ViewLocator's
+         reflection-based resolution is explicitly flagged as trim-unsafe by Avalonia's own docs;
+         Avalonia.DesignerSupport, AvaloniaUI.DiagnosticsSupport, Google.Protobuf, and
+         Microsoft.IO.RecyclableMemoryStream simply aren't trim-annotated libraries. -->
+    <NoWarn>$(NoWarn);IL2026;IL2104</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>
