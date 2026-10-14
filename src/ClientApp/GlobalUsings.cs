@@ -1,3 +1,7 @@
+// Every ViewModel needs these -- matches the old MAUI GlobalUsings.cs, which globally imported
+// both rather than repeating the using in all 14 ViewModel files.
+global using CommunityToolkit.Mvvm.ComponentModel;
+global using CommunityToolkit.Mvvm.Input;
 global using BasketGrpcClient = eShop.Basket.API.Grpc.Basket.BasketClient;
 global using eShop.Basket.API.Grpc;
 // eShop.Basket.API.Grpc (imported above for BasketGrpcClient) has its own protobuf-generated
