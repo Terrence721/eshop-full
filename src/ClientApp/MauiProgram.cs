@@ -138,7 +138,7 @@ public static class MauiProgram
                 };
                 return handler;
 #else
-                return null;
+                return null!;
 #endif
             });
 
