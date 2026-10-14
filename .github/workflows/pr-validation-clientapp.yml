@@ -148,3 +148,77 @@ jobs:
         with:
           name: ios-simulator-screenshot
           path: artifacts/ios-simulator/launch.png
+
+  android-emulator:
+    # Real Android Emulator run, mirroring the ios-simulator job above -- boots a genuine
+    # emulator (hardware-accelerated via KVM, confirmed as the current recommended setup from
+    # reactivecircus/android-emulator-runner's own README) and installs/launches the real APK
+    # rather than only compiling it.
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      # Required for the emulator to run hardware-accelerated rather than falling back to pure
+      # software emulation (which is slow enough to risk job timeouts) -- the exact udev rule
+      # recommended by reactivecircus/android-emulator-runner's own README for ubuntu-latest.
+      - name: Enable KVM
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+
+      # Same caching rationale as the windows/ios-simulator jobs above. DOTNET_ROOT here is
+      # unverified against a real log (unlike the other two, confirmed from this run's own
+      # output) -- /home/runner/.dotnet follows dotnet-install.sh's own documented default of
+      # $HOME/.dotnet when no install dir is given, matching the pattern already confirmed on
+      # macOS; will fix from this job's real log if that assumption turns out wrong.
+      - name: Cache .NET SDK and workloads
+        uses: actions/cache@v6
+        with:
+          path: /home/runner/.dotnet
+          key: ${{ runner.os }}-dotnet-${{ hashFiles('global.json', '.github/workflows/pr-validation-clientapp.yml') }}
+          restore-keys: |
+            ${{ runner.os }}-dotnet-
+
+      - name: Setup .NET (global.json)
+        uses: actions/setup-dotnet@v6
+
+      # Pinned to workload set 10.0.401 -- see the windows job's comment above for why.
+      - name: Install Android workload
+        run: dotnet workload install android --version 10.0.401
+
+      # Confirmed locally: a plain `dotnet build -c Release` for net10.0-android does not run
+      # linking/trimming the way net10.0-ios's build does -- that's a `dotnet publish` concern
+      # here -- so none of the NoWarn/IL20xx handling the iOS project needed applies.
+      - name: Build for Android Emulator
+        run: dotnet build src/ClientApp.Android/ClientApp.Android.csproj -c Release -p:RuntimeIdentifier=android-x64
+
+      # api-level/target/arch match the system image already verified working for the local
+      # AVD set up on this machine (android-36, google_apis, x86_64) -- not a guess.
+      - name: Boot emulator, install, and launch
+        uses: reactivecircus/android-emulator-runner@v2.38.0
+        with:
+          api-level: 36
+          target: google_apis
+          arch: x86_64
+          profile: pixel_7_pro
+          script: |
+            set -euo pipefail
+
+            APK_PATH=$(find artifacts/bin/ClientApp.Android -name "*-Signed.apk" -path "*release_android-x64*" | head -n 1)
+            echo "Installing: $APK_PATH"
+            adb install "$APK_PATH"
+
+            # monkey resolves and starts the app's own launcher activity, so nothing here needs
+            # to know the mangled Java class name .NET for Android generates for MainActivity.
+            adb shell monkey -p com.companyname.eshop -c android.intent.category.LAUNCHER 1
+
+            sleep 5
+            mkdir -p artifacts/android-emulator
+            adb exec-out screencap -p > artifacts/android-emulator/launch.png
+
+      - name: Upload emulator screenshot
+        uses: actions/upload-artifact@v6
+        with:
+          name: android-emulator-screenshot
+          path: artifacts/android-emulator/launch.png
