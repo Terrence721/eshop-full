@@ -7,7 +7,7 @@ using eShop.ClientApp.Exceptions;
 
 namespace eShop.ClientApp.Services.RequestProvider;
 
-public class RequestProvider(HttpMessageHandler _messageHandler) : IRequestProvider
+public class RequestProvider(HttpMessageHandler? _messageHandler) : IRequestProvider
 {
     private readonly Lazy<HttpClient> _httpClient =
         new(() =>
