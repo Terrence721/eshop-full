@@ -17,7 +17,8 @@
   },
   "scripts": {
     "clean:logs": "node scripts/clean-logs.mjs",
-    "clean:build-servers": "node scripts/clean-build-servers.mjs"
+    "clean:build-servers": "node scripts/clean-build-servers.mjs",
+    "build:clientapp": "dotnet build src/ClientApp/ClientApp.csproj -f net10.0"
   },
   "keywords": [],
   "author": "",
