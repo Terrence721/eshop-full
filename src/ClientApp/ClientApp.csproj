@@ -100,4 +100,12 @@
     <CodesignEntitlements>Platforms\iOS\Entitlements.plist</CodesignEntitlements>
   </PropertyGroup>
 
+  <!-- Grpc.Tools hooks its codegen onto BeforeCompile (Google.Protobuf.Tools.targets'
+       _Protobuf_Compile_BeforeCsCompile), but the WinUI single-project build pipeline's own
+       compile step for the windows TFM doesn't go through a target literally named CoreCompile,
+       so that hook never fires there even though codegen runs fine for every other
+       TargetFramework. Force it explicitly, early enough for the generated files to exist
+       before anything needs them. -->
+  <Target Name="_EnsureProtobufCompileForWindows" BeforeTargets="PrepareForBuild" DependsOnTargets="Protobuf_Compile" Condition="$(TargetFramework.Contains('-windows'))" />
+
 </Project>
