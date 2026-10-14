@@ -3,6 +3,10 @@
     <TargetFramework>net10.0-browser</TargetFramework>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <OverrideHtmlAssetPlaceholders>true</OverrideHtmlAssetPlaceholders>
+    <!-- Same real limitation as ClientApp.iOS.csproj: WebAssembly publish runs IL trimming as
+         part of its own build pipeline, and this repo's global TreatWarningsAsErrors escalates
+         ViewLocator's documented trim-unsafe reflection into a hard failure. Known, not a bug. -->
+    <NoWarn>$(NoWarn);IL2026</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>
