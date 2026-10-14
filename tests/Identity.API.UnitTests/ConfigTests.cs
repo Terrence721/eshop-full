@@ -10,7 +10,7 @@ public class ConfigTests
     {
         var values = new Dictionary<string, string?>
         {
-            ["MauiCallback"] = "maui://authcallback",
+            ["ClientAppCallback"] = "eshop://authcallback",
             ["WebAppClient"] = "https://webapp.example",
             ["WebBffClient"] = "https://webbff.example",
             ["WebhooksWebClient"] = "https://webhooksclient.example",
@@ -34,18 +34,18 @@ public class ConfigTests
 
         Assert.HasCount(6, clients);
         CollectionAssert.AreEquivalent(
-            new[] { "maui", "webapp", "webhooksclient", "basketswaggerui", "orderingswaggerui", "webhooksswaggerui" },
+            new[] { "eshop-client", "webapp", "webhooksclient", "basketswaggerui", "orderingswaggerui", "webhooksswaggerui" },
             clients.Select(c => c.ClientId).Distinct().ToList());
     }
 
     [TestMethod]
-    public void GetClients_substitutes_MauiCallback_into_the_maui_client_redirect_uris()
+    public void GetClients_substitutes_ClientAppCallback_into_the_eshop_client_redirect_uris()
     {
-        var clients = Config.GetClients(BuildConfiguration(("MauiCallback", "myapp://custom-callback")));
+        var clients = Config.GetClients(BuildConfiguration(("ClientAppCallback", "myapp://custom-callback")));
 
-        var maui = clients.Single(c => c.ClientId == "maui");
-        Assert.Contains("myapp://custom-callback", maui.RedirectUris);
-        Assert.Contains("myapp://custom-callback/Account/Redirecting", maui.PostLogoutRedirectUris);
+        var eshopClient = clients.Single(c => c.ClientId == "eshop-client");
+        Assert.Contains("myapp://custom-callback", eshopClient.RedirectUris);
+        Assert.Contains("myapp://custom-callback/Account/Redirecting", eshopClient.PostLogoutRedirectUris);
     }
 
     [TestMethod]

@@ -45,7 +45,7 @@ public class Config
     // client want to access resources (aka scopes)
     public static IEnumerable<Client> GetClients(IConfiguration configuration)
     {
-        var mauiCallback = configuration.GetRequiredValue("MauiCallback");
+        var clientAppCallback = configuration.GetRequiredValue("ClientAppCallback");
         var webAppClient = configuration.GetRequiredValue("WebAppClient");
         var webBffClient = configuration.GetRequiredValue("WebBffClient");
         var webhooksWebClient = configuration.GetRequiredValue("WebhooksWebClient");
@@ -57,18 +57,18 @@ public class Config
         [
             new Client
             {
-                ClientId = "maui",
-                ClientName = "eShop MAUI OpenId Client",
+                ClientId = "eshop-client",
+                ClientName = "eShop Client OpenId Client",
                 AllowedGrantTypes = GrantTypes.Code,
                 //Used to retrieve the access token on the back channel.
                 ClientSecrets =
                 {
                     new Secret("secret".Sha256())
                 },
-                RedirectUris = { mauiCallback },
+                RedirectUris = { clientAppCallback },
                 RequireConsent = false,
                 RequirePkce = true,
-                PostLogoutRedirectUris = { $"{mauiCallback}/Account/Redirecting" },
+                PostLogoutRedirectUris = { $"{clientAppCallback}/Account/Redirecting" },
                 //AllowedCorsOrigins = { "http://eshopxamarin" },
                 AllowedScopes =
                 [

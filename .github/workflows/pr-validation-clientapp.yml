@@ -38,11 +38,16 @@ jobs:
       - name: Update Workloads
         run: dotnet workload update
 
+      # Pinned to workload set 10.0.401, dotnet/macios' last release explicitly documented as
+      # "Xcode 26.6 support" (confirmed via its GitHub release notes) -- an unpinned install
+      # grabs whatever's newest, which as of this writing defaults net10.0-ios to a pack that
+      # requires the not-yet-GA Xcode 27 preview, breaking the build on every current runner
+      # image (none of which ship Xcode 27, confirmed via actions/runner-images).
       - name: Install Workloads
         shell: pwsh
         run: |
-          dotnet workload install android
-          dotnet workload install ios
+          dotnet workload install android --version 10.0.401
+          dotnet workload install ios --version 10.0.401
 
       # Build/Test steps intentionally still not enabled: ClientApp's business logic
       # (Services/ViewModels) and real Views are mid-rebuild on Avalonia (replacing MAUI,
@@ -71,8 +76,9 @@ jobs:
       - name: Setup .NET (global.json)
         uses: actions/setup-dotnet@v6
 
+      # Pinned to workload set 10.0.401 -- see the windows job's comment above for why.
       - name: Install iOS workload
-        run: dotnet workload install ios
+        run: dotnet workload install ios --version 10.0.401
 
       - name: Build for iOS Simulator
         run: dotnet build src/ClientApp.iOS/ClientApp.iOS.csproj -c Release -p:RuntimeIdentifier=iossimulator-arm64
