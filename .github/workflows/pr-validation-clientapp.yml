@@ -202,8 +202,13 @@ jobs:
           target: google_apis
           arch: x86_64
           profile: pixel_7_pro
+          # This action runs `script` via /usr/bin/sh, not bash -- confirmed from a real failed
+          # run (`sh: 1: set: Illegal option -o pipefail`). pipefail is a bash/ksh extension
+          # POSIX sh (dash, on Ubuntu) doesn't have; -e/-u alone are POSIX-standard and enough,
+          # since the one pipe below (find | head) still fails loudly downstream at `adb
+          # install ""` if it comes up empty.
           script: |
-            set -euo pipefail
+            set -eu
 
             APK_PATH=$(find artifacts/bin/ClientApp.Android -name "*-Signed.apk" -path "*release_android-x64*" | head -n 1)
             echo "Installing: $APK_PATH"
