@@ -210,7 +210,19 @@ jobs:
           script: |
             set -eu
 
-            APK_PATH=$(find artifacts/bin/ClientApp.Android -name "*-Signed.apk" -path "*release_android-x64*" | head -n 1)
+            # The local Windows build produced a *-Signed.apk, but this run's build log never
+            # echoed an explicit packaging/signing line the way the local one implicitly did --
+            # so rather than guess at another fixed filename, list what's actually there and
+            # match any .apk under the release RID folder, failing loudly with that listing
+            # visible in the log if nothing comes back.
+            echo "Contents of artifacts/bin/ClientApp.Android:"
+            find artifacts/bin/ClientApp.Android -type f
+
+            APK_PATH=$(find artifacts/bin/ClientApp.Android -name "*.apk" -path "*release_android-x64*" | head -n 1)
+            if [ -z "$APK_PATH" ]; then
+              echo "No .apk found under artifacts/bin/ClientApp.Android/release_android-x64" >&2
+              exit 1
+            fi
             echo "Installing: $APK_PATH"
             adb install "$APK_PATH"
 
