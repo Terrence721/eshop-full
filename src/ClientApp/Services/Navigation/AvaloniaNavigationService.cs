@@ -43,7 +43,7 @@ public class AvaloniaNavigationService(IAppEnvironmentService appEnvironmentServ
         await NavigateToAsync(user == UserInfo.Default ? "//Login" : "//Main/Catalog");
     }
 
-    public Task NavigateToAsync(string route, IDictionary<string, object>? routeParameters = null)
+    public async Task NavigateToAsync(string route, IDictionary<string, object>? routeParameters = null)
     {
         var isAbsolute = route.StartsWith("//", StringComparison.Ordinal);
         var destination = Resolve(route[(route.LastIndexOf('/') + 1)..]);
@@ -64,7 +64,12 @@ public class AvaloniaNavigationService(IAppEnvironmentService appEnvironmentServ
 
         CurrentViewModel = destination;
 
-        return Task.CompletedTask;
+        // MAUI's ContentPageBase.OnAppearing() called InitializeAsyncCommand on every real page
+        // every time it appeared, relying on each ViewModel's own logic (e.g. CatalogViewModel's
+        // _initialized field) for idempotency rather than gating it here -- no equivalent
+        // lifecycle hook exists per-View in Avalonia's ViewModel-first model, so this is the one
+        // place that responsibility can live uniformly for every route.
+        await destination.InitializeAsyncCommand.ExecuteAsync(null);
     }
 
     public Task PopAsync()
