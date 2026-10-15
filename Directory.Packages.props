@@ -77,6 +77,10 @@
          own nuspec), not the newest Confluent.Kafka release, to stay on what Aspire actually
          tested against. -->
     <PackageVersion Include="Confluent.Kafka" Version="2.15.0" />
+    <!-- Matches the version already resolved transitively everywhere else in the solution via
+         Aspire.RabbitMQ.Client (confirmed against its project.assets.json). Aspire.Confluent.Kafka
+         doesn't bring Polly in transitively, so EventBusKafka needs an explicit reference. -->
+    <PackageVersion Include="Polly.Core" Version="8.7.0" />
     <!-- Open Telemetry: core packages (OpenTelemetry.*) and contrib instrumentation packages
          (OpenTelemetry.Instrumentation.*) release on independent cadences. -->
     <PackageVersion Include="OpenTelemetry.Exporter.OpenTelemetryProtocol" Version="1.19.1" />
