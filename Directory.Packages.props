@@ -14,6 +14,7 @@
   </PropertyGroup>
   <ItemGroup>
     <!-- Version together with Aspire -->
+    <PackageVersion Include="Aspire.Confluent.Kafka" Version="$(AspireVersion)" />
     <PackageVersion Include="Aspire.Hosting.Azure.CognitiveServices" Version="$(AspireVersion)" />
     <PackageVersion Include="Aspire.Hosting.PostgreSQL" Version="$(AspireVersion)" />
     <PackageVersion Include="Aspire.Hosting.RabbitMQ" Version="$(AspireVersion)" />
@@ -72,6 +73,10 @@
     <!-- AI -->
     <PackageVersion Include="CommunityToolkit.Aspire.Hosting.Ollama" Version="13.4.0" />
     <PackageVersion Include="CommunityToolkit.Aspire.OllamaSharp" Version="13.4.0" />
+    <!-- Pinned to exactly what Aspire.Confluent.Kafka 13.6.1 itself depends on (confirmed via its
+         own nuspec), not the newest Confluent.Kafka release, to stay on what Aspire actually
+         tested against. -->
+    <PackageVersion Include="Confluent.Kafka" Version="2.15.0" />
     <!-- Open Telemetry: core packages (OpenTelemetry.*) and contrib instrumentation packages
          (OpenTelemetry.Instrumentation.*) release on independent cadences. -->
     <PackageVersion Include="OpenTelemetry.Exporter.OpenTelemetryProtocol" Version="1.19.1" />
