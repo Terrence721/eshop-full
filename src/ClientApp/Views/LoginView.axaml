@@ -1,0 +1,45 @@
+<!-- Functional equivalent of upstream's LoginView.xaml, not a verbatim port: the real file
+     uses MAUI-only constructs with no Avalonia equivalent (a custom Animations/Triggers
+     framework, Shell.FlyoutBehavior/NavBarIsVisible, iOS-specific safe-area config), all
+     dropped here rather than reinvented. Only SignInCommand/SettingsCommand/IsBusy are bound,
+     matching the real upstream file exactly: it never actually binds UserName/Password/
+     MockSignInCommand/RegisterCommand despite LoginViewModel exposing all of them (confirmed
+     dead/unused, same category as AddValidations()). Image assets (header.png, logo_header.png,
+     the settings icon) were never created for this rebuild, so this uses plain text/color
+     instead of inventing new graphics: not a redesign, just the minimum to be functional. -->
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:eShop.ClientApp.ViewModels"
+             x:Class="eShop.ClientApp.Views.LoginView"
+             x:DataType="vm:LoginViewModel">
+    <Grid Background="#F2F2F2" RowDefinitions="Auto,*,Auto,Auto,*">
+        <Button Grid.Row="0"
+                Content="Settings"
+                Command="{Binding SettingsCommand}"
+                HorizontalAlignment="Right"
+                Margin="16" />
+
+        <TextBlock Grid.Row="1"
+                   Text="eShop"
+                   FontSize="36"
+                   FontWeight="Bold"
+                   HorizontalAlignment="Center"
+                   VerticalAlignment="Bottom" />
+
+        <Button Grid.Row="2"
+                Content="Login"
+                Command="{Binding SignInCommand}"
+                HorizontalAlignment="Center"
+                Padding="32,12"
+                CornerRadius="16"
+                Background="Black"
+                Foreground="White"
+                Margin="0,24" />
+
+        <ProgressBar Grid.Row="3"
+                     IsIndeterminate="True"
+                     IsVisible="{Binding IsBusy}"
+                     HorizontalAlignment="Center"
+                     Width="200" />
+    </Grid>
+</UserControl>
