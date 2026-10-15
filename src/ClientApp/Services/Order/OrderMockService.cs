@@ -178,8 +178,24 @@ public class OrderMockService : IOrderService
         return MockOrderCheckout;
     }
 
-    public Task<bool> CancelOrderAsync(int orderId)
+    // Real upstream gap carried over verbatim: this returned true without touching MockOrders,
+    // so OrderDetailViewModel.ToggleCancelOrderCommand's "Cancelled" status only ever showed on
+    // the detail screen itself -- navigating back to Profile still showed "Submitted", since the
+    // real OrderService (live, non-mock) actually calls the Ordering.API cancel endpoint and gets
+    // real persistence for free, a guarantee the mock needs to provide explicitly instead. The
+    // delay mimics that same real call's round-trip, since ToggleCancelOrderCommand is now
+    // wrapped in IsBusyFor and should show real processing feedback rather than resolve instantly.
+    public async Task<bool> CancelOrderAsync(int orderId)
     {
-        return Task.FromResult(true);
+        await Task.Delay(TimeSpan.FromSeconds(11));
+
+        var order = MockOrders.FirstOrDefault(o => o.OrderNumber == orderId);
+
+        if (order is not null)
+        {
+            order.OrderStatus = "Cancelled";
+        }
+
+        return true;
     }
 }

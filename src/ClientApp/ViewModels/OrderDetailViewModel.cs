@@ -30,22 +30,39 @@ public partial class OrderDetailViewModel(
             });
     }
 
+    // Upstream relied on Shell's automatic back button for this; Avalonia has no Shell chrome
+    // (see CatalogItemViewModel.DismissCommand for the same gap), so this needs its own.
+    [RelayCommand]
+    private async Task DismissAsync()
+    {
+        await NavigationService.PopAsync();
+    }
+
     [RelayCommand]
     private async Task ToggleCancelOrderAsync()
     {
-        var result = await _appEnvironmentService.OrderService.CancelOrderAsync(Order.OrderNumber);
+        await IsBusyFor(
+            async () =>
+            {
+                var result = await _appEnvironmentService.OrderService.CancelOrderAsync(Order.OrderNumber);
 
-        if (result)
-        {
-            OrderStatusText = "Cancelled";
-        }
-        else
-        {
-            Order = await _appEnvironmentService.OrderService.GetOrderAsync(Order.OrderNumber);
-            OrderStatusText = Order.OrderStatus;
-        }
+                if (result)
+                {
+                    OrderStatusText = "Cancelled";
+                }
+                else
+                {
+                    Order = await _appEnvironmentService.OrderService.GetOrderAsync(Order.OrderNumber);
+                    OrderStatusText = Order.OrderStatus;
+                }
 
-        IsSubmittedOrder = false;
+                IsSubmittedOrder = false;
+            });
+
+        // Return to the (now up-to-date, thanks to PopAsync re-running InitializeAsyncCommand)
+        // order list instead of leaving the user stranded on a detail page for an order that no
+        // longer needs any action.
+        await NavigationService.PopAsync();
     }
 
     public override void ApplyQueryAttributes(IDictionary<string, object> query)
