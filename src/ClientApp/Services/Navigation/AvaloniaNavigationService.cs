@@ -72,14 +72,21 @@ public class AvaloniaNavigationService(IAppEnvironmentService appEnvironmentServ
         await destination.InitializeAsyncCommand.ExecuteAsync(null);
     }
 
-    public Task PopAsync()
+    public async Task PopAsync()
     {
-        if (_backStack.Count > 0)
+        if (_backStack.Count == 0)
         {
-            CurrentViewModel = _backStack.Pop();
+            return;
         }
 
-        return Task.CompletedTask;
+        var destination = _backStack.Pop();
+        CurrentViewModel = destination;
+
+        // Upstream's OnAppearing() fires every time a page becomes visible again, including via
+        // back navigation, and ProfileViewModel (among others) relies on that to show state
+        // changed since the page was last shown (e.g. an order placed after Checkout) -- without
+        // this, popping back to it just showed whatever it looked like before it was pushed.
+        await destination.InitializeAsyncCommand.ExecuteAsync(null);
     }
 
     private ViewModelBase Resolve(string routeKey)

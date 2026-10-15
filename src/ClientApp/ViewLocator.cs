@@ -23,7 +23,15 @@ public class ViewLocator : IDataTemplate
 
         if (type != null)
         {
-            return (Control)Activator.CreateInstance(type)!;
+            var control = (Control)Activator.CreateInstance(type)!;
+
+            // Relying on ContentPresenter to assign DataContext automatically was unreliable when
+            // navigating back to a previously-used ViewModel instance (DataContext came up null,
+            // so every binding on the freshly-built View silently failed): setting it explicitly
+            // here removes the dependency on that implicit behavior entirely.
+            control.DataContext = param;
+
+            return control;
         }
 
         return new TextBlock { Text = "Not Found: " + name };
