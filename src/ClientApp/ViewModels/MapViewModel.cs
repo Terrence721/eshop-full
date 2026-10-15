@@ -26,6 +26,14 @@ public partial class MapViewModel(INavigationService navigationService) : ViewMo
 
         return Task.CompletedTask;
     }
+
+    // Upstream relied on Shell's automatic back button for this; Avalonia has no Shell chrome
+    // (see CatalogItemViewModel.DismissCommand for the same gap), so this needs its own.
+    [RelayCommand]
+    private async Task DismissAsync()
+    {
+        await NavigationService.PopAsync();
+    }
 }
 
 public record Store
