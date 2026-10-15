@@ -28,7 +28,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\eShop.ServiceDefaults\eShop.ServiceDefaults.csproj" />
-    <ProjectReference Include="..\EventBusRabbitMQ\EventBusRabbitMQ.csproj" />
+    <ProjectReference Include="..\EventBusKafka\EventBusKafka.csproj" />
   </ItemGroup>
 
   <ItemGroup>
