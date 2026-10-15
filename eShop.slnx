@@ -1,7 +1,7 @@
 <Solution>
   <Folder Name="/src/">
     <Project Path="src/EventBus/EventBus.csproj" />
-    <Project Path="src/EventBusRabbitMQ/EventBusRabbitMQ.csproj" />
+    <Project Path="src/EventBusKafka/EventBusKafka.csproj" />
     <Project Path="src/eShop.ServiceDefaults/eShop.ServiceDefaults.csproj" />
     <Project Path="src/IntegrationEventLogEF/IntegrationEventLogEF.csproj" />
     <Project Path="src/Identity.API/Identity.API.csproj" />
@@ -22,7 +22,7 @@
   </Folder>
   <Folder Name="/tests/">
     <Project Path="tests/EventBus.UnitTests/EventBus.UnitTests.csproj" />
-    <Project Path="tests/EventBusRabbitMQ.UnitTests/EventBusRabbitMQ.UnitTests.csproj" />
+    <Project Path="tests/EventBusKafka.UnitTests/EventBusKafka.UnitTests.csproj" />
     <Project Path="tests/eShop.ServiceDefaults.UnitTests/eShop.ServiceDefaults.UnitTests.csproj" />
     <Project Path="tests/IntegrationEventLogEF.UnitTests/IntegrationEventLogEF.UnitTests.csproj" />
     <Project Path="tests/Identity.API.UnitTests/Identity.API.UnitTests.csproj" />
