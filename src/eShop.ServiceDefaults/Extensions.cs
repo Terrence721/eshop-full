@@ -42,7 +42,7 @@ public static partial class Extensions
     /// </remarks>
     public static IHostApplicationBuilder AddBasicServiceDefaults(this IHostApplicationBuilder builder)
     {
-        // "self" only here -- RabbitMQ's own check is auto-registered by Aspire's AddRabbitMQClient elsewhere.
+        // "self" only here -- Kafka's own check is auto-registered by Aspire's AddKafkaProducer/AddKafkaConsumer elsewhere.
         builder.AddDefaultHealthChecks();
 
         builder.ConfigureOpenTelemetry();
