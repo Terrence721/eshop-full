@@ -1,0 +1,87 @@
+<!-- Functional equivalent of upstream's BasketView.xaml, not a verbatim port: drops the real
+     file's SelectionChangedCommand-to-AddCommand wiring (tapping a row to re-add it) since there
+     is no bindable equivalent in Avalonia's ListBox (same gap CatalogView hit for navigation),
+     and there is no real user action here that should re-add an item by selecting it anyway;
+     Delete is wired per-row instead (see BasketItemTemplate). CollectionView.EmptyView (MAUI-only)
+     is replaced with a plain TextBlock bound to a real IsEmpty property added to BasketViewModel.
+     No image assets exist for this rebuild (see CatalogItemTemplate). List area background
+     matches the app-wide brand blue convention established for Login/Catalog; the summary bar
+     keeps upstream's own LightGrayColor panel, so it needs its own Foreground override. Back and
+     Close are both real additions upstream never needed: Shell provided a free back arrow there
+     (see BasketViewModel.DismissCommand), and no screen there doubled as an app-exit point. -->
+
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:eShop.ClientApp.ViewModels"
+             xmlns:templates="using:eShop.ClientApp.Views.Templates"
+             x:Class="eShop.ClientApp.Views.BasketView"
+             x:DataType="vm:BasketViewModel"
+             Foreground="White">
+    <Grid RowDefinitions="*,Auto">
+        <Grid Grid.Row="0" Background="#2556CB">
+            <ListBox Background="Transparent" Margin="0,56,0,0" ItemsSource="{Binding BasketItems}">
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <templates:BasketItemTemplate />
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+
+            <TextBlock Text="EMPTY SHOPPING CART"
+                       HorizontalAlignment="Center"
+                       VerticalAlignment="Center"
+                       IsVisible="{Binding IsEmpty}" />
+
+            <Button Content="Back"
+                    Command="{Binding DismissCommand}"
+                    Background="Black"
+                    Foreground="White"
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Top"
+                    Margin="16" />
+
+            <Button Content="Close"
+                    Click="OnQuitClick"
+                    Background="Black"
+                    Foreground="White"
+                    HorizontalAlignment="Right"
+                    VerticalAlignment="Top"
+                    Margin="16" />
+        </Grid>
+
+        <Border Grid.Row="1" Background="#F2F2F2" Padding="16">
+            <Grid ColumnDefinitions="Auto,*,Auto"
+                  RowDefinitions="Auto,Auto,Auto"
+                  RowSpacing="4">
+                <TextBlock Grid.Row="0" Grid.Column="0"
+                           Text="Your Shopping bag"
+                           Foreground="Black"
+                           VerticalAlignment="Center" />
+
+                <Border Grid.Row="0" Grid.Column="2"
+                        Background="Black" CornerRadius="16"
+                        MinWidth="32" MinHeight="32"
+                        HorizontalAlignment="Center">
+                    <TextBlock Text="{Binding BadgeCount}"
+                               Foreground="White"
+                               HorizontalAlignment="Center"
+                               VerticalAlignment="Center" />
+                </Border>
+
+                <TextBlock Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" Text="Total" Foreground="Black" />
+                <TextBlock Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3"
+                           Text="{Binding Total, StringFormat='${0:N2}'}"
+                           Foreground="Black"
+                           HorizontalAlignment="Right" />
+
+                <Button Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3"
+                        Content="Check out"
+                        Command="{Binding CheckoutCommand}"
+                        Background="Black"
+                        Foreground="White"
+                        HorizontalAlignment="Stretch"
+                        HorizontalContentAlignment="Center" />
+            </Grid>
+        </Border>
+    </Grid>
+</UserControl>
