@@ -211,8 +211,9 @@
   <h1>One publish call, three decorators deep — and two real bugs the split finally exposed.</h1>
   <p class="dek">
     Services integrate through published/consumed events, not direct calls — <code>EventBus</code>
-    defines the abstraction (<code>IEventBus</code>), <code>EventBusRabbitMQ</code> is the only
-    implementation today, and <code>IntegrationEventLogEF</code> (done) gives every publisher a
+    defines the abstraction (<code>IEventBus</code>), <code>EventBusKafka</code> is the only
+    implementation today (replacing an original RabbitMQ-backed implementation — see the callout
+    below), and <code>IntegrationEventLogEF</code> (done) gives every publisher a
     transactional outbox instead of a fire-and-forget publish — not wired into a consumer yet, since no
     service that would call it exists on disk. Reviewing <code>RabbitMQEventBus</code>
     closely enough to split it turned up two real bugs, both present verbatim in Microsoft's own reference
@@ -222,7 +223,7 @@
 
   <h2>Publish Path</h2>
   <svg class="pipeline-diagram" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 1060 140" role="img" aria-labelledby="pipeline-title">
-    <title id="pipeline-title">Ordering.API calls IEventBus.PublishAsync, which flows through ResilientEventBusDecorator, then TelemetryEventBusDecorator, then RabbitMQEventBus, to the RabbitMQ broker.</title>
+    <title id="pipeline-title">Ordering.API calls IEventBus.PublishAsync, which flows through ResilientEventBusDecorator, then TelemetryEventBusDecorator, then KafkaEventBus, to the Kafka broker.</title>
     <g id="Layer_1" data-name="Layer 1">
       <path d="M28 40 L152 40 C156.418 40 160 43.582 160 48 L160 92 C160 96.418 156.418 100 152 100 L28 100 C23.582 100 20 96.418 20 92 L20 48 C20 43.582 23.582 40 28 40 Z" fill="var(--surface)" stroke="var(--line)" stroke-miterlimit="10"/>
       <text transform="matrix(1 0 0 1 45 74)" x="0" y="0" xml:space="preserve" font-family="Arial" font-size="13" fill="var(--ink)"><tspan x="0" y="0">Ordering.API</tspan></text>
@@ -241,17 +242,29 @@
       <path d="M660 70 L692 70" fill="none" stroke="var(--ink-soft)" stroke-miterlimit="10"/>
       <path d="M692 64 L700 70 L692 76 Z" fill="var(--ink-soft)" stroke="var(--ink-soft)" stroke-miterlimit="10"/>
       <path d="M708 40 L862 40 C866.418 40 870 43.582 870 48 L870 92 C870 96.418 866.418 100 862 100 L708 100 C703.582 100 700 96.418 700 92 L700 48 C700 43.582 703.582 40 708 40 Z" fill="var(--transport-bg)" stroke="var(--transport)" stroke-miterlimit="10"/>
-      <text transform="matrix(1 0 0 1 725 74)" x="0" y="0" xml:space="preserve" font-family="Arial" font-size="13" fill="var(--transport)"><tspan x="0" y="0">RabbitMQEventBus</tspan></text>
+      <text transform="matrix(1 0 0 1 725 74)" x="0" y="0" xml:space="preserve" font-family="Arial" font-size="13" fill="var(--transport)"><tspan x="0" y="0">KafkaEventBus</tspan></text>
       <path d="M870 70 L902 70" fill="none" stroke="var(--ink-soft)" stroke-miterlimit="10"/>
       <path d="M902 64 L910 70 L902 76 Z" fill="var(--ink-soft)" stroke="var(--ink-soft)" stroke-miterlimit="10"/>
       <path d="M918 40 L1012 40 C1016.418 40 1020 43.582 1020 48 L1020 92 C1020 96.418 1016.418 100 1012 100 L918 100 C913.582 100 910 96.418 910 92 L910 48 C910 43.582 913.582 40 918 40 Z" fill="var(--surface)" stroke="var(--line)" stroke-miterlimit="10"/>
-      <text transform="matrix(1 0 0 1 935 74)" x="0" y="0" xml:space="preserve" font-family="Arial" font-size="13" fill="var(--ink)"><tspan x="0" y="0">RabbitMQ</tspan></text>
+      <text transform="matrix(1 0 0 1 935 74)" x="0" y="0" xml:space="preserve" font-family="Arial" font-size="13" fill="var(--ink)"><tspan x="0" y="0">Kafka</tspan></text>
     </g>
   </svg>
   <p class="dek dek--footnote">
     Three separate <code>IEventBus</code> implementations, composed by wrapping — a caller only ever sees
     <code>IEventBus</code>, and doesn't know or care how many layers are behind it.
   </p>
+
+  <div class="callout">
+    <span class="callout-mark">i</span>
+    <p>
+      The pipeline above is <code>KafkaEventBus</code>, Kafka having fully replaced RabbitMQ as the
+      transport once every consumer was migrated. The zoomed-in sections and the two bugs below predate
+      that swap — they describe <code>RabbitMQEventBus</code>, the original transport the Decorator split
+      was built around, and the fixes carried over unchanged into <code>KafkaEventBus</code>. See
+      <a href="https://github.com/Terrence721/eshop-full/blob/main/docs/architecturedesign.md">docs/architecturedesign.md</a>
+      for the full migration writeup.
+    </p>
+  </div>
 
   <h2>Zoomed In</h2>
 
