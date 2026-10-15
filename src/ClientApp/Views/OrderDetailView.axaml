@@ -1,0 +1,87 @@
+<!-- Functional equivalent of upstream's OrderDetailView.xaml, not a verbatim port: the real file's
+     named styles (TitleStyle etc.) and Appearing-triggered fade animations have no equivalent
+     here (no resource dictionary exists yet, see CatalogItemTemplate; the Animations/Triggers
+     framework itself is MAUI-only, already dropped project-wide). Back is a real addition
+     upstream never needed (Shell provided it there, see OrderDetailViewModel.DismissCommand).
+     Background matches the app-wide brand blue convention. -->
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:eShop.ClientApp.ViewModels"
+             xmlns:templates="using:eShop.ClientApp.Views.Templates"
+             x:Class="eShop.ClientApp.Views.OrderDetailView"
+             x:DataType="vm:OrderDetailViewModel"
+             Foreground="White">
+    <Grid Background="#2556CB" RowDefinitions="Auto,Auto,*">
+        <Grid Grid.Row="0" ColumnDefinitions="Auto,*,Auto" Margin="16">
+            <Button Grid.Column="0"
+                    Content="Back"
+                    Command="{Binding DismissCommand}"
+                    Background="Black"
+                    Foreground="White" />
+
+            <Button Grid.Column="2"
+                    Content="Cancel order"
+                    Command="{Binding ToggleCancelOrderCommand}"
+                    IsVisible="{Binding IsSubmittedOrder}"
+                    Background="Black"
+                    Foreground="White" />
+        </Grid>
+
+        <Grid Grid.Row="1"
+              Margin="16"
+              ColumnDefinitions="*,*"
+              RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto"
+              RowSpacing="4">
+            <TextBlock Grid.Row="0" Grid.Column="0" Text="ORDER NUMBER" Opacity="0.7" />
+            <TextBlock Grid.Row="1" Grid.Column="0" Text="{Binding Order.OrderNumber}" />
+
+            <TextBlock Grid.Row="0" Grid.Column="1" Text="DATE" Opacity="0.7" />
+            <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding Order.OrderDate, StringFormat='{}{0:d}'}" />
+
+            <TextBlock Grid.Row="2" Grid.Column="0" Text="TOTAL" Opacity="0.7" Margin="0,8,0,0" />
+            <TextBlock Grid.Row="3" Grid.Column="0" Text="{Binding Order.Total, StringFormat='${0:N2}'}" />
+
+            <TextBlock Grid.Row="2" Grid.Column="1" Text="STATUS" Opacity="0.7" Margin="0,8,0,0" />
+            <TextBlock Grid.Row="3" Grid.Column="1" Text="{Binding OrderStatusText}" />
+
+            <TextBlock Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2"
+                       Text="SHIPPING ADDRESS"
+                       FontSize="18" FontWeight="Bold"
+                       Margin="0,16,0,4" />
+
+            <StackPanel Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="2">
+                <TextBlock Text="{Binding Order.ShippingStreet}" />
+                <TextBlock Text="{Binding Order.ShippingCity}" />
+                <TextBlock Text="{Binding Order.ShippingState}" />
+                <TextBlock Text="{Binding Order.ShippingCountry}" />
+            </StackPanel>
+        </Grid>
+
+        <ScrollViewer Grid.Row="2">
+            <StackPanel>
+                <ItemsControl ItemsSource="{Binding Order.OrderItems}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <templates:OrderItemTemplate />
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+
+                <StackPanel Margin="16" HorizontalAlignment="Right">
+                    <TextBlock Text="TOTAL" HorizontalAlignment="Right" FontSize="18" />
+                    <TextBlock Text="{Binding Order.Total, StringFormat='${0:N2}'}"
+                               HorizontalAlignment="Right"
+                               FontSize="18"
+                               FontWeight="Bold" />
+                </StackPanel>
+            </StackPanel>
+        </ScrollViewer>
+
+        <ProgressBar Grid.Row="1"
+                     IsIndeterminate="True"
+                     IsVisible="{Binding IsBusy}"
+                     HorizontalAlignment="Center"
+                     VerticalAlignment="Center"
+                     Width="200" />
+    </Grid>
+</UserControl>
