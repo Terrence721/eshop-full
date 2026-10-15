@@ -18,7 +18,13 @@
   "scripts": {
     "clean:logs": "node scripts/clean-logs.mjs",
     "clean:build-servers": "node scripts/clean-build-servers.mjs",
-    "build:clientapp": "dotnet build src/ClientApp/ClientApp.csproj -f net10.0"
+    "build:clientapp": "dotnet build src/ClientApp/ClientApp.csproj -f net10.0",
+    "run:clientapp:desktop": "dotnet run --project src/ClientApp.Desktop/ClientApp.Desktop.csproj",
+    "run:clientapp:android:emulator": "\"%LOCALAPPDATA%\\Android\\Sdk\\emulator\\emulator.exe\" -avd eShop_Emulator",
+    "run:clientapp:android": "dotnet build src/ClientApp.Android/ClientApp.Android.csproj -c Release -p:RuntimeIdentifier=android-x64 -t:Run",
+    "run:clientapp:ios": "echo iOS cannot build or run locally on Windows (no Mac/Xcode available) -- see the ios-simulator job in .github/workflows/pr-validation-clientapp.yml for the real, CI-based way to run it",
+    "run:clientapp:browser:publish": "dotnet publish src/ClientApp.Browser/ClientApp.Browser.csproj -c Release",
+    "run:clientapp:browser:serve": "python -m http.server 8080 --directory artifacts/publish/ClientApp.Browser/release/wwwroot"
   },
   "keywords": [],
   "author": "",
