@@ -45,7 +45,7 @@ builder.Services.AddSingleton<OrderStatusNotifications>();
 builder.Services.AddGrpcClient<BasketGrpcClient>(options => options.Address = new Uri(basketUrl));
 builder.Services.AddScoped<BasketService>();
 
-builder.AddRabbitMqEventBus("eventbus")
+builder.AddKafkaEventBus("eventbus")
     .AddSubscription<OrderStatusChangedToSubmittedIntegrationEvent, OrderStatusChangedToSubmittedIntegrationEventHandler>()
     .AddSubscription<OrderStatusChangedToAwaitingValidationIntegrationEvent, OrderStatusChangedToAwaitingValidationIntegrationEventHandler>()
     .AddSubscription<OrderStatusChangedToPaidIntegrationEvent, OrderStatusChangedToPaidIntegrationEventHandler>()
