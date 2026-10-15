@@ -15,6 +15,8 @@ public partial class BasketViewModel(
 
     public decimal Total => _basketItems?.Sum(basketItem => basketItem.Quantity * basketItem.UnitPrice) ?? 0m;
 
+    public bool IsEmpty => (_basketItems?.Count ?? 0) == 0;
+
     public IReadOnlyList<BasketItem> BasketItems => _basketItems;
 
     public override async Task InitializeAsync()
@@ -95,6 +97,7 @@ public partial class BasketViewModel(
     {
         OnPropertyChanged(nameof(BadgeCount));
         OnPropertyChanged(nameof(Total));
+        OnPropertyChanged(nameof(IsEmpty));
     }
 
     [RelayCommand]
@@ -105,5 +108,13 @@ public partial class BasketViewModel(
             _appEnvironmentService.BasketService.LocalBasketItems = _basketItems;
             await NavigationService.NavigateToAsync("Checkout");
         }
+    }
+
+    // Upstream relied on Shell's automatic back button for this; Avalonia has no Shell chrome
+    // (see CatalogItemViewModel.DismissCommand for the same gap), so Basket needs its own.
+    [RelayCommand]
+    private async Task DismissAsync()
+    {
+        await NavigationService.PopAsync();
     }
 }

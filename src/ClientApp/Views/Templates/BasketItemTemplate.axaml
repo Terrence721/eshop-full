@@ -1,0 +1,52 @@
+<!-- Functional equivalent of upstream's BasketItemTemplate.xaml, not a verbatim port: the real
+     file is a SwipeView (swipe-to-delete), a MAUI-only gesture control with no Avalonia
+     equivalent, replaced here with a plain always-visible Delete button, matching upstream's
+     own Desktop-idiom branch, which showed that same button on desktop instead of relying on
+     swipe. No named style/resource dictionary exists yet (see CatalogItemTemplate), so this uses
+     plain inline values instead of the real file's OrderItemUnitPriceStyle/OrderTotalStyle/
+     QuantityStyle. Real image loading is the same known, deferred gap as CatalogItemTemplate. -->
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:models="using:eShop.ClientApp.Models.Basket"
+             x:Class="eShop.ClientApp.Views.Templates.BasketItemTemplate"
+             x:DataType="models:BasketItem">
+    <Grid Margin="4" ColumnDefinitions="88,*" RowDefinitions="*,Auto">
+        <Border Grid.Row="0" Grid.Column="0"
+                Background="Gray" CornerRadius="8"
+                Width="74" Height="74"
+                Margin="12,0,0,0"
+                VerticalAlignment="Center" />
+
+        <Grid Grid.Row="0" Grid.Column="1" Margin="6" RowDefinitions="Auto,Auto,Auto">
+            <TextBlock Grid.Row="0" Text="{Binding ProductName}" FontWeight="Bold" />
+
+            <Grid Grid.Row="1" ColumnDefinitions="*,*">
+                <TextBlock Grid.Column="0" Text="{Binding UnitPrice, StringFormat='${0:N2}'}" />
+                <TextBlock Grid.Column="1" Text="{Binding Quantity}" HorizontalAlignment="Right" />
+            </Grid>
+
+            <Grid Grid.Row="2" ColumnDefinitions="*,Auto">
+                <TextBlock Grid.Column="0"
+                           Text="{Binding Total, StringFormat='${0:N2}'}"
+                           FontWeight="Bold"
+                           VerticalAlignment="Center" />
+
+                <Button Grid.Column="1"
+                        Content="Delete"
+                        Click="OnDeleteClick"
+                        Background="Black"
+                        Foreground="White" />
+            </Grid>
+        </Grid>
+
+        <Border Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2"
+                Background="#F0AD4E"
+                Padding="8"
+                Margin="0,4,0,0"
+                IsVisible="{Binding HasNewPrice}">
+            <TextBlock Text="{Binding OldUnitPrice, StringFormat='Note that the price of this article changed. The old price was ${0:N2}'}"
+                       TextWrapping="Wrap"
+                       TextAlignment="Center" />
+        </Border>
+    </Grid>
+</UserControl>
