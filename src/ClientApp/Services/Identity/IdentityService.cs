@@ -14,7 +14,22 @@ public class IdentityService(IBrowser browser, ISettingsService settingsService,
 
     public async Task<bool> SignInAsync()
     {
-        var response = await GetClient().LoginAsync(new LoginRequest()).ConfigureAwait(false);
+        LoginResult response;
+
+        try
+        {
+            response = await GetClient().LoginAsync(new LoginRequest()).ConfigureAwait(false);
+        }
+        catch (Exception ex) when (ex is HttpRequestException or InvalidOperationException)
+        {
+            // The real (non-mock) path: if the Identity endpoint simply isn't reachable (no
+            // backend running), OidcClient throws instead of returning an IsError response --
+            // unlike a real auth failure (wrong credentials etc.), which comes back as a normal
+            // response.IsError below. Both mean "didn't sign in" from this method's contract, so
+            // this is treated the same way rather than left to crash the app via an unhandled
+            // exception on the UI thread (see LoginViewModel.SignInAsync).
+            return false;
+        }
 
         if (response.IsError)
         {
