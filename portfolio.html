@@ -501,7 +501,7 @@
     <div class="chips">
       <span class="chip">.NET 10</span>
       <span class="chip">.NET Aspire 13.4</span>
-      <span class="chip">RabbitMQ</span>
+      <span class="chip">Kafka</span>
       <span class="chip">EF Core</span>
       <span class="chip">Polly</span>
       <span class="chip">OpenTelemetry</span>
@@ -515,13 +515,13 @@
   <section>
     <h2>Foundation first, five projects deep</h2>
     <p class="h2-sub">
-      Shared → EventBus → EventBusRabbitMQ → eShop.ServiceDefaults → the transactional outbox, then Identity.API
+      Shared → EventBus → EventBusKafka → eShop.ServiceDefaults → the transactional outbox, then Identity.API
     </p>
     <p class="lede">
       Migration order is deliberate: shared/foundation projects first, since
       everything else depends on them. <code>src/Shared/</code>'s two
       linked-source files, <code>EventBus</code>'s abstractions,
-      <code>EventBusRabbitMQ</code>'s RabbitMQ implementation,
+      <code>EventBusKafka</code>'s Kafka implementation,
       <code>eShop.ServiceDefaults</code>'s Aspire telemetry/health-check/resilience
       defaults, and <code>IntegrationEventLogEF</code> — the EF Core-backed
       transactional outbox every event-publishing service will write through —
@@ -541,7 +541,7 @@
       <div class="card">
         <h3>Deliberate deviations, not defaults</h3>
         <p>
-          A <code>RabbitMQEventBus</code> mixing transport plumbing with
+          A <code>KafkaEventBus</code> mixing transport plumbing with
           telemetry and Polly resilience split into a three-layer
           <a href="diagrams/event-flow.html">Decorator chain</a> once
           upstream fidelity stopped being the constraint. <code>WebApp</code>
@@ -551,7 +551,11 @@
           behind them, are recorded in
           <a href="https://github.com/Terrence721/eshop-full/blob/main/docs/architecturedesign.md"
             >docs/architecturedesign.md</a
-          >.
+          >. Later still, the transport itself changed again: RabbitMQ was
+          replaced outright with Kafka across every consumer, topic-per-event-type
+          in place of exchange-plus-routing-key. The bug write-ups below predate
+          that swap — they describe defects found in the original RabbitMQ
+          implementation, not Kafka's.
         </p>
       </div>
       <div class="card">
