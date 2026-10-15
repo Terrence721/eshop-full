@@ -1,6 +1,12 @@
 name: eShop Pull Request Validation - ClientApp (Avalonia)
 
 on:
+  workflow_dispatch:
+    inputs:
+      debug_ios_simulator:
+        description: 'Open an SSH debug session (tmate) in the ios-simulator job after the Simulator boots'
+        type: boolean
+        default: false
   pull_request:
     branches:
       - '**'
@@ -129,6 +135,7 @@ jobs:
           sys.exit(1)
           ")
           echo "Using simulator: $UDID"
+          echo "UDID=$UDID" >> "$GITHUB_ENV"
 
           xcrun simctl boot "$UDID"
           xcrun simctl bootstatus "$UDID" -b
@@ -148,6 +155,20 @@ jobs:
         with:
           name: ios-simulator-screenshot
           path: artifacts/ios-simulator/launch.png
+
+      # Only runs when manually triggered with debug_ios_simulator checked -- never on an
+      # ordinary push/PR run, so normal CI never blocks waiting for someone to connect.
+      # limit-access-to-actor restricts the SSH session to whoever triggered this run (their
+      # registered GitHub SSH keys), not anyone who sees the printed connection command. The
+      # Simulator from the step above is left booted with the app already installed and
+      # launched, so $UDID (exported to GITHUB_ENV there) is ready to keep driving via
+      # `xcrun simctl` from inside the session -- install/launch/screenshot/terminate etc.
+      - name: Debug session (tmate)
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.debug_ios_simulator }}
+        uses: mxschmitt/action-tmate@v3.24
+        timeout-minutes: 30
+        with:
+          limit-access-to-actor: true
 
   android-emulator:
     # Real Android Emulator run, mirroring the ios-simulator job above -- boots a genuine
