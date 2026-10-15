@@ -17,12 +17,10 @@
     <PackageVersion Include="Aspire.Confluent.Kafka" Version="$(AspireVersion)" />
     <PackageVersion Include="Aspire.Hosting.Azure.CognitiveServices" Version="$(AspireVersion)" />
     <PackageVersion Include="Aspire.Hosting.PostgreSQL" Version="$(AspireVersion)" />
-    <PackageVersion Include="Aspire.Hosting.RabbitMQ" Version="$(AspireVersion)" />
     <PackageVersion Include="Aspire.Hosting.Redis" Version="$(AspireVersion)" />
     <PackageVersion Include="Aspire.Hosting.Yarp" Version="$(AspireVersion)" />
     <PackageVersion Include="Aspire.Npgsql" Version="$(AspireVersion)" />
     <PackageVersion Include="Aspire.Npgsql.EntityFrameworkCore.PostgreSQL" Version="$(AspireVersion)" />
-    <PackageVersion Include="Aspire.RabbitMQ.Client" Version="$(AspireVersion)" />
     <PackageVersion Include="Aspire.StackExchange.Redis" Version="$(AspireVersion)" />
     <!-- Still no stable release from Microsoft as of 2026-08-14; genuinely preview-only. -->
     <PackageVersion Include="Aspire.Azure.AI.OpenAI" Version="$(AspireUnstablePackagesVersion)" />
@@ -77,8 +75,8 @@
          own nuspec), not the newest Confluent.Kafka release, to stay on what Aspire actually
          tested against. -->
     <PackageVersion Include="Confluent.Kafka" Version="2.15.0" />
-    <!-- Matches the version already resolved transitively everywhere else in the solution via
-         Aspire.RabbitMQ.Client (confirmed against its project.assets.json). Aspire.Confluent.Kafka
+    <!-- Matches the version resolved transitively everywhere else in the solution (confirmed
+         against project.assets.json while RabbitMQ was still present). Aspire.Confluent.Kafka
          doesn't bring Polly in transitively, so EventBusKafka needs an explicit reference. -->
     <PackageVersion Include="Polly.Core" Version="8.7.0" />
     <!-- Open Telemetry: core packages (OpenTelemetry.*) and contrib instrumentation packages
