@@ -114,6 +114,8 @@ Commits: `12fbf3e`, `a8da68a`, `14a82f2`, `6110d6f`, `f23d298`, `bb6d745`, `ca98
 
 Commit: `0185981`.
 
+**Known, unfixed C# Dev Kit bug (2026-10-14):** `Microsoft.Assumes+InternalErrorException: Cannot find an instance of the Microsoft.VisualStudio.ProjectSystem.Server.IComponentExportsService service.` — a startup race in C# Dev Kit's closed-source project system (`ProcessServiceContainer.InitializeCoreAsync` calls `Assumes.Present()` on a service before it's proffered, instead of waiting for `availabilityChanged`). Reproduced reliably in this repo (a 34-project `.slnx`), twice back-to-back in one session including right after a `Developer: Restart Extension Host`. Confirmed cosmetic, not a real defect: `dotnet build eShop.slnx` succeeds cleanly (0 errors) the entire time this is broken — it only degrades IntelliSense, test discovery, and the Solution Explorer project tree. No fix available from our side (compiled extension code, not our source); reported upstream with full repro details and stack trace at [microsoft/vscode-dotnettools#3628](https://github.com/microsoft/vscode-dotnettools/issues/3628#issuecomment-6181371011). Workaround when hit: `Developer: Restart Extension Host` (not a window reload — confirmed that alone doesn't clear it), sometimes needing 2-3 attempts.
+
 ### `src/Shared/`
 
 Not a `.csproj` project — a shared-source folder linked directly into consuming projects (absent from `eShop.slnx` for exactly that reason).
