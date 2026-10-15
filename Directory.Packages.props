@@ -16,9 +16,10 @@
     <!-- Version together with Aspire -->
     <PackageVersion Include="Aspire.Confluent.Kafka" Version="$(AspireVersion)" />
     <PackageVersion Include="Aspire.Hosting.Azure.CognitiveServices" Version="$(AspireVersion)" />
+    <PackageVersion Include="Aspire.Hosting.JavaScript" Version="$(AspireVersion)" />
+    <PackageVersion Include="Aspire.Hosting.Kafka" Version="$(AspireVersion)" />
     <PackageVersion Include="Aspire.Hosting.PostgreSQL" Version="$(AspireVersion)" />
     <PackageVersion Include="Aspire.Hosting.Redis" Version="$(AspireVersion)" />
-    <PackageVersion Include="Aspire.Hosting.Yarp" Version="$(AspireVersion)" />
     <PackageVersion Include="Aspire.Npgsql" Version="$(AspireVersion)" />
     <PackageVersion Include="Aspire.Npgsql.EntityFrameworkCore.PostgreSQL" Version="$(AspireVersion)" />
     <PackageVersion Include="Aspire.StackExchange.Redis" Version="$(AspireVersion)" />
@@ -69,8 +70,11 @@
     <!-- Xabaril packages -->
     <PackageVersion Include="AspNetCore.HealthChecks.Uris" Version="9.0.0" />
     <!-- AI -->
-    <PackageVersion Include="CommunityToolkit.Aspire.Hosting.Ollama" Version="13.4.0" />
-    <PackageVersion Include="CommunityToolkit.Aspire.OllamaSharp" Version="13.4.0" />
+    <!-- CommunityToolkit.Aspire.* trails core Aspire by one patch release at the time of pinning
+         (13.6.0 is its latest stable; 13.6.1 only exists as a beta) - confirmed against NuGet,
+         not assumed to match $(AspireVersion) exactly. -->
+    <PackageVersion Include="CommunityToolkit.Aspire.Hosting.Ollama" Version="13.6.0" />
+    <PackageVersion Include="CommunityToolkit.Aspire.OllamaSharp" Version="13.6.0" />
     <!-- Pinned to exactly what Aspire.Confluent.Kafka 13.6.1 itself depends on (confirmed via its
          own nuspec), not the newest Confluent.Kafka release, to stay on what Aspire actually
          tested against. -->
