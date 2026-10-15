@@ -1,0 +1,65 @@
+<!-- Functional equivalent of upstream's ProfileView.xaml, not a verbatim port: the real file's
+     ToolbarItem (Shell-provided chrome) has no Avalonia equivalent, replaced with the same
+     Settings-dropdown convention as CatalogView/LoginView (see those files), with Logout and
+     Close underneath. SelectionChangedCommand has no bindable ListBox equivalent (same gap
+     CatalogView hit), handled via a code-behind SelectionChanged event instead. No named
+     style/resource dictionary exists yet (see CatalogItemTemplate), so this uses plain inline
+     values. Background matches the app-wide brand blue convention. Uses MenuFlyout/MenuItem,
+     not a plain Flyout + HyperlinkButton: see CatalogView for why (a plain Flyout's lack of
+     close-on-click meant a stray click could bleed through to an order row underneath once the
+     list populated). MenuItem headers are plain text TextBlocks styled blue and underlined so
+     they still read as hyperlinks. -->
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:eShop.ClientApp.ViewModels"
+             xmlns:templates="using:eShop.ClientApp.Views.Templates"
+             x:Class="eShop.ClientApp.Views.ProfileView"
+             x:DataType="vm:ProfileViewModel"
+             Foreground="White">
+    <Grid Background="#2556CB">
+        <ListBox Background="Transparent"
+                  ItemsSource="{Binding Orders}"
+                  SelectedItem="{Binding SelectedOrder, Mode=TwoWay}"
+                  SelectionMode="Single"
+                  SelectionChanged="OnOrderSelectionChanged">
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <templates:OrderTemplate />
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+
+        <TextBlock Text="NO ORDERS"
+                   HorizontalAlignment="Center"
+                   VerticalAlignment="Center"
+                   IsVisible="{Binding IsEmpty}" />
+
+        <DropDownButton Content="Settings"
+                         Background="Black"
+                         Foreground="White"
+                         HorizontalAlignment="Right"
+                         VerticalAlignment="Top"
+                         Margin="16">
+            <DropDownButton.Flyout>
+                <MenuFlyout Placement="BottomEdgeAlignedRight">
+                    <MenuItem Command="{Binding LogoutCommand}">
+                        <MenuItem.Header>
+                            <TextBlock Text="Logout" Foreground="#4EA1F7" TextDecorations="Underline" />
+                        </MenuItem.Header>
+                    </MenuItem>
+                    <MenuItem Click="OnQuitClick">
+                        <MenuItem.Header>
+                            <TextBlock Text="Close" Foreground="#4EA1F7" TextDecorations="Underline" />
+                        </MenuItem.Header>
+                    </MenuItem>
+                </MenuFlyout>
+            </DropDownButton.Flyout>
+        </DropDownButton>
+
+        <ProgressBar IsIndeterminate="True"
+                     IsVisible="{Binding IsBusy}"
+                     HorizontalAlignment="Center"
+                     VerticalAlignment="Center"
+                     Width="200" />
+    </Grid>
+</UserControl>

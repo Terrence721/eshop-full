@@ -1,0 +1,32 @@
+<!-- Functional equivalent of upstream's OrderTemplate.xaml, not a verbatim port: no named
+     style/resource dictionary exists yet (see CatalogItemTemplate), so this uses plain inline
+     values instead of the real file's OrderTitleStyle. -->
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:models="using:eShop.ClientApp.Models.Orders"
+             x:Class="eShop.ClientApp.Views.Templates.OrderTemplate"
+             x:DataType="models:Order">
+    <Grid Margin="12" ColumnDefinitions="*,*" RowDefinitions="Auto,Auto,Auto">
+        <StackPanel Grid.Row="0" Grid.Column="0">
+            <TextBlock Text="ORDER NUMBER" Opacity="0.7" />
+            <TextBlock Text="{Binding OrderNumber}" />
+        </StackPanel>
+
+        <StackPanel Grid.Row="0" Grid.Column="1">
+            <TextBlock Text="DATE" Opacity="0.7" />
+            <TextBlock Text="{Binding OrderDate, StringFormat='{}{0:d}'}" />
+        </StackPanel>
+
+        <StackPanel Grid.Row="1" Grid.Column="0" Margin="0,8,0,0">
+            <TextBlock Text="TOTAL" Opacity="0.7" />
+            <TextBlock Text="{Binding Total, StringFormat='${0:N2}'}" />
+        </StackPanel>
+
+        <StackPanel Grid.Row="1" Grid.Column="1" Margin="0,8,0,0">
+            <TextBlock Text="STATUS" Opacity="0.7" />
+            <TextBlock Text="{Binding OrderStatus}" />
+        </StackPanel>
+
+        <Border Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Background="Gray" Height="1" Margin="0,16,0,0" />
+    </Grid>
+</UserControl>
