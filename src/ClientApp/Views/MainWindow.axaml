@@ -6,10 +6,5 @@
         Title="eShop"
         Icon="avares://ClientApp/Assets/app-icon-draft.png"
         Background="#2556CB">
-    <TextBlock Text="{Binding Greeting}"
-               Foreground="White"
-               FontSize="24"
-               FontWeight="SemiBold"
-               HorizontalAlignment="Center"
-               VerticalAlignment="Center" />
+    <ContentControl Content="{Binding CurrentViewModel}" />
 </Window>

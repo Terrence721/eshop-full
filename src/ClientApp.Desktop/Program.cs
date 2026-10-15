@@ -1,5 +1,7 @@
 using System.IO.Pipes;
 using Avalonia;
+using Microsoft.Extensions.DependencyInjection;
+using IBrowser = Duende.IdentityModel.OidcClient.Browser.IBrowser;
 
 namespace eShop.ClientApp.Desktop;
 
@@ -29,6 +31,13 @@ internal sealed class Program
             ForwardActivationUrl(activationUrl);
             return;
         }
+
+        var services = new ServiceCollection();
+        services.AddEShopServices();
+        services.AddSingleton<IBrowser, AvaloniaAuthenticationBrowser>();
+
+        App.Services = services.BuildServiceProvider();
+        App.Services.UseEShopRoutes();
 
         BuildAvaloniaApp().StartWithClassicDesktopLifetime(args);
     }
