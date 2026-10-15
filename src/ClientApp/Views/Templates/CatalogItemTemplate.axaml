@@ -1,0 +1,27 @@
+<!-- Functional equivalent of upstream's ProductTemplate.xaml. Real image loading is a known,
+     deferred gap: Avalonia's Image.Source is typed IImage, not string, so binding PictureUri
+     directly needs a value converter that loads a Bitmap (async, from either a local mock asset
+     or a live HTTP URL), genuinely separate infrastructure, not something to hack together
+     here, and the mock image files (fake_product_01.png etc.) were never created for this
+     rebuild anyway. The gray box already reads as "image goes here." -->
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:models="using:eShop.ClientApp.Models.Catalog"
+             x:Class="eShop.ClientApp.Views.Templates.CatalogItemTemplate"
+             x:DataType="models:CatalogItem"
+             Width="150">
+    <StackPanel Margin="8">
+        <Border Background="Gray" CornerRadius="8" Height="150" Width="150" />
+
+        <TextBlock Text="{Binding Name}"
+                   HorizontalAlignment="Center"
+                   Margin="0,12,0,6"
+                   TextWrapping="Wrap"
+                   TextAlignment="Center" />
+
+        <TextBlock Text="{Binding Price, StringFormat='${0:N2}'}"
+                   FontWeight="Bold"
+                   HorizontalAlignment="Center"
+                   Margin="0,6,0,12" />
+    </StackPanel>
+</UserControl>

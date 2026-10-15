@@ -1,0 +1,49 @@
+<!-- Functional equivalent of upstream's CatalogView.xaml, not a verbatim port: the real file
+     uses MAUI-only constructs with no Avalonia equivalent (custom Animations/Triggers framework,
+     Shell.TitleView, CommunityToolkit.Maui's Expander, a custom BadgeView control, FlexLayout
+     BindableLayout chips), all dropped here rather than reinvented. The filter panel (brand/type
+     chips, Clear/Apply) is a known, deferred follow-up: this covers the product grid, basket
+     button, and busy indicator, the functional core. No image assets exist for this rebuild
+     (see CatalogItemTemplate), and no named style/resource dictionary exists yet either, so
+     this uses plain inline values rather than inventing new design tokens. -->
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:eShop.ClientApp.ViewModels"
+             xmlns:templates="using:eShop.ClientApp.Views.Templates"
+             x:Class="eShop.ClientApp.Views.CatalogView"
+             x:DataType="vm:CatalogViewModel">
+    <Grid>
+        <ScrollViewer>
+            <ListBox ItemsSource="{Binding Products}"
+                     SelectedItem="{Binding SelectedProduct, Mode=TwoWay}"
+                     SelectionMode="Single"
+                     SelectionChanged="OnProductSelectionChanged">
+                <ListBox.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <WrapPanel />
+                    </ItemsPanelTemplate>
+                </ListBox.ItemsPanel>
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <templates:CatalogItemTemplate />
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+        </ScrollViewer>
+
+        <Button Content="{Binding BadgeCount}"
+                Command="{Binding ViewBasketCommand}"
+                HorizontalAlignment="Right"
+                VerticalAlignment="Bottom"
+                Margin="16"
+                CornerRadius="28"
+                Width="56"
+                Height="56" />
+
+        <ProgressBar IsIndeterminate="True"
+                     IsVisible="{Binding IsBusy}"
+                     HorizontalAlignment="Center"
+                     VerticalAlignment="Center"
+                     Width="200" />
+    </Grid>
+</UserControl>
