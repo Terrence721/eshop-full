@@ -4,6 +4,7 @@
         x:Class="eShop.ClientApp.Views.MainWindow"
         x:DataType="vm:MainViewModel"
         Title="eShop"
+        Icon="avares://ClientApp/Assets/app-icon-draft.png"
         Background="#2556CB">
     <TextBlock Text="{Binding Greeting}"
                Foreground="White"
