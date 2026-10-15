@@ -37,7 +37,18 @@ internal sealed partial class Program
 
         await BuildAvaloniaApp()
             .WithInterFont()
-            .StartBrowserAppAsync("out");
+            .StartBrowserAppAsync(
+                "out",
+                new BrowserPlatformOptions
+                {
+                    // WebGL's renderer-info probe (SkiaSharp's own diagnostics, not our code) hits
+                    // Chromium's fingerprinting-resistance refusal to expose WEBGL_debug_renderer_info,
+                    // logged as a benign but noisy console warning on every load. Software2D trades
+                    // GPU-accelerated rendering for CPU canvas rendering to avoid creating a WebGL
+                    // context at all -- a real performance cost, taken deliberately to keep devtools
+                    // clean rather than for a correctness reason.
+                    RenderingMode = [BrowserRenderingMode.Software2D],
+                });
     }
 
     public static AppBuilder BuildAvaloniaApp()
