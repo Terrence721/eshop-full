@@ -1,12 +1,6 @@
 name: eShop Pull Request Validation - ClientApp (Avalonia)
 
 on:
-  workflow_dispatch:
-    inputs:
-      debug_ios_simulator:
-        description: 'Open an SSH debug session (tmate) in the ios-simulator job after the Simulator boots'
-        type: boolean
-        default: false
   pull_request:
     branches:
       - '**'
@@ -14,7 +8,6 @@ on:
       - 'src/ClientApp/**'
       - 'src/ClientApp.Desktop/**'
       - 'src/ClientApp.Android/**'
-      - 'src/ClientApp.iOS/**'
       - 'src/ClientApp.Browser/**'
       - 'tests/ClientApp.UnitTests/**'
       - '.github/workflows/pr-validation-clientapp.yml'
@@ -25,7 +18,6 @@ on:
       - 'src/ClientApp/**'
       - 'src/ClientApp.Desktop/**'
       - 'src/ClientApp.Android/**'
-      - 'src/ClientApp.iOS/**'
       - 'src/ClientApp.Browser/**'
       - 'tests/ClientApp.UnitTests/**'
       - '.github/workflows/pr-validation-clientapp.yml'
@@ -61,118 +53,31 @@ jobs:
       - name: Update Workloads
         run: dotnet workload update
 
-      # Pinned to workload set 10.0.401, dotnet/macios' last release explicitly documented as
-      # "Xcode 26.6 support" (confirmed via its GitHub release notes) -- an unpinned install
-      # grabs whatever's newest, which as of this writing defaults net10.0-ios to a pack that
-      # requires the not-yet-GA Xcode 27 preview, breaking the build on every current runner
-      # image (none of which ship Xcode 27, confirmed via actions/runner-images).
+      # Pinned to workload set 10.0.401 -- an unpinned install grabs whatever's newest, which
+      # has previously defaulted other net10.0-* workloads to packs requiring not-yet-GA
+      # toolchain versions no runner image ships (the exact failure mode this pin avoids).
       - name: Install Workloads
         shell: pwsh
         run: |
           dotnet workload install android --version 10.0.401
-          dotnet workload install ios --version 10.0.401
 
       # Build/Test steps intentionally still not enabled: ClientApp's business logic
       # (Services/ViewModels) and real Views are mid-rebuild on Avalonia (replacing MAUI,
       # 2026-10-14). Enable once that work lands -- the project family itself (ClientApp,
-      # .Desktop, .Android, .iOS, .Browser) and the workload installs above are already real
-      # and worth keeping green in the meantime.
+      # .Desktop, .Android, .Browser) and the workload install above are already real and
+      # worth keeping green in the meantime.
       # - name: Build Desktop
       #   run: dotnet build src/ClientApp.Desktop/ClientApp.Desktop.csproj
       # - name: Build Android (compile-only)
       #   run: dotnet build src/ClientApp.Android/ClientApp.Android.csproj
-      # - name: Build iOS (compile-only)
-      #   run: dotnet build src/ClientApp.iOS/ClientApp.iOS.csproj
       # - name: Build Browser
       #   run: dotnet build src/ClientApp.Browser/ClientApp.Browser.csproj
       # - name: Test
       #   run: dotnet test --project tests/ClientApp.UnitTests/ClientApp.UnitTests.csproj --no-progress --output detailed
 
-  ios-simulator:
-    # Real iOS Simulator run, not just a compile check -- GitHub's macOS runners are actual
-    # Macs with Xcode preinstalled, so this builds and genuinely launches the app rather than
-    # only verifying it compiles. Simulator builds don't need a real Apple Developer
-    # certificate/code-signing (unlike device/App Store builds), so no paid account is needed.
-    runs-on: macos-latest
-    steps:
-      - uses: actions/checkout@v7
-
-      # Same caching rationale as the windows job above -- confirmed from this job's own
-      # real logs that DOTNET_ROOT resolves to /Users/runner/.dotnet on macos-latest (not
-      # /usr/local/share/dotnet, which is only where the runner image's own preinstalled
-      # copy lives; setup-dotnet installs its own under the runner's home directory here).
-      - name: Cache .NET SDK and workloads
-        uses: actions/cache@v6
-        with:
-          path: /Users/runner/.dotnet
-          key: ${{ runner.os }}-dotnet-${{ hashFiles('global.json', '.github/workflows/pr-validation-clientapp.yml') }}
-          restore-keys: |
-            ${{ runner.os }}-dotnet-
-
-      - name: Setup .NET (global.json)
-        uses: actions/setup-dotnet@v6
-
-      # Pinned to workload set 10.0.401 -- see the windows job's comment above for why.
-      - name: Install iOS workload
-        run: dotnet workload install ios --version 10.0.401
-
-      - name: Build for iOS Simulator
-        run: dotnet build src/ClientApp.iOS/ClientApp.iOS.csproj -c Release -p:RuntimeIdentifier=iossimulator-arm64
-
-      - name: Boot simulator, install, and launch
-        run: |
-          set -euo pipefail
-
-          UDID=$(xcrun simctl list devices available -j | python3 -c "
-          import json, sys
-          data = json.load(sys.stdin)
-          for runtime, devices in data['devices'].items():
-              if 'iOS' in runtime:
-                  for d in devices:
-                      if 'iPhone' in d['name']:
-                          print(d['udid'])
-                          sys.exit(0)
-          sys.exit(1)
-          ")
-          echo "Using simulator: $UDID"
-          echo "UDID=$UDID" >> "$GITHUB_ENV"
-
-          xcrun simctl boot "$UDID"
-          xcrun simctl bootstatus "$UDID" -b
-
-          APP_PATH=$(find artifacts/bin/ClientApp.iOS -name "*.app" -path "*iossimulator-arm64*" | head -n 1)
-          echo "Installing: $APP_PATH"
-          xcrun simctl install "$UDID" "$APP_PATH"
-
-          xcrun simctl launch "$UDID" com.companyname.eshop
-
-          sleep 3
-          mkdir -p artifacts/ios-simulator
-          xcrun simctl io "$UDID" screenshot artifacts/ios-simulator/launch.png
-
-      - name: Upload simulator screenshot
-        uses: actions/upload-artifact@v6
-        with:
-          name: ios-simulator-screenshot
-          path: artifacts/ios-simulator/launch.png
-
-      # Only runs when manually triggered with debug_ios_simulator checked -- never on an
-      # ordinary push/PR run, so normal CI never blocks waiting for someone to connect.
-      # limit-access-to-actor restricts the SSH session to whoever triggered this run (their
-      # registered GitHub SSH keys), not anyone who sees the printed connection command. The
-      # Simulator from the step above is left booted with the app already installed and
-      # launched, so $UDID (exported to GITHUB_ENV there) is ready to keep driving via
-      # `xcrun simctl` from inside the session -- install/launch/screenshot/terminate etc.
-      - name: Debug session (tmate)
-        if: ${{ github.event_name == 'workflow_dispatch' && inputs.debug_ios_simulator }}
-        uses: mxschmitt/action-tmate@v3.24
-        timeout-minutes: 30
-        with:
-          limit-access-to-actor: true
-
   android-emulator:
-    # Real Android Emulator run, mirroring the ios-simulator job above -- boots a genuine
-    # emulator (hardware-accelerated via KVM, confirmed as the current recommended setup from
+    # Real Android Emulator run, not just a compile check -- boots a genuine emulator
+    # (hardware-accelerated via KVM, confirmed as the current recommended setup from
     # reactivecircus/android-emulator-runner's own README) and installs/launches the real APK
     # rather than only compiling it.
     runs-on: ubuntu-latest
@@ -188,11 +93,11 @@ jobs:
           sudo udevadm control --reload-rules
           sudo udevadm trigger --name-match=kvm
 
-      # Same caching rationale as the windows/ios-simulator jobs above. DOTNET_ROOT here is
-      # unverified against a real log (unlike the other two, confirmed from this run's own
-      # output) -- /home/runner/.dotnet follows dotnet-install.sh's own documented default of
-      # $HOME/.dotnet when no install dir is given, matching the pattern already confirmed on
-      # macOS; will fix from this job's real log if that assumption turns out wrong.
+      # Same caching rationale as the windows job above. DOTNET_ROOT here is unverified
+      # against a real log (unlike that job's, confirmed from its own output) --
+      # /home/runner/.dotnet follows dotnet-install.sh's own documented default of
+      # $HOME/.dotnet when no install dir is given; will fix from this job's real log if
+      # that assumption turns out wrong.
       - name: Cache .NET SDK and workloads
         uses: actions/cache@v6
         with:
@@ -209,8 +114,8 @@ jobs:
         run: dotnet workload install android --version 10.0.401
 
       # Confirmed locally: a plain `dotnet build -c Release` for net10.0-android does not run
-      # linking/trimming the way net10.0-ios's build does -- that's a `dotnet publish` concern
-      # here -- so none of the NoWarn/IL20xx handling the iOS project needed applies.
+      # linking/trimming -- that's a `dotnet publish` concern here -- so no IL20xx NoWarn
+      # handling is needed the way ClientApp.Browser's csproj needs for its own publish step.
       - name: Build for Android Emulator
         run: dotnet build src/ClientApp.Android/ClientApp.Android.csproj -c Release -p:RuntimeIdentifier=android-x64
 
@@ -252,8 +157,8 @@ jobs:
           path: artifacts/android-emulator/launch.png
 
   browser:
-    # Real browser run, mirroring ios-simulator/android-emulator -- publishes the actual WASM
-    # app, serves it, and loads it in a genuine headless Chromium rather than only compiling it.
+    # Real browser run, mirroring android-emulator above -- publishes the actual WASM app,
+    # serves it, and loads it in a genuine headless Chromium rather than only compiling it.
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
