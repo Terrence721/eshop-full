@@ -1,0 +1,60 @@
+<!-- Functional equivalent of upstream's SettingsView.xaml, not a verbatim port: the real file's
+     Fake Location and GPS toggle sections are entirely commented out (dead in the real app too),
+     so only the Mock Services toggle and its four endpoint fields are built here, not a trimmed
+     port, matching what upstream actually renders. SettingsViewModel still carries the dead
+     Fake Location/GPS members verbatim (same category as LoginView's unused UserName/Password
+     bindings). Back is a real addition upstream never needed (Shell provided it there, see
+     SettingsViewModel.DismissCommand). No named style/resource dictionary exists yet (see
+     CatalogItemTemplate), so this uses plain inline values. Background matches the app-wide
+     brand blue convention. -->
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:eShop.ClientApp.ViewModels"
+             x:Class="eShop.ClientApp.Views.SettingsView"
+             x:DataType="vm:SettingsViewModel"
+             Foreground="White">
+    <Grid Background="#2556CB">
+        <ScrollViewer>
+            <StackPanel Margin="16" Spacing="16">
+                <Button Content="Back"
+                        Command="{Binding DismissCommand}"
+                        Background="Black"
+                        Foreground="White"
+                        HorizontalAlignment="Left" />
+
+                <Grid ColumnDefinitions="*,Auto">
+                    <StackPanel Grid.Column="0" Spacing="4">
+                        <TextBlock Text="{Binding TitleUseAzureServices}" FontSize="18" FontWeight="Bold" />
+                        <TextBlock Text="{Binding DescriptionUseAzureServices}" TextWrapping="Wrap" Opacity="0.8" />
+                    </StackPanel>
+
+                    <ToggleSwitch Grid.Column="1"
+                                  IsChecked="{Binding UseAzureServices, Mode=TwoWay}"
+                                  VerticalAlignment="Center" />
+                </Grid>
+
+                <StackPanel IsVisible="{Binding UseAzureServices}" Spacing="12">
+                    <StackPanel Spacing="4">
+                        <TextBlock Text="Identity Url" Foreground="#4EA1F7" />
+                        <TextBox Text="{Binding IdentityEndpoint, Mode=TwoWay}" />
+                    </StackPanel>
+
+                    <StackPanel Spacing="4">
+                        <TextBlock Text="Gateway Catalog Url" Foreground="#4EA1F7" />
+                        <TextBox Text="{Binding GatewayCatalogEndpoint, Mode=TwoWay}" />
+                    </StackPanel>
+
+                    <StackPanel Spacing="4">
+                        <TextBlock Text="Gateway Orders Url" Foreground="#4EA1F7" />
+                        <TextBox Text="{Binding GatewayOrdersEndpoint, Mode=TwoWay}" />
+                    </StackPanel>
+
+                    <StackPanel Spacing="4">
+                        <TextBlock Text="Gateway Basket Url" Foreground="#4EA1F7" />
+                        <TextBox Text="{Binding GatewayBasketEndpoint, Mode=TwoWay}" />
+                    </StackPanel>
+                </StackPanel>
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
+</UserControl>
