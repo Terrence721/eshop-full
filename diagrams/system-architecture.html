@@ -321,7 +321,7 @@
       <div class="layer-nodes">
         <span class="node node--done">Shared</span>
         <span class="node node--done">EventBus</span>
-        <span class="node node--done">EventBusRabbitMQ</span>
+        <span class="node node--done">EventBusKafka</span>
         <span class="node node--done">eShop.ServiceDefaults</span>
         <span class="node node--done">IntegrationEventLogEF</span>
       </div>
@@ -364,10 +364,10 @@
 
     <div class="card card--done">
       <span class="card-tag">Done</span>
-      <p class="card-title">EventBusRabbitMQ</p>
+      <p class="card-title">EventBusKafka</p>
       <ul>
-        <li>RabbitMQ implementation, 3-layer Decorator chain</li>
-        <li>2 real upstream bugs found and fixed</li>
+        <li>Kafka implementation, 3-layer Decorator chain (replacing an original RabbitMQ implementation)</li>
+        <li>2 real upstream bugs found and fixed in the original RabbitMQ implementation</li>
       </ul>
       <div class="card-link"><a href="event-flow.html">→ Event Flow</a></div>
     </div>
@@ -430,7 +430,7 @@
       <p class="card-title">Ordering.Domain / .Infrastructure / .API</p>
       <ul>
         <li>DDD split: domain model, EF Core persistence, MediatR CQRS API surface</li>
-        <li>3-stage pipeline behavior chain (Logging → Validator → Transaction), same Decorator shape as <code>EventBusRabbitMQ</code></li>
+        <li>3-stage pipeline behavior chain (Logging → Validator → Transaction), same Decorator shape as <code>EventBusKafka</code></li>
       </ul>
       <div class="card-link"><a href="projects-reference.html">→ Projects reference</a></div>
     </div>
