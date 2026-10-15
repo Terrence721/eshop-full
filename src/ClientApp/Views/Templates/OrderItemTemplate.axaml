@@ -1,0 +1,27 @@
+<!-- Functional equivalent of upstream's OrderItemTemplate.xaml, not a verbatim port: no named
+     style/resource dictionary exists yet (see CatalogItemTemplate), so this uses plain inline
+     values. Real image loading is the same known, deferred gap as CatalogItemTemplate. Order
+     items are read-only history, so unlike BasketItemTemplate there is no Delete button. -->
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:models="using:eShop.ClientApp.Models.Orders"
+             x:Class="eShop.ClientApp.Views.Templates.OrderItemTemplate"
+             x:DataType="models:OrderItem">
+    <Grid Margin="4" ColumnDefinitions="88,*,Auto">
+        <Border Grid.Column="0"
+                Background="Gray" CornerRadius="8"
+                Width="74" Height="74"
+                Margin="12,0,0,0"
+                VerticalAlignment="Center" />
+
+        <StackPanel Grid.Column="1" Margin="6" VerticalAlignment="Center">
+            <TextBlock Text="{Binding ProductName}" FontWeight="Bold" />
+            <TextBlock Text="{Binding UnitPrice, StringFormat='${0:N2}'}" />
+        </StackPanel>
+
+        <StackPanel Grid.Column="2" Margin="6" VerticalAlignment="Center" HorizontalAlignment="Right">
+            <TextBlock Text="{Binding Quantity, StringFormat='Qty {0}'}" HorizontalAlignment="Right" />
+            <TextBlock Text="{Binding Total, StringFormat='${0:N2}'}" FontWeight="Bold" HorizontalAlignment="Right" />
+        </StackPanel>
+    </Grid>
+</UserControl>

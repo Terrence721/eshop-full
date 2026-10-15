@@ -1,0 +1,70 @@
+<!-- Functional equivalent of upstream's CheckoutView.xaml, not a verbatim port: the real file
+     uses named styles (OrderTitleStyle etc.) from a resource dictionary that doesn't exist in
+     this rebuild (see CatalogItemTemplate), so this uses plain inline values instead, and drops
+     the real ActivityIndicator sizing's MAUI OnPlatform branch for a single Desktop-appropriate
+     width. Background matches the app-wide brand blue convention established for Login/Catalog. -->
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:eShop.ClientApp.ViewModels"
+             xmlns:templates="using:eShop.ClientApp.Views.Templates"
+             x:Class="eShop.ClientApp.Views.CheckoutView"
+             x:DataType="vm:CheckoutViewModel"
+             Foreground="White">
+    <Grid Background="#2556CB" RowDefinitions="Auto,*,Auto">
+        <Grid Grid.Row="0"
+              Margin="16"
+              ColumnDefinitions="*,*"
+              RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto"
+              RowSpacing="4">
+            <TextBlock Grid.Row="0" Grid.Column="0" Text="ORDER NUMBER" Opacity="0.7" />
+            <TextBlock Grid.Row="1" Grid.Column="0" Text="{Binding Order.OrderNumber}" />
+
+            <TextBlock Grid.Row="0" Grid.Column="1" Text="DATE" Opacity="0.7" />
+            <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding Order.OrderDate, StringFormat='{}{0:d}'}" />
+
+            <TextBlock Grid.Row="2" Grid.Column="0" Text="TOTAL" Opacity="0.7" Margin="0,8,0,0" />
+            <TextBlock Grid.Row="3" Grid.Column="0" Text="{Binding Order.Total, StringFormat='${0:N2}'}" />
+
+            <TextBlock Grid.Row="2" Grid.Column="1" Text="STATUS" Opacity="0.7" Margin="0,8,0,0" />
+            <TextBlock Grid.Row="3" Grid.Column="1" Text="{Binding Order.OrderStatus}" />
+
+            <TextBlock Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2"
+                       Text="SHIPPING ADDRESS"
+                       FontSize="18" FontWeight="Bold"
+                       Margin="0,16,0,4" />
+
+            <StackPanel Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="2">
+                <TextBlock Text="{Binding ShippingAddress.Street}" />
+                <TextBlock Text="{Binding ShippingAddress.ZipCode}" />
+                <TextBlock Text="{Binding ShippingAddress.State}" />
+                <TextBlock Text="{Binding ShippingAddress.Country}" />
+            </StackPanel>
+        </Grid>
+
+        <ScrollViewer Grid.Row="1">
+            <ItemsControl ItemsSource="{Binding Order.OrderItems}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <templates:OrderItemTemplate />
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </ScrollViewer>
+
+        <Border Grid.Row="2" Background="#1A3F99" Padding="16">
+            <Button Content="Place order"
+                    Command="{Binding CheckoutCommand}"
+                    Background="Black"
+                    Foreground="White"
+                    HorizontalAlignment="Stretch"
+                    HorizontalContentAlignment="Center" />
+        </Border>
+
+        <ProgressBar Grid.Row="0" Grid.RowSpan="2"
+                     IsIndeterminate="True"
+                     IsVisible="{Binding IsBusy}"
+                     HorizontalAlignment="Center"
+                     VerticalAlignment="Center"
+                     Width="200" />
+    </Grid>
+</UserControl>
