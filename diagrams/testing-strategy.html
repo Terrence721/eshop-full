@@ -227,12 +227,12 @@
     <thead><tr><th>Project</th><th>Source files covered</th><th>Tests</th></tr></thead>
     <tbody>
       <tr><td><code>eShop.ServiceDefaults.UnitTests</code></td><td class="num">7 of 7</td><td class="num">33</td></tr>
-      <tr><td><code>EventBusRabbitMQ.UnitTests</code></td><td class="num">7 of 7 applicable</td><td class="num">19</td></tr>
+      <tr><td><code>EventBusKafka.UnitTests</code></td><td class="num">7 of 7 applicable</td><td class="num">21</td></tr>
       <tr><td><code>EventBus.UnitTests</code></td><td class="num">6 of 6 applicable</td><td class="num">16</td></tr>
       <tr><td><code>IntegrationEventLogEF.UnitTests</code></td><td class="num">5 of 5 applicable</td><td class="num">17</td></tr>
       <tr><td><code>Identity.API.UnitTests</code></td><td class="num">18 of 18 applicable</td><td class="num">101</td></tr>
       <tr><td><code>Catalog.API.UnitTests</code></td><td class="num">8 of 8 applicable</td><td class="num">45</td></tr>
-      <tr class="total"><td>Total</td><td></td><td class="num">231</td></tr>
+      <tr class="total"><td>Total</td><td></td><td class="num">233</td></tr>
     </tbody>
   </table>
   <p class="dek dek--footnote">
@@ -248,7 +248,7 @@
     acknowledged backlog being closed project by project, not a blanket "every done project has full
     coverage" claim. Both React frontends (<code>Identity.WebApp</code>, 118 tests;
     <code>WebhookClient.WebApp</code>, 52 tests) have had full Vitest + React Testing Library coverage
-    from their first commit instead — 170 more tests, 401 total across the repo, not counted in the
+    from their first commit instead — 170 more tests, 403 total across the repo, not counted in the
     .NET-only table above.
   </p>
 
@@ -289,7 +289,7 @@
       <span class="card-tag">Real ActivityListener</span>
       <p class="card-title">Don't mock OpenTelemetry, listen to it for real</p>
       <p class="body">
-        <code>RabbitMQTelemetryTests.cs</code> and <code>TelemetryEventBusDecoratorTests.cs</code> both use
+        <code>KafkaTelemetryTests.cs</code> and <code>TelemetryEventBusDecoratorTests.cs</code> both use
         a real <code>ActivityListener</code>/<code>ActivitySource</code> to confirm the actual messaging
         semantic-convention tags land with the right values — not a mock standing in for what OpenTelemetry
         would do.
