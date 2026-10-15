@@ -74,6 +74,10 @@ public class SettingsViewModel : ViewModelBase
 
         ToggleAllowGpsLocationCommand = new RelayCommand(ToggleAllowGpsLocation);
 
+        // Upstream relied on Shell's automatic back button for this; Avalonia has no Shell
+        // chrome (see CatalogItemViewModel.DismissCommand for the same gap), so this needs one.
+        DismissCommand = new AsyncRelayCommand(async () => await NavigationService.PopAsync());
+
         UseAzureServices = !_settingsService.UseMocks;
     }
 
@@ -211,6 +215,8 @@ public class SettingsViewModel : ViewModelBase
 
     public ICommand ToggleAllowGpsLocationCommand { get; }
 
+    public ICommand DismissCommand { get; }
+
     protected override void OnPropertyChanged(PropertyChangedEventArgs e)
     {
         base.OnPropertyChanged(e);
@@ -256,6 +262,15 @@ public class SettingsViewModel : ViewModelBase
     {
         // Save use mocks services to local storage
         _settingsService.UseMocks = !UseAzureServices;
+
+        // Upstream's real View bound this toggle's Checked AND its ToggleMockServicesCommand
+        // together on the same control, so every toggle fired both UpdateUseAzureServices() (save)
+        // and ToggleMockServices() (swap the live service references) at once. This View only
+        // binds the value (IsChecked, see SettingsView.axaml), so without this the switch would
+        // only take effect on the next app launch, not the current session -- exactly the gap
+        // that left a live app running against the real (unreachable) IdentityService after a
+        // quick toggle-on/toggle-off test here, crashing Login with an unhandled connection error.
+        _appEnvironmentService.UpdateDependencies(!UseAzureServices);
     }
 
     private void UpdateIdentityEndpoint()
