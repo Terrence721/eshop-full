@@ -192,6 +192,38 @@ public partial class CatalogViewModel : ViewModelBase
     {
         await NavigationService.NavigateToAsync("Basket");
     }
+
+    [RelayCommand]
+    private async Task ViewProfileAsync()
+    {
+        await NavigationService.NavigateToAsync("Profile");
+    }
+
+    [RelayCommand]
+    private async Task ViewMapAsync()
+    {
+        await NavigationService.NavigateToAsync("Map");
+    }
+
+    [RelayCommand]
+    private async Task ViewSettingsAsync()
+    {
+        await NavigationService.NavigateToAsync("Settings");
+    }
+
+    // Matches ProfileViewModel.LogoutAsync: LoginViewModel's ApplyQueryAttributes picks up the
+    // Logout flag and calls IdentityService.SignOutAsync().
+    [RelayCommand]
+    private async Task LogoutAsync()
+    {
+        await IsBusyFor(
+            async () =>
+            {
+                await NavigationService.NavigateToAsync(
+                    "//Login",
+                    new Dictionary<string, object> {{"Logout", true}});
+            });
+    }
 }
 
 public class CatalogBrandSelectionViewModel : SelectionViewModel<CatalogBrand>

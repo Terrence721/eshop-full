@@ -5,16 +5,30 @@
      chips, Clear/Apply) is a known, deferred follow-up: this covers the product grid, basket
      button, and busy indicator, the functional core. No image assets exist for this rebuild
      (see CatalogItemTemplate), and no named style/resource dictionary exists yet either, so
-     this uses plain inline values rather than inventing new design tokens. -->
+     this uses plain inline values rather than inventing new design tokens. The Settings dropdown
+     and its My Orders/Settings/Map/Logout/Close entries are real additions upstream never needed:
+     Shell's TabBar covered reaching Profile/Map (Settings was a flyout item) and its flyout menu
+     covered Logout there, and the OS task switcher covered app-exit (see CatalogViewModel.
+     ViewProfileCommand/ViewSettingsCommand/ViewMapCommand/LogoutCommand, the last mirroring
+     ProfileViewModel's existing real implementation). This uses MenuFlyout/
+     MenuItem, not a plain Flyout + HyperlinkButton: a plain Flyout has no built-in close-on-click
+     behavior, and a hand-rolled Hide() on click raced with Command execution (and, once fixed by
+     deferring it, could still leave a stray click to bleed through to whatever the page underneath
+     renders at that same screen position once it changes, e.g. an order row in ProfileView).
+     MenuFlyout/MenuItem is Avalonia's own tested mechanism for "pick one, close correctly,
+     invoke command", so it does not carry those bugs. MenuItem headers are plain text TextBlocks
+     styled blue and underlined so they still read as hyperlinks. -->
+
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:vm="using:eShop.ClientApp.ViewModels"
              xmlns:templates="using:eShop.ClientApp.Views.Templates"
              x:Class="eShop.ClientApp.Views.CatalogView"
              x:DataType="vm:CatalogViewModel">
-    <Grid>
+    <Grid Background="#2556CB">
         <ScrollViewer>
-            <ListBox ItemsSource="{Binding Products}"
+            <ListBox Background="Transparent"
+                     ItemsSource="{Binding Products}"
                      SelectedItem="{Binding SelectedProduct, Mode=TwoWay}"
                      SelectionMode="Single"
                      SelectionChanged="OnProductSelectionChanged">
@@ -39,6 +53,43 @@
                 CornerRadius="28"
                 Width="56"
                 Height="56" />
+
+        <DropDownButton Content="Settings"
+                         Background="Black"
+                         Foreground="White"
+                         HorizontalAlignment="Right"
+                         VerticalAlignment="Top"
+                         Margin="16">
+            <DropDownButton.Flyout>
+                <MenuFlyout Placement="BottomEdgeAlignedRight">
+                    <MenuItem Command="{Binding ViewProfileCommand}">
+                        <MenuItem.Header>
+                            <TextBlock Text="My Orders" Foreground="#4EA1F7" TextDecorations="Underline" />
+                        </MenuItem.Header>
+                    </MenuItem>
+                    <MenuItem Command="{Binding ViewSettingsCommand}">
+                        <MenuItem.Header>
+                            <TextBlock Text="Settings" Foreground="#4EA1F7" TextDecorations="Underline" />
+                        </MenuItem.Header>
+                    </MenuItem>
+                    <MenuItem Command="{Binding ViewMapCommand}">
+                        <MenuItem.Header>
+                            <TextBlock Text="Map" Foreground="#4EA1F7" TextDecorations="Underline" />
+                        </MenuItem.Header>
+                    </MenuItem>
+                    <MenuItem Command="{Binding LogoutCommand}">
+                        <MenuItem.Header>
+                            <TextBlock Text="Logout" Foreground="#4EA1F7" TextDecorations="Underline" />
+                        </MenuItem.Header>
+                    </MenuItem>
+                    <MenuItem Click="OnQuitClick">
+                        <MenuItem.Header>
+                            <TextBlock Text="Close" Foreground="#4EA1F7" TextDecorations="Underline" />
+                        </MenuItem.Header>
+                    </MenuItem>
+                </MenuFlyout>
+            </DropDownButton.Flyout>
+        </DropDownButton>
 
         <ProgressBar IsIndeterminate="True"
                      IsVisible="{Binding IsBusy}"

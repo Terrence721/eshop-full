@@ -1,23 +1,46 @@
 <!-- Functional equivalent of upstream's LoginView.xaml, not a verbatim port: the real file
      uses MAUI-only constructs with no Avalonia equivalent (a custom Animations/Triggers
      framework, Shell.FlyoutBehavior/NavBarIsVisible, iOS-specific safe-area config), all
-     dropped here rather than reinvented. Only SignInCommand/SettingsCommand/IsBusy are bound,
-     matching the real upstream file exactly: it never actually binds UserName/Password/
-     MockSignInCommand/RegisterCommand despite LoginViewModel exposing all of them (confirmed
-     dead/unused, same category as AddValidations()). Image assets (header.png, logo_header.png,
-     the settings icon) were never created for this rebuild, so this uses plain text/color
-     instead of inventing new graphics: not a redesign, just the minimum to be functional. -->
+     dropped here rather than reinvented. SignInCommand/IsBusy are bound, matching the real
+     upstream file exactly: it never actually binds UserName/Password/MockSignInCommand/
+     RegisterCommand despite LoginViewModel exposing all of them (confirmed dead/unused, same
+     category as AddValidations()). Image assets (header.png, logo_header.png, the settings
+     icon) were never created for this rebuild, so this uses plain text/color instead of
+     inventing new graphics: not a redesign, just the minimum to be functional. Background
+     matches the app's brand blue (MainWindow/MainView's #2556CB) instead of upstream's
+     LightGrayColor, since that color is otherwise never visible once any View fills the
+     window. Settings is a dropdown matching CatalogView's convention (MenuFlyout/MenuItem, not
+     a plain Flyout + HyperlinkButton, see CatalogView for why), with Settings itself now a
+     real reachable destination and Close underneath; there is no Logout before a user is
+     signed in. -->
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:vm="using:eShop.ClientApp.ViewModels"
              x:Class="eShop.ClientApp.Views.LoginView"
-             x:DataType="vm:LoginViewModel">
-    <Grid Background="#F2F2F2" RowDefinitions="Auto,*,Auto,Auto,*">
-        <Button Grid.Row="0"
-                Content="Settings"
-                Command="{Binding SettingsCommand}"
-                HorizontalAlignment="Right"
-                Margin="16" />
+             x:DataType="vm:LoginViewModel"
+             Foreground="White">
+    <Grid Background="#2556CB" RowDefinitions="Auto,*,Auto,Auto,*">
+        <DropDownButton Grid.Row="0"
+                         Content="Settings"
+                         HorizontalAlignment="Right"
+                         Margin="16"
+                         Background="Black"
+                         Foreground="White">
+            <DropDownButton.Flyout>
+                <MenuFlyout Placement="BottomEdgeAlignedRight">
+                    <MenuItem Command="{Binding SettingsCommand}">
+                        <MenuItem.Header>
+                            <TextBlock Text="Settings" Foreground="#4EA1F7" TextDecorations="Underline" />
+                        </MenuItem.Header>
+                    </MenuItem>
+                    <MenuItem Click="OnQuitClick">
+                        <MenuItem.Header>
+                            <TextBlock Text="Close" Foreground="#4EA1F7" TextDecorations="Underline" />
+                        </MenuItem.Header>
+                    </MenuItem>
+                </MenuFlyout>
+            </DropDownButton.Flyout>
+        </DropDownButton>
 
         <TextBlock Grid.Row="1"
                    Text="eShop"
