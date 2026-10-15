@@ -1,0 +1,41 @@
+<!-- Functional equivalent of upstream's MapView.xaml, not a verbatim port: the real file uses
+     Microsoft.Maui.Maps's native Map/Pin controls (platform-native map tiles), which have no
+     Avalonia equivalent: no built-in map control exists, and pulling in a third-party mapping
+     package is out of scope for this adaptation pass (same category as WebAuthenticator/
+     Permissions API gaps elsewhere). This shows the same real Stores data (address, description,
+     coordinates) as a plain list instead of pretending to render an interactive map. The feature
+     itself is dead even upstream (MapViewModel's own comment: "no live service call anywhere,
+     this store list is a single static pin"), so nothing here is more or less reachable than the
+     real app. Back is a real addition upstream never needed (Shell provided it there, see
+     MapViewModel.DismissCommand). Background matches the app-wide brand blue convention. -->
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:eShop.ClientApp.ViewModels"
+             x:Class="eShop.ClientApp.Views.MapView"
+             x:DataType="vm:MapViewModel"
+             Foreground="White">
+    <Grid Background="#2556CB" RowDefinitions="Auto,*">
+        <Button Grid.Row="0"
+                Content="Back"
+                Command="{Binding DismissCommand}"
+                Background="Black"
+                Foreground="White"
+                HorizontalAlignment="Left"
+                Margin="16" />
+
+        <ItemsControl Grid.Row="1" Margin="16" ItemsSource="{Binding Stores}">
+            <ItemsControl.ItemTemplate>
+                <DataTemplate x:DataType="vm:Store">
+                    <Border Background="#1A3F99" CornerRadius="8" Padding="16" Margin="0,0,0,12">
+                        <StackPanel Spacing="4">
+                            <TextBlock Text="{Binding Description}" FontSize="18" FontWeight="Bold" />
+                            <TextBlock Text="{Binding Address}" Opacity="0.8" />
+                            <TextBlock Text="{Binding Location.Latitude, StringFormat='Lat {0}'}" Opacity="0.6" FontSize="12" />
+                            <TextBlock Text="{Binding Location.Longitude, StringFormat='Lng {0}'}" Opacity="0.6" FontSize="12" />
+                        </StackPanel>
+                    </Border>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+    </Grid>
+</UserControl>
