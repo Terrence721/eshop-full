@@ -28,6 +28,13 @@ public static class KafkaDependencyInjectionExtensions
         builder.AddKafkaConsumer<string, byte[]>(connectionName, settings =>
         {
             settings.Config.GroupId = subscriptionClientName;
+
+            // A consumer commonly starts up before any publisher has ever run (e.g. every
+            // service here starts independently, in no guaranteed order) -- without this,
+            // subscribing to a topic nothing has published to yet throws "Subscribed topic not
+            // available" on every Consume() call until something else causes the topic to exist.
+            // Live-verified: without it, Basket.API hit exactly that against a fresh broker.
+            settings.Config.AllowAutoCreateTopics = true;
         });
 
         // Unlike RabbitMQ.Client, Confluent.Kafka has no built-in OpenTelemetry support, so we
