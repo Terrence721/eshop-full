@@ -52,7 +52,20 @@ public class IdentityService(IBrowser browser, ISettingsService settingsService,
 
     public async Task<bool> SignOutAsync()
     {
-        var response = await GetClient().LogoutAsync(new LogoutRequest()).ConfigureAwait(false);
+        LogoutResult response;
+
+        try
+        {
+            response = await GetClient().LogoutAsync(new LogoutRequest()).ConfigureAwait(false);
+        }
+        catch (Exception ex) when (ex is HttpRequestException or InvalidOperationException)
+        {
+            // Same reasoning as SignInAsync: LogoutAsync fetches the discovery document too, so an
+            // unreachable Identity endpoint throws here the same way. Found live on Android (not
+            // mocked) -- LogoutAsync was completely unguarded, crashing the app instead of just
+            // failing the sign-out attempt.
+            return false;
+        }
 
         if (response.IsError)
         {
