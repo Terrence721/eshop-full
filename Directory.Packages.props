@@ -127,7 +127,6 @@
     <!-- AvaloniaUI.DiagnosticsSupport is the real current diagnostics package for Avalonia 12 -
          the older Avalonia.Diagnostics is a stale 11.x-line package, confirmed via NuGet. -->
     <PackageVersion Include="AvaloniaUI.DiagnosticsSupport" Version="2.2.3" />
-    <PackageVersion Include="Xamarin.AndroidX.Core.SplashScreen" Version="1.0.1.15" />
     <PackageVersion Include="CommunityToolkit.Mvvm" Version="8.4.2" />
     <!-- IdentityModel.OidcClient is archived/renamed upstream, same story as IdentityModel ->
          Duende.IdentityModel above; Duende.IdentityModel.OidcClient is the maintained
