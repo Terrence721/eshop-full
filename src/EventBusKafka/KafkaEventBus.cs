@@ -98,6 +98,20 @@ public sealed class KafkaEventBus(
             catch (Exception ex)
             {
                 logger.LogError(ex, "Error consuming from Kafka");
+
+                // Retrying Consume() again immediately, in a tight loop, is a real anti-pattern
+                // regardless of the specific error -- live-verified that it's not just wasteful:
+                // it crashed the whole process with a native access violation in librdkafka
+                // (0xC0000005 in rd_kafka_consumer_poll) rather than staying a managed exception.
+                try
+                {
+                    await Task.Delay(TimeSpan.FromSeconds(1), cancellationToken);
+                }
+                catch (OperationCanceledException)
+                {
+                    break;
+                }
+
                 continue;
             }
 
