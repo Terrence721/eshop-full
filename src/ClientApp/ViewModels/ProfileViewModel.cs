@@ -15,9 +15,11 @@ public partial class ProfileViewModel(
 
     public IList<Order> Orders => _orders;
 
+    public bool IsEmpty => _orders.Count == 0;
+
     public override async Task InitializeAsync()
     {
-        await RefreshAsync();
+        await RefreshOrdersAsync();
     }
 
     [RelayCommand]
@@ -33,6 +35,12 @@ public partial class ProfileViewModel(
             });
     }
 
+    // This real upstream bug was carried over verbatim with the rest of ProfileViewModel: calling
+    // RefreshAsync from InitializeAsync meant its own "if (IsBusy) return" guard always saw
+    // IsBusy already true (set by InitializeAsyncCommand's own IsBusyFor wrapper before
+    // InitializeAsync even runs), so the order fetch below silently never executed on navigation.
+    // RefreshOrdersAsync is the shared fetch; RefreshAsync keeps the guard for its own purpose
+    // (ignoring a second manual refresh while one is already in flight).
     [RelayCommand]
     private async Task RefreshAsync()
     {
@@ -41,14 +49,15 @@ public partial class ProfileViewModel(
             return;
         }
 
-        await IsBusyFor(
-            async () =>
-            {
-                // Get orders
-                var orders = await _appEnvironmentService.OrderService.GetOrdersAsync();
+        await IsBusyFor(RefreshOrdersAsync);
+    }
 
-                _orders.ReloadData(orders);
-            });
+    private async Task RefreshOrdersAsync()
+    {
+        var orders = await _appEnvironmentService.OrderService.GetOrdersAsync();
+
+        _orders.ReloadData(orders);
+        OnPropertyChanged(nameof(IsEmpty));
     }
 
     [RelayCommand]
