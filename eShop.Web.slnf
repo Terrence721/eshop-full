@@ -3,7 +3,7 @@
     "path": "eShop.slnx",
     "projects": [
       "src\\EventBus\\EventBus.csproj",
-      "src\\EventBusRabbitMQ\\EventBusRabbitMQ.csproj",
+      "src\\EventBusKafka\\EventBusKafka.csproj",
       "src\\eShop.ServiceDefaults\\eShop.ServiceDefaults.csproj",
       "src\\IntegrationEventLogEF\\IntegrationEventLogEF.csproj",
       "src\\Identity.API\\Identity.API.csproj",
@@ -18,7 +18,7 @@
       "src\\PaymentProcessor\\PaymentProcessor.csproj",
       "src\\WebBFF\\WebBFF.csproj",
       "tests\\EventBus.UnitTests\\EventBus.UnitTests.csproj",
-      "tests\\EventBusRabbitMQ.UnitTests\\EventBusRabbitMQ.UnitTests.csproj",
+      "tests\\EventBusKafka.UnitTests\\EventBusKafka.UnitTests.csproj",
       "tests\\eShop.ServiceDefaults.UnitTests\\eShop.ServiceDefaults.UnitTests.csproj",
       "tests\\IntegrationEventLogEF.UnitTests\\IntegrationEventLogEF.UnitTests.csproj",
       "tests\\Identity.API.UnitTests\\Identity.API.UnitTests.csproj",
