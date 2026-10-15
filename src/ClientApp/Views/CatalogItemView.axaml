@@ -1,0 +1,59 @@
+<!-- Functional equivalent of upstream's CatalogItemView.xaml, not a verbatim port: the real file
+     uses MAUI-only constructs with no Avalonia equivalent (custom Animations/Triggers framework,
+     Shell.PresentationMode), dropped rather than reinvented. Image assets (arrow_left.png,
+     cart.png, the real product picture) were never created for this rebuild, so the back/add
+     buttons use plain text and the product picture is the same gray placeholder as
+     CatalogItemTemplate, not new graphics. -->
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:eShop.ClientApp.ViewModels"
+             x:Class="eShop.ClientApp.Views.CatalogItemView"
+             x:DataType="vm:CatalogItemViewModel"
+             Foreground="Black">
+    <Grid Background="#AA000000">
+        <Border Background="White" CornerRadius="8" Margin="24" MaxWidth="600">
+            <ScrollViewer>
+                <Grid Margin="16" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto" RowSpacing="8">
+                    <Button Grid.Row="0"
+                            Content="Back"
+                            Command="{Binding DismissCommand}"
+                            Background="Black"
+                            Foreground="White"
+                            HorizontalAlignment="Left" />
+
+                    <Border Grid.Row="1" Background="Gray" CornerRadius="8" Height="250" />
+
+                    <TextBlock Grid.Row="2"
+                               Text="{Binding CatalogItem.Name}"
+                               FontSize="24"
+                               FontWeight="Bold"
+                               TextWrapping="Wrap" />
+
+                    <TextBlock Grid.Row="3"
+                               Text="{Binding CatalogItem.CatalogBrand.Brand}"
+                               FontSize="16"
+                               Opacity="0.7" />
+
+                    <TextBlock Grid.Row="4"
+                               Text="{Binding CatalogItem.Description}"
+                               TextWrapping="Wrap" />
+
+                    <Grid Grid.Row="5" ColumnDefinitions="*,Auto">
+                        <TextBlock Grid.Column="0"
+                                   Text="{Binding CatalogItem.Price, StringFormat='{}{0:C2}'}"
+                                   VerticalAlignment="Center"
+                                   FontSize="18"
+                                   FontWeight="Bold" />
+
+                        <Button Grid.Column="1"
+                                Content="Add to shopping bag"
+                                Command="{Binding AddCatalogItemCommand}"
+                                Background="Black"
+                                Foreground="White"
+                                Padding="16,8" />
+                    </Grid>
+                </Grid>
+            </ScrollViewer>
+        </Border>
+    </Grid>
+</UserControl>
