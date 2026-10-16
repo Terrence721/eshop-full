@@ -24,7 +24,10 @@ public static class KafkaDependencyInjectionExtensions
         // resolve it doesn't exist yet at this point, but AddKafkaConsumer needs the group id now.
         var subscriptionClientName = builder.Configuration.GetSection(SectionName)[nameof(EventBusOptions.SubscriptionClientName)];
 
-        builder.AddKafkaProducer<string, byte[]>(connectionName);
+        builder.AddKafkaProducer<string, byte[]>(connectionName, settings =>
+        {
+            settings.Config.BrokerAddressFamily = BrokerAddressFamily.V4;
+        });
         builder.AddKafkaConsumer<string, byte[]>(connectionName, settings =>
         {
             settings.Config.GroupId = subscriptionClientName;
@@ -35,6 +38,15 @@ public static class KafkaDependencyInjectionExtensions
             // available" on every Consume() call until something else causes the topic to exist.
             // Live-verified: without it, Basket.API hit exactly that against a fresh broker.
             settings.Config.AllowAutoCreateTopics = true;
+
+            // librdkafka resolves the broker's advertised-listener address (distinct from the
+            // initial bootstrap address) independently, and live-verified under eShop.AppHost
+            // that this doesn't reliably honor the OS-level IPv4-preference fix for "localhost"
+            // even when the initial bootstrap connection does -- every service hit "N brokers are
+            // down" against a container whose port is only published on IPv4. Forcing IPv4
+            // explicitly here is the robust fix librdkafka itself documents for this, rather than
+            // depending on OS DNS resolution order.
+            settings.Config.BrokerAddressFamily = BrokerAddressFamily.V4;
         });
 
         // Unlike RabbitMQ.Client, Confluent.Kafka has no built-in OpenTelemetry support, so we
