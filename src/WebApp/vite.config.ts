@@ -4,9 +4,12 @@ import { defineConfig, type ProxyOptions } from 'vite'
 
 // WebBFF holds the real OAuth tokens server-side and proxies every real
 // backend call -- the browser never talks to Catalog.API/Basket.API/
-// Ordering.API/Identity.API directly. Real deployment topology is a
-// separate, still-open decision -- this is dev-only.
-const webBffTarget = 'http://localhost:5225'
+// Ordering.API/Identity.API directly. Under eShop.AppHost,
+// WithReference(webBff) injects the real dashboard-assigned port as
+// services__webbff__http__0 (confirmed via a live probe, not assumed).
+// Falls back to the old fixed port for running this dev server standalone,
+// without AppHost.
+const webBffTarget = process.env['services__webbff__http__0'] ?? 'http://localhost:5225'
 
 // The OIDC handler builds its own absolute redirect_uri (for the
 // /signin-oidc callback) from Request.Host when /bff/login's Challenge
