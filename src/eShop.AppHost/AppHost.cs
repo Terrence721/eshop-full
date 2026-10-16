@@ -26,4 +26,46 @@ var ollama = builder.AddOllama("ollama")
     .WithLifetime(ContainerLifetime.Persistent);
 var embeddingModel = ollama.AddModel("embedding", "all-minilm");
 
+var identityApi = builder.AddProject<Projects.Identity_API>("identity-api")
+    .WithReference(identityDb)
+    .WaitFor(postgres);
+
+var catalogApi = builder.AddProject<Projects.Catalog_API>("catalog-api")
+    .WithReference(catalogDb)
+    .WithReference(eventBus, connectionName: "eventbus")
+    .WithReference(embeddingModel, connectionName: "embedding")
+    .WithEnvironment("OllamaEnabled", "true")
+    .WaitFor(postgres)
+    .WaitFor(eventBus);
+
+var basketApi = builder.AddProject<Projects.Basket_API>("basket-api")
+    .WithReference(redis)
+    .WithReference(eventBus, connectionName: "eventbus")
+    .WaitFor(redis)
+    .WaitFor(eventBus);
+
+var orderingApi = builder.AddProject<Projects.Ordering_API>("ordering-api")
+    .WithReference(orderingDb)
+    .WithReference(eventBus, connectionName: "eventbus")
+    .WaitFor(postgres)
+    .WaitFor(eventBus);
+
+var webhooksApi = builder.AddProject<Projects.Webhooks_API>("webhooks-api")
+    .WithReference(webhooksDb)
+    .WithReference(eventBus, connectionName: "eventbus")
+    .WaitFor(postgres)
+    .WaitFor(eventBus);
+
+// Upstream's own comment, preserved: "wait for the orderingApi to be ready because that
+// contains the EF migrations" -- OrderProcessor reads the same orderingdb directly via raw
+// ADO.NET/Npgsql, with no migrations of its own.
+var orderProcessor = builder.AddProject<Projects.OrderProcessor>("order-processor")
+    .WithReference(orderingDb)
+    .WithReference(eventBus, connectionName: "eventbus")
+    .WaitFor(orderingApi);
+
+var paymentProcessor = builder.AddProject<Projects.PaymentProcessor>("payment-processor")
+    .WithReference(eventBus, connectionName: "eventbus")
+    .WaitFor(eventBus);
+
 builder.Build().Run();
