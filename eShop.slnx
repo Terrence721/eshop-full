@@ -2,6 +2,7 @@
   <Folder Name="/src/">
     <Project Path="src/EventBus/EventBus.csproj" />
     <Project Path="src/EventBusKafka/EventBusKafka.csproj" />
+    <Project Path="src/KafkaTopicSeeder/KafkaTopicSeeder.csproj" />
     <Project Path="src/eShop.ServiceDefaults/eShop.ServiceDefaults.csproj" />
     <Project Path="src/IntegrationEventLogEF/IntegrationEventLogEF.csproj" />
     <Project Path="src/Identity.API/Identity.API.csproj" />
