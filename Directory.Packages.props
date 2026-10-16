@@ -6,7 +6,7 @@
     <MicrosoftExtensionsVersion>10.10.0</MicrosoftExtensionsVersion>
     <AspireVersion>13.6.1</AspireVersion>
     <AspireUnstablePackagesVersion>13.4.6-preview.1.26319.6</AspireUnstablePackagesVersion>
-    <GrpcVersion>2.83.0</GrpcVersion>
+    <GrpcVersion>2.84.0</GrpcVersion>
     <DuendeVersion>8.0.9</DuendeVersion>
     <AvaloniaVersion>12.1.4</AvaloniaVersion>
     <!-- Asp.Versioning.Http/Mvc.ApiExplorer/OpenApi hit a stable 10.0.0 release; Http.Client diverged onto its own 8.x line and is pinned separately below. -->
