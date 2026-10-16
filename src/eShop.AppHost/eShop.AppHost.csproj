@@ -24,6 +24,8 @@
     <ProjectReference Include="..\Webhooks.API\Webhooks.API.csproj" />
     <ProjectReference Include="..\OrderProcessor\OrderProcessor.csproj" />
     <ProjectReference Include="..\PaymentProcessor\PaymentProcessor.csproj" />
+    <ProjectReference Include="..\WebBFF\WebBFF.csproj" />
+    <ProjectReference Include="..\WebhookClient\WebhookClient.csproj" />
   </ItemGroup>
 
 </Project>

@@ -68,4 +68,19 @@ var paymentProcessor = builder.AddProject<Projects.PaymentProcessor>("payment-pr
     .WithReference(eventBus, connectionName: "eventbus")
     .WaitFor(eventBus);
 
+// WithReference here makes each API's real dashboard-assigned endpoint available to WebBFF's
+// process via Aspire's service-discovery env vars -- WebBFF's own BasketUrl/YARP cluster
+// destinations still read from hardcoded appsettings.json values until that's updated separately
+// to actually consume them.
+var webBff = builder.AddProject<Projects.WebBFF>("webbff")
+    .WithReference(catalogApi)
+    .WithReference(basketApi)
+    .WithReference(orderingApi)
+    .WithReference(identityApi)
+    .WaitFor(identityApi);
+
+var webhookClient = builder.AddProject<Projects.WebhookClient>("webhook-client")
+    .WithReference(webhooksApi)
+    .WaitFor(webhooksApi);
+
 builder.Build().Run();
