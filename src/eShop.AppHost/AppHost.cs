@@ -83,4 +83,23 @@ var webhookClient = builder.AddProject<Projects.WebhookClient>("webhook-client")
     .WithReference(webhooksApi)
     .WaitFor(webhooksApi);
 
+// All three are Yarn workspaces (this repo's only JavaScript package manager), not npm --
+// WithYarn() overrides AddViteApp's npm default. Each still reads its own hardcoded dev-proxy
+// target constant in vite.config.ts until that's updated separately to consume these
+// service-discovery references instead.
+var identityWebApp = builder.AddViteApp("identity-webapp", "../Identity.WebApp")
+    .WithYarn()
+    .WithReference(identityApi)
+    .WaitFor(identityApi);
+
+var webApp = builder.AddViteApp("webapp", "../WebApp")
+    .WithYarn()
+    .WithReference(webBff)
+    .WaitFor(webBff);
+
+var webhookClientWebApp = builder.AddViteApp("webhookclient-webapp", "../WebhookClient.WebApp")
+    .WithYarn()
+    .WithReference(webhookClient)
+    .WaitFor(webhookClient);
+
 builder.Build().Run();
