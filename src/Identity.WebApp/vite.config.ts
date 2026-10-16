@@ -7,10 +7,13 @@ import { defineConfig, type ProxyOptions } from 'vite'
 // endpoints (/connect/*, /.well-known/*) proxy through so the browser sees
 // one origin -- the existing ASP.NET Identity cookie just works, no CORS
 // config needed on Identity.API (it isn't configured to allow any, and
-// stays untouched). Real deployment topology (reverse proxy vs. something
-// else under eShop.AppHost) is a separate, still-open decision -- this is
-// dev-only.
-const identityApiTarget = 'http://localhost:5223'
+// stays untouched). Under eShop.AppHost, WithReference(identityApi) injects
+// the real dashboard-assigned port as services__identity-api__http__0
+// (confirmed via a live probe, not assumed -- Aspire's env-var naming keeps
+// the resource's own hyphenated name rather than uppercasing/underscoring
+// it). Falls back to the old fixed port for running this dev server
+// standalone, without AppHost.
+const identityApiTarget = process.env['services__identity-api__http__0'] ?? 'http://localhost:5223'
 
 // Duende itself performs real top-level browser redirects to these same
 // paths (e.g. /connect/authorize redirecting an unauthenticated browser to
