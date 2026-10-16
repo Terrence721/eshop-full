@@ -30,31 +30,51 @@ var identityApi = builder.AddProject<Projects.Identity_API>("identity-api")
     .WithReference(identityDb)
     .WaitFor(postgres);
 
+// WaitFor(embeddingModel) is required, not optional -- live-verified: without it, seeding ran
+// before Ollama's image finished pulling, and CatalogContextSeed's embedding-generation call
+// threw an unhandled exception that crashed the whole process (startup-time seeding has no
+// retry/resilience around that call).
 var catalogApi = builder.AddProject<Projects.Catalog_API>("catalog-api")
     .WithReference(catalogDb)
     .WithReference(eventBus, connectionName: "eventbus")
     .WithReference(embeddingModel, connectionName: "embedding")
     .WithEnvironment("OllamaEnabled", "true")
     .WaitFor(postgres)
-    .WaitFor(eventBus);
+    .WaitFor(eventBus)
+    .WaitFor(embeddingModel);
 
+// Identity__Url feeds AddDefaultAuthentication's JWT bearer Authority (eShop.ServiceDefaults) --
+// live-verified as a real pre-existing gap: appsettings.json's own "Identity" section never had a
+// "Url" value (only "Audience"), since no real Identity.API instance existed to point at before
+// now.
 var basketApi = builder.AddProject<Projects.Basket_API>("basket-api")
     .WithReference(redis)
     .WithReference(eventBus, connectionName: "eventbus")
+    .WithReference(identityApi)
+    .WithEnvironment("Identity__Url", identityApi.GetEndpoint("http"))
     .WaitFor(redis)
-    .WaitFor(eventBus);
+    .WaitFor(eventBus)
+    .WaitFor(identityApi);
 
 var orderingApi = builder.AddProject<Projects.Ordering_API>("ordering-api")
     .WithReference(orderingDb)
     .WithReference(eventBus, connectionName: "eventbus")
+    .WithReference(identityApi)
+    .WithEnvironment("Identity__Url", identityApi.GetEndpoint("http"))
     .WaitFor(postgres)
-    .WaitFor(eventBus);
+    .WaitFor(eventBus)
+    .WaitFor(identityApi);
 
+// Overrides appsettings.json's own stale hardcoded "Identity:Url" (a fixed dev port from before
+// this project existed) with the real dashboard-assigned one.
 var webhooksApi = builder.AddProject<Projects.Webhooks_API>("webhooks-api")
     .WithReference(webhooksDb)
     .WithReference(eventBus, connectionName: "eventbus")
+    .WithReference(identityApi)
+    .WithEnvironment("Identity__Url", identityApi.GetEndpoint("http"))
     .WaitFor(postgres)
-    .WaitFor(eventBus);
+    .WaitFor(eventBus)
+    .WaitFor(identityApi);
 
 // Upstream's own comment, preserved: "wait for the orderingApi to be ready because that
 // contains the EF migrations" -- OrderProcessor reads the same orderingdb directly via raw
@@ -68,20 +88,31 @@ var paymentProcessor = builder.AddProject<Projects.PaymentProcessor>("payment-pr
     .WithReference(eventBus, connectionName: "eventbus")
     .WaitFor(eventBus);
 
-// WithReference here makes each API's real dashboard-assigned endpoint available to WebBFF's
-// process via Aspire's service-discovery env vars -- WebBFF's own BasketUrl/YARP cluster
-// destinations still read from hardcoded appsettings.json values until that's updated separately
-// to actually consume them.
+// BasketUrl/YARP cluster destinations resolve "basket-api"/"catalog-api"/"ordering-api" via
+// WithReference + Microsoft.Extensions.ServiceDiscovery.Yarp's destination resolver (already
+// wired in WebBFF itself). IdentityUrl is WebBFF's own flat config key (not a connection string
+// WithReference would populate), read directly by Duende.BFF's OIDC Authority -- needs the
+// explicit WithEnvironment, live-verified as a real startup crash (GetRequiredValue("IdentityUrl")
+// throws) without it.
 var webBff = builder.AddProject<Projects.WebBFF>("webbff")
     .WithReference(catalogApi)
     .WithReference(basketApi)
     .WithReference(orderingApi)
     .WithReference(identityApi)
+    .WithEnvironment("IdentityUrl", identityApi.GetEndpoint("http"))
     .WaitFor(identityApi);
 
 var webhookClient = builder.AddProject<Projects.WebhookClient>("webhook-client")
     .WithReference(webhooksApi)
-    .WaitFor(webhooksApi);
+    .WithReference(identityApi)
+    .WithEnvironment("IdentityUrl", identityApi.GetEndpoint("http"))
+    .WaitFor(webhooksApi)
+    .WaitFor(identityApi);
+
+// CallBackUrl (SignedOutRedirectUri) needs WebhookClient's own address -- a self-reference,
+// resolved lazily at runtime like any other EndpointReference, so it has to be set after the
+// resource itself is declared rather than inline in the chain above.
+webhookClient.WithEnvironment("CallBackUrl", webhookClient.GetEndpoint("http"));
 
 // All three are Yarn workspaces (this repo's only JavaScript package manager), not npm --
 // WithYarn() overrides AddViteApp's npm default. Each still reads its own hardcoded dev-proxy
