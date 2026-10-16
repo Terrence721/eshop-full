@@ -38,7 +38,8 @@ builder.Services.AddBff()
 
 builder.Services.AddReverseProxy()
     .AddBffExtensions()
-    .LoadFromConfig(builder.Configuration.GetSection("ReverseProxy"));
+    .LoadFromConfig(builder.Configuration.GetSection("ReverseProxy"))
+    .AddServiceDiscoveryDestinationResolver();
 
 builder.Services.AddSingleton<OrderStatusNotifications>();
 
