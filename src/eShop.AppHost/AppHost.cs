@@ -26,6 +26,18 @@ var ollama = builder.AddOllama("ollama")
     .WithLifetime(ContainerLifetime.Persistent);
 var embeddingModel = ollama.AddModel("embedding", "all-minilm");
 
+// Pre-creates every subscribed Kafka topic (13 total, confirmed against every real
+// AddSubscription<T,...>() call in the solution) before any consumer starts, instead of relying
+// on auto.create.topics.enable: eliminates the one-time "Subscribed topic not available" error
+// every consumer previously hit on its first Consume() call against a fresh broker (harmless --
+// AllowAutoCreateTopics already made it self-recovering -- but genuinely avoidable noise, and
+// explicit topic provisioning is the better practice regardless). Exits once done; only the 6
+// projects that actually subscribe to something wait for it -- OrderProcessor has zero
+// subscriptions, so it never hits this in the first place.
+var kafkaTopicSeeder = builder.AddProject<Projects.KafkaTopicSeeder>("kafka-topic-seeder")
+    .WithReference(eventBus, connectionName: "eventbus")
+    .WaitFor(eventBus);
+
 var identityApi = builder.AddProject<Projects.Identity_API>("identity-api")
     .WithReference(identityDb)
     .WaitFor(postgres);
@@ -41,7 +53,8 @@ var catalogApi = builder.AddProject<Projects.Catalog_API>("catalog-api")
     .WithEnvironment("OllamaEnabled", "true")
     .WaitFor(postgres)
     .WaitFor(eventBus)
-    .WaitFor(embeddingModel);
+    .WaitFor(embeddingModel)
+    .WaitFor(kafkaTopicSeeder);
 
 // Identity__Url feeds AddDefaultAuthentication's JWT bearer Authority (eShop.ServiceDefaults) --
 // live-verified as a real pre-existing gap: appsettings.json's own "Identity" section never had a
@@ -54,7 +67,8 @@ var basketApi = builder.AddProject<Projects.Basket_API>("basket-api")
     .WithEnvironment("Identity__Url", identityApi.GetEndpoint("http"))
     .WaitFor(redis)
     .WaitFor(eventBus)
-    .WaitFor(identityApi);
+    .WaitFor(identityApi)
+    .WaitFor(kafkaTopicSeeder);
 
 var orderingApi = builder.AddProject<Projects.Ordering_API>("ordering-api")
     .WithReference(orderingDb)
@@ -63,7 +77,8 @@ var orderingApi = builder.AddProject<Projects.Ordering_API>("ordering-api")
     .WithEnvironment("Identity__Url", identityApi.GetEndpoint("http"))
     .WaitFor(postgres)
     .WaitFor(eventBus)
-    .WaitFor(identityApi);
+    .WaitFor(identityApi)
+    .WaitFor(kafkaTopicSeeder);
 
 // Overrides appsettings.json's own stale hardcoded "Identity:Url" (a fixed dev port from before
 // this project existed) with the real dashboard-assigned one.
@@ -74,7 +89,8 @@ var webhooksApi = builder.AddProject<Projects.Webhooks_API>("webhooks-api")
     .WithEnvironment("Identity__Url", identityApi.GetEndpoint("http"))
     .WaitFor(postgres)
     .WaitFor(eventBus)
-    .WaitFor(identityApi);
+    .WaitFor(identityApi)
+    .WaitFor(kafkaTopicSeeder);
 
 // Upstream's own comment, preserved: "wait for the orderingApi to be ready because that
 // contains the EF migrations" -- OrderProcessor reads the same orderingdb directly via raw
@@ -86,21 +102,27 @@ var orderProcessor = builder.AddProject<Projects.OrderProcessor>("order-processo
 
 var paymentProcessor = builder.AddProject<Projects.PaymentProcessor>("payment-processor")
     .WithReference(eventBus, connectionName: "eventbus")
-    .WaitFor(eventBus);
+    .WaitFor(eventBus)
+    .WaitFor(kafkaTopicSeeder);
 
 // BasketUrl/YARP cluster destinations resolve "basket-api"/"catalog-api"/"ordering-api" via
 // WithReference + Microsoft.Extensions.ServiceDiscovery.Yarp's destination resolver (already
 // wired in WebBFF itself). IdentityUrl is WebBFF's own flat config key (not a connection string
 // WithReference would populate), read directly by Duende.BFF's OIDC Authority -- needs the
 // explicit WithEnvironment, live-verified as a real startup crash (GetRequiredValue("IdentityUrl")
-// throws) without it.
+// throws) without it. eventbus was missing entirely on the first pass -- live-verified as a real
+// gap: WebBFF subscribes to 6 Kafka events (Program.cs) but fell back to its own
+// appsettings.json's hardcoded "localhost:9092" instead of the real dynamic broker port.
 var webBff = builder.AddProject<Projects.WebBFF>("webbff")
     .WithReference(catalogApi)
     .WithReference(basketApi)
     .WithReference(orderingApi)
     .WithReference(identityApi)
+    .WithReference(eventBus, connectionName: "eventbus")
     .WithEnvironment("IdentityUrl", identityApi.GetEndpoint("http"))
-    .WaitFor(identityApi);
+    .WaitFor(identityApi)
+    .WaitFor(eventBus)
+    .WaitFor(kafkaTopicSeeder);
 
 var webhookClient = builder.AddProject<Projects.WebhookClient>("webhook-client")
     .WithReference(webhooksApi)
