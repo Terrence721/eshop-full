@@ -19,6 +19,10 @@
     <Project Path="src/ClientApp.Desktop/ClientApp.Desktop.csproj" />
     <Project Path="src/ClientApp.Android/ClientApp.Android.csproj" />
     <Project Path="src/ClientApp.Browser/ClientApp.Browser.csproj" />
+    <Project Path="src/Identity.WebApp/Identity.WebApp.esproj" />
+    <Project Path="src/WebApp/WebApp.esproj" />
+    <Project Path="src/WebhookClient.WebApp/WebhookClient.WebApp.esproj" />
+    <Project Path="src/eShop.AppHost/eShop.AppHost.csproj" />
   </Folder>
   <Folder Name="/tests/">
     <Project Path="tests/EventBus.UnitTests/EventBus.UnitTests.csproj" />
