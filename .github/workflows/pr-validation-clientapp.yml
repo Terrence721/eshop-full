@@ -61,17 +61,15 @@ jobs:
         run: |
           dotnet workload install android --version 10.0.401
 
-      # Build/Test steps intentionally still not enabled: ClientApp's business logic
-      # (Services/ViewModels) and real Views are mid-rebuild on Avalonia (replacing MAUI,
-      # 2026-10-14). Enable once that work lands -- the project family itself (ClientApp,
-      # .Desktop, .Android, .Browser) and the workload install above are already real and
-      # worth keeping green in the meantime.
-      # - name: Build Desktop
-      #   run: dotnet build src/ClientApp.Desktop/ClientApp.Desktop.csproj
-      # - name: Build Android (compile-only)
-      #   run: dotnet build src/ClientApp.Android/ClientApp.Android.csproj
-      # - name: Build Browser
-      #   run: dotnet build src/ClientApp.Browser/ClientApp.Browser.csproj
+      # Business logic (Services/ViewModels) and real Views are done and live-verified
+      # (2026-10-16, see todo.md) -- Build steps enabled. Test stays commented out: no
+      # tests/ClientApp.UnitTests project exists yet (tracked separately, todo.md row 20).
+      - name: Build Desktop
+        run: dotnet build src/ClientApp.Desktop/ClientApp.Desktop.csproj
+      - name: Build Android (compile-only)
+        run: dotnet build src/ClientApp.Android/ClientApp.Android.csproj
+      - name: Build Browser
+        run: dotnet build src/ClientApp.Browser/ClientApp.Browser.csproj
       # - name: Test
       #   run: dotnet test --project tests/ClientApp.UnitTests/ClientApp.UnitTests.csproj --no-progress --output detailed
 
