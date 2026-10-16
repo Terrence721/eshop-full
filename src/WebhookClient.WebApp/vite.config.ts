@@ -5,9 +5,12 @@ import { defineConfig, type ProxyOptions } from 'vite'
 // WebhookClient's own BFF/API endpoints proxy through so the browser sees
 // one origin -- the httpOnly session cookie WebhookClient sets just works,
 // no CORS config needed there (it isn't configured to allow any, and
-// stays untouched). Real deployment topology is a separate, still-open
-// decision -- this is dev-only.
-const webhookClientTarget = 'http://localhost:5062'
+// stays untouched). Under eShop.AppHost, WithReference(webhookClient)
+// injects the real dashboard-assigned port as
+// services__webhook-client__http__0 (confirmed via a live probe, not
+// assumed). Falls back to the old fixed port for running this dev server
+// standalone, without AppHost.
+const webhookClientTarget = process.env['services__webhook-client__http__0'] ?? 'http://localhost:5062'
 
 // The OIDC handler builds its own absolute redirect_uri (for the
 // /signin-oidc callback) from Request.Host when /bff/login's Challenge
