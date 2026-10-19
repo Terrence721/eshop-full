@@ -32,6 +32,7 @@
     <Project Path="tests/IntegrationEventLogEF.UnitTests/IntegrationEventLogEF.UnitTests.csproj" />
     <Project Path="tests/Identity.API.UnitTests/Identity.API.UnitTests.csproj" />
     <Project Path="tests/Catalog.API.UnitTests/Catalog.API.UnitTests.csproj" />
+    <Project Path="tests/Catalog.FunctionalTests/Catalog.FunctionalTests.csproj" />
     <Project Path="tests/Basket.API.UnitTests/Basket.API.UnitTests.csproj" />
     <Project Path="tests/Ordering.Domain.UnitTests/Ordering.Domain.UnitTests.csproj" />
     <Project Path="tests/Ordering.Infrastructure.UnitTests/Ordering.Infrastructure.UnitTests.csproj" />
