@@ -37,7 +37,7 @@ A living list of what's done and what's left on this build. This is an independe
 | `eShop.AppHost` | Full resource graph (containers, all 7 domain APIs/workers, `WebBFF`/`WebhookClient`, 3 React/Vite frontends) built and live-verified — 6 real bugs found and fixed along the way, plus a new `KafkaTopicSeeder` project — see "eShop.AppHost built and live-verified end-to-end" below |
 | `ClientApp` | Avalonia UI (not MAUI), 4-project solution (`ClientApp` shared lib + `.Desktop`/`.Android`/`.Browser` heads), full MVVM build (9 Views, OIDC login, mock/live service toggle) live-verified running on all 3 heads — see "ClientApp built and live-verified across Desktop/Android/Browser" below |
 
-**Still to do:** 2 of 21 `.csproj`-equivalent items remain (`tests/`, `build/`) — see the "Still to do" table below and [project board](https://github.com/users/Terrence721/projects/5) for the live board.
+**Still to do:** 0 of 21 `.csproj`-equivalent items remain — migration complete. All 21 items done (see "At a glance" above and [project board](https://github.com/users/Terrence721/projects/5)).
 
 ## ✅ Done
 
@@ -1512,3 +1512,7 @@ All 3 heads: same mock data, same navigation logic, zero divergence — confirmi
 **CI**: `windows` job's `Build` steps (Desktop/Android compile-only/Browser) uncommented (`3fc7f87`) — safe now that all 3 heads build clean. `Test` stays commented out: no `tests/ClientApp.UnitTests` project exists yet, tracked under row 20 (`tests/`), not this row.
 
 **Deliberately still open**: no automated test coverage for `ClientApp` yet (upstream's own `ClientApp.UnitTests`, 14 files/32 tests, is part of the row-20 `tests/` migration, not bundled into this row). Live OIDC against a real running `Identity.API` (vs. the mock identity service exercised above) wasn't re-verified this pass — covered separately for Android during the original OIDC-redirect-capture work (see "ClientApp — real upstream scope" above). The UI/UX and dead-code redesign (`FiltersView`'s unreachable route, etc.) stays deliberately deferred to a later codeReview phase, per the 2026-10-14 decision — this pass only closed the "does it actually run" gap, not a redesign pass.
+
+---
+
+**✅ Migration complete — all 21 items done (this session, 2026-10-19).** `tests/` finished with `Ordering.FunctionalTests` (11 passing) + `Catalog.FunctionalTests` + `ClientApp.UnitTests` (32 passing Avalonia harness); `build/` left intentionally empty (upstream scripts target non-existent Dockerfiles). Working tree clean, everything pushed to `main`.
