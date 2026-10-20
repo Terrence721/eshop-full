@@ -1,4 +1,4 @@
-using eShop.ClientApp.Models.Basket;
+﻿using eShop.ClientApp.Models.Basket;
 
 namespace eShop.ClientApp.Services.Basket;
 
@@ -8,7 +8,7 @@ public class BasketMockService : IBasketService
 
     public BasketMockService()
     {
-        _mockCustomBasket = new CustomerBasket {BuyerId = "9245fe4a-d402-451c-b9ed-9c1a04247482"};
+        _mockCustomBasket = new CustomerBasket { BuyerId = "9245fe4a-d402-451c-b9ed-9c1a04247482" };
         _mockCustomBasket.AddItemToBasket(new BasketItem
         {
             Id = "1",

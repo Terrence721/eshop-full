@@ -1,4 +1,4 @@
-using System.Security.Claims;
+﻿using System.Security.Claims;
 using Duende.IdentityServer.Models;
 using eShop.Identity.API.Models;
 using eShop.Identity.API.Services;

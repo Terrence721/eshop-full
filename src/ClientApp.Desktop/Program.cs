@@ -1,4 +1,4 @@
-using System.IO.Pipes;
+﻿using System.IO.Pipes;
 using Avalonia;
 using Microsoft.Extensions.DependencyInjection;
 using IBrowser = Duende.IdentityModel.OidcClient.Browser.IBrowser;

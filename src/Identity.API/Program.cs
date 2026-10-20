@@ -1,11 +1,11 @@
-using Duende.IdentityServer.Services;
+﻿using Duende.IdentityServer.Services;
 using eShop.Identity.API;
-using IdentityServerHost.Quickstart.UI;
 using eShop.Identity.API.Configuration;
 using eShop.Identity.API.Data;
 using eShop.Identity.API.Models;
 using eShop.Identity.API.Services;
 using eShop.ServiceDefaults;
+using IdentityServerHost.Quickstart.UI;
 using Microsoft.AspNetCore.Identity;
 
 var builder = WebApplication.CreateBuilder(args);

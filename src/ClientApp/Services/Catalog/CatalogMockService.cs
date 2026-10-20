@@ -1,14 +1,14 @@
-using eShop.ClientApp.Models.Catalog;
+﻿using eShop.ClientApp.Models.Catalog;
 
 namespace eShop.ClientApp.Services.Catalog;
 
 public class CatalogMockService : ICatalogService
 {
     private static readonly List<CatalogBrand> MockCatalogBrands =
-        [new CatalogBrand {Id = 1, Brand = "Azure"}, new CatalogBrand {Id = 2, Brand = "Visual Studio"}];
+        [new CatalogBrand { Id = 1, Brand = "Azure" }, new CatalogBrand { Id = 2, Brand = "Visual Studio" }];
 
     private static readonly List<CatalogType> MockCatalogTypes =
-        [new CatalogType {Id = 1, Type = "Mug"}, new CatalogType {Id = 2, Type = "T-Shirt"}];
+        [new CatalogType { Id = 1, Type = "Mug" }, new CatalogType { Id = 2, Type = "T-Shirt" }];
 
     private static readonly List<CatalogItem> MockCatalog =
         [

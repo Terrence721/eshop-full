@@ -1,4 +1,4 @@
-namespace IdentityServerHost.Quickstart.UI.UnitTests;
+﻿namespace IdentityServerHost.Quickstart.UI.UnitTests;
 
 // AllowLocalLogin/AllowRememberLogin/AutomaticRedirectAfterSignOut are const,
 // not tested here - MSTEST0032 correctly flags asserting against a compile-time

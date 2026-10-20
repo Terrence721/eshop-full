@@ -1,4 +1,4 @@
-using System.Security.Claims;
+﻿using System.Security.Claims;
 using eShop.Basket.API.Extensions;
 using Microsoft.AspNetCore.Http;
 

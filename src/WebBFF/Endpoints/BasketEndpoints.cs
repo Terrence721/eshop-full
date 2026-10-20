@@ -1,4 +1,4 @@
-namespace eShop.WebBFF.Endpoints;
+﻿namespace eShop.WebBFF.Endpoints;
 
 public static class BasketEndpoints
 {

@@ -1,4 +1,4 @@
-using CommunityToolkit.Mvvm.Messaging;
+﻿using CommunityToolkit.Mvvm.Messaging;
 using eShop.ClientApp.Messages;
 using eShop.ClientApp.Models.Catalog;
 using eShop.ClientApp.Services;
@@ -80,8 +80,8 @@ public partial class CatalogViewModel : ViewModelBase
                 BadgeCount = basket?.ItemCount ?? 0;
 
                 _products.ReloadData(products);
-                _brands.ReloadData(brands.Select(x => new CatalogBrandSelectionViewModel {Value = x}));
-                _types.ReloadData(types.Select(x => new CatalogTypeSelectionViewModel {Value = x}));
+                _brands.ReloadData(brands.Select(x => new CatalogBrandSelectionViewModel { Value = x }));
+                _types.ReloadData(types.Select(x => new CatalogTypeSelectionViewModel { Value = x }));
             });
     }
 
@@ -97,7 +97,7 @@ public partial class CatalogViewModel : ViewModelBase
 
         await NavigationService.NavigateToAsync(
             "ViewCatalogItem",
-            new Dictionary<string, object> {["CatalogItem"] = catalogItem});
+            new Dictionary<string, object> { ["CatalogItem"] = catalogItem });
     }
 
     [RelayCommand]
@@ -221,7 +221,7 @@ public partial class CatalogViewModel : ViewModelBase
             {
                 await NavigationService.NavigateToAsync(
                     "//Login",
-                    new Dictionary<string, object> {{"Logout", true}});
+                    new Dictionary<string, object> { { "Logout", true } });
             });
     }
 }

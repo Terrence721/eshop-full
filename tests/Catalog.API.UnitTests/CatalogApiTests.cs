@@ -1,4 +1,4 @@
-using eShop.Catalog.API.Infrastructure;
+﻿using eShop.Catalog.API.Infrastructure;
 using eShop.Catalog.API.IntegrationEvents;
 using eShop.Catalog.API.IntegrationEvents.Events;
 using eShop.Catalog.API.Model;

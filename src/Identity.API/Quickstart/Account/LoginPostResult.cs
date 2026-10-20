@@ -1,4 +1,4 @@
-namespace IdentityServerHost.Quickstart.UI;
+﻿namespace IdentityServerHost.Quickstart.UI;
 
 // Response shape for POST /Account/Login - the outcome is one of a redirect
 // (cancelled or succeeded) or the redisplayed form with a validation error.

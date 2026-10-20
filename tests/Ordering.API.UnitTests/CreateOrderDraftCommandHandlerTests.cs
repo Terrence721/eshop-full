@@ -1,4 +1,4 @@
-using eShop.Ordering.API.Application.Commands;
+﻿using eShop.Ordering.API.Application.Commands;
 using eShop.Ordering.API.Application.Models;
 
 namespace eShop.Ordering.API.UnitTests;

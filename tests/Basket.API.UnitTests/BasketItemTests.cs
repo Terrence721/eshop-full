@@ -1,4 +1,4 @@
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using eShop.Basket.API.Model;
 
 namespace eShop.Basket.API.UnitTests;

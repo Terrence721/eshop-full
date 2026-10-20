@@ -1,4 +1,4 @@
-using eShop.Basket.API.IntegrationEvents.EventHandling;
+﻿using eShop.Basket.API.IntegrationEvents.EventHandling;
 using eShop.Basket.API.IntegrationEvents.Events;
 using eShop.Basket.API.Repositories;
 using Microsoft.Extensions.Logging;

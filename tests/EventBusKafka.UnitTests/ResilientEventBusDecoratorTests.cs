@@ -1,4 +1,4 @@
-using Confluent.Kafka;
+﻿using Confluent.Kafka;
 using eShop.EventBus.Abstractions;
 using eShop.EventBus.Events;
 using eShop.EventBusKafka;

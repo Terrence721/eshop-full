@@ -1,4 +1,4 @@
-using eShop.IntegrationEventLogEF.Services;
+﻿using eShop.IntegrationEventLogEF.Services;
 
 namespace eShop.IntegrationEventLogEF.UnitTests.Services;
 

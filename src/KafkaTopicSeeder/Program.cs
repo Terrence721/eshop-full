@@ -1,4 +1,4 @@
-using Confluent.Kafka;
+﻿using Confluent.Kafka;
 using Confluent.Kafka.Admin;
 
 var bootstrapServers = Environment.GetEnvironmentVariable("ConnectionStrings__eventbus")

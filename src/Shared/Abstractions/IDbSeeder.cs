@@ -1,4 +1,4 @@
-namespace Microsoft.AspNetCore.Hosting;
+﻿namespace Microsoft.AspNetCore.Hosting;
 
 public interface IDbSeeder<in TContext> where TContext : DbContext
 {

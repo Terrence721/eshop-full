@@ -1,4 +1,4 @@
-using System.Security.Claims;
+﻿using System.Security.Claims;
 using eShop.Ordering.API.Infrastructure.Services;
 using Microsoft.AspNetCore.Http;
 using NSubstitute;

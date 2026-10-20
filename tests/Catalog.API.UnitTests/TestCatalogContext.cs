@@ -1,4 +1,4 @@
-using eShop.Catalog.API.Infrastructure;
+﻿using eShop.Catalog.API.Infrastructure;
 using eShop.Catalog.API.Model;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;

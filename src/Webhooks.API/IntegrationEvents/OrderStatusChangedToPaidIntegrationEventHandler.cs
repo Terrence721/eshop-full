@@ -1,4 +1,4 @@
-namespace Webhooks.API.IntegrationEvents;
+﻿namespace Webhooks.API.IntegrationEvents;
 
 public class OrderStatusChangedToPaidIntegrationEventHandler(
     IWebhooksRetriever retriever,

@@ -1,4 +1,4 @@
-namespace eShop.WebBFF.IntegrationEvents.EventHandling;
+﻿namespace eShop.WebBFF.IntegrationEvents.EventHandling;
 
 public class OrderStatusChangedToCancelledIntegrationEventHandler(
     OrderStatusNotifications notifications,

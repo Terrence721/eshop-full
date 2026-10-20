@@ -1,4 +1,4 @@
-namespace eShop.IntegrationEventLogEF.Services;
+﻿namespace eShop.IntegrationEventLogEF.Services;
 
 internal static class IntegrationEventTypeResolver
 {

@@ -1,4 +1,4 @@
-using eShop.ClientApp.Models.Basket;
+﻿using eShop.ClientApp.Models.Basket;
 using eShop.ClientApp.Services.FixUri;
 using eShop.ClientApp.Services.Identity;
 using eShop.ClientApp.Services.Settings;
@@ -48,7 +48,7 @@ public class BasketService : IBasketService, IDisposable
             {
                 foreach (var item in basketResponse.Items)
                 {
-                    basket.AddItemToBasket(new BasketItem {ProductId = item.ProductId, Quantity = item.Quantity});
+                    basket.AddItemToBasket(new BasketItem { ProductId = item.ProductId, Quantity = item.Quantity });
                 }
             }
         }
@@ -77,7 +77,7 @@ public class BasketService : IBasketService, IDisposable
             customerBasket.Items
                 .Select(
                     x =>
-                        new GrpcBasketItem {ProductId = x.ProductId, Quantity = x.Quantity}));
+                        new GrpcBasketItem { ProductId = x.ProductId, Quantity = x.Quantity }));
 
         var result = await GetBasketClient()
             .UpdateBasketAsync(updateBasketRequest, CreateAuthenticationHeaders(authToken)).ConfigureAwait(false);
@@ -89,7 +89,7 @@ public class BasketService : IBasketService, IDisposable
 
         foreach (var item in result.Items)
         {
-            customerBasket.AddItemToBasket(new BasketItem {ProductId = item.ProductId, Quantity = item.Quantity});
+            customerBasket.AddItemToBasket(new BasketItem { ProductId = item.ProductId, Quantity = item.Quantity });
         }
 
         return customerBasket;

@@ -1,4 +1,4 @@
-using eShop.Ordering.API.Application.DomainEventHandlers;
+﻿using eShop.Ordering.API.Application.DomainEventHandlers;
 using eShop.Ordering.Domain.AggregatesModel.BuyerAggregate;
 using eShop.Ordering.Domain.AggregatesModel.OrderAggregate;
 using eShop.Ordering.Domain.Events;

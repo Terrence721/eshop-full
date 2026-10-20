@@ -1,5 +1,4 @@
-using Microsoft.Extensions.DependencyInjection;
-using eShop.ClientApp.Services;
+﻿using eShop.ClientApp.Services;
 using eShop.ClientApp.Services.AppEnvironment;
 using eShop.ClientApp.Services.Basket;
 using eShop.ClientApp.Services.Catalog;
@@ -12,6 +11,7 @@ using eShop.ClientApp.Services.RequestProvider;
 using eShop.ClientApp.Services.Settings;
 using eShop.ClientApp.Services.Theme;
 using eShop.ClientApp.ViewModels;
+using Microsoft.Extensions.DependencyInjection;
 using IBrowser = Duende.IdentityModel.OidcClient.Browser.IBrowser;
 
 namespace eShop.ClientApp;

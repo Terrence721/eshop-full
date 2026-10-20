@@ -1,4 +1,4 @@
-namespace eShop.Ordering.Domain.AggregatesModel.OrderAggregate;
+﻿namespace eShop.Ordering.Domain.AggregatesModel.OrderAggregate;
 
 public class Address : ValueObject
 {

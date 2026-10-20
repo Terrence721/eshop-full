@@ -1,4 +1,4 @@
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.Text.RegularExpressions;
 using eShop.ClientApp.Models.Basket;
 using eShop.ClientApp.Models.Catalog;

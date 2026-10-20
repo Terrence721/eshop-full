@@ -1,4 +1,4 @@
-var builder = DistributedApplication.CreateBuilder(args);
+﻿var builder = DistributedApplication.CreateBuilder(args);
 
 // One Postgres server, 4 logical databases - matches upstream's own real resource graph
 // (confirmed via earlier research in todo.md). ankane/pgvector, not the default postgres
@@ -134,7 +134,7 @@ var webhookClient = builder.AddProject<Projects.WebhookClient>("webhook-client")
 // CallBackUrl (SignedOutRedirectUri) needs WebhookClient's own address -- a self-reference,
 // resolved lazily at runtime like any other EndpointReference, so it has to be set after the
 // resource itself is declared rather than inline in the chain above.
-webhookClient.WithEnvironment("CallBackUrl", webhookClient.GetEndpoint("http"));;
+webhookClient.WithEnvironment("CallBackUrl", webhookClient.GetEndpoint("http")); ;
 
 // All three are Yarn workspaces (this repo's only JavaScript package manager), not npm --
 // WithYarn() overrides AddViteApp's npm default. Each still reads its own hardcoded dev-proxy

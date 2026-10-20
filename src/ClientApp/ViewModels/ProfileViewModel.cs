@@ -1,4 +1,4 @@
-using eShop.ClientApp.Models.Orders;
+﻿using eShop.ClientApp.Models.Orders;
 using eShop.ClientApp.Services;
 using eShop.ClientApp.Services.AppEnvironment;
 
@@ -31,7 +31,7 @@ public partial class ProfileViewModel(
                 // Logout
                 await NavigationService.NavigateToAsync(
                     "//Login",
-                    new Dictionary<string, object> {{"Logout", true}});
+                    new Dictionary<string, object> { { "Logout", true } });
             });
     }
 
@@ -70,6 +70,6 @@ public partial class ProfileViewModel(
 
         await NavigationService.NavigateToAsync(
             "OrderDetail",
-            new Dictionary<string, object> {{nameof(Order.OrderNumber), order.OrderNumber}});
+            new Dictionary<string, object> { { nameof(Order.OrderNumber), order.OrderNumber } });
     }
 }

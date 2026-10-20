@@ -1,4 +1,4 @@
-using eShop.Ordering.API.Application.Commands;
+﻿using eShop.Ordering.API.Application.Commands;
 using eShop.Ordering.Infrastructure.Idempotency;
 using MediatR;
 using Microsoft.Extensions.Logging;

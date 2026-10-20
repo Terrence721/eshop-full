@@ -1,4 +1,4 @@
-using eShop.EventBus.Abstractions;
+﻿using eShop.EventBus.Abstractions;
 using eShop.EventBus.Events;
 using eShop.IntegrationEventLogEF;
 using eShop.IntegrationEventLogEF.Services;

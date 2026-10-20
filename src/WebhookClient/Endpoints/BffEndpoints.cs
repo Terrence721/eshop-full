@@ -1,6 +1,6 @@
+﻿using System.Security.Claims;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
-using System.Security.Claims;
 
 namespace eShop.WebhookClient.Endpoints;
 

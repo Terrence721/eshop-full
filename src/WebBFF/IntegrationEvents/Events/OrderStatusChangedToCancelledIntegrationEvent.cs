@@ -1,4 +1,4 @@
-namespace eShop.WebBFF.IntegrationEvents.Events;
+﻿namespace eShop.WebBFF.IntegrationEvents.Events;
 
 public record OrderStatusChangedToCancelledIntegrationEvent : IntegrationEvent
 {

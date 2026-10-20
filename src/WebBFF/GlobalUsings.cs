@@ -1,5 +1,4 @@
-global using BasketGrpcClient = eShop.Basket.API.Grpc.Basket.BasketClient;
-global using Duende.AccessTokenManagement.OpenIdConnect;
+﻿global using Duende.AccessTokenManagement.OpenIdConnect;
 global using Duende.Bff;
 global using Duende.Bff.Yarp;
 global using eShop.Basket.API.Grpc;
@@ -13,3 +12,4 @@ global using eShop.WebBFF.IntegrationEvents.Events;
 global using eShop.WebBFF.Services;
 global using Grpc.Core;
 global using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+global using BasketGrpcClient = eShop.Basket.API.Grpc.Basket.BasketClient;

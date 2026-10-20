@@ -1,4 +1,4 @@
-using eShop.Ordering.API.Infrastructure;
+﻿using eShop.Ordering.API.Infrastructure;
 using eShop.Ordering.Domain.AggregatesModel.BuyerAggregate;
 using eShop.Ordering.Infrastructure;
 using MediatR;

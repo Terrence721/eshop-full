@@ -1,4 +1,4 @@
-using eShop.EventBus.Abstractions;
+﻿using eShop.EventBus.Abstractions;
 
 namespace eShop.EventBus.UnitTests.Abstractions;
 

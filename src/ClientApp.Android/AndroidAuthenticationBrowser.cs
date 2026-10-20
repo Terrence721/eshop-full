@@ -1,7 +1,7 @@
-using Android.Content;
+﻿using Android.Content;
 using Duende.IdentityModel.OidcClient.Browser;
-using IBrowser = Duende.IdentityModel.OidcClient.Browser.IBrowser;
 using AndroidApplication = Android.App.Application;
+using IBrowser = Duende.IdentityModel.OidcClient.Browser.IBrowser;
 
 namespace eShop.ClientApp.Android;
 

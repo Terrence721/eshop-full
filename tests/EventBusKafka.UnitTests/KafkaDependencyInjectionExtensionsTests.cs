@@ -1,4 +1,4 @@
-using eShop.EventBus.Abstractions;
+﻿using eShop.EventBus.Abstractions;
 using eShop.EventBusKafka;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;

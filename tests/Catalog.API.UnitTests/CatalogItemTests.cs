@@ -1,4 +1,4 @@
-using eShop.Catalog.API.Infrastructure.Exceptions;
+﻿using eShop.Catalog.API.Infrastructure.Exceptions;
 using eShop.Catalog.API.Model;
 
 namespace eShop.Catalog.API.UnitTests;

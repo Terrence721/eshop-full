@@ -1,4 +1,4 @@
-using eShop.EventBusKafka;
+﻿using eShop.EventBusKafka;
 
 namespace eShop.EventBusKafka.UnitTests;
 
