@@ -18,6 +18,8 @@
   "scripts": {
     "clean:logs": "node scripts/clean-logs.mjs",
     "clean:build-servers": "node scripts/clean-build-servers.mjs",
+    "unlock:build": "node scripts/unlock-build.mjs",
+    "build": "yarn unlock:build && dotnet build eShop.slnx /nr:false",
     "build:clientapp": "dotnet build src/ClientApp/ClientApp.csproj -f net10.0",
     "run:clientapp:desktop": "dotnet run --project src/ClientApp.Desktop/ClientApp.Desktop.csproj",
     "run:clientapp:android:emulator": "\"%LOCALAPPDATA%\\Android\\Sdk\\emulator\\emulator.exe\" -avd eShop_Emulator",
