@@ -11,7 +11,7 @@ public class OrdersServiceTests
     {
         _settingsService = new MockSettingsService();
     }
-    
+
     [TestMethod]
     public async Task GetFakeOrderTest()
     {

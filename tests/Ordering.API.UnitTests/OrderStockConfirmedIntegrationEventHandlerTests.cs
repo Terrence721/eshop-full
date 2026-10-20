@@ -1,4 +1,4 @@
-using eShop.Ordering.API.Application.Commands;
+﻿using eShop.Ordering.API.Application.Commands;
 using eShop.Ordering.API.Application.IntegrationEvents.EventHandling;
 using eShop.Ordering.API.Application.IntegrationEvents.Events;
 using MediatR;

@@ -1,4 +1,4 @@
-using System.Text.Json.Serialization;
+﻿using System.Text.Json.Serialization;
 using eShop.ClientApp.Models.Catalog;
 using eShop.ClientApp.Models.Orders;
 using eShop.ClientApp.Models.Token;

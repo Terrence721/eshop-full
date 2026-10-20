@@ -1,4 +1,4 @@
-namespace eShop.EventBusKafka;
+﻿namespace eShop.EventBusKafka;
 
 using Microsoft.Extensions.Options;
 using Polly.Retry;

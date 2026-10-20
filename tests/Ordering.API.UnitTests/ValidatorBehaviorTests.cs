@@ -1,4 +1,4 @@
-using eShop.Ordering.API.Application.Behaviors;
+﻿using eShop.Ordering.API.Application.Behaviors;
 using eShop.Ordering.API.Application.Commands;
 using eShop.Ordering.Domain.Exceptions;
 using FluentValidation;

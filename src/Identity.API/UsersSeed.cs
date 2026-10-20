@@ -1,4 +1,4 @@
-using eShop.Identity.API.Data;
+﻿using eShop.Identity.API.Data;
 using eShop.Identity.API.Models;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
@@ -35,25 +35,25 @@ public class UsersSeed(ILogger<UsersSeed> logger, UserManager<ApplicationUser> u
         string userName, string firstName, string lastName, string email,
         string city, string state, string street, string zipCode,
         string cardNumberLastFour, string securityNumber) => new()
-    {
-        Id = Guid.NewGuid().ToString(),
-        UserName = userName,
-        Email = email,
-        EmailConfirmed = true,
-        Name = firstName,
-        LastName = lastName,
-        CardHolderName = $"{firstName} {lastName}",
-        CardNumber = $"XXXXXXXXXXXX{cardNumberLastFour}",
-        CardType = 1,
-        Expiration = "12/24",
-        SecurityNumber = securityNumber,
-        PhoneNumber = "1234567890",
-        City = city,
-        State = state,
-        Street = street,
-        ZipCode = zipCode,
-        Country = "U.S."
-    };
+        {
+            Id = Guid.NewGuid().ToString(),
+            UserName = userName,
+            Email = email,
+            EmailConfirmed = true,
+            Name = firstName,
+            LastName = lastName,
+            CardHolderName = $"{firstName} {lastName}",
+            CardNumber = $"XXXXXXXXXXXX{cardNumberLastFour}",
+            CardType = 1,
+            Expiration = "12/24",
+            SecurityNumber = securityNumber,
+            PhoneNumber = "1234567890",
+            City = city,
+            State = state,
+            Street = street,
+            ZipCode = zipCode,
+            Country = "U.S."
+        };
 
     private async Task EnsureUserAsync(string userName, ApplicationUser user)
     {

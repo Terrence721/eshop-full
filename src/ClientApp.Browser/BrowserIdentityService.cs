@@ -1,4 +1,4 @@
-using Duende.IdentityModel.OidcClient;
+﻿using Duende.IdentityModel.OidcClient;
 using eShop.ClientApp.Models.Token;
 using eShop.ClientApp.Models.User;
 using eShop.ClientApp.Services.Identity;

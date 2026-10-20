@@ -1,4 +1,4 @@
-using eShop.IntegrationEventLogEF;
+﻿using eShop.IntegrationEventLogEF;
 using Microsoft.EntityFrameworkCore;
 
 namespace eShop.IntegrationEventLogEF.UnitTests;

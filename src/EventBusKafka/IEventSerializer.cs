@@ -1,4 +1,4 @@
-namespace eShop.EventBusKafka;
+﻿namespace eShop.EventBusKafka;
 
 // Same seam EventBusRabbitMQ already has, duplicated here rather than shared across the two
 // projects (EventBusRabbitMQ is being removed once every consumer migrates, so a dependency on

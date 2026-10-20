@@ -1,4 +1,4 @@
-namespace IdentityServerHost.Quickstart.UI;
+﻿namespace IdentityServerHost.Quickstart.UI;
 
 // Response shape for GET /Device/Index - either the browser arrived with no
 // user code yet (NeedsUserCode, the SPA shows an entry form), or a code was

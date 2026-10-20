@@ -1,4 +1,4 @@
-namespace IdentityServerHost.Quickstart.UI;
+﻿namespace IdentityServerHost.Quickstart.UI;
 
 // Response shape for POST /Consent/Index - the outcome is one of a redirect, a
 // validation error (with the form redisplayed), or the redisplayed form alone.

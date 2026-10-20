@@ -1,4 +1,4 @@
-using eShop.Identity.API.Models;
+﻿using eShop.Identity.API.Models;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 
 namespace eShop.Identity.API.Data;

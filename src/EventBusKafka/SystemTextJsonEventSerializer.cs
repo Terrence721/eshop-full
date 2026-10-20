@@ -1,4 +1,4 @@
-namespace eShop.EventBusKafka;
+﻿namespace eShop.EventBusKafka;
 
 using System.Diagnostics.CodeAnalysis;
 using Microsoft.Extensions.Options;

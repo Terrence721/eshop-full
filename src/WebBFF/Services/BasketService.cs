@@ -1,4 +1,4 @@
-namespace eShop.WebBFF.Services;
+﻿namespace eShop.WebBFF.Services;
 
 public record BasketQuantity(int ProductId, int Quantity);
 

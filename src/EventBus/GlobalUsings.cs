@@ -1,1 +1,1 @@
-global using eShop.EventBus.Events;
+﻿global using eShop.EventBus.Events;

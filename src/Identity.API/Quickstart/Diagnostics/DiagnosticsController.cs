@@ -1,4 +1,4 @@
-using System.Buffers.Text;
+﻿using System.Buffers.Text;
 using System.Text;
 using System.Text.Json;
 using Microsoft.AspNetCore.Authentication;

@@ -1,4 +1,4 @@
-namespace IdentityServerHost.Quickstart.UI;
+﻿namespace IdentityServerHost.Quickstart.UI;
 
 // Response shape for POST /Device/Callback's redisplay-with-error outcome -
 // DeviceController's own doc comment on this branch says it redisplays "the

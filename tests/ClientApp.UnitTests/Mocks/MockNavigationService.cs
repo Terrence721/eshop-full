@@ -7,7 +7,7 @@ public class MockNavigationService : INavigationService
 {
     public ViewModelBase? CurrentViewModel => null;
 
-    #pragma warning disable CS0067
+#pragma warning disable CS0067
     public event PropertyChangedEventHandler? PropertyChanged;
 #pragma warning restore CS0067
 

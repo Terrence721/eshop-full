@@ -1,4 +1,4 @@
-using eShop.Ordering.Domain.AggregatesModel.BuyerAggregate;
+﻿using eShop.Ordering.Domain.AggregatesModel.BuyerAggregate;
 using eShop.Ordering.Infrastructure.Repositories;
 using MediatR;
 using Microsoft.EntityFrameworkCore;

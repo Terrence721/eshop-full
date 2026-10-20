@@ -1,4 +1,4 @@
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using eShop.ClientApp.Models.User;
 using eShop.ClientApp.Services.AppEnvironment;
 using eShop.ClientApp.ViewModels;

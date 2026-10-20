@@ -1,4 +1,4 @@
-namespace eShop.ClientApp.Models.Marketing;
+﻿namespace eShop.ClientApp.Models.Marketing;
 
 // Marketing/Map feature is dead even in upstream - no live service call anywhere,
 // MapViewModel's store list is a single static pin. Ported as-is, not wired up.

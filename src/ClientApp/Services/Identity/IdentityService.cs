@@ -1,7 +1,7 @@
+﻿using Duende.IdentityModel.OidcClient;
 using eShop.ClientApp.Models.Token;
 using eShop.ClientApp.Models.User;
 using eShop.ClientApp.Services.Settings;
-using Duende.IdentityModel.OidcClient;
 using IBrowser = Duende.IdentityModel.OidcClient.Browser.IBrowser;
 
 namespace eShop.ClientApp.Services.Identity;

@@ -1,4 +1,4 @@
-using eShop.Catalog.API.Model;
+﻿using eShop.Catalog.API.Model;
 using eShop.Catalog.API.Services;
 using Microsoft.Extensions.AI;
 using Microsoft.Extensions.Logging;

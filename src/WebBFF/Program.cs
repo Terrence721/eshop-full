@@ -1,4 +1,4 @@
-// Basket.API's native gRPC endpoint is plain HTTP/2 (no TLS) -- the .NET gRPC client
+﻿// Basket.API's native gRPC endpoint is plain HTTP/2 (no TLS) -- the .NET gRPC client
 // refuses unencrypted HTTP/2 by default, so this must be set before any channel is
 // created.
 AppContext.SetSwitch("System.Net.Http.SocketsHttpHandler.Http2UnencryptedSupport", true);

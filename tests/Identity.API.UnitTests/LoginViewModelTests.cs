@@ -1,4 +1,4 @@
-namespace IdentityServerHost.Quickstart.UI.UnitTests;
+﻿namespace IdentityServerHost.Quickstart.UI.UnitTests;
 
 [TestClass]
 public class LoginViewModelTests

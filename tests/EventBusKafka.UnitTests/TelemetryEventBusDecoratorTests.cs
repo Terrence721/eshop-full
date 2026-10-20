@@ -1,4 +1,4 @@
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using eShop.EventBus.Abstractions;
 using eShop.EventBus.Events;
 using eShop.EventBusKafka;

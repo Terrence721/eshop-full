@@ -1,4 +1,4 @@
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using NSubstitute;
 using Webhooks.API.IntegrationEvents;
 using Webhooks.API.Model;

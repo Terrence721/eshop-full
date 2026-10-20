@@ -1,4 +1,4 @@
-using Duende.IdentityServer.Models;
+﻿using Duende.IdentityServer.Models;
 using Duende.IdentityServer.Validation;
 
 namespace IdentityServerHost.Quickstart.UI.UnitTests;

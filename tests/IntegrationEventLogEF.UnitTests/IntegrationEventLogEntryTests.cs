@@ -1,4 +1,4 @@
-using System.Text.Json;
+﻿using System.Text.Json;
 using eShop.EventBus.Events;
 using eShop.IntegrationEventLogEF;
 

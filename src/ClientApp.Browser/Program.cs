@@ -1,12 +1,12 @@
-using System.Runtime.InteropServices.JavaScript;
+﻿using System.Runtime.InteropServices.JavaScript;
 using System.Runtime.Versioning;
 using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Browser;
-using Microsoft.Extensions.DependencyInjection;
 using eShop.ClientApp;
 using eShop.ClientApp.Browser;
 using eShop.ClientApp.Services.Identity;
+using Microsoft.Extensions.DependencyInjection;
 
 [SupportedOSPlatform("browser")]
 internal sealed partial class Program

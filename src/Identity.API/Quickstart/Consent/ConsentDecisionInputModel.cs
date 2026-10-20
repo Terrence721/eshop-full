@@ -1,4 +1,4 @@
-namespace IdentityServerHost.Quickstart.UI;
+﻿namespace IdentityServerHost.Quickstart.UI;
 
 // Shared by ConsentInputModel and DeviceAuthorizationInputModel - the fields
 // both POST bodies actually carry to describe the user's consent decision.

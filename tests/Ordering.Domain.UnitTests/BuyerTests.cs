@@ -1,4 +1,4 @@
-using eShop.Ordering.Domain.AggregatesModel.BuyerAggregate;
+﻿using eShop.Ordering.Domain.AggregatesModel.BuyerAggregate;
 using eShop.Ordering.Domain.Events;
 
 namespace eShop.Ordering.Domain.UnitTests;

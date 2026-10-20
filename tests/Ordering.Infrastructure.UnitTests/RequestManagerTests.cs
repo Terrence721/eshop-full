@@ -1,4 +1,4 @@
-using eShop.Ordering.Domain.Exceptions;
+﻿using eShop.Ordering.Domain.Exceptions;
 using eShop.Ordering.Infrastructure.Idempotency;
 using MediatR;
 using NSubstitute;

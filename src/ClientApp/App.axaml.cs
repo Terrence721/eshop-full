@@ -1,9 +1,9 @@
-using Avalonia;
+﻿using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
-using Microsoft.Extensions.DependencyInjection;
 using eShop.ClientApp.ViewModels;
 using eShop.ClientApp.Views;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace eShop.ClientApp;
 

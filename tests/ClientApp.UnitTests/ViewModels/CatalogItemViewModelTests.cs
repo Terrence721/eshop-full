@@ -1,8 +1,8 @@
-﻿using eShop.ClientApp.UnitTests.Mocks;
-using CommunityToolkit.Mvvm.Messaging;
+﻿using CommunityToolkit.Mvvm.Messaging;
 using eShop.ClientApp.Messages;
 using eShop.ClientApp.Models.Catalog;
 using eShop.ClientApp.Services.Identity;
+using eShop.ClientApp.UnitTests.Mocks;
 
 namespace eShop.ClientApp.UnitTests.ViewModels;
 
@@ -36,7 +36,7 @@ public class CatalogItemViewModelTests
         var CatalogItemViewModel = new CatalogItemViewModel(_appEnvironmentService, _navigationService);
         Assert.IsNotNull(CatalogItemViewModel.AddCatalogItemCommand);
     }
-    
+
     [TestMethod]
     public async Task AddCatalogItemCommandSendsAddProductMessageTest()
     {
@@ -44,8 +44,8 @@ public class CatalogItemViewModelTests
 
         var catalogItemViewModel = new CatalogItemViewModel(_appEnvironmentService, _navigationService);
 
-        catalogItemViewModel.CatalogItem = new CatalogItem {Id = 123, Name = "test", Price = 1.23m,};
-        
+        catalogItemViewModel.CatalogItem = new CatalogItem { Id = 123, Name = "test", Price = 1.23m, };
+
         WeakReferenceMessenger.Default
             .Register<CatalogItemViewModelTests, ProductCountChangedMessage>(
                 this,
@@ -53,7 +53,7 @@ public class CatalogItemViewModelTests
                 {
                     messageReceived = true;
                 });
-        
+
         await catalogItemViewModel.AddCatalogItemCommand.ExecuteUntilComplete();
 
         Assert.IsTrue(messageReceived);

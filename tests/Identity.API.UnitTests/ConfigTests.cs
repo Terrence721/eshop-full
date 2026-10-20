@@ -1,4 +1,4 @@
-using eShop.Identity.API.Configuration;
+﻿using eShop.Identity.API.Configuration;
 using Microsoft.Extensions.Configuration;
 
 namespace IdentityServerHost.Quickstart.UI.UnitTests;

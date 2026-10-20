@@ -1,4 +1,4 @@
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.Globalization;
 using System.Windows.Input;
 using eShop.ClientApp.Services;
@@ -246,7 +246,7 @@ public class SettingsViewModel : ViewModelBase
     {
         if (!_settingsService.UseMocks)
         {
-            var locationRequest = new Location {Latitude = _latitude, Longitude = _longitude};
+            var locationRequest = new Location { Latitude = _latitude, Longitude = _longitude };
 
             await _locationService.UpdateUserLocation(locationRequest);
         }

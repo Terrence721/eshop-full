@@ -1,4 +1,4 @@
-using System.Text;
+﻿using System.Text;
 using Asp.Versioning;
 using Asp.Versioning.ApiExplorer;
 using Microsoft.Extensions.Primitives;

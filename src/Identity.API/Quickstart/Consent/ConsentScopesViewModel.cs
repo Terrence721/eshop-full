@@ -1,4 +1,4 @@
-namespace IdentityServerHost.Quickstart.UI;
+﻿namespace IdentityServerHost.Quickstart.UI;
 
 // Shared by ConsentViewModel and DeviceAuthorizationViewModel - the fields both
 // GET-response shapes actually need to redisplay a scope-consent screen.

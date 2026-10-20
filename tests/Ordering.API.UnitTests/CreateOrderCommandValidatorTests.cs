@@ -1,4 +1,4 @@
-using eShop.Ordering.API.Application.Commands;
+﻿using eShop.Ordering.API.Application.Commands;
 using eShop.Ordering.API.Application.Models;
 using eShop.Ordering.API.Application.Validations;
 using Microsoft.Extensions.Logging;

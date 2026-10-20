@@ -1,5 +1,5 @@
-﻿using eShop.ClientApp.UnitTests.Mocks;
-using eShop.ClientApp.Services.Identity;
+﻿using eShop.ClientApp.Services.Identity;
+using eShop.ClientApp.UnitTests.Mocks;
 
 namespace eShop.ClientApp.UnitTests.ViewModels;
 
@@ -27,7 +27,7 @@ public class CatalogViewModelTests
 
         _appEnvironmentService.UpdateDependencies(true);
     }
-    
+
     [TestMethod]
     public void FilterCommandIsNotNullTest()
     {

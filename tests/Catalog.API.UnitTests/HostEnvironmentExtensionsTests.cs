@@ -1,4 +1,4 @@
-using Microsoft.Extensions.Hosting;
+﻿using Microsoft.Extensions.Hosting;
 using NSubstitute;
 
 namespace eShop.Catalog.API.UnitTests;

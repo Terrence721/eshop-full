@@ -1,4 +1,4 @@
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using eShop.ClientApp.Services;
 using eShop.ClientApp.Services.AppEnvironment;
 using eShop.ClientApp.Services.OpenUrl;
@@ -17,7 +17,8 @@ public partial class LoginViewModel : ViewModelBase
 
     [ObservableProperty] public partial bool IsMock { get; set; }
 
-    [ObservableProperty] [NotifyCanExecuteChangedFor(nameof(MockSignInCommand))]
+    [ObservableProperty]
+    [NotifyCanExecuteChangedFor(nameof(MockSignInCommand))]
     public partial bool IsValid { get; set; }
 
     // Never set anywhere in upstream, not bound in LoginView.xaml - dead.
@@ -128,8 +129,8 @@ public partial class LoginViewModel : ViewModelBase
     // UserName/Password's Validations lists stay empty and Validate() always returns true.
     private void AddValidations()
     {
-        UserName.Validations.Add(new IsNotNullOrEmptyRule<string> {ValidationMessage = "A username is required."});
-        Password.Validations.Add(new IsNotNullOrEmptyRule<string> {ValidationMessage = "A password is required."});
+        UserName.Validations.Add(new IsNotNullOrEmptyRule<string> { ValidationMessage = "A username is required." });
+        Password.Validations.Add(new IsNotNullOrEmptyRule<string> { ValidationMessage = "A password is required." });
     }
 
     public void InvalidateMock()

@@ -1,12 +1,12 @@
-using System.Security.Claims;
+﻿using System.Security.Claims;
 using eShop.Basket.API.Grpc;
 using eShop.Basket.API.Repositories;
 using Grpc.Core;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
-using ModelCustomerBasket = eShop.Basket.API.Model.CustomerBasket;
 using ModelBasketItem = eShop.Basket.API.Model.BasketItem;
+using ModelCustomerBasket = eShop.Basket.API.Model.CustomerBasket;
 
 namespace eShop.Basket.API.UnitTests;
 

@@ -1,4 +1,4 @@
-using eShop.EventBus.Extensions;
+﻿using eShop.EventBus.Extensions;
 
 namespace eShop.EventBus.UnitTests.Extensions;
 
