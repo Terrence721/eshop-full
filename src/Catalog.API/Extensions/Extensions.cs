@@ -36,7 +36,9 @@
         builder.Services.AddOptions<CatalogOptions>()
             .BindConfiguration(nameof(CatalogOptions));
 
-        if (builder.Configuration["OllamaEnabled"] is string ollamaEnabled && bool.Parse(ollamaEnabled))
+        if (builder.Configuration["OllamaEnabled"] is string ollamaEnabled
+            && bool.TryParse(ollamaEnabled, out var ollamaEnabledValue)
+            && ollamaEnabledValue)
         {
             builder.AddOllamaApiClient("embedding")
                 .AddEmbeddingGenerator();
