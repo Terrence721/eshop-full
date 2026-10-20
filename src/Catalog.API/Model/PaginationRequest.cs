@@ -2,6 +2,9 @@
 
 namespace eShop.Catalog.API.Model;
 
+/// <summary>
+/// Paging input for Catalog list endpoints. Defaults are 10 items per page, starting at page 0.
+/// </summary>
 public record PaginationRequest(
     [property: Description("Number of items to return in a single page of results")]
     [property: DefaultValue(10)]
