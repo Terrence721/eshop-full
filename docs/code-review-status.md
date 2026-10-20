@@ -73,5 +73,6 @@ Result legend: `OK` = reviewed, no changes required; `FIX` = reviewed and change
 | `src/Catalog.API/Model/CatalogType.cs` | OK | Trivial entity (Id + required Type, type-only constructor); no unit tests target it; no changes needed. |
 | `src/Catalog.API/Model/PaginatedItems.cs` | OK | Generic paging envelope (PageIndex/PageSize/Count/Data); init-only reads; no changes needed. |
 | `src/Catalog.API/Model/PaginationRequest.cs` | OK | Paging input record (PageSize default 10, PageIndex default 0); no validation boundaries; no changes needed. |
+| `src/Catalog.API/Extensions/Extensions.cs` | FIX | Hardened `OllamaEnabled` parsing (`bool.Parse` -> `bool.TryParse`) so a non-boolean config value no longer throws at startup; startup wiring otherwise unchanged. |
 | `src/Catalog.API/Extensions/HostEnvironmentExtensions.cs` | OK | Detects the "Build" environment / GetDocument.Insider host used for OpenAPI build-time generation; null-safe entry assembly check; no changes needed. |
 | `src/Catalog.API/Model/CatalogServices.cs` | OK | ASP.NET AsParameters aggregator over 5 services; ctor assignment to init properties; no changes needed. |
