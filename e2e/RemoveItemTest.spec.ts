@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test';
 
 test('Remove item from cart', async ({ page }) => {
   await page.goto('/');
-  await expect(page.getByRole('heading', { name: 'Ready for a new adventure?' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'eShop' })).toBeVisible();
   
   await page.getByRole('link', { name: 'Adventurer GPS Watch' }).click();
   await expect(page.getByRole('heading', { name: 'Adventurer GPS Watch' })).toBeVisible();
