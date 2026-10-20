@@ -64,7 +64,7 @@ app.UseRouting();
 app.UseBff();
 app.UseAuthorization();
 
-app.MapReverseProxy().AsBffApiEndpoint().AllowAnonymous();
+app.MapReverseProxy().AsBffApiEndpoint();
 app.MapOrderStatusEndpoints();
 app.MapBasketEndpoints();
 
