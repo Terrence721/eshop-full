@@ -1516,3 +1516,11 @@ All 3 heads: same mock data, same navigation logic, zero divergence — confirmi
 ---
 
 **✅ Migration complete — all 21 items done (this session, 2026-10-19).** `tests/` finished with `Ordering.FunctionalTests` (11 passing) + `Catalog.FunctionalTests` + `ClientApp.UnitTests` (32 passing Avalonia harness); `build/` left intentionally empty (upstream scripts target non-existent Dockerfiles). Working tree clean, everything pushed to `main`.
+
+## Session summary - e2e/auth fixes
+
+- Reverted BFF auth regression; WebBFF proxy now uses `AsBffApiEndpoint()` again.
+- Login setup fixed to use Identity JSON login flow (`/Account/Login`) and storage state.
+- Remaining e2e failures: BrowseItem, AddItem, RemoveItem (catalog/API auth or selector issues).
+- Backend/startup fixes applied for Identity config and HTTPS metadata.
+- PR #129 merged (gRPC bump) successfully.
