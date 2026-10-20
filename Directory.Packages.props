@@ -2,11 +2,11 @@
   <PropertyGroup>
     <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
     <CentralPackageTransitivePinningEnabled>true</CentralPackageTransitivePinningEnabled>
-    <DotnetPackagesVersion>10.0.12</DotnetPackagesVersion>
-    <MicrosoftExtensionsVersion>10.10.0</MicrosoftExtensionsVersion>
+    <DotnetPackagesVersion>10.0.13</DotnetPackagesVersion>
+    <MicrosoftExtensionsVersion>10.11.0</MicrosoftExtensionsVersion>
     <AspireVersion>13.6.1</AspireVersion>
     <AspireUnstablePackagesVersion>13.4.6-preview.1.26319.6</AspireUnstablePackagesVersion>
-    <GrpcVersion>2.83.0</GrpcVersion>
+    <GrpcVersion>2.84.0</GrpcVersion>
     <DuendeVersion>8.0.9</DuendeVersion>
     <AvaloniaVersion>12.1.4</AvaloniaVersion>
     <!-- Asp.Versioning.Http/Mvc.ApiExplorer/OpenApi hit a stable 10.0.0 release; Http.Client diverged onto its own 8.x line and is pinned separately below. -->
@@ -45,6 +45,7 @@
     <PackageVersion Include="Microsoft.Extensions.ApiDescription.Server" Version="$(DotnetPackagesVersion)" />
     <PackageVersion Include="Microsoft.Extensions.Identity.Stores" Version="$(DotnetPackagesVersion)" />
     <PackageVersion Include="Microsoft.OpenApi" Version="2.12.2" />
+    <PackageVersion Include="MessagePack" Version="2.5.303" />
     <PackageVersion Include="MSTest" Version="4.3.3" />
     <!-- Microsoft marks this extension experimental: API/CLI options/report format may change without notice. -->
     <PackageVersion Include="Microsoft.Testing.Extensions.HtmlReport" Version="2.3.3" />
@@ -86,13 +87,13 @@
     <PackageVersion Include="Polly.Core" Version="8.7.0" />
     <!-- Open Telemetry: core packages (OpenTelemetry.*) and contrib instrumentation packages
          (OpenTelemetry.Instrumentation.*) release on independent cadences. -->
-    <PackageVersion Include="OpenTelemetry.Exporter.OpenTelemetryProtocol" Version="1.19.1" />
-    <PackageVersion Include="OpenTelemetry.Extensions.Hosting" Version="1.19.1" />
-    <PackageVersion Include="OpenTelemetry.Instrumentation.AspNetCore" Version="1.19.0" />
+    <PackageVersion Include="OpenTelemetry.Exporter.OpenTelemetryProtocol" Version="1.20.0" />
+    <PackageVersion Include="OpenTelemetry.Extensions.Hosting" Version="1.20.0" />
+    <PackageVersion Include="OpenTelemetry.Instrumentation.AspNetCore" Version="1.20.0" />
     <!-- Still beta upstream; no stable release exists. -->
     <PackageVersion Include="OpenTelemetry.Instrumentation.GrpcNetClient" Version="1.16.0-beta.1" />
-    <PackageVersion Include="OpenTelemetry.Instrumentation.Http" Version="1.19.0" />
-    <PackageVersion Include="OpenTelemetry.Instrumentation.Runtime" Version="1.19.0" />
+    <PackageVersion Include="OpenTelemetry.Instrumentation.Http" Version="1.20.0" />
+    <PackageVersion Include="OpenTelemetry.Instrumentation.Runtime" Version="1.20.0" />
     <!-- IdentityServer -->
     <PackageVersion Include="Duende.IdentityServer" Version="$(DuendeVersion)" />
     <PackageVersion Include="Duende.IdentityServer.AspNetIdentity" Version="$(DuendeVersion)" />
@@ -101,8 +102,8 @@
     <PackageVersion Include="Duende.IdentityServer.Storage" Version="$(DuendeVersion)" />
     <!-- Duende.BFF: a different product line/version cadence from Duende.IdentityServer above,
          not tied to $(DuendeVersion) -->
-    <PackageVersion Include="Duende.BFF" Version="4.3.1" />
-    <PackageVersion Include="Duende.BFF.Yarp" Version="4.3.1" />
+    <PackageVersion Include="Duende.BFF" Version="4.3.2" />
+    <PackageVersion Include="Duende.BFF.Yarp" Version="4.3.2" />
     <!-- Scaffolding -->
     <PackageVersion Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="10.0.2" />
     <!-- Grpc -->
@@ -146,3 +147,4 @@
     <PackageVersion Include="Microsoft.Extensions.Logging.Debug" Version="$(DotnetPackagesVersion)" />
   </ItemGroup>
 </Project>
+
