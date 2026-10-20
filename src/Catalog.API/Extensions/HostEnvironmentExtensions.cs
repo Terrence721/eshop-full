@@ -1,7 +1,10 @@
-﻿using System.Reflection;
+using System.Reflection;
 
 namespace Microsoft.Extensions.Hosting;
 
+/// <summary>
+/// Extension methods used to detect the environment the Catalog API is running in during startup.
+/// </summary>
 internal static class HostEnvironmentExtensions
 {
     public static bool IsBuild(this IHostEnvironment hostEnvironment)
