@@ -89,7 +89,7 @@ export default defineConfig({
   webServer: {
     command: 'dotnet run --project src/eShop.AppHost/eShop.AppHost.csproj',
     url: 'http://localhost:5045',
-    reuseExistingServer: !process.env.CI,
+    reuseExistingServer: true,
     stderr: 'pipe',
     stdout: 'pipe',
     timeout: 5 * 60_000,
