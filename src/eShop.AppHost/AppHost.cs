@@ -134,7 +134,7 @@ var webhookClient = builder.AddProject<Projects.WebhookClient>("webhook-client")
 // CallBackUrl (SignedOutRedirectUri) needs WebhookClient's own address -- a self-reference,
 // resolved lazily at runtime like any other EndpointReference, so it has to be set after the
 // resource itself is declared rather than inline in the chain above.
-webhookClient.WithEnvironment("CallBackUrl", webhookClient.GetEndpoint("http"));
+webhookClient.WithEnvironment("CallBackUrl", webhookClient.GetEndpoint("http"));;
 
 // All three are Yarn workspaces (this repo's only JavaScript package manager), not npm --
 // WithYarn() overrides AddViteApp's npm default. Each still reads its own hardcoded dev-proxy
@@ -155,5 +155,18 @@ var webhookClientWebApp = builder.AddViteApp("webhookclient-webapp", "../Webhook
     .WithYarn()
     .WithReference(webhookClient)
     .WaitFor(webhookClient);
+
+// Identity API's GetRequiredValue clients all need real downstream service URLs --
+// without these Aspire never provisions them and Identity.API crashes at startup.
+identityApi.WithEnvironment(context =>
+{
+    context.EnvironmentVariables["WebAppClient"] = "http://localhost:5045";
+    context.EnvironmentVariables["WebBffClient"] = "http://localhost:5045";
+    context.EnvironmentVariables["WebhooksWebClient"] = "http://localhost:5062";
+    context.EnvironmentVariables["BasketApiClient"] = "http://localhost:5222";
+    context.EnvironmentVariables["OrderingApiClient"] = "http://localhost:5224";
+    context.EnvironmentVariables["WebhooksApiClient"] = "http://localhost:5227";
+    context.EnvironmentVariables["ClientAppCallback"] = "eshop://authcallback";
+});
 
 builder.Build().Run();

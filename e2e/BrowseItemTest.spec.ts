@@ -5,8 +5,7 @@ test('Browse Items', async ({ page }) => {
 
   await expect(page.getByRole('heading', { name: 'eShop' })).toBeVisible();
 
-  await page.getByRole('link', { name: 'Adventurer GPS Watch' }).click(); 
-  await page.getByRole('heading', { name: 'Adventurer GPS Watch' }).click();
+  await page.getByText('Adventurer GPS Watch').click();
   
   //Expect
   await expect(page.getByRole('heading', { name: 'Adventurer GPS Watch' })).toBeVisible();
