@@ -69,3 +69,4 @@ Result legend: `OK` = reviewed, no changes required; `FIX` = reviewed and change
 | File | Result | Notes |
 | --- | --- | --- |
 | `src/Catalog.API/Model/CatalogItem.cs` | OK | 9 unit tests pass (RemoveStock/AddStock paths); no changes needed. |
+| `src/Catalog.API/Model/CatalogBrand.cs` | OK | Trivial entity (Id + required Brand, brand-only constructor); no unit tests target it; no changes needed. |
