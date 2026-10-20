@@ -147,6 +147,7 @@ var identityWebApp = builder.AddViteApp("identity-webapp", "../Identity.WebApp")
 
 var webApp = builder.AddViteApp("webapp", "../WebApp")
     .WithYarn()
+    .WithHttpEndpoint(port: 5045, name: "http")
     .WithReference(webBff)
     .WaitFor(webBff);
 
