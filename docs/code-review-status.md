@@ -25,6 +25,20 @@ Result legend: `OK` = reviewed, no changes required; `FIX` = reviewed and change
 | `src/EventBus/Extensions/GenericTypeExtensions.cs` | OK | Generic type name helper; no changes needed. |
 | `src/EventBus/GlobalUsings.cs` | OK | Single global using; no changes needed. |
 
+## EventBusKafka
+
+| File | Result | Notes |
+| --- | --- | --- |
+| `src/EventBusKafka/EventBusOptions.cs` | OK | Carried-over options; consumer group id + retry count; no changes needed. |
+| `src/EventBusKafka/GlobalUsings.cs` | OK | Kafka/abstraction/usings; no changes needed. |
+| `src/EventBusKafka/IEventSerializer.cs` | OK | Swappable serializer seam; no changes needed. |
+| `src/EventBusKafka/KafkaDependencyInjectionExtensions.cs` | OK | Producer/consumer/telemetry/resilience wiring verified; no changes needed. |
+| `src/EventBusKafka/KafkaEventBus.cs` | OK | Publish/consume/decorator-hosted lifecycle; no changes needed. |
+| `src/EventBusKafka/KafkaTelemetry.cs` | OK | Semconv tags; no changes needed. |
+| `src/EventBusKafka/ResilientEventBusDecorator.cs` | OK | Polly retry of `KafkaRetriableException`; no changes needed. |
+| `src/EventBusKafka/SystemTextJsonEventSerializer.cs` | OK | AOT-safe serialization; no changes needed. |
+| `src/EventBusKafka/TelemetryEventBusDecorator.cs` | OK | Span + exception tags; no changes needed. |
+
 ## eShop.ServiceDefaults
 
 | File | Result | Notes |
