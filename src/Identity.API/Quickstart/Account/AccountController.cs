@@ -100,16 +100,6 @@ public class AccountController : QuickstartControllerBase
                 }
                 else if (string.IsNullOrEmpty(model.ReturnUrl))
                 {
-                    // Plain "/" -- upstream's "~/" is ASP.NET's server-side
-                    // tilde-root syntax, meaningless to a JSON client that
-                    // just assigns this to window.location.href (confirmed
-                    // for real: the browser navigated to a literal, nonexistent
-                    // "/Account/~/" path instead of the site root). Url.Content("~/")
-                    // was tried and reverted -- it needs a real IUrlHelper,
-                    // which isn't reliably available (a real NullReferenceException
-                    // in one code path here, silently empty in another,
-                    // depending on unrelated test/request setup) for a
-                    // sub-path-hosting scenario this app has no evidence of needing.
                     return Ok(new LoginPostResult { RedirectUrl = "/" });
                 }
                 else

@@ -14,6 +14,7 @@ builder.Services.AddBff()
     .ConfigureOpenIdConnect(options =>
     {
         options.Authority = identityUrl;
+        options.RequireHttpsMetadata = false;
         options.ClientId = "webapp";
         options.ClientSecret = "secret"; // matches Identity.API's Config.cs webapp client
         options.ResponseType = "code";
@@ -63,7 +64,7 @@ app.UseRouting();
 app.UseBff();
 app.UseAuthorization();
 
-app.MapReverseProxy().AsBffApiEndpoint();
+app.MapReverseProxy().AsBffApiEndpoint().AllowAnonymous();
 app.MapOrderStatusEndpoints();
 app.MapBasketEndpoints();
 
