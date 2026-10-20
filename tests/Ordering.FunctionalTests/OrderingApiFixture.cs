@@ -1,7 +1,9 @@
 ﻿using Aspire.Hosting;
 using Aspire.Hosting.ApplicationModel;
 
+using eShop.EventBus.Abstractions;
 using Microsoft.AspNetCore.Mvc.Testing;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
 namespace eShop.Ordering.FunctionalTests;
@@ -33,12 +35,20 @@ public sealed class OrderingApiFixture : WebApplicationFactory<Program>, IAsyncL
             config.AddInMemoryCollection(new Dictionary<string, string>
             {
                 { $"ConnectionStrings:{Postgres.Resource.Name}", _postgresConnectionString },
-                { "Identity:Url", IdentityApi.GetEndpoint("http").Url }
+                { "Identity:Url", IdentityApi.GetEndpoint("http").Url },
+                { "Testing:DisableEventBus", "true" }
             });
         });
         builder.ConfigureServices(services =>
         {
             services.AddSingleton<IStartupFilter>(new AutoAuthorizeStartupFilter());
+
+            var descriptors = services.Where(s => s.ServiceType == typeof(IEventBus)).ToList();
+            foreach (var descriptor in descriptors)
+            {
+                services.Remove(descriptor);
+            }
+            services.AddTransient<IEventBus, NullEventBus>();
         });
         return base.CreateHost(builder);
     }

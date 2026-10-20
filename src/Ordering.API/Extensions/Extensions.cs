@@ -25,8 +25,11 @@ internal static class Extensions
 
         services.AddTransient<IOrderingIntegrationEventService, OrderingIntegrationEventService>();
 
-        builder.AddKafkaEventBus("eventbus")
-               .AddEventBusSubscriptions();
+        if (!builder.Configuration.GetValue<bool>("Testing:DisableEventBus"))
+        {
+            builder.AddKafkaEventBus("eventbus")
+                   .AddEventBusSubscriptions();
+        }
 
         services.AddHttpContextAccessor();
         services.AddTransient<IIdentityService, IdentityService>();

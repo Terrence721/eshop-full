@@ -33,6 +33,7 @@ public sealed class CatalogApiFixture : WebApplicationFactory<Program>, IAsyncLi
             config.AddInMemoryCollection(new Dictionary<string, string>
             {
                 { $"ConnectionStrings:{Postgres.Resource.Name}", _postgresConnectionString },
+                { "Testing:DisableEventBus", "true" },
                 });
         });
         // Replace Kafka-backed event bus with a no-op so price-update tests
