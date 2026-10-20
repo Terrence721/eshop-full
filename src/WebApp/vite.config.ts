@@ -37,6 +37,7 @@ const webBffProxy: ProxyOptions = {
 export default defineConfig({
   plugins: [react()],
   server: {
+    port: 5045,
     proxy: {
       '/bff': webBffProxy,
       '/remoteapi': webBffProxy,
