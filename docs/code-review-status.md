@@ -72,3 +72,4 @@ Result legend: `OK` = reviewed, no changes required; `FIX` = reviewed and change
 | `src/Catalog.API/Model/CatalogBrand.cs` | OK | Trivial entity (Id + required Brand, brand-only constructor); no unit tests target it; no changes needed. |
 | `src/Catalog.API/Model/CatalogType.cs` | OK | Trivial entity (Id + required Type, type-only constructor); no unit tests target it; no changes needed. |
 | `src/Catalog.API/Model/PaginatedItems.cs` | OK | Generic paging envelope (PageIndex/PageSize/Count/Data); init-only reads; no changes needed. |
+| `src/Catalog.API/Model/CatalogServices.cs` | OK | ASP.NET AsParameters aggregator over 5 services; ctor assignment to init properties; no changes needed. |
