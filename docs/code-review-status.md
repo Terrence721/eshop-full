@@ -63,3 +63,9 @@ Result legend: `OK` = reviewed, no changes required; `FIX` = reviewed and change
 | `src/IntegrationEventLogEF/Services/IntegrationEventLogService.cs` | OK | Save/retrieve/mark flow; no changes needed. |
 | `src/IntegrationEventLogEF/Services/IntegrationEventTypeResolver.cs` | OK | Entry-assembly type resolution; no changes needed. |
 | `src/IntegrationEventLogEF/Utilities/ResilientTransaction.cs` | OK | Shared execution strategy + explicit transaction; no changes needed. |
+
+## Catalog.API
+
+| File | Result | Notes |
+| --- | --- | --- |
+| `src/Catalog.API/Model/CatalogItem.cs` | OK | 9 unit tests pass (RemoveStock/AddStock paths); no changes needed. |
