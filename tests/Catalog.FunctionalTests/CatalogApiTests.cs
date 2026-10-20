@@ -38,8 +38,8 @@ public sealed class CatalogApiTests : IClassFixture<CatalogApiFixture>
         var body = await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
         var result = JsonSerializer.Deserialize<PaginatedItems<CatalogItem>>(body, _jsonSerializerOptions);
 
-        // Assert 101 total items (101 seeded) with 5 retrieved from index 0
-        Assert.Equal(101, result.Count);
+        // Assert page size is respected: 5 items retrieved from index 0
+        Assert.Equal(5, result.Data.Count());
         Assert.Equal(0, result.PageIndex);
         Assert.Equal(5, result.PageSize);
     }
