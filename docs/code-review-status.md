@@ -137,3 +137,4 @@ Result legend: `OK` = reviewed, no changes required; `FIX` = reviewed and change
 | `src/Ordering.API/Application/Commands/CancelOrderCommandHandler.cs` | OK | Cancel handler + idempotent identified wrapper; XML docs added; SOLID/DRY/ISP checked; no functional changes. |
 | `src/Ordering.API/Application/Commands/CreateOrderCommand.cs` | OK | Large, DDD-styled DataContract command (private setters, [DataContract] parameterless constructor for deserialization); class-level XML doc added; SOLID/DRY/ISP checked; no functional changes. |
 | `src/Ordering.API/Application/Commands/CreateOrderCommandHandler.cs` | OK | Create-order handler (+ idempotent wrapper): outbox event, address/order construction, repository add/save; XML docs added; SOLID/DRY/ISP checked. |
+| `src/Ordering.API/Application/Commands/CreateOrderDraftCommand.cs` | OK | Draft command record (buyer + basket items) returning OrderDraftDTO; XML doc added; no functional changes. |
