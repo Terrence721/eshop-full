@@ -4,6 +4,9 @@ using Pgvector;
 
 namespace eShop.Catalog.API.Infrastructure;
 
+/// <summary>
+/// Seeds the Catalog database from <c>Setup/catalog.json</c>, including optional embedding generation.
+/// </summary>
 public partial class CatalogContextSeed(
     IWebHostEnvironment env,
     ICatalogAI catalogAI,
