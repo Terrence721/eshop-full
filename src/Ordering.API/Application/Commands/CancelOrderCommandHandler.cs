@@ -1,6 +1,9 @@
 ﻿namespace eShop.Ordering.API.Application.Commands;
 
 // Regular CommandHandler
+/// <summary>
+/// Handles cancellation of an order, transitioning it to the cancelled status.
+/// </summary>
 public class CancelOrderCommandHandler : IRequestHandler<CancelOrderCommand, bool>
 {
     private readonly IOrderRepository _orderRepository;
@@ -31,6 +34,9 @@ public class CancelOrderCommandHandler : IRequestHandler<CancelOrderCommand, boo
 
 
 // Use for Idempotency in Command process
+/// <summary>
+/// Identified-command (idempotent) wrapper around <see cref="CancelOrderCommandHandler" />.
+/// </summary>
 public class CancelOrderIdentifiedCommandHandler : IdentifiedCommandHandler<CancelOrderCommand, bool>
 {
     public CancelOrderIdentifiedCommandHandler(
