@@ -81,6 +81,7 @@ Result legend: `OK` = reviewed, no changes required; `FIX` = reviewed and change
 | `src/Catalog.API/Infrastructure/EntityConfigurations/CatalogBrandEntityTypeConfiguration.cs` | OK | Maps CatalogBrand to its table with a 100-char Brand max length; no changes needed. |
 | `src/Catalog.API/Infrastructure/EntityConfigurations/CatalogTypeEntityTypeConfiguration.cs` | OK | Maps CatalogType to its table with a 100-char Type max length; no changes needed. |
 | `src/Catalog.API/Infrastructure/EntityConfigurations/CatalogItemEntityTypeConfiguration.cs` | OK | Maps CatalogItem to Catalog table (Name 50, vector(384) embedding, FKs to brand/type, index on Name); no changes needed. |
+| `src/Catalog.API/Apis/CatalogApi.cs` | OK | Minimal API endpoint registration/handlers (list, lookup, semantic search, update, create, delete, picture); no changes needed. |
 | `src/Catalog.API/Infrastructure/Exceptions/CatalogDomainException.cs` | OK | Standard exception type (parameterless/message/inner) with doc summary; no changes needed. |
 | `src/Catalog.API/Extensions/HostEnvironmentExtensions.cs` | OK | Detects the "Build" environment / GetDocument.Insider host used for OpenAPI build-time generation; null-safe entry assembly check; no changes needed. |
 | `src/Catalog.API/Model/CatalogServices.cs` | OK | ASP.NET AsParameters aggregator over 5 services; ctor assignment to init properties; no changes needed. |
