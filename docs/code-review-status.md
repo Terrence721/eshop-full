@@ -115,3 +115,4 @@ Result legend: `OK` = reviewed, no changes required; `FIX` = reviewed and change
 | `src/Basket.API/IntegrationEvents/EventHandling/OrderStartedIntegrationEventHandler.cs` | OK | Posts-order basket deletion via IBasketRepository; focused, SRP/ISP compliant; class-level XML doc added; no functional changes. |
 | `src/Basket.API/IntegrationEvents/Events/OrderStartedIntegrationEvent.cs` | OK | Immutable record (UserId) inheriting IntegrationEvent; XML doc added; no functional changes. |
 | `src/Basket.API/Program.cs` | OK | Composition root (basic defaults, app services, gRPC, gRPC-Web, MapGrpcService); SRP compliant; entrypoint comment added. |
+| `src/Basket.API/GlobalUsings.cs` | OK | Consolidated global `using` aliases for cross-cutting namespaces; no unused/undocumented imports; header comment added. |
