@@ -77,6 +77,7 @@ Result legend: `OK` = reviewed, no changes required; `FIX` = reviewed and change
 | `src/Catalog.API/Infrastructure/CatalogContext.cs` | OK | DbContext for CatalogItems/Brands/Types plus vendor vector extension and integration event log table; no changes needed. |
 | `src/Catalog.API/Infrastructure/CatalogContextSeed.cs` | OK | Idempotent seeder (catalog.json -> brands/types/items, optional embeddings); no changes needed. |
 | `src/Catalog.API/Services/CatalogAI.cs` | OK | AI/embedding helper (IsEnabled, truncation to configured dimensions, combined text); 8 unit tests pass. |
+| `src/Catalog.API/Services/ICatalogAI.cs` | OK | Interface for AI embedding operations; single interface (not split) keeps callers simple; no changes needed. |
 | `src/Catalog.API/Infrastructure/EntityConfigurations/CatalogBrandEntityTypeConfiguration.cs` | OK | Maps CatalogBrand to its table with a 100-char Brand max length; no changes needed. |
 | `src/Catalog.API/Infrastructure/EntityConfigurations/CatalogTypeEntityTypeConfiguration.cs` | OK | Maps CatalogType to its table with a 100-char Type max length; no changes needed. |
 | `src/Catalog.API/Infrastructure/EntityConfigurations/CatalogItemEntityTypeConfiguration.cs` | OK | Maps CatalogItem to Catalog table (Name 50, vector(384) embedding, FKs to brand/type, index on Name); no changes needed. |

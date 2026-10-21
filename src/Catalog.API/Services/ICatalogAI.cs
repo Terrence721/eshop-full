@@ -2,6 +2,9 @@
 
 namespace eShop.Catalog.API.Services;
 
+/// <summary>
+/// Abstraction over the catalog's embedding (AI) capabilities, implemented by <see cref="CatalogAI"/>.
+/// </summary>
 public interface ICatalogAI
 {
     /// <summary>Gets whether the AI system is enabled.</summary>
