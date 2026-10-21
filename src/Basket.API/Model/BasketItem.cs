@@ -1,5 +1,8 @@
 ﻿namespace eShop.Basket.API.Model;
 
+/// <summary>
+/// A single line item stored in a customer's basket.
+/// </summary>
 public class BasketItem : IValidatableObject
 {
     public string? Id { get; set; }
