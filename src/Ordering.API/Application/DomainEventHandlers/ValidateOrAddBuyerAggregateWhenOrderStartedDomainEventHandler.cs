@@ -1,21 +1,20 @@
 ﻿namespace eShop.Ordering.API.Application.DomainEventHandlers;
 
-public class ValidateOrAddBuyerAggregateWhenOrderStartedDomainEventHandler
-                    : INotificationHandler<OrderStartedDomainEvent>
+/// <summary>
+/// Validates or creates the buyer aggregate and payment method when an order starts.
+/// </summary>
+public class ValidateOrAddBuyerAggregateWhenOrderStartedDomainEventHandler(
+    ILogger<ValidateOrAddBuyerAggregateWhenOrderStartedDomainEventHandler> logger,
+    IBuyerRepository buyerRepository,
+    IOrderingIntegrationEventService orderingIntegrationEventService)
+    : INotificationHandler<OrderStartedDomainEvent>
 {
-    private readonly ILogger _logger;
-    private readonly IBuyerRepository _buyerRepository;
-    private readonly IOrderingIntegrationEventService _orderingIntegrationEventService;
-
-    public ValidateOrAddBuyerAggregateWhenOrderStartedDomainEventHandler(
-        ILogger<ValidateOrAddBuyerAggregateWhenOrderStartedDomainEventHandler> logger,
-        IBuyerRepository buyerRepository,
-        IOrderingIntegrationEventService orderingIntegrationEventService)
-    {
-        _buyerRepository = buyerRepository ?? throw new ArgumentNullException(nameof(buyerRepository));
-        _orderingIntegrationEventService = orderingIntegrationEventService ?? throw new ArgumentNullException(nameof(orderingIntegrationEventService));
-        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-    }
+    private readonly ILogger _logger =
+        logger ?? throw new ArgumentNullException(nameof(logger));
+    private readonly IBuyerRepository _buyerRepository =
+        buyerRepository ?? throw new ArgumentNullException(nameof(buyerRepository));
+    private readonly IOrderingIntegrationEventService _orderingIntegrationEventService =
+        orderingIntegrationEventService ?? throw new ArgumentNullException(nameof(orderingIntegrationEventService));
 
     public async Task Handle(OrderStartedDomainEvent domainEvent, CancellationToken cancellationToken)
     {
