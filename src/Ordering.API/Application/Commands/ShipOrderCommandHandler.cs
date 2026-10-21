@@ -1,5 +1,8 @@
 ﻿namespace eShop.Ordering.API.Application.Commands;
 
+/// <summary>
+/// Handler moving an order to shipped status (plus idempotent wrapper).
+/// </summary>
 // Regular CommandHandler
 public class ShipOrderCommandHandler : IRequestHandler<ShipOrderCommand, bool>
 {
