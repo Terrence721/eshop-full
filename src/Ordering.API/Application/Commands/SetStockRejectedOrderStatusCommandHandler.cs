@@ -1,5 +1,8 @@
 ﻿namespace eShop.Ordering.API.Application.Commands;
 
+/// <summary>
+/// Handler moving an order to stock-rejected status (plus idempotent wrapper).
+/// </summary>
 // Regular CommandHandler
 public class SetStockRejectedOrderStatusCommandHandler : IRequestHandler<SetStockRejectedOrderStatusCommand, bool>
 {
