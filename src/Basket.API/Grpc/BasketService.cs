@@ -5,6 +5,10 @@ using eShop.Basket.API.Repositories;
 
 namespace eShop.Basket.API.Grpc;
 
+/// <summary>
+/// gRPC service for customer-basket operations (get, update, delete), scoped to the
+/// authenticated caller's identity and backed by <see cref="IBasketRepository"/>.
+/// </summary>
 public class BasketService(
     IBasketRepository repository,
     ILogger<BasketService> logger) : Basket.BasketBase
