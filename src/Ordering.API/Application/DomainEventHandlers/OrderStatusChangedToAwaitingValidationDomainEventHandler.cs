@@ -1,5 +1,8 @@
 ﻿namespace eShop.Ordering.API.Application.DomainEventHandlers;
 
+/// <summary>
+/// Publishes an order-status-changed (awaiting validation) integration event.
+/// </summary>
 public class OrderStatusChangedToAwaitingValidationDomainEventHandler
                 : INotificationHandler<OrderStatusChangedToAwaitingValidationDomainEvent>
 {
@@ -16,8 +19,8 @@ public class OrderStatusChangedToAwaitingValidationDomainEventHandler
     {
         _orderRepository = orderRepository ?? throw new ArgumentNullException(nameof(orderRepository));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-        _buyerRepository = buyerRepository;
-        _orderingIntegrationEventService = orderingIntegrationEventService;
+        _buyerRepository = buyerRepository ?? throw new ArgumentNullException(nameof(buyerRepository));
+        _orderingIntegrationEventService = orderingIntegrationEventService ?? throw new ArgumentNullException(nameof(orderingIntegrationEventService));
     }
 
     public async Task Handle(OrderStatusChangedToAwaitingValidationDomainEvent domainEvent, CancellationToken cancellationToken)
