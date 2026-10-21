@@ -1,4 +1,5 @@
-﻿var builder = WebApplication.CreateBuilder(args);
+// Composition root and startup pipeline for Basket.API.
+var builder = WebApplication.CreateBuilder(args);
 
 builder.AddBasicServiceDefaults();
 builder.AddApplicationServices();
