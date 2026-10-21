@@ -1,5 +1,8 @@
-﻿namespace eShop.Catalog.API.Infrastructure.EntityConfigurations;
+namespace eShop.Catalog.API.Infrastructure.EntityConfigurations;
 
+/// <summary>
+/// EF Core mapping for <see cref="CatalogType"/>, including its table name and column constraints.
+/// </summary>
 class CatalogTypeEntityTypeConfiguration
     : IEntityTypeConfiguration<CatalogType>
 {
