@@ -77,5 +77,6 @@ Result legend: `OK` = reviewed, no changes required; `FIX` = reviewed and change
 | `src/Catalog.API/Infrastructure/CatalogContext.cs` | OK | DbContext for CatalogItems/Brands/Types plus vendor vector extension and integration event log table; no changes needed. |
 | `src/Catalog.API/Infrastructure/CatalogContextSeed.cs` | OK | Idempotent seeder (catalog.json -> brands/types/items, optional embeddings); no changes needed. |
 | `src/Catalog.API/Infrastructure/EntityConfigurations/CatalogBrandEntityTypeConfiguration.cs` | OK | Maps CatalogBrand to its table with a 100-char Brand max length; no changes needed. |
+| `src/Catalog.API/Infrastructure/EntityConfigurations/CatalogTypeEntityTypeConfiguration.cs` | OK | Maps CatalogType to its table with a 100-char Type max length; no changes needed. |
 | `src/Catalog.API/Extensions/HostEnvironmentExtensions.cs` | OK | Detects the "Build" environment / GetDocument.Insider host used for OpenAPI build-time generation; null-safe entry assembly check; no changes needed. |
 | `src/Catalog.API/Model/CatalogServices.cs` | OK | ASP.NET AsParameters aggregator over 5 services; ctor assignment to init properties; no changes needed. |
