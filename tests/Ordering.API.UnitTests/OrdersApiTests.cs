@@ -159,6 +159,21 @@ public class OrdersApiTests
         Assert.AreEqual("XXXXXXXXXXXX1111", sentCommand!.CardNumber);
     }
 
+    [TestMethod]
+    public async Task CreateOrderAsync_masks_short_card_numbers_without_throwing()
+    {
+        CreateOrderCommand? sentCommand = null;
+        var mediator = Substitute.For<IMediator>();
+        mediator.Send(Arg.Do<IdentifiedCommand<CreateOrderCommand, bool>>(c => sentCommand = c.Command)).Returns(true);
+
+        // Empty and very-short card numbers must not throw ArgumentOutOfRangeException
+        // while still being fully masked.
+        var result = await OrdersApi.CreateOrderAsync(Guid.NewGuid(), CreateOrderRequest(cardNumber: "12"), CreateServices(mediator));
+
+        Assert.IsInstanceOfType<Ok>(result.Result);
+        Assert.AreEqual("XX", sentCommand!.CardNumber);
+    }
+
     // Real, if surprising, behavior: the endpoint only logs on inner-command failure, it
     // never returns anything other than Ok for it - a missing/empty request ID is the
     // only branch that returns something other than success.

@@ -2,6 +2,10 @@
 using CardType = eShop.Ordering.API.Application.Queries.CardType;
 using Order = eShop.Ordering.API.Application.Queries.Order;
 
+/// <summary>
+/// Minimal-API endpoints that expose the ordering operations (list, get, draft, create,
+/// cancel and ship) under <c>api/orders</c>.
+/// </summary>
 public static class OrdersApi
 {
     public static RouteGroupBuilder MapOrdersApiV1(this IEndpointRouteBuilder app)
@@ -137,7 +141,12 @@ public static class OrdersApi
 
         using (services.Logger.BeginScope(new List<KeyValuePair<string, object>> { new("IdentifiedCommandId", requestId) }))
         {
-            var maskedCCNumber = request.CardNumber.Substring(request.CardNumber.Length - 4).PadLeft(request.CardNumber.Length, 'X');
+            // Mask everything but the last four digits without throwing on short/empty
+            // card numbers (which would otherwise surface an unhandled exception).
+            var cardNumber = request.CardNumber ?? string.Empty;
+            var maskedCCNumber = cardNumber.Length <= 4
+                ? new string('X', cardNumber.Length)
+                : cardNumber.Substring(cardNumber.Length - 4).PadLeft(cardNumber.Length, 'X');
             var createOrderCommand = new CreateOrderCommand(request.Items, request.UserId, request.UserName, request.City, request.Street,
                 request.State, request.Country, request.ZipCode,
                 maskedCCNumber, request.CardHolderName, request.CardExpiration,
