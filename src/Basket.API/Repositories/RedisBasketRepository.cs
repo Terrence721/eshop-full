@@ -1,8 +1,11 @@
-﻿using System.Text.Json;
+using System.Text.Json;
 using eShop.Basket.API.Model;
 
 namespace eShop.Basket.API.Repositories;
 
+/// <summary>
+/// Redis-backed implementation of <see cref="IBasketRepository"/>.
+/// </summary>
 public class RedisBasketRepository(ILogger<RedisBasketRepository> logger, IConnectionMultiplexer redis) : IBasketRepository
 {
     private readonly IDatabase _database = redis.GetDatabase();
@@ -11,7 +14,7 @@ public class RedisBasketRepository(ILogger<RedisBasketRepository> logger, IConne
     // implementation:
 
     // - /basket/{id} "string" per unique basket
-    private static RedisKey BasketKeyPrefix = "/basket/"u8.ToArray();
+    private static readonly RedisKey BasketKeyPrefix = "/basket/"u8.ToArray();
     // note on UTF8 here: library limitation (to be fixed) - prefixes are more efficient as blobs
 
     private static RedisKey GetBasketKey(string userId) => BasketKeyPrefix.Append(userId);
