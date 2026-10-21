@@ -137,6 +137,7 @@ Result legend: `OK` = reviewed, no changes required; `FIX` = reviewed and change
 | `src/Ordering.API/Application/Commands/IdentifiedCommand.cs` | OK | Identified-command (request/id) wrapper used for idempotency; XML doc added; no functional changes. |
 | `src/Ordering.API/Application/Commands/IdentifiedCommandHandler.cs` | FIX | Abstract idempotent base handler (existence check, mediation, logging, duplicate handling); added mediator/requestManager null guards; XML already present; SOLID/DRY/ISP checked. |
 | `src/Ordering.API/Application/Commands/SetAwaitingValidationOrderStatusCommand.cs` | OK | Single-purpose status-transition command record; XML doc added; no functional changes. |
+| `src/Ordering.API/Application/Commands/SetAwaitingValidationOrderStatusCommandHandler.cs` | OK | Set-awaiting-validation handler + idempotent wrapper; XML doc added; SOLID/DRY/ISP checked. |
 | `src/Ordering.API/Application/Commands/CancelOrderCommand.cs` | OK | Single-purpose cancel-order command record; XML doc added; no functional changes. |
 | `src/Ordering.API/Application/Commands/CancelOrderCommandHandler.cs` | OK | Cancel handler + idempotent identified wrapper; XML docs added; SOLID/DRY/ISP checked; no functional changes. |
 | `src/Ordering.API/Application/Commands/CreateOrderCommand.cs` | OK | Large, DDD-styled DataContract command (private setters, [DataContract] parameterless constructor for deserialization); class-level XML doc added; SOLID/DRY/ISP checked; no functional changes. |
