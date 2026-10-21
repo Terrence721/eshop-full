@@ -1,4 +1,5 @@
-﻿global using System.Runtime.Serialization;
+// Global using directives for Ordering.API (domain, application, infrastructure).
+global using System.Runtime.Serialization;
 global using Asp.Versioning.Conventions;
 global using eShop.EventBus.Abstractions;
 global using eShop.EventBus.Events;

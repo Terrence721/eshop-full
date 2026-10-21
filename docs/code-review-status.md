@@ -127,3 +127,4 @@ Result legend: `OK` = reviewed, no changes required; `FIX` = reviewed and change
 | `src/Ordering.API/Extensions/Extensions.cs` | OK | Composition root (auth, EF Core/Npgsql, migration, integration services, identity, mediator, validators, repositories, event bus); class-level XML doc added; SOLID/DRY/ISP checked. |
 | `src/Ordering.API/Extensions/LinqSelectExtensions.cs` | OK | Per-element try/select with captured exceptions and pluggable handlers; class-level XML doc added; SOLID/DRY/ISP checked. |
 | `src/Ordering.API/Extensions/OrderingApiTrace.cs` | OK | Source-generated partial logger for ordering trace events (status/payment/buyer changes); internal, focused; class-level XML doc added. |
+| `src/Ordering.API/GlobalUsings.cs` | OK | Global using consolidation for Ordering.API cross-cutting namespaces; header comment added; consistent with layering. |
