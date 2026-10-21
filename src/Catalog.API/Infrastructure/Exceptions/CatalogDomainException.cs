@@ -1,7 +1,7 @@
 ﻿namespace eShop.Catalog.API.Infrastructure.Exceptions;
 
 /// <summary>
-/// Exception type for app exceptions
+/// Exception type for domain (catalog) errors
 /// </summary>
 public class CatalogDomainException : Exception
 {
