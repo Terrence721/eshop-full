@@ -1,5 +1,9 @@
-﻿using FluentValidation;
+using FluentValidation;
 
+/// <summary>
+/// Host-application builder extensions that register Ordering.API's infrastructure
+/// (authentication, database, event bus, mediator, repositories, and integration services).
+/// </summary>
 internal static class Extensions
 {
     public static void AddApplicationServices(this IHostApplicationBuilder builder)
