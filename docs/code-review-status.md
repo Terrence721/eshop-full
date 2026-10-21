@@ -107,3 +107,4 @@ Result legend: `OK` = reviewed, no changes required; `FIX` = reviewed and change
 | --- | --- | --- |
 | `src/Basket.API/Model/BasketItem.cs` | OK | Validatable basket line (Quantity < 1 rejected); self-consistency constraints minimal; no changes needed. |
 | `src/Basket.API/Model/CustomerBasket.cs` | OK | Customer basket aggregate (BuyerId, Items, parameterless/optional constructor); no changes needed. |
+| `src/Basket.API/Repositories/IBasketRepository.cs` | OK | Focused CRUD contract for customer basket (get, update, delete); ISP-compliant; no changes needed. |
