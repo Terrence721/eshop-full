@@ -1,5 +1,8 @@
 ﻿namespace eShop.Ordering.API.Application.DomainEventHandlers;
 
+/// <summary>
+/// Publishes an order-status-changed (cancelled) integration event when an order is cancelled.
+/// </summary>
 public partial class OrderCancelledDomainEventHandler
                 : INotificationHandler<OrderCancelledDomainEvent>
 {
@@ -17,7 +20,7 @@ public partial class OrderCancelledDomainEventHandler
         _orderRepository = orderRepository ?? throw new ArgumentNullException(nameof(orderRepository));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         _buyerRepository = buyerRepository ?? throw new ArgumentNullException(nameof(buyerRepository));
-        _orderingIntegrationEventService = orderingIntegrationEventService;
+        _orderingIntegrationEventService = orderingIntegrationEventService ?? throw new ArgumentNullException(nameof(orderingIntegrationEventService));
     }
 
     public async Task Handle(OrderCancelledDomainEvent domainEvent, CancellationToken cancellationToken)
