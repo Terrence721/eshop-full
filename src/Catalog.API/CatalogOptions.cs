@@ -1,5 +1,8 @@
 ﻿namespace eShop.Catalog.API;
 
+/// <summary>
+/// Configurable options for the Catalog service, including embedding dimensions used for vector search.
+/// </summary>
 public class CatalogOptions
 {
     public string? PicBaseUrl { get; set; }
