@@ -3,6 +3,10 @@
 using eShop.Ordering.Domain.AggregatesModel.OrderAggregate;
 
 // Regular CommandHandler
+/// <summary>
+/// Creates an order from a basket-derived draft, persisting it and publishing the
+/// order-started integration event through the outbox.
+/// </summary>
 public class CreateOrderCommandHandler
     : IRequestHandler<CreateOrderCommand, bool>
 {
@@ -54,6 +58,9 @@ public class CreateOrderCommandHandler
 
 
 // Use for Idempotency in Command process
+/// <summary>
+/// Identified-command (idempotent) wrapper around <see cref="CreateOrderCommandHandler" />.
+/// </summary>
 public class CreateOrderIdentifiedCommandHandler : IdentifiedCommandHandler<CreateOrderCommand, bool>
 {
     public CreateOrderIdentifiedCommandHandler(
