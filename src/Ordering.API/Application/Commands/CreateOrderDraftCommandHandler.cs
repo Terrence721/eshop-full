@@ -4,6 +4,9 @@ using eShop.Ordering.API.Extensions;
 using eShop.Ordering.Domain.AggregatesModel.OrderAggregate;
 
 // Regular CommandHandler
+/// <summary>
+/// Builds a read-only order draft from a buyer basket.
+/// </summary>
 public class CreateOrderDraftCommandHandler
     : IRequestHandler<CreateOrderDraftCommand, OrderDraftDTO>
 {
