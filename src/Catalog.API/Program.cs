@@ -1,4 +1,5 @@
-﻿var builder = WebApplication.CreateBuilder(args);
+// Entry point for the Catalog API host.
+var builder = WebApplication.CreateBuilder(args);
 
 builder.AddServiceDefaults();
 builder.AddApplicationServices();
