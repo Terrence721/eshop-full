@@ -1,5 +1,9 @@
-﻿namespace eShop.Catalog.API.IntegrationEvents.EventHandling;
+namespace eShop.Catalog.API.IntegrationEvents.EventHandling;
 
+/// <summary>
+/// Handles awaiting-validation order events by confirming stock availability
+/// (or rejecting the order when any item is out of stock).
+/// </summary>
 public class OrderStatusChangedToAwaitingValidationIntegrationEventHandler(
     CatalogContext catalogContext,
     ICatalogIntegrationEventService catalogIntegrationEventService,
