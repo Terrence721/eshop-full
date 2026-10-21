@@ -18,6 +18,8 @@ public abstract class IdentifiedCommandHandler<T, R> : IRequestHandler<Identifie
         IRequestManager requestManager,
         ILogger<IdentifiedCommandHandler<T, R>> logger)
     {
+        ArgumentNullException.ThrowIfNull(mediator);
+        ArgumentNullException.ThrowIfNull(requestManager);
         ArgumentNullException.ThrowIfNull(logger);
         _mediator = mediator;
         _requestManager = requestManager;
