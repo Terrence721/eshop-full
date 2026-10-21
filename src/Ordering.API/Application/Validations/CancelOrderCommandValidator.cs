@@ -1,5 +1,8 @@
 ﻿namespace eShop.Ordering.API.Application.Validations;
 
+/// <summary>
+/// Validator for <see cref="CancelOrderCommand" />.
+/// </summary>
 public class CancelOrderCommandValidator : AbstractValidator<CancelOrderCommand>
 {
     public CancelOrderCommandValidator(ILogger<CancelOrderCommandValidator> logger)
