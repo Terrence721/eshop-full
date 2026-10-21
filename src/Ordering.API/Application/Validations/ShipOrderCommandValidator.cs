@@ -1,5 +1,8 @@
 ﻿namespace eShop.Ordering.API.Application.Validations;
 
+/// <summary>
+/// Validator for <see cref="ShipOrderCommand" />.
+/// </summary>
 public class ShipOrderCommandValidator : AbstractValidator<ShipOrderCommand>
 {
     public ShipOrderCommandValidator(ILogger<ShipOrderCommandValidator> logger)
