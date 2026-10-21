@@ -1,5 +1,9 @@
-﻿namespace eShop.Catalog.API.Infrastructure.EntityConfigurations;
+namespace eShop.Catalog.API.Infrastructure.EntityConfigurations;
 
+/// <summary>
+/// EF Core mapping for <see cref="CatalogItem"/>, including column lengths,
+/// the pgvector embedding type, foreign keys and the Name index.
+/// </summary>
 class CatalogItemEntityTypeConfiguration
     : IEntityTypeConfiguration<CatalogItem>
 {
