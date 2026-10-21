@@ -1,4 +1,5 @@
-﻿global using System.ComponentModel.DataAnnotations;
+// Global using directives for Basket.API.
+global using System.ComponentModel.DataAnnotations;
 global using System.Security.Claims;
 global using System.Text.Json;
 global using eShop.Basket.API.Extensions;
