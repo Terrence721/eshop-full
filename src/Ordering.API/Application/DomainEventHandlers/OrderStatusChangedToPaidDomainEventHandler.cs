@@ -1,5 +1,8 @@
 ﻿namespace eShop.Ordering.API.Application.DomainEventHandlers;
 
+/// <summary>
+/// Publishes an order-status-changed (paid) integration event and stock list.
+/// </summary>
 public class OrderStatusChangedToPaidDomainEventHandler : INotificationHandler<OrderStatusChangedToPaidDomainEvent>
 {
     private readonly IOrderRepository _orderRepository;
