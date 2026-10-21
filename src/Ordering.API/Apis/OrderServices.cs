@@ -1,4 +1,8 @@
-﻿public class OrderServices(
+/// <summary>
+/// Lightweight parameter object bundling the cross-cutting services required by
+/// the ordering endpoint handlers (mediator, queries, identity, logger).
+/// </summary>
+public class OrderServices(
     IMediator mediator,
     IOrderQueries queries,
     IIdentityService identityService,
