@@ -1,5 +1,8 @@
 ﻿namespace eShop.Ordering.API.Extensions;
 
+/// <summary>
+/// Source-generated logger-message helpers for ordering-trace events.
+/// </summary>
 internal static partial class OrderingApiTrace
 {
     [LoggerMessage(EventId = 1, EventName = "OrderStatusUpdated", Level = LogLevel.Trace, Message = "Order with Id: {OrderId} has been successfully updated to status {Status}")]
