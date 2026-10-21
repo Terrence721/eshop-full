@@ -1,5 +1,8 @@
 ﻿namespace eShop.Ordering.API.Application.Validations;
 
+/// <summary>
+/// Validates a <see cref="CreateOrderCommand" /> (address, card details, and order items).
+/// </summary>
 public class CreateOrderCommandValidator : AbstractValidator<CreateOrderCommand>
 {
     public CreateOrderCommandValidator(ILogger<CreateOrderCommandValidator> logger)
