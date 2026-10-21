@@ -1,5 +1,8 @@
 ﻿namespace eShop.Ordering.API.Application.IntegrationEvents.EventHandling;
 
+/// <summary>
+/// Handles the confirmed grace period by moving the order to awaiting validation.
+/// </summary>
 public class GracePeriodConfirmedIntegrationEventHandler(
     IMediator mediator,
     ILogger<GracePeriodConfirmedIntegrationEventHandler> logger) : IIntegrationEventHandler<GracePeriodConfirmedIntegrationEvent>
