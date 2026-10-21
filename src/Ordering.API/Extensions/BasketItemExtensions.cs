@@ -1,5 +1,9 @@
-﻿namespace eShop.Ordering.API.Extensions;
+namespace eShop.Ordering.API.Extensions;
 
+/// <summary>
+/// Mapping extensions from the basket contract's <c>BasketItem</c> (Ordering.API's
+/// application model) to ordering DTOs used in order creation.
+/// </summary>
 public static class BasketItemExtensions
 {
     public static IEnumerable<OrderItemDTO> ToOrderItemsDTO(this IEnumerable<BasketItem> basketItems)
