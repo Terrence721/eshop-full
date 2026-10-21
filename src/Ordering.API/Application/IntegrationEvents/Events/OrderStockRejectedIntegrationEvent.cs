@@ -1,27 +1,20 @@
 ﻿namespace eShop.Ordering.API.Application.IntegrationEvents.Events;
 
-public record OrderStockRejectedIntegrationEvent : IntegrationEvent
+/// <summary>
+/// Integration event signalling stock was rejected for an order.
+/// </summary>
+public record OrderStockRejectedIntegrationEvent(
+    int orderId,
+    List<ConfirmedOrderStockItem> orderStockItems) : IntegrationEvent
 {
-    public int OrderId { get; }
+    public int OrderId { get; } = orderId;
 
-    public List<ConfirmedOrderStockItem> OrderStockItems { get; }
-
-    public OrderStockRejectedIntegrationEvent(int orderId,
-        List<ConfirmedOrderStockItem> orderStockItems)
-    {
-        OrderId = orderId;
-        OrderStockItems = orderStockItems;
-    }
+    public List<ConfirmedOrderStockItem> OrderStockItems { get; } = orderStockItems;
 }
 
-public record ConfirmedOrderStockItem
+public record ConfirmedOrderStockItem(int productId, bool hasStock)
 {
-    public int ProductId { get; }
-    public bool HasStock { get; }
+    public int ProductId { get; } = productId;
 
-    public ConfirmedOrderStockItem(int productId, bool hasStock)
-    {
-        ProductId = productId;
-        HasStock = hasStock;
-    }
+    public bool HasStock { get; } = hasStock;
 }
