@@ -4,6 +4,9 @@ using Pgvector;
 
 namespace eShop.Catalog.API.Services;
 
+/// <summary>
+/// Provides embedding generation for catalog items using an optional <see cref="IEmbeddingGenerator{TInput,TEmbedding}"/>.
+/// </summary>
 public sealed class CatalogAI : ICatalogAI
 {
     private readonly int _embeddingDimensions;
