@@ -110,3 +110,4 @@ Result legend: `OK` = reviewed, no changes required; `FIX` = reviewed and change
 | `src/Basket.API/Repositories/IBasketRepository.cs` | OK | Focused CRUD contract for customer basket (get, update, delete); ISP-compliant; no changes needed. |
 | `src/Basket.API/Repositories/RedisBasketRepository.cs` | FIX | Redis-backed basket repository (get/update/delete, JSON serialization); marked `BasketKeyPrefix` `readonly` (it was mutable despite being a `static` prefix). |
 | `src/Basket.API/Extensions/ServerCallContextIdentityExtensions.cs` | OK | Two single-responsibility gRPC extension methods (sub/name claim extraction); focused, ISP-compliant; class-level XML doc added; no functional changes. |
+| `src/Basket.API/Extensions/Extensions.cs` | OK | Application composition root (auth, Redis, singleton basket repository, event-bus subscriptions, JSON context); SRP respected at composition layer; class-level XML doc added; no functional changes. |
