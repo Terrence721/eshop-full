@@ -91,6 +91,7 @@ Result legend: `OK` = reviewed, no changes required; `FIX` = reviewed and change
 | `src/Catalog.API/IntegrationEvents/Events/OrderStatusChangedToAwaitingValidationIntegrationEvent.cs` | OK | Event carrying order id + stock items for validation; no changes needed. |
 | `src/Catalog.API/IntegrationEvents/Events/OrderStatusChangedToPaidIntegrationEvent.cs` | OK | Event carrying order id + stock items for stock decrement; no changes needed. |
 | `src/Catalog.API/IntegrationEvents/Events/OrderStockConfirmedIntegrationEvent.cs` | OK | Confirmation event for an order with sufficient stock; no changes needed. |
+| `src/Catalog.API/IntegrationEvents/Events/OrderStockItem.cs` | OK | Stock item line record (ProductId, Units); no changes needed. |
 | `src/Catalog.API/Infrastructure/Exceptions/CatalogDomainException.cs` | OK | Standard exception type (parameterless/message/inner) with doc summary; no changes needed. |
 | `src/Catalog.API/Extensions/HostEnvironmentExtensions.cs` | OK | Detects the "Build" environment / GetDocument.Insider host used for OpenAPI build-time generation; null-safe entry assembly check; no changes needed. |
 | `src/Catalog.API/Model/CatalogServices.cs` | OK | ASP.NET AsParameters aggregator over 5 services; ctor assignment to init properties; no changes needed. |
