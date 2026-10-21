@@ -85,6 +85,7 @@ Result legend: `OK` = reviewed, no changes required; `FIX` = reviewed and change
 | `src/Catalog.API/CatalogOptions.cs` | OK | Catalog settings (PicBaseUrl, UseCustomizationData, configurable EmbeddingDimensions default 384); no changes needed. |
 | `src/Catalog.API/IntegrationEvents/CatalogIntegrationEventService.cs` | OK | Publishes via event bus with outbox marking; atomic save of catalog + outbox event; no changes needed. |
 | `src/Catalog.API/IntegrationEvents/ICatalogIntegrationEventService.cs` | OK | Two-method contract for saving/publishing integration events; no changes needed. |
+| `src/Catalog.API/IntegrationEvents/EventHandling/OrderStatusChangedToAwaitingValidationIntegrationEventHandler.cs` | OK | Validates stock availability on awaiting validation event, publishing confirmed/rejected event; no changes needed. |
 | `src/Catalog.API/Infrastructure/Exceptions/CatalogDomainException.cs` | OK | Standard exception type (parameterless/message/inner) with doc summary; no changes needed. |
 | `src/Catalog.API/Extensions/HostEnvironmentExtensions.cs` | OK | Detects the "Build" environment / GetDocument.Insider host used for OpenAPI build-time generation; null-safe entry assembly check; no changes needed. |
 | `src/Catalog.API/Model/CatalogServices.cs` | OK | ASP.NET AsParameters aggregator over 5 services; ctor assignment to init properties; no changes needed. |
