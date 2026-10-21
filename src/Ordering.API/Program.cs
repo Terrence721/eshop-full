@@ -1,4 +1,5 @@
-﻿var builder = WebApplication.CreateBuilder(args);
+// Composition root and startup pipeline for Ordering.API.
+var builder = WebApplication.CreateBuilder(args);
 
 builder.AddServiceDefaults();
 builder.AddApplicationServices();
