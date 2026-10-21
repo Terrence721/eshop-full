@@ -122,3 +122,4 @@ Result legend: `OK` = reviewed, no changes required; `FIX` = reviewed and change
 | File | Result | Notes |
 | --- | --- | --- |
 | `src/Ordering.API/Apis/OrdersApi.cs` | FIX | Minimal-API endpoints (list/get/create/cancel/ship/draft); guarded card-number masking so short/empty values no longer throw `ArgumentOutOfRangeException`; class-level XML doc added; SOLID/DRY/ISP checked. |
+| `src/Ordering.API/Apis/OrderServices.cs` | OK | ASP.NET Core [AsParameters] aggregate of mediator, queries, identity and logger; cohesive, single responsibility; class-level XML doc added. |
