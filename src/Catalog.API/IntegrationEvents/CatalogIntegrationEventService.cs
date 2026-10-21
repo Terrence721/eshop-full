@@ -1,5 +1,8 @@
 ﻿namespace eShop.Catalog.API.IntegrationEvents;
 
+/// <summary>
+/// Catalog-specific integration event service built on the shared outbox implementation.
+/// </summary>
 public sealed class CatalogIntegrationEventService(ILogger<CatalogIntegrationEventService> logger,
     IEventBus eventBus,
     CatalogContext catalogContext,
