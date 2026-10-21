@@ -130,3 +130,4 @@ Result legend: `OK` = reviewed, no changes required; `FIX` = reviewed and change
 | `src/Ordering.API/GlobalUsings.cs` | OK | Global using consolidation for Ordering.API cross-cutting namespaces; header comment added; consistent with layering. |
 | `src/Ordering.API/Program.cs` | OK | Composition root (defaults, app services, problem details, versioning, OpenAPI, MapOrdersApiV1, authorization); entry-point comment added. |
 | `src/Ordering.API/Program.Testing.cs` | OK | Public partial `Program` for WebApplicationFactory integration tests; XML doc added; no functional changes. |
+| `src/Ordering.API/Application/Behaviors/LoggingBehavior.cs` | OK | MediatR pipeline behavior logging request/response; single responsibility; XML doc added; no functional changes. |

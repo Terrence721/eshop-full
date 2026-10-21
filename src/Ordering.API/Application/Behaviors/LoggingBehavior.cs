@@ -1,5 +1,8 @@
-﻿namespace eShop.Ordering.API.Application.Behaviors;
+namespace eShop.Ordering.API.Application.Behaviors;
 
+/// <summary>
+/// MediatR pipeline behavior that logs the request and its response around handler execution.
+/// </summary>
 public class LoggingBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse> where TRequest : IRequest<TResponse>
 {
     private readonly ILogger<LoggingBehavior<TRequest, TResponse>> _logger;
@@ -14,4 +17,3 @@ public class LoggingBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, 
         return response;
     }
 }
-
