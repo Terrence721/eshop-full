@@ -1,5 +1,8 @@
 ﻿namespace eShop.Ordering.API.Application.DomainEventHandlers;
 
+/// <summary>
+/// Publishes an order-status-changed (stock confirmed) integration event.
+/// </summary>
 public class OrderStatusChangedToStockConfirmedDomainEventHandler
                 : INotificationHandler<OrderStatusChangedToStockConfirmedDomainEvent>
 {
@@ -17,7 +20,7 @@ public class OrderStatusChangedToStockConfirmedDomainEventHandler
         _orderRepository = orderRepository ?? throw new ArgumentNullException(nameof(orderRepository));
         _buyerRepository = buyerRepository ?? throw new ArgumentNullException(nameof(buyerRepository));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-        _orderingIntegrationEventService = orderingIntegrationEventService;
+        _orderingIntegrationEventService = orderingIntegrationEventService ?? throw new ArgumentNullException(nameof(orderingIntegrationEventService));
     }
 
     public async Task Handle(OrderStatusChangedToStockConfirmedDomainEvent domainEvent, CancellationToken cancellationToken)
