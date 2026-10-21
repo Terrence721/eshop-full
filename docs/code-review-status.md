@@ -132,3 +132,4 @@ Result legend: `OK` = reviewed, no changes required; `FIX` = reviewed and change
 | `src/Ordering.API/Program.Testing.cs` | OK | Public partial `Program` for WebApplicationFactory integration tests; XML doc added; no functional changes. |
 | `src/Ordering.API/Application/Behaviors/LoggingBehavior.cs` | OK | MediatR pipeline behavior logging request/response; single responsibility; XML doc added; no functional changes. |
 | `src/Ordering.API/Application/Behaviors/TransactionBehavior.cs` | FIX | MediatR transaction/outbox pipeline behavior; made null validation use `ArgumentNullException` instead of `ArgumentException` (corrected mismatched parameter-name check); XML doc added; SOLID/DRY/ISP checked. |
+| `src/Ordering.API/Application/Behaviors/ValidatorBehavior.cs` | FIX | MediatR validation pipeline behavior; added constructor null checks; XML doc added; SOLID/DRY/ISP checked. |
