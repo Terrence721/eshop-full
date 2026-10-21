@@ -1,18 +1,10 @@
 ﻿namespace eShop.Ordering.API.Application.IntegrationEvents.Events;
 
-public record OrderStatusChangedToCancelledIntegrationEvent : IntegrationEvent
-{
-    public int OrderId { get; }
-    public OrderStatus OrderStatus { get; }
-    public string BuyerName { get; }
-    public string BuyerIdentityGuid { get; }
-
-    public OrderStatusChangedToCancelledIntegrationEvent
-        (int orderId, OrderStatus orderStatus, string buyerName, string buyerIdentityGuid)
-    {
-        OrderId = orderId;
-        OrderStatus = orderStatus;
-        BuyerName = buyerName;
-        BuyerIdentityGuid = buyerIdentityGuid;
-    }
-}
+/// <summary>
+/// Integration event publishing cancellation status for an order.
+/// </summary>
+public record OrderStatusChangedToCancelledIntegrationEvent(
+    int OrderId,
+    OrderStatus OrderStatus,
+    string BuyerName,
+    string BuyerIdentityGuid) : IntegrationEvent;
