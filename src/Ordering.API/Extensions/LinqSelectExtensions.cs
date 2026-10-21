@@ -1,5 +1,9 @@
-﻿namespace eShop.Ordering.API.Extensions;
+namespace eShop.Ordering.API.Extensions;
 
+/// <summary>
+/// LINQ helpers that apply a selector over an enumerable and capture any exception
+/// per element instead of aborting the whole sequence.
+/// </summary>
 public static class LinqSelectExtensions
 {
     public static IEnumerable<SelectTryResult<TSource, TResult>> SelectTry<TSource, TResult>(this IEnumerable<TSource> enumerable, Func<TSource, TResult> selector)

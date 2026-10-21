@@ -125,3 +125,4 @@ Result legend: `OK` = reviewed, no changes required; `FIX` = reviewed and change
 | `src/Ordering.API/Apis/OrderServices.cs` | OK | ASP.NET Core [AsParameters] aggregate of mediator, queries, identity and logger; cohesive, single responsibility; class-level XML doc added. |
 | `src/Ordering.API/Extensions/BasketItemExtensions.cs` | OK | BasketItem→OrderItemDTO mapping (including single-item and collection extension); null-forgiving documented; class-level XML doc added; SOLID/DRY/ISP checked. |
 | `src/Ordering.API/Extensions/Extensions.cs` | OK | Composition root (auth, EF Core/Npgsql, migration, integration services, identity, mediator, validators, repositories, event bus); class-level XML doc added; SOLID/DRY/ISP checked. |
+| `src/Ordering.API/Extensions/LinqSelectExtensions.cs` | OK | Per-element try/select with captured exceptions and pluggable handlers; class-level XML doc added; SOLID/DRY/ISP checked. |
