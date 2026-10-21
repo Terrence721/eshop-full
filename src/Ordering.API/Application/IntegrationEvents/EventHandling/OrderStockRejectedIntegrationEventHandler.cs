@@ -1,5 +1,8 @@
 ﻿namespace eShop.Ordering.API.Application.IntegrationEvents.EventHandling;
 
+/// <summary>
+/// Handles an integration event signalling that stock was rejected for an order by marking it as stock-rejected.
+/// </summary>
 public class OrderStockRejectedIntegrationEventHandler(
     IMediator mediator,
     ILogger<OrderStockRejectedIntegrationEventHandler> logger) : IIntegrationEventHandler<OrderStockRejectedIntegrationEvent>
