@@ -96,6 +96,7 @@ Result legend: `OK` = reviewed, no changes required; `FIX` = reviewed and change
 | `src/Catalog.API/IntegrationEvents/Events/ProductPriceChangedIntegrationEvent.cs` | OK | Price change event (ProductId, NewPrice, OldPrice); no changes needed. |
 | `src/Catalog.API/Program.cs` | OK | Startup wiring (service defaults, application services, OpenAPI, catalog API); no changes needed. |
 | `src/Catalog.API/Program.Testing.cs` | OK | Public partial Program marker for WebApplicationFactory integration tests; no changes needed. |
+| `src/Catalog.API/GlobalUsings.cs` | OK | Project-wide global usings (asp.net versioning, EF, Npgsql, service defaults); no changes needed. |
 | `src/Catalog.API/Infrastructure/Exceptions/CatalogDomainException.cs` | OK | Standard exception type (parameterless/message/inner) with doc summary; no changes needed. |
 | `src/Catalog.API/Extensions/HostEnvironmentExtensions.cs` | OK | Detects the "Build" environment / GetDocument.Insider host used for OpenAPI build-time generation; null-safe entry assembly check; no changes needed. |
 | `src/Catalog.API/Model/CatalogServices.cs` | OK | ASP.NET AsParameters aggregator over 5 services; ctor assignment to init properties; no changes needed. |

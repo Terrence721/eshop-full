@@ -1,3 +1,4 @@
+// Global usings for the Catalog API project.
 ﻿global using Asp.Versioning;
 global using Asp.Versioning.Conventions;
 global using eShop.Catalog.API;
