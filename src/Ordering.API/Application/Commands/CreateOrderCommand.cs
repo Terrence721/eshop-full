@@ -13,6 +13,9 @@ using eShop.Ordering.API.Application.Models;
 using eShop.Ordering.API.Extensions;
 
 [DataContract]
+/// <summary>
+/// Serializable, immutable-style command capturing all details of a new order.
+/// </summary>
 public class CreateOrderCommand
     : IRequest<bool>
 {
