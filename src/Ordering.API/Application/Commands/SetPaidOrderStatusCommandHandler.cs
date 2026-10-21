@@ -1,5 +1,8 @@
 ﻿namespace eShop.Ordering.API.Application.Commands;
 
+/// <summary>
+/// Handler moving an order to the paid status (plus idempotent wrapper).
+/// </summary>
 // Regular CommandHandler
 public class SetPaidOrderStatusCommandHandler : IRequestHandler<SetPaidOrderStatusCommand, bool>
 {
