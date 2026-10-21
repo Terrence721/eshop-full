@@ -1,5 +1,8 @@
 ﻿namespace eShop.Ordering.API.Application.Validations;
 
+/// <summary>
+/// Validates the wrapped idempotent command's request id is present.
+/// </summary>
 public class IdentifiedCommandValidator : AbstractValidator<IdentifiedCommand<CreateOrderCommand, bool>>
 {
     public IdentifiedCommandValidator(ILogger<IdentifiedCommandValidator> logger)
