@@ -1,5 +1,8 @@
 ﻿namespace eShop.Ordering.API.Application.Commands;
 
+/// <summary>
+/// Wraps an inner command with a request id to provide idempotency (identified command).
+/// </summary>
 public class IdentifiedCommand<T, R> : IRequest<R>
     where T : IRequest<R>
 {
