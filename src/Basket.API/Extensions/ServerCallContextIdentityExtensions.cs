@@ -1,4 +1,9 @@
-﻿namespace eShop.Basket.API.Extensions;
+﻿/// <summary>
+/// Extension methods that extract the authenticated user identity (gRPC to ASP.NET Core claims)
+/// from a <see cref="ServerCallContext"/>. Both lookups tolerate missing claims and return
+/// <see langword="null" /> instead of throwing.
+/// </summary>
+namespace eShop.Basket.API.Extensions;
 
 internal static class ServerCallContextIdentityExtensions
 {
