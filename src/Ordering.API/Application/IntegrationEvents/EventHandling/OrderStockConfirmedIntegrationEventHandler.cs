@@ -1,5 +1,8 @@
 ﻿namespace eShop.Ordering.API.Application.IntegrationEvents.EventHandling;
 
+/// <summary>
+/// Handles stock-confirmed integration events by moving order status to stock-confirmed.
+/// </summary>
 public class OrderStockConfirmedIntegrationEventHandler(
     IMediator mediator,
     ILogger<OrderStockConfirmedIntegrationEventHandler> logger) :
