@@ -1,17 +1,17 @@
 ﻿namespace eShop.Ordering.API.Application.DomainEventHandlers;
 
-public class UpdateOrderWhenBuyerAndPaymentMethodVerifiedDomainEventHandler : INotificationHandler<BuyerAndPaymentMethodVerifiedDomainEvent>
+/// <summary>
+/// Updates an order with the verified buyer and payment method IDs.
+/// </summary>
+public class UpdateOrderWhenBuyerAndPaymentMethodVerifiedDomainEventHandler(
+    IOrderRepository orderRepository,
+    ILogger<UpdateOrderWhenBuyerAndPaymentMethodVerifiedDomainEventHandler> logger)
+    : INotificationHandler<BuyerAndPaymentMethodVerifiedDomainEvent>
 {
-    private readonly IOrderRepository _orderRepository;
-    private readonly ILogger _logger;
-
-    public UpdateOrderWhenBuyerAndPaymentMethodVerifiedDomainEventHandler(
-        IOrderRepository orderRepository,
-        ILogger<UpdateOrderWhenBuyerAndPaymentMethodVerifiedDomainEventHandler> logger)
-    {
-        _orderRepository = orderRepository ?? throw new ArgumentNullException(nameof(orderRepository));
-        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-    }
+    private readonly IOrderRepository _orderRepository =
+        orderRepository ?? throw new ArgumentNullException(nameof(orderRepository));
+    private readonly ILogger _logger =
+        logger ?? throw new ArgumentNullException(nameof(logger));
 
     // Domain Logic comment:
     // When the Buyer and Buyer's payment method have been created or verified that they existed,
