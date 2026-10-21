@@ -100,3 +100,9 @@ Result legend: `OK` = reviewed, no changes required; `FIX` = reviewed and change
 | `src/Catalog.API/Infrastructure/Exceptions/CatalogDomainException.cs` | OK | Standard exception type (parameterless/message/inner) with doc summary; no changes needed. |
 | `src/Catalog.API/Extensions/HostEnvironmentExtensions.cs` | OK | Detects the "Build" environment / GetDocument.Insider host used for OpenAPI build-time generation; null-safe entry assembly check; no changes needed. |
 | `src/Catalog.API/Model/CatalogServices.cs` | OK | ASP.NET AsParameters aggregator over 5 services; ctor assignment to init properties; no changes needed. |
+
+## Basket.API
+
+| File | Result | Notes |
+| --- | --- | --- |
+| `src/Basket.API/Model/BasketItem.cs` | OK | Validatable basket line (Quantity < 1 rejected); self-consistency constraints minimal; no changes needed. |
