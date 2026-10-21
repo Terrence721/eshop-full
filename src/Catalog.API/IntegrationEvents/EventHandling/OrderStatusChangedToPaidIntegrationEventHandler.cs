@@ -1,5 +1,8 @@
-﻿namespace eShop.Catalog.API.IntegrationEvents.EventHandling;
+namespace eShop.Catalog.API.IntegrationEvents.EventHandling;
 
+/// <summary>
+/// Handles paid order events by decrementing stock for each ordered item.
+/// </summary>
 public class OrderStatusChangedToPaidIntegrationEventHandler(
     CatalogContext catalogContext,
     ILogger<OrderStatusChangedToPaidIntegrationEventHandler> logger) :
