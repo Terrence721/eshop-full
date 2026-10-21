@@ -1,5 +1,8 @@
-﻿namespace eShop.Basket.API.Model;
+namespace eShop.Basket.API.Model;
 
+/// <summary>
+/// A customer's basket, containing line items.
+/// </summary>
 public class CustomerBasket
 {
     public string? BuyerId { get; set; }
