@@ -7,6 +7,9 @@ using Pgvector.EntityFrameworkCore;
 
 namespace eShop.Catalog.API;
 
+/// <summary>
+/// Minimal API endpoint registration and handlers for the Catalog service.
+/// </summary>
 public static class CatalogApi
 {
     public static IEndpointRouteBuilder MapCatalogApi(this IEndpointRouteBuilder app)
