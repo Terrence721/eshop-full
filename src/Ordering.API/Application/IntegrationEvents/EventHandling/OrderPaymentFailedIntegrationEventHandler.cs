@@ -1,5 +1,8 @@
 ﻿namespace eShop.Ordering.API.Application.IntegrationEvents.EventHandling;
 
+/// <summary>
+/// Handles a payment-failed integration event by cancelling the associated order.
+/// </summary>
 public class OrderPaymentFailedIntegrationEventHandler(
     IMediator mediator,
     ILogger<OrderPaymentFailedIntegrationEventHandler> logger) :
