@@ -113,3 +113,4 @@ Result legend: `OK` = reviewed, no changes required; `FIX` = reviewed and change
 | `src/Basket.API/Extensions/Extensions.cs` | OK | Application composition root (auth, Redis, singleton basket repository, event-bus subscriptions, JSON context); SRP respected at composition layer; class-level XML doc added; no functional changes. |
 | `src/Basket.API/Grpc/BasketService.cs` | OK | gRPC controller (get/update/delete), caller-scoped identity checks, mapping helpers; repository interface only (ISP); class-level XML doc added; no functional changes. |
 | `src/Basket.API/IntegrationEvents/EventHandling/OrderStartedIntegrationEventHandler.cs` | OK | Posts-order basket deletion via IBasketRepository; focused, SRP/ISP compliant; class-level XML doc added; no functional changes. |
+| `src/Basket.API/IntegrationEvents/Events/OrderStartedIntegrationEvent.cs` | OK | Immutable record (UserId) inheriting IntegrationEvent; XML doc added; no functional changes. |
