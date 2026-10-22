@@ -9,10 +9,10 @@ namespace eShop.ClientApp.ViewModels
     public partial class CatalogViewModel : ViewModelBase
     {
         private readonly IAppEnvironmentService _appEnvironmentService;
-        private readonly ObservableCollectionEx<CatalogBrandSelectionViewModel> _brands = new();
+        private readonly ObservableCollectionEx<CatalogBrandSelectionViewModel> _brands = [];
 
-        private readonly ObservableCollectionEx<CatalogItem> _products = new();
-        private readonly ObservableCollectionEx<CatalogTypeSelectionViewModel> _types = new();
+        private readonly ObservableCollectionEx<CatalogItem> _products = [];
+        private readonly ObservableCollectionEx<CatalogTypeSelectionViewModel> _types = [];
 
         [ObservableProperty] public partial int BadgeCount { get; set; }
 
@@ -39,9 +39,9 @@ namespace eShop.ClientApp.ViewModels
         {
             _appEnvironmentService = appEnvironmentService;
 
-            _products = new ObservableCollectionEx<CatalogItem>();
-            _brands = new ObservableCollectionEx<CatalogBrandSelectionViewModel>();
-            _types = new ObservableCollectionEx<CatalogTypeSelectionViewModel>();
+            _products = [];
+            _brands = [];
+            _types = [];
 
             WeakReferenceMessenger.Default
                 .Register<CatalogViewModel, ProductCountChangedMessage>(

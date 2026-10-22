@@ -14,7 +14,7 @@ namespace eShop.ClientApp.Services
     public class AvaloniaNavigationService(IAppEnvironmentService appEnvironmentService) : INavigationService
     {
         private readonly IAppEnvironmentService _appEnvironmentService = appEnvironmentService;
-        private readonly Dictionary<string, Func<ViewModelBase>> _routes = new();
+        private readonly Dictionary<string, Func<ViewModelBase>> _routes = [];
         private readonly Stack<ViewModelBase> _backStack = new();
 
         private ViewModelBase? _currentViewModel;

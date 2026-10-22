@@ -11,7 +11,7 @@ namespace eShop.ClientApp.Services.Settings
     // NOT actually encrypted, a second flagged gap, not a silent security downgrade.
     internal static class LocalSettingsStore
     {
-        private static readonly Dictionary<string, string> Cache = new();
+        private static readonly Dictionary<string, string> Cache = [];
         private static readonly string? FilePath = GetFilePath();
         private static bool _loaded;
 

@@ -147,7 +147,7 @@ namespace eShop.Ordering.FunctionalTests
                 PictureUrl = null
             };
             var cardExpirationDate = Convert.ToDateTime("2023-12-22T12:34:24.334Z");
-            var OrderRequest = new CreateOrderRequest("1", "TestUser", null, null, null, null, null, "XXXXXXXXXXXX0005", "Test User", cardExpirationDate, "test buyer", 1, null, new List<BasketItem> { item });
+            var OrderRequest = new CreateOrderRequest("1", "TestUser", null, null, null, null, null, "XXXXXXXXXXXX0005", "Test User", cardExpirationDate, "test buyer", 1, null, [item]);
             var content = new StringContent(JsonSerializer.Serialize(OrderRequest), Encoding.UTF8, "application/json")
             {
                 Headers = { { "x-requestid", Guid.NewGuid().ToString() } }
@@ -204,7 +204,7 @@ namespace eShop.Ordering.FunctionalTests
             AssertThatOrderItemsAreTheSameAsRequestPayloadItems(payload, responseData);
         }
 
-        private CreateOrderDraftCommand FakeOrderDraftCommand()
+        private static CreateOrderDraftCommand FakeOrderDraftCommand()
         {
             return new CreateOrderDraftCommand(
                 BuyerId: Guid.NewGuid().ToString(),
@@ -232,7 +232,7 @@ namespace eShop.Ordering.FunctionalTests
             // TODO: might need to add more asserts in here
         }
 
-        string BuildOrder()
+        static string BuildOrder()
         {
             var order = new
             {
