@@ -10,4 +10,7 @@ public record OrderStatusChangedToAwaitingValidationIntegrationEvent(
     string BuyerIdentityGuid,
     IEnumerable<OrderStockItem> OrderStockItems) : IntegrationEvent;
 
+/// <summary>
+/// A stock item affected by an order awaiting validation.
+/// </summary>
 public record OrderStockItem(int ProductId, int Units);
