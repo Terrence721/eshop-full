@@ -6,7 +6,7 @@
     // Regular CommandHandler
     public class SetPaidOrderStatusCommandHandler(IOrderRepository orderRepository) : IRequestHandler<SetPaidOrderStatusCommand, bool>
     {
-        private readonly IOrderRepository _orderRepository = orderRepository;
+        private readonly IOrderRepository _orderRepository = orderRepository ?? throw new ArgumentNullException(nameof(orderRepository));
 
         /// <summary>
         /// Handler which processes the command when
@@ -16,6 +16,8 @@
         /// <returns></returns>
         public async Task<bool> Handle(SetPaidOrderStatusCommand command, CancellationToken cancellationToken)
         {
+            ArgumentNullException.ThrowIfNull(command);
+
             // Simulate a work time for validating the payment
             await Task.Delay(10000, cancellationToken);
 
