@@ -1,7 +1,13 @@
 ﻿namespace Webhooks.API.Services;
 
+/// <summary>
+/// Verifies a grant URL shares the hook's origin and echoes the expected token over OPTIONS.
+/// </summary>
 class GrantUrlTesterService(IHttpClientFactory factory, ILogger<IGrantUrlTesterService> logger) : IGrantUrlTesterService
 {
+    /// <summary>
+    /// Tests whether <paramref name="url" /> can be granted for <paramref name="urlHook" />.
+    /// </summary>
     public async Task<bool> TestGrantUrl(string urlHook, string url, string token)
     {
         if (!CheckSameOrigin(urlHook, url))
@@ -14,7 +20,7 @@ class GrantUrlTesterService(IHttpClientFactory factory, ILogger<IGrantUrlTesterS
         var msg = new HttpRequestMessage(HttpMethod.Options, url);
         msg.Headers.Add("X-eshop-whtoken", token);
 
-        logger.LogInformation("Sending the OPTIONS message to {Url} with token \"{Token}\"", LogSanitizer.ForLog(url), LogSanitizer.ForLog(token) ?? string.Empty);
+        logger.LogInformation("Sending the OPTIONS message to {Url}", LogSanitizer.ForLog(url));
 
         try
         {
