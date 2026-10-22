@@ -5,6 +5,9 @@ using Npgsql;
 
 namespace eShop.OrderProcessor.Services;
 
+/// <summary>
+/// Checks orders whose grace period has elapsed and publishes grace-period-confirmed events.
+/// </summary>
 public class GracePeriodManagerService(
     IOptions<BackgroundTaskOptions> options,
     IEventBus eventBus,
@@ -13,6 +16,7 @@ public class GracePeriodManagerService(
 {
     private readonly BackgroundTaskOptions _options = options?.Value ?? throw new ArgumentNullException(nameof(options));
 
+    /// <inheritdoc />
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
         var delayTime = TimeSpan.FromSeconds(_options.CheckUpdateTime);
@@ -41,6 +45,9 @@ public class GracePeriodManagerService(
         }
     }
 
+    /// <summary>
+    /// Reads eligible orders and publishes a grace-period-confirmed event for each.
+    /// </summary>
     private async Task CheckConfirmedGracePeriodOrders()
     {
         if (logger.IsEnabled(LogLevel.Debug))
@@ -60,6 +67,9 @@ public class GracePeriodManagerService(
         }
     }
 
+    /// <summary>
+    /// Retrieves order ids that have passed the configured grace period while still submitted.
+    /// </summary>
     private async ValueTask<List<int>> GetConfirmedGracePeriodOrders()
     {
         try
