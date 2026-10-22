@@ -6,7 +6,7 @@
     // Regular CommandHandler
     public class SetStockRejectedOrderStatusCommandHandler(IOrderRepository orderRepository) : IRequestHandler<SetStockRejectedOrderStatusCommand, bool>
     {
-        private readonly IOrderRepository _orderRepository = orderRepository;
+        private readonly IOrderRepository _orderRepository = orderRepository ?? throw new ArgumentNullException(nameof(orderRepository));
 
         /// <summary>
         /// Handler which processes the command when
@@ -16,6 +16,9 @@
         /// <returns></returns>
         public async Task<bool> Handle(SetStockRejectedOrderStatusCommand command, CancellationToken cancellationToken)
         {
+            ArgumentNullException.ThrowIfNull(command);
+            ArgumentNullException.ThrowIfNull(command.OrderStockItems);
+
             // Simulate a work time for rejecting the stock
             await Task.Delay(10000, cancellationToken);
 
