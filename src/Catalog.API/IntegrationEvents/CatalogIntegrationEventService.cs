@@ -15,7 +15,7 @@ public sealed class CatalogIntegrationEventService(ILogger<CatalogIntegrationEve
     {
         try
         {
-            logger.LogInformation("Publishing integration event: {IntegrationEventId_published} - ({@IntegrationEvent})", evt.Id, evt);
+            if (logger.IsEnabled(LogLevel.Information)) logger.LogInformation("Publishing integration event: {IntegrationEventId_published} - ({@IntegrationEvent})", evt.Id, evt);
 
             await integrationEventLogService.MarkEventAsInProgressAsync(evt.Id);
             await eventBus.PublishAsync(evt);
@@ -23,14 +23,14 @@ public sealed class CatalogIntegrationEventService(ILogger<CatalogIntegrationEve
         }
         catch (Exception ex)
         {
-            logger.LogError(ex, "Error Publishing integration event: {IntegrationEventId} - ({@IntegrationEvent})", evt.Id, evt);
+            if (logger.IsEnabled(LogLevel.Error)) logger.LogError(ex, "Error Publishing integration event: {IntegrationEventId} - ({@IntegrationEvent})", evt.Id, evt);
             await integrationEventLogService.MarkEventAsFailedAsync(evt.Id);
         }
     }
 
     public async Task SaveEventAndCatalogContextChangesAsync(IntegrationEvent evt)
     {
-        logger.LogInformation("CatalogIntegrationEventService - Saving changes and integrationEvent: {IntegrationEventId}", evt.Id);
+        if (logger.IsEnabled(LogLevel.Information)) logger.LogInformation("CatalogIntegrationEventService - Saving changes and integrationEvent: {IntegrationEventId}", evt.Id);
 
         //Use of an EF Core resiliency strategy when using multiple DbContexts within an explicit BeginTransaction():
         //See: https://docs.microsoft.com/en-us/ef/core/miscellaneous/connection-resiliency
