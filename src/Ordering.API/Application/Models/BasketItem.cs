@@ -1,5 +1,8 @@
-﻿namespace eShop.Ordering.API.Application.Models;
+namespace eShop.Ordering.API.Application.Models;
 
+/// <summary>
+/// Application-model BasketItem synced from Catalog (used for draft/creation).
+/// </summary>
 public class BasketItem
 {
     public string? Id { get; init; }
