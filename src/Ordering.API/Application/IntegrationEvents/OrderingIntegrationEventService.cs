@@ -1,5 +1,8 @@
-﻿namespace eShop.Ordering.API.Application.IntegrationEvents;
+namespace eShop.Ordering.API.Application.IntegrationEvents;
 
+/// <summary>
+/// Outbox-style integration event service saving events and publishing pending events.
+/// </summary>
 public class OrderingIntegrationEventService(IEventBus eventBus,
     OrderingContext orderingContext,
     IIntegrationEventLogService integrationEventLogService,
