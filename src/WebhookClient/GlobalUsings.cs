@@ -1,4 +1,5 @@
-﻿global using eShop.ServiceDefaults;
+﻿// Global usings for WebhookClient.
+global using eShop.ServiceDefaults;
 global using eShop.WebhookClient.Endpoints;
 global using eShop.WebhookClient.Extensions;
 global using eShop.WebhookClient.Services;
