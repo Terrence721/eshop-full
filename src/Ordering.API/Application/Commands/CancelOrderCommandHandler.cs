@@ -6,7 +6,7 @@
     /// </summary>
     public class CancelOrderCommandHandler(IOrderRepository orderRepository) : IRequestHandler<CancelOrderCommand, bool>
     {
-        private readonly IOrderRepository _orderRepository = orderRepository;
+        private readonly IOrderRepository _orderRepository = orderRepository ?? throw new ArgumentNullException(nameof(orderRepository));
 
         /// <summary>
         /// Handler which processes the command when
@@ -16,6 +16,8 @@
         /// <returns></returns>
         public async Task<bool> Handle(CancelOrderCommand command, CancellationToken cancellationToken)
         {
+            ArgumentNullException.ThrowIfNull(command);
+
             var orderToUpdate = await _orderRepository.GetAsync(command.OrderNumber);
             if (orderToUpdate == null)
             {
