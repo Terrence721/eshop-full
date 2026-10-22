@@ -13,7 +13,7 @@ namespace eShop.ClientApp.Services.FixUri
 
         private readonly ISettingsService _settingsService = settingsService;
 
-        private readonly Regex IpRegex = new(@"\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b");
+        private static readonly Regex IpRegex = new(@"\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b", RegexOptions.Compiled);
 
         public void FixCatalogItemPictureUri(IEnumerable<CatalogItem>? catalogItems)
         {
@@ -49,15 +49,19 @@ namespace eShop.ClientApp.Services.FixUri
             {
                 if (!_settingsService.UseMocks && _settingsService.IdentityEndpointBase != _settingsService.DefaultEndpoint)
                 {
-                    foreach (var basketItem in basketItems)
+                    var localResult = IpRegex.Matches(_settingsService.IdentityEndpointBase);
+                    if (localResult.Count > 0)
                     {
-                        var serverResult = IpRegex.Matches(basketItem.PictureUrl);
-                        var localResult = IpRegex.Matches(_settingsService.IdentityEndpointBase);
-
-                        if (serverResult.Count != -1 && localResult.Count != -1)
+                        var localIp = localResult[0].Value;
+                        foreach (var basketItem in basketItems)
                         {
+                            var serverResult = IpRegex.Matches(basketItem.PictureUrl);
+                            if (serverResult.Count == 0)
+                            {
+                                continue;
+                            }
+
                             var serviceIp = serverResult[0].Value;
-                            var localIp = localResult[0].Value;
                             basketItem.PictureUrl = basketItem.PictureUrl.Replace(serviceIp, localIp);
                         }
                     }
@@ -80,16 +84,19 @@ namespace eShop.ClientApp.Services.FixUri
             {
                 if (!_settingsService.UseMocks && _settingsService.IdentityEndpointBase != _settingsService.DefaultEndpoint)
                 {
-                    foreach (var campaignItem in campaignItems)
+                    var localResult = IpRegex.Matches(_settingsService.IdentityEndpointBase);
+                    if (localResult.Count > 0)
                     {
-                        var serverResult = IpRegex.Matches(campaignItem.PictureUri);
-                        var localResult = IpRegex.Matches(_settingsService.IdentityEndpointBase);
-
-                        if (serverResult.Count != -1 && localResult.Count != -1)
+                        var localIp = localResult[0].Value;
+                        foreach (var campaignItem in campaignItems)
                         {
-                            var serviceIp = serverResult[0].Value;
-                            var localIp = localResult[0].Value;
+                            var serverResult = IpRegex.Matches(campaignItem.PictureUri);
+                            if (serverResult.Count == 0)
+                            {
+                                continue;
+                            }
 
+                            var serviceIp = serverResult[0].Value;
                             campaignItem.PictureUri = campaignItem.PictureUri.Replace(serviceIp, localIp);
                         }
                     }
