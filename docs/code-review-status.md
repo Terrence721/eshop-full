@@ -188,3 +188,31 @@ Result legend: `OK` = reviewed, no changes required; `FIX` = reviewed and change
 | `src/Ordering.API/Infrastructure/OrderingContextSeed.cs` | OK | Seeds predefined card types when missing; walks DB context (seed adapter); class-level XML doc added; no functional changes; primary constructor N/A. |
 | `src/Ordering.API/Infrastructure/Services/IIdentityService.cs` | OK | Focused two-method contract for resolving the current user's "sub" identity and display name from the ambient HttpContext; ISP-compliant, DIP-friendly seam; interface-level and member XML docs added; SOLID/DRY checked; no functional changes. |
 | `src/Ordering.API/Infrastructure/Services/IdentityService.cs` | OK | HttpContext-backed IIdentityService implementation (primary constructor); reads "sub" claim and Identity.Name; null-forgiving documented; class-level XML doc added; SOLID/DRY/ISP checked; no functional changes. |
+## Webhooks.API
+
+| File | Result | Notes |
+| --- | --- | --- |
+| `src/Webhooks.API/Model/WebhookType.cs` | FIX | Added XML documentation to enum and members; no functional changes. |
+| `src/Webhooks.API/Apis/WebHooksApi.cs` | OK | Added class/endpoint XML documentation; endpoint shapes retained; SOLID/DRY/ISP checked. |
+| `src/Webhooks.API/Exceptions/WebhooksDomainException.cs` | FIX | Added standard exception constructors and XML documentation, matching `CatalogDomainException`. |
+| `src/Webhooks.API/Extensions/Extensions.cs` | OK | Added class/method XML documentation; composition wiring retained; SOLID/DRY/ISP checked. |
+| `src/Webhooks.API/Extensions/RouteHandlerBuilderExtensions.cs` | OK | Added XML documentation; validation filter centralized; no functional changes. |
+| `src/Webhooks.API/GlobalUsings.cs` | OK | Added header comment; global using set verified. |
+| `src/Webhooks.API/Infrastructure/WebhooksContext.cs` | OK | Added XML documentation; indexes and context shape retained. |
+| `src/Webhooks.API/IntegrationEvents/OrderStatusChangedToPaidIntegrationEvent.cs` | OK | Added XML documentation; positional record retained. |
+| `src/Webhooks.API/IntegrationEvents/OrderStatusChangedToPaidIntegrationEventHandler.cs` | FIX | Corrected logger generic type and log message from Shipped to Paid. |
+| `src/Webhooks.API/IntegrationEvents/OrderStatusChangedToShippedIntegrationEvent.cs` | OK | Added XML documentation; positional record retained. |
+| `src/Webhooks.API/IntegrationEvents/OrderStatusChangedToShippedIntegrationEventHandler.cs` | OK | Added XML documentation; handler already correct. |
+| `src/Webhooks.API/IntegrationEvents/OrderStockItem.cs` | OK | Added XML documentation; no functional changes. |
+| `src/Webhooks.API/IntegrationEvents/ProductPriceChangedIntegrationEvent.cs` | OK | Added XML documentation; positional record retained. |
+| `src/Webhooks.API/IntegrationEvents/ProductPriceChangedIntegrationEventHandler.cs` | FIX | Implemented previously no-op handler to notify price-change subscribers, matching paid/shipped flow. |
+| `src/Webhooks.API/Services/GrantUrlTesterService.cs` | FIX | Added XML documentation; stopped logging the raw token in the OPTIONS message. |
+| `src/Webhooks.API/Services/IGrantUrlTesterService.cs` | OK | Added XML documentation; focused tester contract. |
+| `src/Webhooks.API/Services/IWebhooksRetriever.cs` | OK | Added XML documentation; focused retriever contract. |
+| `src/Webhooks.API/Services/IWebhooksSender.cs` | OK | Added XML documentation; focused sender contract. |
+| `src/Webhooks.API/Services/WebhooksRetriever.cs` | OK | Added XML documentation; no functional changes. |
+| `src/Webhooks.API/Services/WebhooksSender.cs` | OK | Added XML documentation; fan-out retained. |
+| `src/Webhooks.API/Model/WebhookData.cs` | OK | Added XML documentation; serialization shape retained. |
+| `src/Webhooks.API/Model/WebhookSubscription.cs` | OK | Added XML documentation; nullability preserved. |
+| `src/Webhooks.API/Model/WebhookSubscriptionRequest.cs` | OK | Added XML documentation; validation retained. |
+| `src/Webhooks.API/Program.cs` | OK | Added composition-root header comment; wiring retained. |
