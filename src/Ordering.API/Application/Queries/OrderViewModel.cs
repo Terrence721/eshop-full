@@ -1,4 +1,8 @@
-﻿namespace eShop.Ordering.API.Application.Queries;
+namespace eShop.Ordering.API.Application.Queries;
+
+/// <summary>
+/// Query result DTOs (Order, Orderitem, OrderSummary, CardType) for Ordering reads.
+/// </summary>
 
 // All four records below are only ever constructed via object initializers in
 // OrderQueries.cs, which sets every property every time -- the implicit parameterless
