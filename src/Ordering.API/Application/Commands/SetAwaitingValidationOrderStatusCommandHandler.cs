@@ -3,7 +3,7 @@
     // Regular CommandHandler
     public class SetAwaitingValidationOrderStatusCommandHandler(IOrderRepository orderRepository) : IRequestHandler<SetAwaitingValidationOrderStatusCommand, bool>
     {
-        private readonly IOrderRepository _orderRepository = orderRepository;
+        private readonly IOrderRepository _orderRepository = orderRepository ?? throw new ArgumentNullException(nameof(orderRepository));
 
         /// <summary>
         /// Handler which processes the command when
@@ -13,6 +13,8 @@
         /// <returns></returns>
         public async Task<bool> Handle(SetAwaitingValidationOrderStatusCommand command, CancellationToken cancellationToken)
         {
+            ArgumentNullException.ThrowIfNull(command);
+
             var orderToUpdate = await _orderRepository.GetAsync(command.OrderNumber);
             if (orderToUpdate == null)
             {
