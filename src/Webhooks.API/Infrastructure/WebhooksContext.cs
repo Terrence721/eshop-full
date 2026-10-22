@@ -1,5 +1,8 @@
 ﻿namespace Webhooks.API.Infrastructure;
 
+/// <summary>
+/// EF Core DbContext for Webhooks.API subscriptions.
+/// </summary>
 /// <remarks>
 /// Add migrations using the following command inside the 'Webhooks.API' project directory:
 ///
@@ -7,6 +10,9 @@
 /// </remarks>
 public class WebhooksContext(DbContextOptions<WebhooksContext> options) : DbContext(options)
 {
+    /// <summary>
+    /// Webhook subscriptions keyed by user and event type.
+    /// </summary>
     public required DbSet<WebhookSubscription> Subscriptions { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
