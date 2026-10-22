@@ -1,11 +1,16 @@
 ﻿namespace eShop.PaymentProcessor.IntegrationEvents.EventHandling;
 
+/// <summary>
+/// Handles an order status change to stock confirmed by simulating payment
+/// and publishing the resulting payment success or failure event.
+/// </summary>
 public class OrderStatusChangedToStockConfirmedIntegrationEventHandler(
     IEventBus eventBus,
     IOptionsMonitor<PaymentOptions> options,
     ILogger<OrderStatusChangedToStockConfirmedIntegrationEventHandler> logger) :
     IIntegrationEventHandler<OrderStatusChangedToStockConfirmedIntegrationEvent>
 {
+    /// <inheritdoc />
     public async Task Handle(OrderStatusChangedToStockConfirmedIntegrationEvent @event)
     {
         logger.LogInformation("Handling integration event: {IntegrationEventId} - ({@IntegrationEvent})", @event.Id, @event);
