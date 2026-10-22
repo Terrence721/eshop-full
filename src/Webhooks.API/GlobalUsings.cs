@@ -1,4 +1,5 @@
-﻿global using System.ComponentModel.DataAnnotations;
+﻿// Global usings for Webhooks.API.
+global using System.ComponentModel.DataAnnotations;
 global using System.Text;
 global using System.Text.Json;
 global using eShop.EventBus.Abstractions;
