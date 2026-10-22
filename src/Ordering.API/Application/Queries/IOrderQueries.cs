@@ -1,5 +1,8 @@
-﻿namespace eShop.Ordering.API.Application.Queries;
+namespace eShop.Ordering.API.Application.Queries;
 
+/// <summary>
+/// Ordering read-model queries (order details, user orders, cards).
+/// </summary>
 public interface IOrderQueries
 {
     Task<Order> GetOrderAsync(int id);
