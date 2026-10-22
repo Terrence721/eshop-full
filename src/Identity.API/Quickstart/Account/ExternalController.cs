@@ -12,27 +12,18 @@ using Microsoft.AspNetCore.Mvc;
 namespace IdentityServerHost.Quickstart.UI;
 
 [AllowAnonymous]
-public class ExternalController : QuickstartControllerBase
+public class ExternalController(
+    UserManager<ApplicationUser> userManager,
+    SignInManager<ApplicationUser> signInManager,
+    IIdentityServerInteractionService interaction,
+    IEventService events,
+    ILogger<ExternalController> logger) : QuickstartControllerBase
 {
-    private readonly UserManager<ApplicationUser> _userManager;
-    private readonly SignInManager<ApplicationUser> _signInManager;
-    private readonly IIdentityServerInteractionService _interaction;
-    private readonly IEventService _events;
-    private readonly ILogger<ExternalController> _logger;
-
-    public ExternalController(
-        UserManager<ApplicationUser> userManager,
-        SignInManager<ApplicationUser> signInManager,
-        IIdentityServerInteractionService interaction,
-        IEventService events,
-        ILogger<ExternalController> logger)
-    {
-        _userManager = userManager;
-        _signInManager = signInManager;
-        _interaction = interaction;
-        _events = events;
-        _logger = logger;
-    }
+    private readonly UserManager<ApplicationUser> _userManager = userManager;
+    private readonly SignInManager<ApplicationUser> _signInManager = signInManager;
+    private readonly IIdentityServerInteractionService _interaction = interaction;
+    private readonly IEventService _events = events;
+    private readonly ILogger<ExternalController> _logger = logger;
 
     /// <summary>
     /// initiate roundtrip to external authentication provider

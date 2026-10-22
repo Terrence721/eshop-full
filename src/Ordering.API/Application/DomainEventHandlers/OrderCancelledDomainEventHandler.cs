@@ -3,25 +3,17 @@
 /// <summary>
 /// Publishes an order-status-changed (cancelled) integration event when an order is cancelled.
 /// </summary>
-public partial class OrderCancelledDomainEventHandler
-                : INotificationHandler<OrderCancelledDomainEvent>
+public partial class OrderCancelledDomainEventHandler(
+    IOrderRepository orderRepository,
+    ILogger<OrderCancelledDomainEventHandler> logger,
+    IBuyerRepository buyerRepository,
+    IOrderingIntegrationEventService orderingIntegrationEventService)
+                                : INotificationHandler<OrderCancelledDomainEvent>
 {
-    private readonly IOrderRepository _orderRepository;
-    private readonly IBuyerRepository _buyerRepository;
-    private readonly ILogger _logger;
-    private readonly IOrderingIntegrationEventService _orderingIntegrationEventService;
-
-    public OrderCancelledDomainEventHandler(
-        IOrderRepository orderRepository,
-        ILogger<OrderCancelledDomainEventHandler> logger,
-        IBuyerRepository buyerRepository,
-        IOrderingIntegrationEventService orderingIntegrationEventService)
-    {
-        _orderRepository = orderRepository ?? throw new ArgumentNullException(nameof(orderRepository));
-        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-        _buyerRepository = buyerRepository ?? throw new ArgumentNullException(nameof(buyerRepository));
-        _orderingIntegrationEventService = orderingIntegrationEventService ?? throw new ArgumentNullException(nameof(orderingIntegrationEventService));
-    }
+    private readonly IOrderRepository _orderRepository = orderRepository ?? throw new ArgumentNullException(nameof(orderRepository));
+    private readonly IBuyerRepository _buyerRepository = buyerRepository ?? throw new ArgumentNullException(nameof(buyerRepository));
+    private readonly ILogger _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+    private readonly IOrderingIntegrationEventService _orderingIntegrationEventService = orderingIntegrationEventService ?? throw new ArgumentNullException(nameof(orderingIntegrationEventService));
 
     public async Task Handle(OrderCancelledDomainEvent domainEvent, CancellationToken cancellationToken)
     {

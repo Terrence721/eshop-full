@@ -1,14 +1,9 @@
 ﻿namespace eShop.Ordering.API.Application.Commands;
 
 // Regular CommandHandler
-public class SetAwaitingValidationOrderStatusCommandHandler : IRequestHandler<SetAwaitingValidationOrderStatusCommand, bool>
+public class SetAwaitingValidationOrderStatusCommandHandler(IOrderRepository orderRepository) : IRequestHandler<SetAwaitingValidationOrderStatusCommand, bool>
 {
-    private readonly IOrderRepository _orderRepository;
-
-    public SetAwaitingValidationOrderStatusCommandHandler(IOrderRepository orderRepository)
-    {
-        _orderRepository = orderRepository;
-    }
+    private readonly IOrderRepository _orderRepository = orderRepository;
 
     /// <summary>
     /// Handler which processes the command when
@@ -31,16 +26,11 @@ public class SetAwaitingValidationOrderStatusCommandHandler : IRequestHandler<Se
 
 
 // Use for Idempotency in Command process
-public class SetAwaitingValidationIdentifiedOrderStatusCommandHandler : IdentifiedCommandHandler<SetAwaitingValidationOrderStatusCommand, bool>
+public class SetAwaitingValidationIdentifiedOrderStatusCommandHandler(
+    IMediator mediator,
+    IRequestManager requestManager,
+    ILogger<IdentifiedCommandHandler<SetAwaitingValidationOrderStatusCommand, bool>> logger) : IdentifiedCommandHandler<SetAwaitingValidationOrderStatusCommand, bool>(mediator, requestManager, logger)
 {
-    public SetAwaitingValidationIdentifiedOrderStatusCommandHandler(
-        IMediator mediator,
-        IRequestManager requestManager,
-        ILogger<IdentifiedCommandHandler<SetAwaitingValidationOrderStatusCommand, bool>> logger)
-        : base(mediator, requestManager, logger)
-    {
-    }
-
     protected override bool CreateResultForDuplicateRequest()
     {
         return true; // Ignore duplicate requests for processing order.

@@ -9,12 +9,8 @@
 ///
 /// dotnet ef migrations add --context CatalogContext [migration-name]
 /// </remarks>
-public class CatalogContext : DbContext
+public class CatalogContext(DbContextOptions<CatalogContext> options) : DbContext(options)
 {
-    public CatalogContext(DbContextOptions<CatalogContext> options) : base(options)
-    {
-    }
-
     public required DbSet<CatalogItem> CatalogItems { get; set; }
     public required DbSet<CatalogBrand> CatalogBrands { get; set; }
     public required DbSet<CatalogType> CatalogTypes { get; set; }

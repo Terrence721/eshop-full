@@ -1,15 +1,10 @@
 ﻿namespace eShop.Ordering.Infrastructure.Repositories;
 
-public class BuyerRepository
-    : IBuyerRepository
+public class BuyerRepository(OrderingContext context)
+        : IBuyerRepository
 {
-    private readonly OrderingContext _context;
+    private readonly OrderingContext _context = context ?? throw new ArgumentNullException(nameof(context));
     public IUnitOfWork UnitOfWork => _context;
-
-    public BuyerRepository(OrderingContext context)
-    {
-        _context = context ?? throw new ArgumentNullException(nameof(context));
-    }
 
     public Buyer Add(Buyer buyer)
     {

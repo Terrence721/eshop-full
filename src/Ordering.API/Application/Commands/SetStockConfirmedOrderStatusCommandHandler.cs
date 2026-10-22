@@ -4,14 +4,9 @@
 /// Handler moving an order to stock-confirmed status (plus idempotent wrapper).
 /// </summary>
 // Regular CommandHandler
-public class SetStockConfirmedOrderStatusCommandHandler : IRequestHandler<SetStockConfirmedOrderStatusCommand, bool>
+public class SetStockConfirmedOrderStatusCommandHandler(IOrderRepository orderRepository) : IRequestHandler<SetStockConfirmedOrderStatusCommand, bool>
 {
-    private readonly IOrderRepository _orderRepository;
-
-    public SetStockConfirmedOrderStatusCommandHandler(IOrderRepository orderRepository)
-    {
-        _orderRepository = orderRepository;
-    }
+    private readonly IOrderRepository _orderRepository = orderRepository;
 
     /// <summary>
     /// Handler which processes the command when
@@ -37,16 +32,11 @@ public class SetStockConfirmedOrderStatusCommandHandler : IRequestHandler<SetSto
 
 
 // Use for Idempotency in Command process
-public class SetStockConfirmedOrderStatusIdentifiedCommandHandler : IdentifiedCommandHandler<SetStockConfirmedOrderStatusCommand, bool>
+public class SetStockConfirmedOrderStatusIdentifiedCommandHandler(
+    IMediator mediator,
+    IRequestManager requestManager,
+    ILogger<IdentifiedCommandHandler<SetStockConfirmedOrderStatusCommand, bool>> logger) : IdentifiedCommandHandler<SetStockConfirmedOrderStatusCommand, bool>(mediator, requestManager, logger)
 {
-    public SetStockConfirmedOrderStatusIdentifiedCommandHandler(
-        IMediator mediator,
-        IRequestManager requestManager,
-        ILogger<IdentifiedCommandHandler<SetStockConfirmedOrderStatusCommand, bool>> logger)
-        : base(mediator, requestManager, logger)
-    {
-    }
-
     protected override bool CreateResultForDuplicateRequest()
     {
         return true; // Ignore duplicate requests for processing order.

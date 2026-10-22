@@ -3,25 +3,17 @@
 /// <summary>
 /// Publishes an order-status-changed (stock confirmed) integration event.
 /// </summary>
-public class OrderStatusChangedToStockConfirmedDomainEventHandler
-                : INotificationHandler<OrderStatusChangedToStockConfirmedDomainEvent>
+public class OrderStatusChangedToStockConfirmedDomainEventHandler(
+    IOrderRepository orderRepository,
+    IBuyerRepository buyerRepository,
+    ILogger<OrderStatusChangedToStockConfirmedDomainEventHandler> logger,
+    IOrderingIntegrationEventService orderingIntegrationEventService)
+                                : INotificationHandler<OrderStatusChangedToStockConfirmedDomainEvent>
 {
-    private readonly IOrderRepository _orderRepository;
-    private readonly IBuyerRepository _buyerRepository;
-    private readonly ILogger _logger;
-    private readonly IOrderingIntegrationEventService _orderingIntegrationEventService;
-
-    public OrderStatusChangedToStockConfirmedDomainEventHandler(
-        IOrderRepository orderRepository,
-        IBuyerRepository buyerRepository,
-        ILogger<OrderStatusChangedToStockConfirmedDomainEventHandler> logger,
-        IOrderingIntegrationEventService orderingIntegrationEventService)
-    {
-        _orderRepository = orderRepository ?? throw new ArgumentNullException(nameof(orderRepository));
-        _buyerRepository = buyerRepository ?? throw new ArgumentNullException(nameof(buyerRepository));
-        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-        _orderingIntegrationEventService = orderingIntegrationEventService ?? throw new ArgumentNullException(nameof(orderingIntegrationEventService));
-    }
+    private readonly IOrderRepository _orderRepository = orderRepository ?? throw new ArgumentNullException(nameof(orderRepository));
+    private readonly IBuyerRepository _buyerRepository = buyerRepository ?? throw new ArgumentNullException(nameof(buyerRepository));
+    private readonly ILogger _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+    private readonly IOrderingIntegrationEventService _orderingIntegrationEventService = orderingIntegrationEventService ?? throw new ArgumentNullException(nameof(orderingIntegrationEventService));
 
     public async Task Handle(OrderStatusChangedToStockConfirmedDomainEvent domainEvent, CancellationToken cancellationToken)
     {

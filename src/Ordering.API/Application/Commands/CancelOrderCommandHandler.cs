@@ -4,14 +4,9 @@
 /// <summary>
 /// Handles cancellation of an order, transitioning it to the cancelled status.
 /// </summary>
-public class CancelOrderCommandHandler : IRequestHandler<CancelOrderCommand, bool>
+public class CancelOrderCommandHandler(IOrderRepository orderRepository) : IRequestHandler<CancelOrderCommand, bool>
 {
-    private readonly IOrderRepository _orderRepository;
-
-    public CancelOrderCommandHandler(IOrderRepository orderRepository)
-    {
-        _orderRepository = orderRepository;
-    }
+    private readonly IOrderRepository _orderRepository = orderRepository;
 
     /// <summary>
     /// Handler which processes the command when
@@ -37,16 +32,11 @@ public class CancelOrderCommandHandler : IRequestHandler<CancelOrderCommand, boo
 /// <summary>
 /// Identified-command (idempotent) wrapper around <see cref="CancelOrderCommandHandler" />.
 /// </summary>
-public class CancelOrderIdentifiedCommandHandler : IdentifiedCommandHandler<CancelOrderCommand, bool>
+public class CancelOrderIdentifiedCommandHandler(
+    IMediator mediator,
+    IRequestManager requestManager,
+    ILogger<IdentifiedCommandHandler<CancelOrderCommand, bool>> logger) : IdentifiedCommandHandler<CancelOrderCommand, bool>(mediator, requestManager, logger)
 {
-    public CancelOrderIdentifiedCommandHandler(
-        IMediator mediator,
-        IRequestManager requestManager,
-        ILogger<IdentifiedCommandHandler<CancelOrderCommand, bool>> logger)
-        : base(mediator, requestManager, logger)
-    {
-    }
-
     protected override bool CreateResultForDuplicateRequest()
     {
         return true; // Ignore duplicate requests for processing order.

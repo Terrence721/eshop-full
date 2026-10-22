@@ -3,25 +3,17 @@
 /// <summary>
 /// Publishes an order-status-changed (awaiting validation) integration event.
 /// </summary>
-public class OrderStatusChangedToAwaitingValidationDomainEventHandler
-                : INotificationHandler<OrderStatusChangedToAwaitingValidationDomainEvent>
+public class OrderStatusChangedToAwaitingValidationDomainEventHandler(
+    IOrderRepository orderRepository,
+    ILogger<OrderStatusChangedToAwaitingValidationDomainEventHandler> logger,
+    IBuyerRepository buyerRepository,
+    IOrderingIntegrationEventService orderingIntegrationEventService)
+                                : INotificationHandler<OrderStatusChangedToAwaitingValidationDomainEvent>
 {
-    private readonly IOrderRepository _orderRepository;
-    private readonly ILogger _logger;
-    private readonly IBuyerRepository _buyerRepository;
-    private readonly IOrderingIntegrationEventService _orderingIntegrationEventService;
-
-    public OrderStatusChangedToAwaitingValidationDomainEventHandler(
-        IOrderRepository orderRepository,
-        ILogger<OrderStatusChangedToAwaitingValidationDomainEventHandler> logger,
-        IBuyerRepository buyerRepository,
-        IOrderingIntegrationEventService orderingIntegrationEventService)
-    {
-        _orderRepository = orderRepository ?? throw new ArgumentNullException(nameof(orderRepository));
-        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-        _buyerRepository = buyerRepository ?? throw new ArgumentNullException(nameof(buyerRepository));
-        _orderingIntegrationEventService = orderingIntegrationEventService ?? throw new ArgumentNullException(nameof(orderingIntegrationEventService));
-    }
+    private readonly IOrderRepository _orderRepository = orderRepository ?? throw new ArgumentNullException(nameof(orderRepository));
+    private readonly ILogger _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+    private readonly IBuyerRepository _buyerRepository = buyerRepository ?? throw new ArgumentNullException(nameof(buyerRepository));
+    private readonly IOrderingIntegrationEventService _orderingIntegrationEventService = orderingIntegrationEventService ?? throw new ArgumentNullException(nameof(orderingIntegrationEventService));
 
     public async Task Handle(OrderStatusChangedToAwaitingValidationDomainEvent domainEvent, CancellationToken cancellationToken)
     {

@@ -7,15 +7,10 @@ using Microsoft.AspNetCore.Mvc.Testing;
 
 namespace eShop.Catalog.FunctionalTests;
 
-public sealed class CatalogApiTests : IClassFixture<CatalogApiFixture>
+public sealed class CatalogApiTests(CatalogApiFixture fixture) : IClassFixture<CatalogApiFixture>
 {
-    private readonly WebApplicationFactory<Program> _webApplicationFactory;
+    private readonly WebApplicationFactory<Program> _webApplicationFactory = fixture;
     private readonly JsonSerializerOptions _jsonSerializerOptions = new(JsonSerializerDefaults.Web);
-
-    public CatalogApiTests(CatalogApiFixture fixture)
-    {
-        _webApplicationFactory = fixture;
-    }
 
     private HttpClient CreateHttpClient(ApiVersion apiVersion)
     {

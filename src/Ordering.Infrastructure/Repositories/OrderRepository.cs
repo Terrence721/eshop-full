@@ -1,16 +1,11 @@
 ﻿namespace eShop.Ordering.Infrastructure.Repositories;
 
-public class OrderRepository
-    : IOrderRepository
+public class OrderRepository(OrderingContext context)
+        : IOrderRepository
 {
-    private readonly OrderingContext _context;
+    private readonly OrderingContext _context = context ?? throw new ArgumentNullException(nameof(context));
 
     public IUnitOfWork UnitOfWork => _context;
-
-    public OrderRepository(OrderingContext context)
-    {
-        _context = context ?? throw new ArgumentNullException(nameof(context));
-    }
 
     public Order Add(Order order)
     {

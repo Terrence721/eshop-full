@@ -4,14 +4,9 @@ namespace eShop.ClientApp.Services.Identity;
 
 // Dead code - never constructed anywhere in upstream. OidcClient's own LoginAsync builds the
 // authorize request internally; this class predates that and was never removed.
-public class AuthorizeRequest
+public class AuthorizeRequest(string authorizeEndpoint)
 {
-    private readonly Uri _authorizeEndpoint;
-
-    public AuthorizeRequest(string authorizeEndpoint)
-    {
-        _authorizeEndpoint = new Uri(authorizeEndpoint);
-    }
+    private readonly Uri _authorizeEndpoint = new Uri(authorizeEndpoint);
 
     public string Create(IDictionary<string, string> values)
     {

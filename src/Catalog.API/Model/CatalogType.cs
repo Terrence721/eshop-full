@@ -2,15 +2,10 @@
 
 namespace eShop.Catalog.API.Model;
 
-public class CatalogType
+public class CatalogType(string type)
 {
-    public CatalogType(string type)
-    {
-        Type = type;
-    }
-
     public int Id { get; set; }
 
     [Required]
-    public string Type { get; set; }
+    public string Type { get; set; } = type;
 }

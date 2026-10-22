@@ -19,14 +19,9 @@ public static class HttpClientExtensions
         return builder;
     }
 
-    private class HttpClientAuthorizationDelegatingHandler : DelegatingHandler
+    private class HttpClientAuthorizationDelegatingHandler(IHttpContextAccessor httpContextAccessor) : DelegatingHandler
     {
-        private readonly IHttpContextAccessor _httpContextAccessor;
-
-        public HttpClientAuthorizationDelegatingHandler(IHttpContextAccessor httpContextAccessor)
-        {
-            _httpContextAccessor = httpContextAccessor;
-        }
+        private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
 
         protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {

@@ -7,18 +7,13 @@ using eShop.ClientApp.Services.Settings;
 
 namespace eShop.ClientApp.Services.FixUri;
 
-public class FixUriService : IFixUriService
+public class FixUriService(ISettingsService settingsService) : IFixUriService
 {
     private const string ApiVersion = "api-version=2.0";
 
-    private readonly ISettingsService _settingsService;
+    private readonly ISettingsService _settingsService = settingsService;
 
     private readonly Regex IpRegex = new(@"\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b");
-
-    public FixUriService(ISettingsService settingsService)
-    {
-        _settingsService = settingsService;
-    }
 
     public void FixCatalogItemPictureUri(IEnumerable<CatalogItem>? catalogItems)
     {

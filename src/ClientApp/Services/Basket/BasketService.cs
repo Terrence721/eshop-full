@@ -9,22 +9,15 @@ using GrpcBasketItem = eShop.Basket.API.Grpc.BasketItem;
 
 namespace eShop.ClientApp.Services.Basket;
 
-public class BasketService : IBasketService, IDisposable
+public class BasketService(IIdentityService identityService, ISettingsService settingsService,
+    IFixUriService fixUriService) : IBasketService, IDisposable
 {
-    private readonly IFixUriService _fixUriService;
-    private readonly IIdentityService _identityService;
-    private readonly ISettingsService _settingsService;
+    private readonly IFixUriService _fixUriService = fixUriService;
+    private readonly IIdentityService _identityService = identityService;
+    private readonly ISettingsService _settingsService = settingsService;
     private BasketGrpcClient? _basketClient;
 
     private GrpcChannel? _channel;
-
-    public BasketService(IIdentityService identityService, ISettingsService settingsService,
-        IFixUriService fixUriService)
-    {
-        _identityService = identityService;
-        _settingsService = settingsService;
-        _fixUriService = fixUriService;
-    }
 
     public IEnumerable<BasketItem>? LocalBasketItems { get; set; }
 

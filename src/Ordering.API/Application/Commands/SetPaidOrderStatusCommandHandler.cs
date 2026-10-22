@@ -4,14 +4,9 @@
 /// Handler moving an order to the paid status, plus its idempotent wrapper.
 /// </summary>
 // Regular CommandHandler
-public class SetPaidOrderStatusCommandHandler : IRequestHandler<SetPaidOrderStatusCommand, bool>
+public class SetPaidOrderStatusCommandHandler(IOrderRepository orderRepository) : IRequestHandler<SetPaidOrderStatusCommand, bool>
 {
-    private readonly IOrderRepository _orderRepository;
-
-    public SetPaidOrderStatusCommandHandler(IOrderRepository orderRepository)
-    {
-        _orderRepository = orderRepository;
-    }
+    private readonly IOrderRepository _orderRepository = orderRepository;
 
     /// <summary>
     /// Handler which processes the command when
@@ -40,16 +35,11 @@ public class SetPaidOrderStatusCommandHandler : IRequestHandler<SetPaidOrderStat
 /// <summary>
 /// Identified (idempotent) wrapper around <see cref="SetPaidOrderStatusCommandHandler" />.
 /// </summary>
-public class SetPaidIdentifiedOrderStatusCommandHandler : IdentifiedCommandHandler<SetPaidOrderStatusCommand, bool>
+public class SetPaidIdentifiedOrderStatusCommandHandler(
+    IMediator mediator,
+    IRequestManager requestManager,
+    ILogger<IdentifiedCommandHandler<SetPaidOrderStatusCommand, bool>> logger) : IdentifiedCommandHandler<SetPaidOrderStatusCommand, bool>(mediator, requestManager, logger)
 {
-    public SetPaidIdentifiedOrderStatusCommandHandler(
-        IMediator mediator,
-        IRequestManager requestManager,
-        ILogger<IdentifiedCommandHandler<SetPaidOrderStatusCommand, bool>> logger)
-        : base(mediator, requestManager, logger)
-    {
-    }
-
     protected override bool CreateResultForDuplicateRequest()
     {
         return true; // Ignore duplicate requests for processing order.

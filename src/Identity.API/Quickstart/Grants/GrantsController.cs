@@ -11,23 +11,15 @@ namespace IdentityServerHost.Quickstart.UI;
 /// This sample controller allows a user to revoke grants given to clients
 /// </summary>
 [Authorize]
-public class GrantsController : QuickstartControllerBase
+public class GrantsController(IIdentityServerInteractionService interaction,
+    IClientStore clients,
+    IResourceStore resources,
+    IEventService events) : QuickstartControllerBase
 {
-    private readonly IIdentityServerInteractionService _interaction;
-    private readonly IClientStore _clients;
-    private readonly IResourceStore _resources;
-    private readonly IEventService _events;
-
-    public GrantsController(IIdentityServerInteractionService interaction,
-        IClientStore clients,
-        IResourceStore resources,
-        IEventService events)
-    {
-        _interaction = interaction;
-        _clients = clients;
-        _resources = resources;
-        _events = events;
-    }
+    private readonly IIdentityServerInteractionService _interaction = interaction;
+    private readonly IClientStore _clients = clients;
+    private readonly IResourceStore _resources = resources;
+    private readonly IEventService _events = events;
 
     /// <summary>
     /// Show list of grants

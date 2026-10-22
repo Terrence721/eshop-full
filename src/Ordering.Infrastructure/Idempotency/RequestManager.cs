@@ -1,14 +1,8 @@
 ﻿namespace eShop.Ordering.Infrastructure.Idempotency;
 
-public class RequestManager : IRequestManager
+public class RequestManager(OrderingContext context) : IRequestManager
 {
-    private readonly OrderingContext _context;
-
-    public RequestManager(OrderingContext context)
-    {
-        _context = context ?? throw new ArgumentNullException(nameof(context));
-    }
-
+    private readonly OrderingContext _context = context ?? throw new ArgumentNullException(nameof(context));
 
     public async Task<bool> ExistAsync(Guid id)
     {

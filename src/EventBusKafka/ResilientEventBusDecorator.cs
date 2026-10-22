@@ -3,16 +3,10 @@
 using Microsoft.Extensions.Options;
 using Polly.Retry;
 
-public sealed class ResilientEventBusDecorator : IEventBus
+public sealed class ResilientEventBusDecorator(IEventBus inner, IOptions<EventBusOptions> options) : IEventBus
 {
-    private readonly IEventBus _inner;
-    private readonly ResiliencePipeline _pipeline;
-
-    public ResilientEventBusDecorator(IEventBus inner, IOptions<EventBusOptions> options)
-    {
-        _inner = inner;
-        _pipeline = CreateResiliencePipeline(options.Value.RetryCount);
-    }
+    private readonly IEventBus _inner = inner;
+    private readonly ResiliencePipeline _pipeline = CreateResiliencePipeline(options.Value.RetryCount);
 
     public Task PublishAsync(IntegrationEvent @event) =>
         _pipeline.ExecuteAsync(
