@@ -21,11 +21,11 @@ namespace eShop.ClientApp.Services.Settings
         private const string IdLatitude = "latitude";
         private const string IdLongitude = "longitude";
         private const string IdAllowGpsLocation = "allow_gps_location";
-        private readonly bool UseMocksDefault = true;
-        private readonly bool UseFakeLocationDefault = false;
-        private readonly bool AllowGpsLocationDefault = false;
-        private readonly double FakeLatitudeDefault = 47.604610d;
-        private readonly double FakeLongitudeDefault = -122.315752d;
+        private const bool UseMocksDefault = true;
+        private const bool UseFakeLocationDefault = false;
+        private const bool AllowGpsLocationDefault = false;
+        private const double FakeLatitudeDefault = 47.604610d;
+        private const double FakeLongitudeDefault = -122.315752d;
 
         #endregion
 
