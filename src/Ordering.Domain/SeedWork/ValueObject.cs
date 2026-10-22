@@ -1,6 +1,6 @@
 ﻿namespace eShop.Ordering.Domain.SeedWork;
 
-public abstract class ValueObject
+public abstract class ValueObject : IEquatable<ValueObject>
 {
     protected static bool EqualOperator(ValueObject left, ValueObject right)
     {
@@ -18,16 +18,20 @@ public abstract class ValueObject
 
     protected abstract IEnumerable<object> GetEqualityComponents();
 
-    public override bool Equals(object? obj)
+    public override bool Equals(object? obj) => Equals(obj as ValueObject);
+
+    public bool Equals(ValueObject? other)
     {
-        if (obj == null || obj.GetType() != GetType())
-        {
+        if (other is null)
             return false;
-        }
 
-        var other = (ValueObject)obj;
+        if (ReferenceEquals(this, other))
+            return true;
 
-        return this.GetEqualityComponents().SequenceEqual(other.GetEqualityComponents());
+        if (GetType() != other.GetType())
+            return false;
+
+        return GetEqualityComponents().SequenceEqual(other.GetEqualityComponents());
     }
 
     public override int GetHashCode()

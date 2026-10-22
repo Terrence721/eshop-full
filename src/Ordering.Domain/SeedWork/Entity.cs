@@ -1,6 +1,6 @@
 ﻿namespace eShop.Ordering.Domain.SeedWork;
 
-public abstract class Entity
+public abstract class Entity : IEquatable<Entity>
 {
     int? _requestedHashCode;
     int _Id;
@@ -40,23 +40,23 @@ public abstract class Entity
         return this.Id == default;
     }
 
-    public override bool Equals(object? obj)
+    public override bool Equals(object? obj) => Equals(obj as Entity);
+
+    public bool Equals(Entity? other)
     {
-        if (obj == null || !(obj is Entity))
+        if (other is null)
             return false;
 
-        if (Object.ReferenceEquals(this, obj))
+        if (ReferenceEquals(this, other))
             return true;
 
-        if (this.GetType() != obj.GetType())
+        if (GetType() != other.GetType())
             return false;
 
-        Entity item = (Entity)obj;
-
-        if (item.IsTransient() || this.IsTransient())
+        if (other.IsTransient() || IsTransient())
             return false;
-        else
-            return item.Id == this.Id;
+
+        return other.Id == Id;
     }
 
     public override int GetHashCode()
