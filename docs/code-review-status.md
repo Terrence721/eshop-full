@@ -236,3 +236,15 @@ Result legend: `OK` = reviewed, no changes required; `FIX` = reviewed and change
 | `src/WebhookClient/Endpoints/HooksApiEndpoints.cs` | OK | Added XML documentation; hook/receive/stream flow retained. |
 | `src/WebhookClient/Endpoints/WebhookEndpoints.cs` | OK | Added XML documentation; grant/receive flow retained. |
 | `src/WebhookClient/Program.cs` | OK | Added composition-root header comment; endpoint mapping retained. |
+
+## PaymentProcessor
+
+| File | Result | Notes |
+| --- | --- | --- |
+| `src/PaymentProcessor/GlobalUsings.cs` | FIX | Added header comment for global usings. |
+| `src/PaymentProcessor/IntegrationEvents/EventHandling/OrderStatusChangedToStockConfirmedIntegrationEventHandler.cs` | FIX | Added XML documentation for the stock-confirmed handler. |
+| `src/PaymentProcessor/IntegrationEvents/Events/OrderPaymentFailedIntegrationEvent.cs` | FIX | Added XML documentation with order id detail. |
+| `src/PaymentProcessor/IntegrationEvents/Events/OrderPaymentSucceededIntegrationEvent.cs` | FIX | Added XML documentation with order id detail. |
+| `src/PaymentProcessor/IntegrationEvents/Events/OrderStatusChangedToStockConfirmedIntegrationEvent.cs` | FIX | Added XML documentation with order id detail. |
+| `src/PaymentProcessor/PaymentOptions.cs` | FIX | Added XML documentation for payment options. |
+| `src/PaymentProcessor/Program.cs` | FIX | Added header comment for app host wiring. |
