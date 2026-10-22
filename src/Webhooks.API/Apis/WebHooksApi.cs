@@ -4,8 +4,14 @@ using Webhooks.API.Extensions;
 
 namespace Webhooks.API;
 
+/// <summary>
+/// Minimal API endpoints for managing webhook subscriptions.
+/// </summary>
 public static class WebHooksApi
 {
+    /// <summary>
+    /// Registers the V1 webhook subscription endpoints.
+    /// </summary>
     public static RouteGroupBuilder MapWebHooksApiV1(this IEndpointRouteBuilder app)
     {
         var api = app.MapGroup("/api/webhooks").HasApiVersion(1.0);
@@ -18,6 +24,9 @@ public static class WebHooksApi
         return api;
     }
 
+    /// <summary>
+    /// Returns all webhook subscriptions owned by the current user.
+    /// </summary>
     public static async Task<Ok<List<WebhookSubscription>>> GetAllAsync(WebhooksContext context, ClaimsPrincipal user)
     {
         var userId = user.GetUserId();
@@ -25,6 +34,9 @@ public static class WebHooksApi
         return TypedResults.Ok(data);
     }
 
+    /// <summary>
+    /// Returns a single webhook subscription by id, scoped to the current user.
+    /// </summary>
     public static async Task<Results<Ok<WebhookSubscription>, NotFound<string>>> GetByIdAsync(
         WebhooksContext context,
         ClaimsPrincipal user,
@@ -40,6 +52,9 @@ public static class WebHooksApi
         return TypedResults.NotFound($"Subscriptions {id} not found");
     }
 
+    /// <summary>
+    /// Creates a new webhook subscription after validating the grant URL.
+    /// </summary>
     public static async Task<Results<Created, BadRequest<string>>> CreateAsync(
         WebhookSubscriptionRequest request,
         IGrantUrlTesterService grantUrlTester,
@@ -56,9 +71,6 @@ public static class WebHooksApi
                 DestUrl = request.Url,
                 Token = request.Token,
                 Type = Enum.Parse<WebhookType>(request.Event, ignoreCase: true),
-                // GetUserId() is nullable by signature, but this endpoint group requires
-                // authorization (Program.cs), so the "sub" claim is always present in
-                // practice -- same pattern already established for IdentityService.
                 UserId = user.GetUserId()!
             };
 
@@ -73,6 +85,9 @@ public static class WebHooksApi
         }
     }
 
+    /// <summary>
+    /// Deletes a webhook subscription owned by the current user.
+    /// </summary>
     public static async Task<Results<Accepted, NotFound<string>>> DeleteAsync(
         WebhooksContext context,
         ClaimsPrincipal user,
