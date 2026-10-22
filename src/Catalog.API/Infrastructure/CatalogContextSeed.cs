@@ -30,13 +30,13 @@ public partial class CatalogContextSeed(
             await context.CatalogBrands.AddRangeAsync(sourceItems.Select(x => x.Brand).Distinct()
                 .Where(brandName => brandName != null)
                 .Select(brandName => new CatalogBrand(brandName!)));
-            logger.LogInformation("Seeded catalog with {NumBrands} brands", context.CatalogBrands.Count());
+            if (logger.IsEnabled(LogLevel.Information)) logger.LogInformation("Seeded catalog with {NumBrands} brands", context.CatalogBrands.Count());
 
             context.CatalogTypes.RemoveRange(context.CatalogTypes);
             await context.CatalogTypes.AddRangeAsync(sourceItems.Select(x => x.Type).Distinct()
                 .Where(typeName => typeName != null)
                 .Select(typeName => new CatalogType(typeName!)));
-            logger.LogInformation("Seeded catalog with {NumTypes} types", context.CatalogTypes.Count());
+            if (logger.IsEnabled(LogLevel.Information)) logger.LogInformation("Seeded catalog with {NumTypes} types", context.CatalogTypes.Count());
 
             await context.SaveChangesAsync();
 
@@ -60,7 +60,7 @@ public partial class CatalogContextSeed(
 
             if (catalogAI.IsEnabled)
             {
-                logger.LogInformation("Generating {NumItems} embeddings", catalogItems.Length);
+                if (logger.IsEnabled(LogLevel.Information)) logger.LogInformation("Generating {NumItems} embeddings", catalogItems.Length);
                 IReadOnlyList<Vector>? embeddings = await catalogAI.GetEmbeddingsAsync(catalogItems);
                 for (int i = 0; i < catalogItems.Length; i++)
                 {
@@ -69,7 +69,7 @@ public partial class CatalogContextSeed(
             }
 
             await context.CatalogItems.AddRangeAsync(catalogItems);
-            logger.LogInformation("Seeded catalog with {NumItems} items", context.CatalogItems.Count());
+            if (logger.IsEnabled(LogLevel.Information)) logger.LogInformation("Seeded catalog with {NumItems} items", context.CatalogItems.Count());
             await context.SaveChangesAsync();
         }
     }
