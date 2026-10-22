@@ -78,23 +78,29 @@
                             break;
                     }
 
-                    _logger.LogInformation(
-                        "Sending command: {CommandName} - {IdProperty}: {CommandId} ({@Command})",
-                        commandName,
-                        idProperty,
-                        commandId,
-                        command);
+                    if (_logger.IsEnabled(LogLevel.Information))
+                    {
+                        _logger.LogInformation(
+                            "Sending command: {CommandName} - {IdProperty}: {CommandId} ({@Command})",
+                            commandName,
+                            idProperty,
+                            commandId,
+                            command);
+                    }
 
                     // Send the embedded business command to mediator so it runs its related CommandHandler
                     var result = await _mediator.Send(command, cancellationToken);
 
-                    _logger.LogInformation(
-                        "Command result: {@Result} - {CommandName} - {IdProperty}: {CommandId} ({@Command})",
-                        result,
-                        commandName,
-                        idProperty,
-                        commandId,
-                        command);
+                    if (_logger.IsEnabled(LogLevel.Information))
+                    {
+                        _logger.LogInformation(
+                            "Command result: {@Result} - {CommandName} - {IdProperty}: {CommandId} ({@Command})",
+                            result,
+                            commandName,
+                            idProperty,
+                            commandId,
+                            command);
+                    }
 
                     return result;
                 }
