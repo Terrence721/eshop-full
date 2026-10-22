@@ -12,9 +12,11 @@
     {
         public Task<OrderDraftDTO> Handle(CreateOrderDraftCommand message, CancellationToken cancellationToken)
         {
+            ArgumentNullException.ThrowIfNull(message);
+            ArgumentNullException.ThrowIfNull(message.Items);
+
             var order = Order.NewDraft();
-            var orderItems = message.Items.Select(i => i.ToOrderItemDTO());
-            foreach (var item in orderItems)
+            foreach (var item in message.Items.ToOrderItemsDTO())
             {
                 order.AddOrderItem(item.ProductId, item.ProductName, item.UnitPrice, item.Discount, item.PictureUrl, item.Units);
             }
