@@ -42,19 +42,40 @@ namespace eShop.ClientApp
                     sp.GetRequiredService<ISettingsService>(),
                     null));
 
+            services.AddTransient<BasketMockService>();
+            services.AddTransient<CatalogMockService>();
+            services.AddTransient<OrderMockService>();
+            services.AddTransient<IdentityMockService>();
+
+            services.AddTransient(sp => new BasketService(
+                sp.GetRequiredService<IIdentityService>(),
+                sp.GetRequiredService<ISettingsService>(),
+                sp.GetRequiredService<IFixUriService>()));
+
+            services.AddTransient(sp => new CatalogService(
+                sp.GetRequiredService<ISettingsService>(),
+                sp.GetRequiredService<IRequestProvider>(),
+                sp.GetRequiredService<IFixUriService>()));
+
+            services.AddTransient(sp => new OrderService(
+                sp.GetRequiredService<IIdentityService>(),
+                sp.GetRequiredService<ISettingsService>(),
+                sp.GetRequiredService<IRequestProvider>()));
+
             services.AddSingleton<IAppEnvironmentService>(
                 sp =>
                 {
-                    var requestProvider = sp.GetRequiredService<IRequestProvider>();
-                    var fixUriService = sp.GetRequiredService<IFixUriService>();
                     var settingsService = sp.GetRequiredService<ISettingsService>();
-                    var identityService = sp.GetRequiredService<IIdentityService>();
 
                     var appEnvironmentService = new AppEnvironmentService(
-                        new BasketMockService(), new BasketService(identityService, settingsService, fixUriService),
-                        new CatalogMockService(), new CatalogService(settingsService, requestProvider, fixUriService),
-                        new OrderMockService(), new OrderService(identityService, settingsService, requestProvider),
-                        new IdentityMockService(), identityService);
+                        sp.GetRequiredService<BasketMockService>() as IBasketService,
+                        sp.GetRequiredService<BasketService>() as IBasketService,
+                        sp.GetRequiredService<CatalogMockService>() as ICatalogService,
+                        sp.GetRequiredService<CatalogService>() as ICatalogService,
+                        sp.GetRequiredService<OrderMockService>() as IOrderService,
+                        sp.GetRequiredService<OrderService>() as IOrderService,
+                        sp.GetRequiredService<IdentityMockService>() as IIdentityService,
+                        sp.GetRequiredService<IIdentityService>());
 
                     appEnvironmentService.UpdateDependencies(settingsService.UseMocks);
 
