@@ -17,6 +17,8 @@
 
         public async Task Handle(OrderStatusChangedToAwaitingValidationDomainEvent domainEvent, CancellationToken cancellationToken)
         {
+            ArgumentNullException.ThrowIfNull(domainEvent);
+
             OrderingApiTrace.LogOrderStatusUpdated(_logger, domainEvent.OrderId, OrderStatus.AwaitingValidation);
 
             // GetAsync/FindByIdAsync are nullable by signature, but upstream has no guard here
@@ -25,7 +27,7 @@
             var order = (await _orderRepository.GetAsync(domainEvent.OrderId))!;
             var buyer = (await _buyerRepository.FindByIdAsync(order.BuyerId!.Value))!;
 
-            var orderStockList = domainEvent.OrderItems
+            var orderStockList = (domainEvent.OrderItems ?? [])
                 .Select(orderItem => new OrderStockItem(orderItem.ProductId, orderItem.Units));
 
             var integrationEvent = new OrderStatusChangedToAwaitingValidationIntegrationEvent(order.Id, order.OrderStatus, buyer.Name, buyer.IdentityGuid, orderStockList);
