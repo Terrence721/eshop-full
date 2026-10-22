@@ -1,4 +1,5 @@
-﻿global using eShop.OrderProcessor.Extensions;
+﻿// Global using directives used throughout this project.
+global using eShop.OrderProcessor.Extensions;
 global using eShop.OrderProcessor.Services;
 global using eShop.ServiceDefaults;
 global using Microsoft.AspNetCore.Builder;
