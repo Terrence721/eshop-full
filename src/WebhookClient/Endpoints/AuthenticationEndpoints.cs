@@ -4,8 +4,14 @@ using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 
 namespace eShop.WebhookClient.Endpoints;
 
+/// <summary>
+/// Authentication-related endpoints for WebhookClient.
+/// </summary>
 public static class AuthenticationEndpoints
 {
+    /// <summary>
+    /// Maps the logout endpoint and signs out of both cookie and OIDC schemes.
+    /// </summary>
     public static IEndpointRouteBuilder MapAuthenticationEndpoints(this IEndpointRouteBuilder app)
     {
         // antiforgery.ValidateRequestAsync() dropped -- it's a server-rendered-form
