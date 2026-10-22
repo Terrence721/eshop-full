@@ -1,5 +1,8 @@
 ﻿namespace eShop.Ordering.API.Application.IntegrationEvents.EventHandling;
 
+/// <summary>
+/// Handles a payment-succeeded integration event by setting the associated order to paid status.
+/// </summary>
 public class OrderPaymentSucceededIntegrationEventHandler(
     IMediator mediator,
     ILogger<OrderPaymentSucceededIntegrationEventHandler> logger) :
