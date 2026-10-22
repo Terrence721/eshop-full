@@ -1,39 +1,40 @@
-﻿namespace eShop.PaymentProcessor.IntegrationEvents.EventHandling;
-
-/// <summary>
-/// Handles an order status change to stock confirmed by simulating payment
-/// and publishing the resulting payment success or failure event.
-/// </summary>
-public class OrderStatusChangedToStockConfirmedIntegrationEventHandler(
-    IEventBus eventBus,
-    IOptionsMonitor<PaymentOptions> options,
-    ILogger<OrderStatusChangedToStockConfirmedIntegrationEventHandler> logger) :
-    IIntegrationEventHandler<OrderStatusChangedToStockConfirmedIntegrationEvent>
+﻿namespace eShop.PaymentProcessor.IntegrationEvents.EventHandling
 {
-    /// <inheritdoc />
-    public async Task Handle(OrderStatusChangedToStockConfirmedIntegrationEvent @event)
+    /// <summary>
+    /// Handles an order status change to stock confirmed by simulating payment
+    /// and publishing the resulting payment success or failure event.
+    /// </summary>
+    public class OrderStatusChangedToStockConfirmedIntegrationEventHandler(
+        IEventBus eventBus,
+        IOptionsMonitor<PaymentOptions> options,
+        ILogger<OrderStatusChangedToStockConfirmedIntegrationEventHandler> logger) :
+        IIntegrationEventHandler<OrderStatusChangedToStockConfirmedIntegrationEvent>
     {
-        logger.LogInformation("Handling integration event: {IntegrationEventId} - ({@IntegrationEvent})", @event.Id, @event);
-
-        IntegrationEvent orderPaymentIntegrationEvent;
-
-        // Business feature comment:
-        // When OrderStatusChangedToStockConfirmed Integration Event is handled.
-        // Here we're simulating that we'd be performing the payment against any payment gateway
-        // Instead of a real payment we just take the env. var to simulate the payment
-        // The payment can be successful or it can fail
-
-        if (options.CurrentValue.PaymentSucceeded)
+        /// <inheritdoc />
+        public async Task Handle(OrderStatusChangedToStockConfirmedIntegrationEvent @event)
         {
-            orderPaymentIntegrationEvent = new OrderPaymentSucceededIntegrationEvent(@event.OrderId);
-        }
-        else
-        {
-            orderPaymentIntegrationEvent = new OrderPaymentFailedIntegrationEvent(@event.OrderId);
-        }
+            logger.LogInformation("Handling integration event: {IntegrationEventId} - ({@IntegrationEvent})", @event.Id, @event);
 
-        logger.LogInformation("Publishing integration event: {IntegrationEventId} - ({@IntegrationEvent})", orderPaymentIntegrationEvent.Id, orderPaymentIntegrationEvent);
+            IntegrationEvent orderPaymentIntegrationEvent;
 
-        await eventBus.PublishAsync(orderPaymentIntegrationEvent);
+            // Business feature comment:
+            // When OrderStatusChangedToStockConfirmed Integration Event is handled.
+            // Here we're simulating that we'd be performing the payment against any payment gateway
+            // Instead of a real payment we just take the env. var to simulate the payment
+            // The payment can be successful or it can fail
+
+            if (options.CurrentValue.PaymentSucceeded)
+            {
+                orderPaymentIntegrationEvent = new OrderPaymentSucceededIntegrationEvent(@event.OrderId);
+            }
+            else
+            {
+                orderPaymentIntegrationEvent = new OrderPaymentFailedIntegrationEvent(@event.OrderId);
+            }
+
+            logger.LogInformation("Publishing integration event: {IntegrationEventId} - ({@IntegrationEvent})", orderPaymentIntegrationEvent.Id, orderPaymentIntegrationEvent);
+
+            await eventBus.PublishAsync(orderPaymentIntegrationEvent);
+        }
     }
 }

@@ -1,13 +1,14 @@
 ﻿using eShop.IntegrationEventLogEF.Utilities;
 
-namespace eShop.IntegrationEventLogEF.UnitTests.Utilities;
-
-[TestClass]
-public class ResilientTransactionTests
+namespace eShop.IntegrationEventLogEF.UnitTests.Utilities
 {
-    [TestMethod]
-    public void New_throws_when_context_is_null()
+    [TestClass]
+    public class ResilientTransactionTests
     {
-        Assert.ThrowsExactly<ArgumentNullException>(() => ResilientTransaction.New(null!));
+        [TestMethod]
+        public void New_throws_when_context_is_null()
+        {
+            Assert.ThrowsExactly<ArgumentNullException>(() => ResilientTransaction.New(null!));
+        }
     }
 }

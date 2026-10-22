@@ -1,59 +1,60 @@
 ﻿using eShop.ClientApp.Models.Basket;
 
-namespace eShop.ClientApp.Services.Basket;
-
-public class BasketMockService : IBasketService
+namespace eShop.ClientApp.Services.Basket
 {
-    private CustomerBasket _mockCustomBasket;
-
-    public BasketMockService()
+    public class BasketMockService : IBasketService
     {
-        _mockCustomBasket = new CustomerBasket { BuyerId = "9245fe4a-d402-451c-b9ed-9c1a04247482" };
-        _mockCustomBasket.AddItemToBasket(new BasketItem
+        private CustomerBasket _mockCustomBasket;
+
+        public BasketMockService()
         {
-            Id = "1",
-            PictureUrl = "fake_product_01.png",
-            ProductId = Common.Common.MockCatalogItemId01,
-            ProductName = ".NET Bot Blue Sweatshirt (M)",
-            Quantity = 1,
-            UnitPrice = 19.50M
-        });
+            _mockCustomBasket = new CustomerBasket { BuyerId = "9245fe4a-d402-451c-b9ed-9c1a04247482" };
+            _mockCustomBasket.AddItemToBasket(new BasketItem
+            {
+                Id = "1",
+                PictureUrl = "fake_product_01.png",
+                ProductId = Common.Common.MockCatalogItemId01,
+                ProductName = ".NET Bot Blue Sweatshirt (M)",
+                Quantity = 1,
+                UnitPrice = 19.50M
+            });
 
-        _mockCustomBasket.AddItemToBasket(new BasketItem
+            _mockCustomBasket.AddItemToBasket(new BasketItem
+            {
+                Id = "2",
+                PictureUrl = "fake_product_04.png",
+                ProductId = Common.Common.MockCatalogItemId04,
+                ProductName = ".NET Black Cup",
+                Quantity = 1,
+                UnitPrice = 17.00M
+            });
+        }
+
+        public IEnumerable<BasketItem>? LocalBasketItems { get; set; }
+
+        public async Task<CustomerBasket?> GetBasketAsync()
         {
-            Id = "2",
-            PictureUrl = "fake_product_04.png",
-            ProductId = Common.Common.MockCatalogItemId04,
-            ProductName = ".NET Black Cup",
-            Quantity = 1,
-            UnitPrice = 17.00M
-        });
-    }
+            await Task.Delay(10);
 
-    public IEnumerable<BasketItem>? LocalBasketItems { get; set; }
+            return _mockCustomBasket;
+        }
 
-    public async Task<CustomerBasket?> GetBasketAsync()
-    {
-        await Task.Delay(10);
+        public async Task<CustomerBasket> UpdateBasketAsync(CustomerBasket customerBasket)
+        {
+            await Task.Delay(10);
 
-        return _mockCustomBasket;
-    }
+            _mockCustomBasket = customerBasket;
 
-    public async Task<CustomerBasket> UpdateBasketAsync(CustomerBasket customerBasket)
-    {
-        await Task.Delay(10);
+            return _mockCustomBasket;
+        }
 
-        _mockCustomBasket = customerBasket;
+        public async Task ClearBasketAsync()
+        {
+            await Task.Delay(10);
 
-        return _mockCustomBasket;
-    }
+            _mockCustomBasket.ClearBasket();
 
-    public async Task ClearBasketAsync()
-    {
-        await Task.Delay(10);
-
-        _mockCustomBasket.ClearBasket();
-
-        LocalBasketItems = null;
+            LocalBasketItems = null;
+        }
     }
 }

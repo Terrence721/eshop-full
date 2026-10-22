@@ -1,17 +1,18 @@
-﻿namespace eShop.Ordering.API.Application.Validations;
-
-/// <summary>
-/// Validator for <see cref="ShipOrderCommand" />.
-/// </summary>
-public class ShipOrderCommandValidator : AbstractValidator<ShipOrderCommand>
+﻿namespace eShop.Ordering.API.Application.Validations
 {
-    public ShipOrderCommandValidator(ILogger<ShipOrderCommandValidator> logger)
+    /// <summary>
+    /// Validator for <see cref="ShipOrderCommand" />.
+    /// </summary>
+    public class ShipOrderCommandValidator : AbstractValidator<ShipOrderCommand>
     {
-        RuleFor(order => order.OrderNumber).NotEmpty().WithMessage("No orderId found");
-
-        if (logger.IsEnabled(LogLevel.Trace))
+        public ShipOrderCommandValidator(ILogger<ShipOrderCommandValidator> logger)
         {
-            logger.LogTrace("INSTANCE CREATED - {ClassName}", GetType().Name);
+            RuleFor(order => order.OrderNumber).NotEmpty().WithMessage("No orderId found");
+
+            if (logger.IsEnabled(LogLevel.Trace))
+            {
+                logger.LogTrace("INSTANCE CREATED - {ClassName}", GetType().Name);
+            }
         }
     }
 }

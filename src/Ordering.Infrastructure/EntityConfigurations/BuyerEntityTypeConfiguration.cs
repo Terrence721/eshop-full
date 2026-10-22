@@ -1,22 +1,23 @@
-﻿namespace eShop.Ordering.Infrastructure.EntityConfigurations;
-
-class BuyerEntityTypeConfiguration
-    : IEntityTypeConfiguration<Buyer>
+﻿namespace eShop.Ordering.Infrastructure.EntityConfigurations
 {
-    public void Configure(EntityTypeBuilder<Buyer> buyerConfiguration)
+    class BuyerEntityTypeConfiguration
+        : IEntityTypeConfiguration<Buyer>
     {
-        buyerConfiguration.ToTable("buyers");
+        public void Configure(EntityTypeBuilder<Buyer> buyerConfiguration)
+        {
+            buyerConfiguration.ToTable("buyers");
 
-        buyerConfiguration.Property(b => b.Id)
-            .UseHiLo("buyerseq");
+            buyerConfiguration.Property(b => b.Id)
+                .UseHiLo("buyerseq");
 
-        buyerConfiguration.Property(b => b.IdentityGuid)
-            .HasMaxLength(200);
+            buyerConfiguration.Property(b => b.IdentityGuid)
+                .HasMaxLength(200);
 
-        buyerConfiguration.HasIndex("IdentityGuid")
-            .IsUnique(true);
+            buyerConfiguration.HasIndex("IdentityGuid")
+                .IsUnique(true);
 
-        buyerConfiguration.HasMany(b => b.PaymentMethods)
-            .WithOne();
+            buyerConfiguration.HasMany(b => b.PaymentMethods)
+                .WithOne();
+        }
     }
 }

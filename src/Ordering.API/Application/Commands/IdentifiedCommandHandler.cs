@@ -1,110 +1,111 @@
-﻿namespace eShop.Ordering.API.Application.Commands;
-
-/// <summary>
-/// Provides a base implementation for handling duplicate request and ensuring idempotent updates, in the cases where
-/// a requestid sent by client is used to detect duplicate requests.
-/// </summary>
-/// <typeparam name="T">Type of the command handler that performs the operation if request is not duplicated</typeparam>
-/// <typeparam name="R">Return value of the inner command handler</typeparam>
-public abstract class IdentifiedCommandHandler<T, R> : IRequestHandler<IdentifiedCommand<T, R>, R>
-    where T : IRequest<R>
+﻿namespace eShop.Ordering.API.Application.Commands
 {
-    private readonly IMediator _mediator;
-    private readonly IRequestManager _requestManager;
-    private readonly ILogger<IdentifiedCommandHandler<T, R>> _logger;
-
-    public IdentifiedCommandHandler(
-        IMediator mediator,
-        IRequestManager requestManager,
-        ILogger<IdentifiedCommandHandler<T, R>> logger)
-    {
-        ArgumentNullException.ThrowIfNull(mediator);
-        ArgumentNullException.ThrowIfNull(requestManager);
-        ArgumentNullException.ThrowIfNull(logger);
-        _mediator = mediator;
-        _requestManager = requestManager;
-        _logger = logger;
-    }
-
     /// <summary>
-    /// Creates the result value to return if a previous request was found
+    /// Provides a base implementation for handling duplicate request and ensuring idempotent updates, in the cases where
+    /// a requestid sent by client is used to detect duplicate requests.
     /// </summary>
-    /// <returns></returns>
-    protected abstract R CreateResultForDuplicateRequest();
-
-    /// <summary>
-    /// This method handles the command. It just ensures that no other request exists with the same ID, and if this is the case
-    /// just enqueues the original inner command.
-    /// </summary>
-    /// <param name="message">IdentifiedCommand which contains both original command & request ID</param>
-    /// <returns>Return value of inner command or default value if request same ID was found</returns>
-    public async Task<R> Handle(IdentifiedCommand<T, R> message, CancellationToken cancellationToken)
+    /// <typeparam name="T">Type of the command handler that performs the operation if request is not duplicated</typeparam>
+    /// <typeparam name="R">Return value of the inner command handler</typeparam>
+    public abstract class IdentifiedCommandHandler<T, R> : IRequestHandler<IdentifiedCommand<T, R>, R>
+        where T : IRequest<R>
     {
-        var alreadyExists = await _requestManager.ExistAsync(message.Id);
-        if (alreadyExists)
+        private readonly IMediator _mediator;
+        private readonly IRequestManager _requestManager;
+        private readonly ILogger<IdentifiedCommandHandler<T, R>> _logger;
+
+        public IdentifiedCommandHandler(
+            IMediator mediator,
+            IRequestManager requestManager,
+            ILogger<IdentifiedCommandHandler<T, R>> logger)
         {
-            return CreateResultForDuplicateRequest();
+            ArgumentNullException.ThrowIfNull(mediator);
+            ArgumentNullException.ThrowIfNull(requestManager);
+            ArgumentNullException.ThrowIfNull(logger);
+            _mediator = mediator;
+            _requestManager = requestManager;
+            _logger = logger;
         }
-        else
+
+        /// <summary>
+        /// Creates the result value to return if a previous request was found
+        /// </summary>
+        /// <returns></returns>
+        protected abstract R CreateResultForDuplicateRequest();
+
+        /// <summary>
+        /// This method handles the command. It just ensures that no other request exists with the same ID, and if this is the case
+        /// just enqueues the original inner command.
+        /// </summary>
+        /// <param name="message">IdentifiedCommand which contains both original command & request ID</param>
+        /// <returns>Return value of inner command or default value if request same ID was found</returns>
+        public async Task<R> Handle(IdentifiedCommand<T, R> message, CancellationToken cancellationToken)
         {
-            await _requestManager.CreateRequestForCommandAsync<T>(message.Id);
-            try
+            var alreadyExists = await _requestManager.ExistAsync(message.Id);
+            if (alreadyExists)
             {
-                var command = message.Command;
-                var commandName = command.GetGenericTypeName();
-                var idProperty = string.Empty;
-                var commandId = string.Empty;
-
-                switch (command)
-                {
-                    case CreateOrderCommand createOrderCommand:
-                        idProperty = nameof(createOrderCommand.UserId);
-                        commandId = createOrderCommand.UserId;
-                        break;
-
-                    case CancelOrderCommand cancelOrderCommand:
-                        idProperty = nameof(cancelOrderCommand.OrderNumber);
-                        commandId = $"{cancelOrderCommand.OrderNumber}";
-                        break;
-
-                    case ShipOrderCommand shipOrderCommand:
-                        idProperty = nameof(shipOrderCommand.OrderNumber);
-                        commandId = $"{shipOrderCommand.OrderNumber}";
-                        break;
-
-                    default:
-                        idProperty = "Id?";
-                        commandId = "n/a";
-                        break;
-                }
-
-                _logger.LogInformation(
-                    "Sending command: {CommandName} - {IdProperty}: {CommandId} ({@Command})",
-                    commandName,
-                    idProperty,
-                    commandId,
-                    command);
-
-                // Send the embedded business command to mediator so it runs its related CommandHandler
-                var result = await _mediator.Send(command, cancellationToken);
-
-                _logger.LogInformation(
-                    "Command result: {@Result} - {CommandName} - {IdProperty}: {CommandId} ({@Command})",
-                    result,
-                    commandName,
-                    idProperty,
-                    commandId,
-                    command);
-
-                return result;
+                return CreateResultForDuplicateRequest();
             }
-            catch
+            else
             {
-                // Intentionally swallows the exception and returns the type's default --
-                // matches upstream's exact behavior. R is unconstrained, so default(R) can
-                // genuinely be null for a reference type; null-forgiving preserves that
-                // behavior rather than changing the MediatR-mandated Task<R> contract.
-                return default!;
+                await _requestManager.CreateRequestForCommandAsync<T>(message.Id);
+                try
+                {
+                    var command = message.Command;
+                    var commandName = command.GetGenericTypeName();
+                    var idProperty = string.Empty;
+                    var commandId = string.Empty;
+
+                    switch (command)
+                    {
+                        case CreateOrderCommand createOrderCommand:
+                            idProperty = nameof(createOrderCommand.UserId);
+                            commandId = createOrderCommand.UserId;
+                            break;
+
+                        case CancelOrderCommand cancelOrderCommand:
+                            idProperty = nameof(cancelOrderCommand.OrderNumber);
+                            commandId = $"{cancelOrderCommand.OrderNumber}";
+                            break;
+
+                        case ShipOrderCommand shipOrderCommand:
+                            idProperty = nameof(shipOrderCommand.OrderNumber);
+                            commandId = $"{shipOrderCommand.OrderNumber}";
+                            break;
+
+                        default:
+                            idProperty = "Id?";
+                            commandId = "n/a";
+                            break;
+                    }
+
+                    _logger.LogInformation(
+                        "Sending command: {CommandName} - {IdProperty}: {CommandId} ({@Command})",
+                        commandName,
+                        idProperty,
+                        commandId,
+                        command);
+
+                    // Send the embedded business command to mediator so it runs its related CommandHandler
+                    var result = await _mediator.Send(command, cancellationToken);
+
+                    _logger.LogInformation(
+                        "Command result: {@Result} - {CommandName} - {IdProperty}: {CommandId} ({@Command})",
+                        result,
+                        commandName,
+                        idProperty,
+                        commandId,
+                        command);
+
+                    return result;
+                }
+                catch
+                {
+                    // Intentionally swallows the exception and returns the type's default --
+                    // matches upstream's exact behavior. R is unconstrained, so default(R) can
+                    // genuinely be null for a reference type; null-forgiving preserves that
+                    // behavior rather than changing the MediatR-mandated Task<R> contract.
+                    return default!;
+                }
             }
         }
     }

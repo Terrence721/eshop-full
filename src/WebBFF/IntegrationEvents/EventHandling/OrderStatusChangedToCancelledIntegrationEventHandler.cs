@@ -1,14 +1,15 @@
-﻿namespace eShop.WebBFF.IntegrationEvents.EventHandling;
-
-public class OrderStatusChangedToCancelledIntegrationEventHandler(
-    OrderStatusNotifications notifications,
-    ILogger<OrderStatusChangedToCancelledIntegrationEventHandler> logger) :
-    IIntegrationEventHandler<OrderStatusChangedToCancelledIntegrationEvent>
+﻿namespace eShop.WebBFF.IntegrationEvents.EventHandling
 {
-    public Task Handle(OrderStatusChangedToCancelledIntegrationEvent @event)
+    public class OrderStatusChangedToCancelledIntegrationEventHandler(
+        OrderStatusNotifications notifications,
+        ILogger<OrderStatusChangedToCancelledIntegrationEventHandler> logger) :
+        IIntegrationEventHandler<OrderStatusChangedToCancelledIntegrationEvent>
     {
-        logger.LogInformation("Handling integration event: {IntegrationEventId} - ({@IntegrationEvent})", @event.Id, @event);
+        public Task Handle(OrderStatusChangedToCancelledIntegrationEvent @event)
+        {
+            logger.LogInformation("Handling integration event: {IntegrationEventId} - ({@IntegrationEvent})", @event.Id, @event);
 
-        return notifications.NotifyOrderStatusChangedAsync(@event.BuyerIdentityGuid);
+            return notifications.NotifyOrderStatusChangedAsync(@event.BuyerIdentityGuid);
+        }
     }
 }

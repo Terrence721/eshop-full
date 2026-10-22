@@ -7,204 +7,205 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Primitives;
 using Microsoft.OpenApi;
 
-namespace eShop.ServiceDefaults;
-
-internal static class OpenApiOptionsExtensions
+namespace eShop.ServiceDefaults
 {
-    public static OpenApiOptions ApplyApiVersionInfo(this OpenApiOptions options, string title, string description)
+    internal static class OpenApiOptionsExtensions
     {
-        options.AddDocumentTransformer((document, context, cancellationToken) =>
+        public static OpenApiOptions ApplyApiVersionInfo(this OpenApiOptions options, string title, string description)
         {
-            // AV0027 assumes the provider is resolved before endpoints are mapped. Document
-            // transformers instead run lazily when the OpenAPI document is generated, which is
-            // always after every endpoint has been mapped, so resolving it here is safe.
+            options.AddDocumentTransformer((document, context, cancellationToken) =>
+            {
+                // AV0027 assumes the provider is resolved before endpoints are mapped. Document
+                // transformers instead run lazily when the OpenAPI document is generated, which is
+                // always after every endpoint has been mapped, so resolving it here is safe.
 #pragma warning disable AV0027
-            var versionedDescriptionProvider = context.ApplicationServices.GetService<IApiVersionDescriptionProvider>();
+                var versionedDescriptionProvider = context.ApplicationServices.GetService<IApiVersionDescriptionProvider>();
 #pragma warning restore AV0027
-            var apiDescription = versionedDescriptionProvider?.ApiVersionDescriptions
-                .SingleOrDefault(description => description.GroupName == context.DocumentName);
-            if (apiDescription is null)
-            {
+                var apiDescription = versionedDescriptionProvider?.ApiVersionDescriptions
+                    .SingleOrDefault(description => description.GroupName == context.DocumentName);
+                if (apiDescription is null)
+                {
+                    return Task.CompletedTask;
+                }
+                document.Info.Version = apiDescription.ApiVersion.ToString();
+                document.Info.Title = title;
+                document.Info.Description = BuildDescription(apiDescription, description);
                 return Task.CompletedTask;
-            }
-            document.Info.Version = apiDescription.ApiVersion.ToString();
-            document.Info.Title = title;
-            document.Info.Description = BuildDescription(apiDescription, description);
-            return Task.CompletedTask;
-        });
-        return options;
-    }
+            });
+            return options;
+        }
 
-    internal static void AppendSentenceSeparator(StringBuilder text)
-    {
-        if (text.Length > 0)
+        internal static void AppendSentenceSeparator(StringBuilder text)
         {
-            if (text[^1] != '.')
+            if (text.Length > 0)
             {
-                text.Append('.');
+                if (text[^1] != '.')
+                {
+                    text.Append('.');
+                }
+
+                text.Append(' ');
             }
-
-            text.Append(' ');
-        }
-    }
-
-    internal static string BuildDescription(ApiVersionDescription api, string description)
-    {
-        var text = new StringBuilder(description);
-
-        if (api.IsDeprecated)
-        {
-            AppendSentenceSeparator(text);
-
-            text.Append("This API version has been deprecated.");
         }
 
-        if (api.SunsetPolicy is { } policy)
+        internal static string BuildDescription(ApiVersionDescription api, string description)
         {
-            if (policy.Date is { } when)
+            var text = new StringBuilder(description);
+
+            if (api.IsDeprecated)
             {
                 AppendSentenceSeparator(text);
 
-                text.Append("The API will be sunset on ")
-                    .Append(when.Date.ToShortDateString())
-                    .Append('.');
+                text.Append("This API version has been deprecated.");
             }
 
-            if (policy.HasLinks)
+            if (api.SunsetPolicy is { } policy)
             {
-                text.AppendLine();
-
-                var rendered = false;
-
-                foreach (var link in policy.Links.Where(l => l.Type == "text/html"))
+                if (policy.Date is { } when)
                 {
-                    if (!rendered)
+                    AppendSentenceSeparator(text);
+
+                    text.Append("The API will be sunset on ")
+                        .Append(when.Date.ToShortDateString())
+                        .Append('.');
+                }
+
+                if (policy.HasLinks)
+                {
+                    text.AppendLine();
+
+                    var rendered = false;
+
+                    foreach (var link in policy.Links.Where(l => l.Type == "text/html"))
                     {
-                        text.Append("<h4>Links</h4><ul>");
-                        rendered = true;
+                        if (!rendered)
+                        {
+                            text.Append("<h4>Links</h4><ul>");
+                            rendered = true;
+                        }
+
+                        text.Append("<li><a href=\"");
+                        text.Append(link.LinkTarget.OriginalString);
+                        text.Append("\">");
+                        text.Append(
+                            StringSegment.IsNullOrEmpty(link.Title)
+                            ? link.LinkTarget.OriginalString
+                            : link.Title.ToString());
+                        text.Append("</a></li>");
                     }
 
-                    text.Append("<li><a href=\"");
-                    text.Append(link.LinkTarget.OriginalString);
-                    text.Append("\">");
-                    text.Append(
-                        StringSegment.IsNullOrEmpty(link.Title)
-                        ? link.LinkTarget.OriginalString
-                        : link.Title.ToString());
-                    text.Append("</a></li>");
-                }
-
-                if (rendered)
-                {
-                    text.Append("</ul>");
+                    if (rendered)
+                    {
+                        text.Append("</ul>");
+                    }
                 }
             }
+
+            return text.ToString();
         }
 
-        return text.ToString();
-    }
-
-    public static OpenApiOptions ApplySecuritySchemeDefinitions(this OpenApiOptions options)
-    {
-        options.AddDocumentTransformer<SecuritySchemeDefinitionsTransformer>();
-        return options;
-    }
-
-    internal static Dictionary<string, string> GetScopes(this IConfigurationSection identitySection) =>
-        identitySection.GetRequiredSection("Scopes").GetChildren().ToDictionary(p => p.Key, p => p.Value ?? string.Empty);
-
-    public static OpenApiOptions ApplyAuthorizationChecks(this OpenApiOptions options, string[] scopes)
-    {
-        options.AddOperationTransformer((operation, context, cancellationToken) =>
+        public static OpenApiOptions ApplySecuritySchemeDefinitions(this OpenApiOptions options)
         {
-            var metadata = context.Description.ActionDescriptor.EndpointMetadata;
+            options.AddDocumentTransformer<SecuritySchemeDefinitionsTransformer>();
+            return options;
+        }
 
-            if (!metadata.OfType<IAuthorizeData>().Any())
+        internal static Dictionary<string, string> GetScopes(this IConfigurationSection identitySection) =>
+            identitySection.GetRequiredSection("Scopes").GetChildren().ToDictionary(p => p.Key, p => p.Value ?? string.Empty);
+
+        public static OpenApiOptions ApplyAuthorizationChecks(this OpenApiOptions options, string[] scopes)
+        {
+            options.AddOperationTransformer((operation, context, cancellationToken) =>
             {
-                return Task.CompletedTask;
-            }
+                var metadata = context.Description.ActionDescriptor.EndpointMetadata;
 
-            operation.Responses ??= [];
-            operation.Responses.TryAdd("401", new OpenApiResponse { Description = "Unauthorized" });
-            operation.Responses.TryAdd("403", new OpenApiResponse { Description = "Forbidden" });
-
-            var oAuthScheme = new OpenApiSecuritySchemeReference("oauth2", null);
-
-            operation.Security =
-            [
-                new()
+                if (!metadata.OfType<IAuthorizeData>().Any())
                 {
-                    [oAuthScheme] = scopes.ToList()
+                    return Task.CompletedTask;
                 }
-            ];
 
-            return Task.CompletedTask;
-        });
-        return options;
-    }
+                operation.Responses ??= [];
+                operation.Responses.TryAdd("401", new OpenApiResponse { Description = "Unauthorized" });
+                operation.Responses.TryAdd("403", new OpenApiResponse { Description = "Forbidden" });
 
-    public static OpenApiOptions ApplyOperationDeprecatedStatus(this OpenApiOptions options)
-    {
-        options.AddOperationTransformer((operation, context, cancellationToken) =>
-        {
-            operation.Deprecated = operation.Deprecated || context.Description.ActionDescriptor.EndpointMetadata
-                .OfType<ObsoleteAttribute>()
-                .Any();
+                var oAuthScheme = new OpenApiSecuritySchemeReference("oauth2", null);
 
-            return Task.CompletedTask;
-        });
-        return options;
-    }
-
-    public static OpenApiOptions ApplyApiVersionDescription(this OpenApiOptions options)
-    {
-        options.AddOperationTransformer((operation, context, cancellationToken) =>
-        {
-            // Add an example for the API version parameter and remove the default value
-            var apiVersionParameter = operation.Parameters?.FirstOrDefault(p => p.Name == "api-version");
-            if (apiVersionParameter?.Schema is OpenApiSchema targetSchema)
-            {
-                if (targetSchema.Default != null)
-                {
-                    targetSchema.Examples = [targetSchema.Default];
-                }
-                targetSchema.Default = null;
-            }
-            return Task.CompletedTask;
-        });
-        return options;
-    }
-
-    private class SecuritySchemeDefinitionsTransformer(IConfiguration configuration) : IOpenApiDocumentTransformer
-    {
-        public Task TransformAsync(OpenApiDocument document, OpenApiDocumentTransformerContext context, CancellationToken cancellationToken)
-        {
-            var identitySection = configuration.GetSection("Identity");
-            if (!identitySection.Exists())
-            {
-                return Task.CompletedTask;
-            }
-
-            var identityUrlExternal = identitySection.GetRequiredValue("Url");
-            var scopes = identitySection.GetScopes();
-            var securityScheme = new OpenApiSecurityScheme
-            {
-                Type = SecuritySchemeType.OAuth2,
-                Flows = new OpenApiOAuthFlows()
-                {
-                    // TODO: Change this to use Authorization Code flow with PKCE
-                    Implicit = new OpenApiOAuthFlow()
+                operation.Security =
+                [
+                    new()
                     {
-                        AuthorizationUrl = new Uri($"{identityUrlExternal}/connect/authorize"),
-                        TokenUrl = new Uri($"{identityUrlExternal}/connect/token"),
-                        Scopes = scopes,
+                        [oAuthScheme] = scopes.ToList()
                     }
+                ];
+
+                return Task.CompletedTask;
+            });
+            return options;
+        }
+
+        public static OpenApiOptions ApplyOperationDeprecatedStatus(this OpenApiOptions options)
+        {
+            options.AddOperationTransformer((operation, context, cancellationToken) =>
+            {
+                operation.Deprecated = operation.Deprecated || context.Description.ActionDescriptor.EndpointMetadata
+                    .OfType<ObsoleteAttribute>()
+                    .Any();
+
+                return Task.CompletedTask;
+            });
+            return options;
+        }
+
+        public static OpenApiOptions ApplyApiVersionDescription(this OpenApiOptions options)
+        {
+            options.AddOperationTransformer((operation, context, cancellationToken) =>
+            {
+                // Add an example for the API version parameter and remove the default value
+                var apiVersionParameter = operation.Parameters?.FirstOrDefault(p => p.Name == "api-version");
+                if (apiVersionParameter?.Schema is OpenApiSchema targetSchema)
+                {
+                    if (targetSchema.Default != null)
+                    {
+                        targetSchema.Examples = [targetSchema.Default];
+                    }
+                    targetSchema.Default = null;
                 }
-            };
-            document.Components ??= new();
-            document.Components.SecuritySchemes ??= new Dictionary<string, IOpenApiSecurityScheme>();
-            document.Components.SecuritySchemes.Add("oauth2", securityScheme);
-            return Task.CompletedTask;
+                return Task.CompletedTask;
+            });
+            return options;
+        }
+
+        private class SecuritySchemeDefinitionsTransformer(IConfiguration configuration) : IOpenApiDocumentTransformer
+        {
+            public Task TransformAsync(OpenApiDocument document, OpenApiDocumentTransformerContext context, CancellationToken cancellationToken)
+            {
+                var identitySection = configuration.GetSection("Identity");
+                if (!identitySection.Exists())
+                {
+                    return Task.CompletedTask;
+                }
+
+                var identityUrlExternal = identitySection.GetRequiredValue("Url");
+                var scopes = identitySection.GetScopes();
+                var securityScheme = new OpenApiSecurityScheme
+                {
+                    Type = SecuritySchemeType.OAuth2,
+                    Flows = new OpenApiOAuthFlows()
+                    {
+                        // TODO: Change this to use Authorization Code flow with PKCE
+                        Implicit = new OpenApiOAuthFlow()
+                        {
+                            AuthorizationUrl = new Uri($"{identityUrlExternal}/connect/authorize"),
+                            TokenUrl = new Uri($"{identityUrlExternal}/connect/token"),
+                            Scopes = scopes,
+                        }
+                    }
+                };
+                document.Components ??= new();
+                document.Components.SecuritySchemes ??= new Dictionary<string, IOpenApiSecurityScheme>();
+                document.Components.SecuritySchemes.Add("oauth2", securityScheme);
+                return Task.CompletedTask;
+            }
         }
     }
 }

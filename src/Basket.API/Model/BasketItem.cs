@@ -1,27 +1,28 @@
-﻿namespace eShop.Basket.API.Model;
-
-/// <summary>
-/// A single line item stored in a customer's basket.
-/// </summary>
-public class BasketItem : IValidatableObject
+﻿namespace eShop.Basket.API.Model
 {
-    public string? Id { get; set; }
-    public int ProductId { get; set; }
-    public string? ProductName { get; set; }
-    public decimal UnitPrice { get; set; }
-    public decimal OldUnitPrice { get; set; }
-    public int Quantity { get; set; }
-    public string? PictureUrl { get; set; }
-
-    public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
+    /// <summary>
+    /// A single line item stored in a customer's basket.
+    /// </summary>
+    public class BasketItem : IValidatableObject
     {
-        var results = new List<ValidationResult>();
+        public string? Id { get; set; }
+        public int ProductId { get; set; }
+        public string? ProductName { get; set; }
+        public decimal UnitPrice { get; set; }
+        public decimal OldUnitPrice { get; set; }
+        public int Quantity { get; set; }
+        public string? PictureUrl { get; set; }
 
-        if (Quantity < 1)
+        public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
         {
-            results.Add(new ValidationResult("Invalid number of units", new[] { "Quantity" }));
-        }
+            var results = new List<ValidationResult>();
 
-        return results;
+            if (Quantity < 1)
+            {
+                results.Add(new ValidationResult("Invalid number of units", new[] { "Quantity" }));
+            }
+
+            return results;
+        }
     }
 }

@@ -5,136 +5,137 @@ using eShop.ClientApp.Services.OpenUrl;
 using eShop.ClientApp.Services.Settings;
 using eShop.ClientApp.Validations;
 
-namespace eShop.ClientApp.ViewModels;
-
-public partial class LoginViewModel : ViewModelBase
+namespace eShop.ClientApp.ViewModels
 {
-    private readonly IAppEnvironmentService _appEnvironmentService;
-    private readonly IOpenUrlService _openUrlService;
-    private readonly ISettingsService _settingsService;
-
-    [ObservableProperty] public partial bool IsLogin { get; set; }
-
-    [ObservableProperty] public partial bool IsMock { get; set; }
-
-    [ObservableProperty]
-    [NotifyCanExecuteChangedFor(nameof(MockSignInCommand))]
-    public partial bool IsValid { get; set; }
-
-    // Never set anywhere in upstream, not bound in LoginView.xaml - dead.
-    [ObservableProperty] public partial string? LoginUrl { get; set; }
-
-    [ObservableProperty] public partial ValidatableObject<string> Password { get; set; } = new();
-
-    [ObservableProperty] public partial ValidatableObject<string> UserName { get; set; } = new();
-
-    public LoginViewModel(
-        IOpenUrlService openUrlService, IAppEnvironmentService appEnvironmentService,
-        INavigationService navigationService, ISettingsService settingsService)
-        : base(navigationService)
+    public partial class LoginViewModel : ViewModelBase
     {
-        _settingsService = settingsService;
-        _openUrlService = openUrlService;
-        _appEnvironmentService = appEnvironmentService;
+        private readonly IAppEnvironmentService _appEnvironmentService;
+        private readonly IOpenUrlService _openUrlService;
+        private readonly ISettingsService _settingsService;
 
-        InvalidateMock();
-    }
+        [ObservableProperty] public partial bool IsLogin { get; set; }
 
-    public override async void ApplyQueryAttributes(IDictionary<string, object> query)
-    {
-        base.ApplyQueryAttributes(query);
+        [ObservableProperty] public partial bool IsMock { get; set; }
 
-        if (query.ValueAsBool("Logout"))
+        [ObservableProperty]
+        [NotifyCanExecuteChangedFor(nameof(MockSignInCommand))]
+        public partial bool IsValid { get; set; }
+
+        // Never set anywhere in upstream, not bound in LoginView.xaml - dead.
+        [ObservableProperty] public partial string? LoginUrl { get; set; }
+
+        [ObservableProperty] public partial ValidatableObject<string> Password { get; set; } = new();
+
+        [ObservableProperty] public partial ValidatableObject<string> UserName { get; set; } = new();
+
+        public LoginViewModel(
+            IOpenUrlService openUrlService, IAppEnvironmentService appEnvironmentService,
+            INavigationService navigationService, ISettingsService settingsService)
+            : base(navigationService)
         {
-            await PerformLogoutAsync();
+            _settingsService = settingsService;
+            _openUrlService = openUrlService;
+            _appEnvironmentService = appEnvironmentService;
+
+            InvalidateMock();
         }
-    }
 
-    public override Task InitializeAsync()
-    {
-        return Task.CompletedTask;
-    }
+        public override async void ApplyQueryAttributes(IDictionary<string, object> query)
+        {
+            base.ApplyQueryAttributes(query);
 
-    [RelayCommand(CanExecute = nameof(IsValid))]
-    private async Task MockSignInAsync()
-    {
-        await IsBusyFor(
-            async () =>
+            if (query.ValueAsBool("Logout"))
             {
-                var isAuthenticated = false;
+                await PerformLogoutAsync();
+            }
+        }
 
-                try
+        public override Task InitializeAsync()
+        {
+            return Task.CompletedTask;
+        }
+
+        [RelayCommand(CanExecute = nameof(IsValid))]
+        private async Task MockSignInAsync()
+        {
+            await IsBusyFor(
+                async () =>
                 {
-                    await Task.Delay(1000);
+                    var isAuthenticated = false;
 
-                    isAuthenticated = true;
-                }
-                catch (Exception ex)
+                    try
+                    {
+                        await Task.Delay(1000);
+
+                        isAuthenticated = true;
+                    }
+                    catch (Exception ex)
+                    {
+                        Debug.WriteLine($"[SignIn] Error signing in: {ex}");
+                    }
+
+                    if (isAuthenticated)
+                    {
+                        await NavigationService.NavigateToAsync("//Main/Catalog");
+                    }
+                });
+        }
+
+        [RelayCommand]
+        private async Task SignInAsync()
+        {
+            await IsBusyFor(
+                async () =>
                 {
-                    Debug.WriteLine($"[SignIn] Error signing in: {ex}");
-                }
+                    var loginSuccess = await _appEnvironmentService.IdentityService.SignInAsync();
 
-                if (isAuthenticated)
-                {
-                    await NavigationService.NavigateToAsync("//Main/Catalog");
-                }
-            });
-    }
+                    if (loginSuccess)
+                    {
+                        await NavigationService.NavigateToAsync("//Main/Catalog");
+                    }
+                });
+        }
 
-    [RelayCommand]
-    private async Task SignInAsync()
-    {
-        await IsBusyFor(
-            async () =>
-            {
-                var loginSuccess = await _appEnvironmentService.IdentityService.SignInAsync();
+        [RelayCommand]
+        private Task RegisterAsync()
+        {
+            return _openUrlService.OpenUrl(_settingsService.RegistrationEndpoint);
+        }
 
-                if (loginSuccess)
-                {
-                    await NavigationService.NavigateToAsync("//Main/Catalog");
-                }
-            });
-    }
+        [RelayCommand]
+        private async Task PerformLogoutAsync()
+        {
+            await _appEnvironmentService.IdentityService.SignOutAsync();
 
-    [RelayCommand]
-    private Task RegisterAsync()
-    {
-        return _openUrlService.OpenUrl(_settingsService.RegistrationEndpoint);
-    }
+            _settingsService.UseFakeLocation = false;
 
-    [RelayCommand]
-    private async Task PerformLogoutAsync()
-    {
-        await _appEnvironmentService.IdentityService.SignOutAsync();
+            UserName.Value = string.Empty;
+            Password.Value = string.Empty;
+        }
 
-        _settingsService.UseFakeLocation = false;
+        [RelayCommand]
+        private Task SettingsAsync()
+        {
+            return NavigationService.NavigateToAsync("Settings");
+        }
 
-        UserName.Value = string.Empty;
-        Password.Value = string.Empty;
-    }
+        [RelayCommand]
+        private void Validate()
+        {
+            IsValid = UserName.Validate() && Password.Validate();
+        }
 
-    [RelayCommand]
-    private Task SettingsAsync()
-    {
-        return NavigationService.NavigateToAsync("Settings");
-    }
+        // Dead code - never called anywhere in upstream (constructor doesn't call it), so
+        // UserName/Password's Validations lists stay empty and Validate() always returns true.
+        private void AddValidations()
+        {
+            UserName.Validations.Add(new IsNotNullOrEmptyRule<string> { ValidationMessage = "A username is required." });
+            Password.Validations.Add(new IsNotNullOrEmptyRule<string> { ValidationMessage = "A password is required." });
+        }
 
-    [RelayCommand]
-    private void Validate()
-    {
-        IsValid = UserName.Validate() && Password.Validate();
-    }
-
-    // Dead code - never called anywhere in upstream (constructor doesn't call it), so
-    // UserName/Password's Validations lists stay empty and Validate() always returns true.
-    private void AddValidations()
-    {
-        UserName.Validations.Add(new IsNotNullOrEmptyRule<string> { ValidationMessage = "A username is required." });
-        Password.Validations.Add(new IsNotNullOrEmptyRule<string> { ValidationMessage = "A password is required." });
-    }
-
-    public void InvalidateMock()
-    {
-        IsMock = false; //_settingsService.UseMocks;
+        public void InvalidateMock()
+        {
+            IsMock = false; //_settingsService.UseMocks;
+        }
     }
 }

@@ -7,83 +7,84 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Scalar.AspNetCore;
 
-namespace eShop.ServiceDefaults;
-
-public static partial class Extensions
+namespace eShop.ServiceDefaults
 {
-    public static IApplicationBuilder UseDefaultOpenApi(this WebApplication app)
+    public static partial class Extensions
     {
-        var configuration = app.Configuration;
-        var openApiSection = configuration.GetSection("OpenApi");
-
-        if (!openApiSection.Exists())
+        public static IApplicationBuilder UseDefaultOpenApi(this WebApplication app)
         {
+            var configuration = app.Configuration;
+            var openApiSection = configuration.GetSection("OpenApi");
+
+            if (!openApiSection.Exists())
+            {
+                return app;
+            }
+
+            app.MapOpenApi().WithDocumentPerVersion();
+
+            if (app.Environment.IsDevelopment())
+            {
+                var descriptions = app.DescribeApiVersions();
+                // MaxBy the actual version rather than assuming list order, since that ordering isn't
+                // documented on IApiVersionDescriptionProvider.
+                var defaultDocument = descriptions.Count > 0 ? descriptions.MaxBy(d => d.ApiVersion)!.GroupName : "v1";
+
+                app.MapScalarApiReference(options =>
+                {
+                    // Disable default fonts to avoid download unnecessary fonts
+                    options.DefaultFonts = false;
+
+                    foreach (var description in descriptions)
+                    {
+                        options.AddDocument(description.GroupName, description.GroupName, isDefault: description.GroupName == defaultDocument);
+                    }
+                });
+                app.MapGet("/", () => Results.Redirect($"/scalar/{defaultDocument}")).ExcludeFromDescription();
+            }
+
             return app;
         }
 
-        app.MapOpenApi().WithDocumentPerVersion();
-
-        if (app.Environment.IsDevelopment())
+        public static IHostApplicationBuilder AddDefaultOpenApi(
+            this IHostApplicationBuilder builder,
+            IApiVersioningBuilder? apiVersioning = default)
         {
-            var descriptions = app.DescribeApiVersions();
-            // MaxBy the actual version rather than assuming list order, since that ordering isn't
-            // documented on IApiVersionDescriptionProvider.
-            var defaultDocument = descriptions.Count > 0 ? descriptions.MaxBy(d => d.ApiVersion)!.GroupName : "v1";
+            var openApi = builder.Configuration.GetSection("OpenApi");
 
-            app.MapScalarApiReference(options =>
+            if (!openApi.Exists())
             {
-                // Disable default fonts to avoid download unnecessary fonts
-                options.DefaultFonts = false;
+                return builder;
+            }
 
-                foreach (var description in descriptions)
-                {
-                    options.AddDocument(description.GroupName, description.GroupName, isDefault: description.GroupName == defaultDocument);
-                }
-            });
-            app.MapGet("/", () => Results.Redirect($"/scalar/{defaultDocument}")).ExcludeFromDescription();
-        }
+            if (apiVersioning is not null)
+            {
+                var identitySection = builder.Configuration.GetSection("Identity");
 
-        return app;
-    }
+                var scopes = identitySection.Exists()
+                    ? identitySection.GetScopes()
+                    : [];
 
-    public static IHostApplicationBuilder AddDefaultOpenApi(
-        this IHostApplicationBuilder builder,
-        IApiVersioningBuilder? apiVersioning = default)
-    {
-        var openApi = builder.Configuration.GetSection("OpenApi");
+                // the default format will just be ApiVersion.ToString(); for example, 1.0.
+                // this will format the version as "'v'major[.minor][-status]"
+                apiVersioning.AddApiExplorer(options =>
+                    {
+                        options.GroupNameFormat = "'v'VVV";
+                        options.DefaultApiVersionParameterDescription = "The API version, in the format 'major.minor'.";
+                    })
+                    .AddOpenApi(options =>
+                    {
+                        var document = options.Document;
 
-        if (!openApi.Exists())
-        {
+                        document.ApplyApiVersionInfo(openApi.GetRequiredValue("Document:Title"), openApi.GetRequiredValue("Document:Description"));
+                        document.ApplyAuthorizationChecks([.. scopes.Keys]);
+                        document.ApplySecuritySchemeDefinitions();
+                        document.ApplyOperationDeprecatedStatus();
+                        document.ApplyApiVersionDescription();
+                    });
+            }
+
             return builder;
         }
-
-        if (apiVersioning is not null)
-        {
-            var identitySection = builder.Configuration.GetSection("Identity");
-
-            var scopes = identitySection.Exists()
-                ? identitySection.GetScopes()
-                : [];
-
-            // the default format will just be ApiVersion.ToString(); for example, 1.0.
-            // this will format the version as "'v'major[.minor][-status]"
-            apiVersioning.AddApiExplorer(options =>
-                {
-                    options.GroupNameFormat = "'v'VVV";
-                    options.DefaultApiVersionParameterDescription = "The API version, in the format 'major.minor'.";
-                })
-                .AddOpenApi(options =>
-                {
-                    var document = options.Document;
-
-                    document.ApplyApiVersionInfo(openApi.GetRequiredValue("Document:Title"), openApi.GetRequiredValue("Document:Description"));
-                    document.ApplyAuthorizationChecks([.. scopes.Keys]);
-                    document.ApplySecuritySchemeDefinitions();
-                    document.ApplyOperationDeprecatedStatus();
-                    document.ApplyApiVersionDescription();
-                });
-        }
-
-        return builder;
     }
 }

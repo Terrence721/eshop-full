@@ -1,28 +1,29 @@
 ﻿using eShop.ClientApp.Services;
 
-namespace eShop.ClientApp.ViewModels;
-
-// The real navigation shell -- CurrentViewModel just forwards INavigationService's own
-// CurrentViewModel, re-raising PropertyChanged so MainWindow/MainView's ContentControl (bound
-// to this property, rendered via the globally-registered ViewLocator) updates whenever
-// NavigateToAsync/PopAsync swaps what's current.
-public class MainViewModel : ViewModelBase
+namespace eShop.ClientApp.ViewModels
 {
-    public MainViewModel(INavigationService navigationService) : base(navigationService)
+    // The real navigation shell -- CurrentViewModel just forwards INavigationService's own
+    // CurrentViewModel, re-raising PropertyChanged so MainWindow/MainView's ContentControl (bound
+    // to this property, rendered via the globally-registered ViewLocator) updates whenever
+    // NavigateToAsync/PopAsync swaps what's current.
+    public class MainViewModel : ViewModelBase
     {
-        navigationService.PropertyChanged += (_, e) =>
+        public MainViewModel(INavigationService navigationService) : base(navigationService)
         {
-            if (e.PropertyName == nameof(INavigationService.CurrentViewModel))
+            navigationService.PropertyChanged += (_, e) =>
             {
-                OnPropertyChanged(nameof(CurrentViewModel));
-            }
-        };
-    }
+                if (e.PropertyName == nameof(INavigationService.CurrentViewModel))
+                {
+                    OnPropertyChanged(nameof(CurrentViewModel));
+                }
+            };
+        }
 
-    public ViewModelBase? CurrentViewModel => NavigationService.CurrentViewModel;
+        public ViewModelBase? CurrentViewModel => NavigationService.CurrentViewModel;
 
-    public override Task InitializeAsync()
-    {
-        return NavigationService.InitializeAsync();
+        public override Task InitializeAsync()
+        {
+            return NavigationService.InitializeAsync();
+        }
     }
 }

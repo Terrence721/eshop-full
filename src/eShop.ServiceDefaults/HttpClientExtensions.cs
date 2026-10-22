@@ -4,38 +4,39 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
-namespace eShop.ServiceDefaults;
-
-public static class HttpClientExtensions
+namespace eShop.ServiceDefaults
 {
-    public static IHttpClientBuilder AddAuthToken(this IHttpClientBuilder builder)
+    public static class HttpClientExtensions
     {
-        builder.Services.AddHttpContextAccessor();
-
-        builder.Services.TryAddTransient<HttpClientAuthorizationDelegatingHandler>();
-
-        builder.AddHttpMessageHandler<HttpClientAuthorizationDelegatingHandler>();
-
-        return builder;
-    }
-
-    private class HttpClientAuthorizationDelegatingHandler(IHttpContextAccessor httpContextAccessor) : DelegatingHandler
-    {
-        private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
-
-        protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
+        public static IHttpClientBuilder AddAuthToken(this IHttpClientBuilder builder)
         {
-            if (_httpContextAccessor.HttpContext is HttpContext context)
+            builder.Services.AddHttpContextAccessor();
+
+            builder.Services.TryAddTransient<HttpClientAuthorizationDelegatingHandler>();
+
+            builder.AddHttpMessageHandler<HttpClientAuthorizationDelegatingHandler>();
+
+            return builder;
+        }
+
+        private class HttpClientAuthorizationDelegatingHandler(IHttpContextAccessor httpContextAccessor) : DelegatingHandler
+        {
+            private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
+
+            protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
             {
-                var accessToken = await context.GetTokenAsync("access_token");
-
-                if (accessToken is not null)
+                if (_httpContextAccessor.HttpContext is HttpContext context)
                 {
-                    request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
-                }
-            }
+                    var accessToken = await context.GetTokenAsync("access_token");
 
-            return await base.SendAsync(request, cancellationToken);
+                    if (accessToken is not null)
+                    {
+                        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+                    }
+                }
+
+                return await base.SendAsync(request, cancellationToken);
+            }
         }
     }
 }

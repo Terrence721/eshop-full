@@ -1,38 +1,39 @@
-﻿namespace eShop.Ordering.API.Application.Commands;
-
-// Regular CommandHandler
-public class SetAwaitingValidationOrderStatusCommandHandler(IOrderRepository orderRepository) : IRequestHandler<SetAwaitingValidationOrderStatusCommand, bool>
+﻿namespace eShop.Ordering.API.Application.Commands
 {
-    private readonly IOrderRepository _orderRepository = orderRepository;
-
-    /// <summary>
-    /// Handler which processes the command when
-    /// graceperiod has finished
-    /// </summary>
-    /// <param name="command"></param>
-    /// <returns></returns>
-    public async Task<bool> Handle(SetAwaitingValidationOrderStatusCommand command, CancellationToken cancellationToken)
+    // Regular CommandHandler
+    public class SetAwaitingValidationOrderStatusCommandHandler(IOrderRepository orderRepository) : IRequestHandler<SetAwaitingValidationOrderStatusCommand, bool>
     {
-        var orderToUpdate = await _orderRepository.GetAsync(command.OrderNumber);
-        if (orderToUpdate == null)
+        private readonly IOrderRepository _orderRepository = orderRepository;
+
+        /// <summary>
+        /// Handler which processes the command when
+        /// graceperiod has finished
+        /// </summary>
+        /// <param name="command"></param>
+        /// <returns></returns>
+        public async Task<bool> Handle(SetAwaitingValidationOrderStatusCommand command, CancellationToken cancellationToken)
         {
-            return false;
+            var orderToUpdate = await _orderRepository.GetAsync(command.OrderNumber);
+            if (orderToUpdate == null)
+            {
+                return false;
+            }
+
+            orderToUpdate.SetAwaitingValidationStatus();
+            return await _orderRepository.UnitOfWork.SaveEntitiesAsync(cancellationToken);
         }
-
-        orderToUpdate.SetAwaitingValidationStatus();
-        return await _orderRepository.UnitOfWork.SaveEntitiesAsync(cancellationToken);
     }
-}
 
 
-// Use for Idempotency in Command process
-public class SetAwaitingValidationIdentifiedOrderStatusCommandHandler(
-    IMediator mediator,
-    IRequestManager requestManager,
-    ILogger<IdentifiedCommandHandler<SetAwaitingValidationOrderStatusCommand, bool>> logger) : IdentifiedCommandHandler<SetAwaitingValidationOrderStatusCommand, bool>(mediator, requestManager, logger)
-{
-    protected override bool CreateResultForDuplicateRequest()
+    // Use for Idempotency in Command process
+    public class SetAwaitingValidationIdentifiedOrderStatusCommandHandler(
+        IMediator mediator,
+        IRequestManager requestManager,
+        ILogger<IdentifiedCommandHandler<SetAwaitingValidationOrderStatusCommand, bool>> logger) : IdentifiedCommandHandler<SetAwaitingValidationOrderStatusCommand, bool>(mediator, requestManager, logger)
     {
-        return true; // Ignore duplicate requests for processing order.
+        protected override bool CreateResultForDuplicateRequest()
+        {
+            return true; // Ignore duplicate requests for processing order.
+        }
     }
 }

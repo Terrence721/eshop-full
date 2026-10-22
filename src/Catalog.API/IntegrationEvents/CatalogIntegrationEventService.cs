@@ -1,69 +1,70 @@
-﻿namespace eShop.Catalog.API.IntegrationEvents;
-
-/// <summary>
-/// Catalog-specific integration event service built on the shared outbox implementation.
-/// </summary>
-public sealed class CatalogIntegrationEventService(ILogger<CatalogIntegrationEventService> logger,
-    IEventBus eventBus,
-    CatalogContext catalogContext,
-    IIntegrationEventLogService integrationEventLogService)
-    : ICatalogIntegrationEventService, IDisposable
+﻿namespace eShop.Catalog.API.IntegrationEvents
 {
-    private volatile bool disposedValue;
-
-    public async Task PublishThroughEventBusAsync(IntegrationEvent evt)
+    /// <summary>
+    /// Catalog-specific integration event service built on the shared outbox implementation.
+    /// </summary>
+    public sealed class CatalogIntegrationEventService(ILogger<CatalogIntegrationEventService> logger,
+        IEventBus eventBus,
+        CatalogContext catalogContext,
+        IIntegrationEventLogService integrationEventLogService)
+        : ICatalogIntegrationEventService, IDisposable
     {
-        try
-        {
-            if (logger.IsEnabled(LogLevel.Information)) logger.LogInformation("Publishing integration event: {IntegrationEventId_published} - ({@IntegrationEvent})", evt.Id, evt);
+        private volatile bool disposedValue;
 
-            await integrationEventLogService.MarkEventAsInProgressAsync(evt.Id);
-            await eventBus.PublishAsync(evt);
-            await integrationEventLogService.MarkEventAsPublishedAsync(evt.Id);
-        }
-        catch (Exception ex)
+        public async Task PublishThroughEventBusAsync(IntegrationEvent evt)
         {
-            if (logger.IsEnabled(LogLevel.Error)) logger.LogError(ex, "Error Publishing integration event: {IntegrationEventId} - ({@IntegrationEvent})", evt.Id, evt);
-            await integrationEventLogService.MarkEventAsFailedAsync(evt.Id);
-        }
-    }
-
-    public async Task SaveEventAndCatalogContextChangesAsync(IntegrationEvent evt)
-    {
-        if (logger.IsEnabled(LogLevel.Information)) logger.LogInformation("CatalogIntegrationEventService - Saving changes and integrationEvent: {IntegrationEventId}", evt.Id);
-
-        //Use of an EF Core resiliency strategy when using multiple DbContexts within an explicit BeginTransaction():
-        //See: https://docs.microsoft.com/en-us/ef/core/miscellaneous/connection-resiliency
-        await ResilientTransaction.New(catalogContext).ExecuteAsync(async () =>
-        {
-            // Achieving atomicity between original catalog database operation and the IntegrationEventLog thanks to a local transaction
-            await catalogContext.SaveChangesAsync();
-            // Null-forgiving: ResilientTransaction.ExecuteAsync already opened a transaction
-            // via BeginTransactionAsync() before invoking this lambda, so CurrentTransaction is
-            // guaranteed non-null here -- the nullable analysis can't trace that across the
-            // lambda boundary. A genuine upstream nullability gap this fork's stricter
-            // TreatWarningsAsErrors caught (verified via reflection against the real
-            // DatabaseFacade.CurrentTransaction annotation, not assumed).
-            await integrationEventLogService.SaveEventAsync(evt, catalogContext.Database.CurrentTransaction!);
-        });
-    }
-
-    private void Dispose(bool disposing)
-    {
-        if (!disposedValue)
-        {
-            if (disposing)
+            try
             {
-                (integrationEventLogService as IDisposable)?.Dispose();
+                if (logger.IsEnabled(LogLevel.Information)) logger.LogInformation("Publishing integration event: {IntegrationEventId_published} - ({@IntegrationEvent})", evt.Id, evt);
+
+                await integrationEventLogService.MarkEventAsInProgressAsync(evt.Id);
+                await eventBus.PublishAsync(evt);
+                await integrationEventLogService.MarkEventAsPublishedAsync(evt.Id);
             }
-
-            disposedValue = true;
+            catch (Exception ex)
+            {
+                if (logger.IsEnabled(LogLevel.Error)) logger.LogError(ex, "Error Publishing integration event: {IntegrationEventId} - ({@IntegrationEvent})", evt.Id, evt);
+                await integrationEventLogService.MarkEventAsFailedAsync(evt.Id);
+            }
         }
-    }
 
-    public void Dispose()
-    {
-        Dispose(disposing: true);
-        GC.SuppressFinalize(this);
+        public async Task SaveEventAndCatalogContextChangesAsync(IntegrationEvent evt)
+        {
+            if (logger.IsEnabled(LogLevel.Information)) logger.LogInformation("CatalogIntegrationEventService - Saving changes and integrationEvent: {IntegrationEventId}", evt.Id);
+
+            //Use of an EF Core resiliency strategy when using multiple DbContexts within an explicit BeginTransaction():
+            //See: https://docs.microsoft.com/en-us/ef/core/miscellaneous/connection-resiliency
+            await ResilientTransaction.New(catalogContext).ExecuteAsync(async () =>
+            {
+                // Achieving atomicity between original catalog database operation and the IntegrationEventLog thanks to a local transaction
+                await catalogContext.SaveChangesAsync();
+                // Null-forgiving: ResilientTransaction.ExecuteAsync already opened a transaction
+                // via BeginTransactionAsync() before invoking this lambda, so CurrentTransaction is
+                // guaranteed non-null here -- the nullable analysis can't trace that across the
+                // lambda boundary. A genuine upstream nullability gap this fork's stricter
+                // TreatWarningsAsErrors caught (verified via reflection against the real
+                // DatabaseFacade.CurrentTransaction annotation, not assumed).
+                await integrationEventLogService.SaveEventAsync(evt, catalogContext.Database.CurrentTransaction!);
+            });
+        }
+
+        private void Dispose(bool disposing)
+        {
+            if (!disposedValue)
+            {
+                if (disposing)
+                {
+                    (integrationEventLogService as IDisposable)?.Dispose();
+                }
+
+                disposedValue = true;
+            }
+        }
+
+        public void Dispose()
+        {
+            Dispose(disposing: true);
+            GC.SuppressFinalize(this);
+        }
     }
 }

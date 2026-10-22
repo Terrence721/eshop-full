@@ -1,17 +1,18 @@
-﻿namespace eShop.Ordering.Infrastructure.EntityConfigurations;
-
-class CardTypeEntityTypeConfiguration
-    : IEntityTypeConfiguration<CardType>
+﻿namespace eShop.Ordering.Infrastructure.EntityConfigurations
 {
-    public void Configure(EntityTypeBuilder<CardType> cardTypesConfiguration)
+    class CardTypeEntityTypeConfiguration
+        : IEntityTypeConfiguration<CardType>
     {
-        cardTypesConfiguration.ToTable("cardtypes");
+        public void Configure(EntityTypeBuilder<CardType> cardTypesConfiguration)
+        {
+            cardTypesConfiguration.ToTable("cardtypes");
 
-        cardTypesConfiguration.Property(ct => ct.Id)
-            .ValueGeneratedNever();
+            cardTypesConfiguration.Property(ct => ct.Id)
+                .ValueGeneratedNever();
 
-        cardTypesConfiguration.Property(ct => ct.Name)
-            .HasMaxLength(200)
-            .IsRequired();
+            cardTypesConfiguration.Property(ct => ct.Name)
+                .HasMaxLength(200)
+                .IsRequired();
+        }
     }
 }

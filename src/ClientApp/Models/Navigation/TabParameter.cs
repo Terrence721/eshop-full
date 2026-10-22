@@ -1,6 +1,7 @@
-﻿namespace eShop.ClientApp.Models.Navigation;
-
-public class TabParameter
+﻿namespace eShop.ClientApp.Models.Navigation
 {
-    public int TabIndex { get; set; }
+    public class TabParameter
+    {
+        public int TabIndex { get; set; }
+    }
 }

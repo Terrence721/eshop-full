@@ -1,6 +1,7 @@
-﻿namespace IdentityServerHost.Quickstart.UI;
-
-public class ConsentViewModel : ConsentScopesViewModel
+﻿namespace IdentityServerHost.Quickstart.UI
 {
-    public string? ReturnUrl { get; set; }
+    public class ConsentViewModel : ConsentScopesViewModel
+    {
+        public string? ReturnUrl { get; set; }
+    }
 }

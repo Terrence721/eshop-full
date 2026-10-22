@@ -1,14 +1,15 @@
-﻿namespace eShop.WebBFF.IntegrationEvents.EventHandling;
-
-public class OrderStatusChangedToStockConfirmedIntegrationEventHandler(
-    OrderStatusNotifications notifications,
-    ILogger<OrderStatusChangedToStockConfirmedIntegrationEventHandler> logger) :
-    IIntegrationEventHandler<OrderStatusChangedToStockConfirmedIntegrationEvent>
+﻿namespace eShop.WebBFF.IntegrationEvents.EventHandling
 {
-    public Task Handle(OrderStatusChangedToStockConfirmedIntegrationEvent @event)
+    public class OrderStatusChangedToStockConfirmedIntegrationEventHandler(
+        OrderStatusNotifications notifications,
+        ILogger<OrderStatusChangedToStockConfirmedIntegrationEventHandler> logger) :
+        IIntegrationEventHandler<OrderStatusChangedToStockConfirmedIntegrationEvent>
     {
-        logger.LogInformation("Handling integration event: {IntegrationEventId} - ({@IntegrationEvent})", @event.Id, @event);
+        public Task Handle(OrderStatusChangedToStockConfirmedIntegrationEvent @event)
+        {
+            logger.LogInformation("Handling integration event: {IntegrationEventId} - ({@IntegrationEvent})", @event.Id, @event);
 
-        return notifications.NotifyOrderStatusChangedAsync(@event.BuyerIdentityGuid);
+            return notifications.NotifyOrderStatusChangedAsync(@event.BuyerIdentityGuid);
+        }
     }
 }

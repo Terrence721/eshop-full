@@ -5,20 +5,21 @@ using MediatR;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
 
-namespace eShop.Ordering.API.UnitTests;
-
-[TestClass]
-public class OrderPaymentSucceededIntegrationEventHandlerTests
+namespace eShop.Ordering.API.UnitTests
 {
-    [TestMethod]
-    public async Task Handle_sends_a_SetPaidOrderStatusCommand_for_the_order()
+    [TestClass]
+    public class OrderPaymentSucceededIntegrationEventHandlerTests
     {
-        var mediator = Substitute.For<IMediator>();
-        var handler = new OrderPaymentSucceededIntegrationEventHandler(
-            mediator, Substitute.For<ILogger<OrderPaymentSucceededIntegrationEventHandler>>());
+        [TestMethod]
+        public async Task Handle_sends_a_SetPaidOrderStatusCommand_for_the_order()
+        {
+            var mediator = Substitute.For<IMediator>();
+            var handler = new OrderPaymentSucceededIntegrationEventHandler(
+                mediator, Substitute.For<ILogger<OrderPaymentSucceededIntegrationEventHandler>>());
 
-        await handler.Handle(new OrderPaymentSucceededIntegrationEvent(orderId: 5));
+            await handler.Handle(new OrderPaymentSucceededIntegrationEvent(orderId: 5));
 
-        await mediator.Received(1).Send(Arg.Is<SetPaidOrderStatusCommand>(c => c.OrderNumber == 5));
+            await mediator.Received(1).Send(Arg.Is<SetPaidOrderStatusCommand>(c => c.OrderNumber == 5));
+        }
     }
 }

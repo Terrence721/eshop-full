@@ -1,10 +1,11 @@
-﻿namespace eShop.ClientApp.UnitTests.Mocks;
-
-public class MockDialogService : IDialogService
+﻿namespace eShop.ClientApp.UnitTests.Mocks
 {
-    public Task ShowAlertAsync(string message, string title, string buttonLabel)
+    public class MockDialogService : IDialogService
     {
-        return Task.CompletedTask;
+        public Task ShowAlertAsync(string message, string title, string buttonLabel)
+        {
+            return Task.CompletedTask;
+        }
     }
-}
 
+}

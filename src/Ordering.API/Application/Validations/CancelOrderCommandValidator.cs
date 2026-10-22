@@ -1,17 +1,18 @@
-﻿namespace eShop.Ordering.API.Application.Validations;
-
-/// <summary>
-/// Validator for <see cref="CancelOrderCommand" />.
-/// </summary>
-public class CancelOrderCommandValidator : AbstractValidator<CancelOrderCommand>
+﻿namespace eShop.Ordering.API.Application.Validations
 {
-    public CancelOrderCommandValidator(ILogger<CancelOrderCommandValidator> logger)
+    /// <summary>
+    /// Validator for <see cref="CancelOrderCommand" />.
+    /// </summary>
+    public class CancelOrderCommandValidator : AbstractValidator<CancelOrderCommand>
     {
-        RuleFor(order => order.OrderNumber).NotEmpty().WithMessage("No orderId found");
-
-        if (logger.IsEnabled(LogLevel.Trace))
+        public CancelOrderCommandValidator(ILogger<CancelOrderCommandValidator> logger)
         {
-            logger.LogTrace("INSTANCE CREATED - {ClassName}", GetType().Name);
+            RuleFor(order => order.OrderNumber).NotEmpty().WithMessage("No orderId found");
+
+            if (logger.IsEnabled(LogLevel.Trace))
+            {
+                logger.LogTrace("INSTANCE CREATED - {ClassName}", GetType().Name);
+            }
         }
     }
 }

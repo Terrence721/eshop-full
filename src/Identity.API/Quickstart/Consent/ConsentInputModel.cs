@@ -1,6 +1,7 @@
-﻿namespace IdentityServerHost.Quickstart.UI;
-
-public class ConsentInputModel : ConsentDecisionInputModel
+﻿namespace IdentityServerHost.Quickstart.UI
 {
-    public string? ReturnUrl { get; set; }
+    public class ConsentInputModel : ConsentDecisionInputModel
+    {
+        public string? ReturnUrl { get; set; }
+    }
 }

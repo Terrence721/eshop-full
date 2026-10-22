@@ -1,6 +1,7 @@
-﻿namespace eShop.ClientApp.Models.User;
-
-public class LogoutParameter
+﻿namespace eShop.ClientApp.Models.User
 {
-    public bool Logout { get; set; }
+    public class LogoutParameter
+    {
+        public bool Logout { get; set; }
+    }
 }

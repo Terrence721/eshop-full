@@ -1,26 +1,27 @@
-﻿namespace eShop.EventBus.Extensions;
-
-public static class GenericTypeExtensions
+﻿namespace eShop.EventBus.Extensions
 {
-    public static string GetGenericTypeName(this Type type)
+    public static class GenericTypeExtensions
     {
-        string typeName;
-
-        if (type.IsGenericType)
+        public static string GetGenericTypeName(this Type type)
         {
-            var genericTypes = string.Join(",", type.GetGenericArguments().Select(t => t.Name).ToArray());
-            typeName = $"{type.Name.Remove(type.Name.IndexOf('`'))}<{genericTypes}>";
+            string typeName;
+
+            if (type.IsGenericType)
+            {
+                var genericTypes = string.Join(",", type.GetGenericArguments().Select(t => t.Name).ToArray());
+                typeName = $"{type.Name.Remove(type.Name.IndexOf('`'))}<{genericTypes}>";
+            }
+            else
+            {
+                typeName = type.Name;
+            }
+
+            return typeName;
         }
-        else
+
+        public static string GetGenericTypeName(this object @object)
         {
-            typeName = type.Name;
+            return @object.GetType().GetGenericTypeName();
         }
-
-        return typeName;
-    }
-
-    public static string GetGenericTypeName(this object @object)
-    {
-        return @object.GetType().GetGenericTypeName();
     }
 }

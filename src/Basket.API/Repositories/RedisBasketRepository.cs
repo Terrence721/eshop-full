@@ -1,56 +1,57 @@
 using System.Text.Json;
 using eShop.Basket.API.Model;
 
-namespace eShop.Basket.API.Repositories;
-
-/// <summary>
-/// Redis-backed implementation of <see cref="IBasketRepository"/>.
-/// </summary>
-public class RedisBasketRepository(ILogger<RedisBasketRepository> logger, IConnectionMultiplexer redis) : IBasketRepository
+namespace eShop.Basket.API.Repositories
 {
-    private readonly IDatabase _database = redis.GetDatabase();
-    private static readonly JsonSerializerOptions JsonOptions = new(JsonSerializerDefaults.Web);
-
-    // implementation:
-
-    // - /basket/{id} "string" per unique basket
-    private static readonly RedisKey BasketKeyPrefix = "/basket/"u8.ToArray();
-    // note on UTF8 here: library limitation (to be fixed) - prefixes are more efficient as blobs
-
-    private static RedisKey GetBasketKey(string userId) => BasketKeyPrefix.Append(userId);
-
-    public async Task<bool> DeleteBasketAsync(string id)
+    /// <summary>
+    /// Redis-backed implementation of <see cref="IBasketRepository"/>.
+    /// </summary>
+    public class RedisBasketRepository(ILogger<RedisBasketRepository> logger, IConnectionMultiplexer redis) : IBasketRepository
     {
-        return await _database.KeyDeleteAsync(GetBasketKey(id));
-    }
+        private readonly IDatabase _database = redis.GetDatabase();
+        private static readonly JsonSerializerOptions JsonOptions = new(JsonSerializerDefaults.Web);
 
-    public async Task<CustomerBasket?> GetBasketAsync(string customerId)
-    {
-        using var data = await _database.StringGetLeaseAsync(GetBasketKey(customerId));
+        // implementation:
 
-        if (data is null || data.Length == 0)
+        // - /basket/{id} "string" per unique basket
+        private static readonly RedisKey BasketKeyPrefix = "/basket/"u8.ToArray();
+        // note on UTF8 here: library limitation (to be fixed) - prefixes are more efficient as blobs
+
+        private static RedisKey GetBasketKey(string userId) => BasketKeyPrefix.Append(userId);
+
+        public async Task<bool> DeleteBasketAsync(string id)
         {
-            return null;
+            return await _database.KeyDeleteAsync(GetBasketKey(id));
         }
 
-        return JsonSerializer.Deserialize<CustomerBasket>(data.Span, JsonOptions);
-    }
-
-    public async Task<CustomerBasket?> UpdateBasketAsync(CustomerBasket basket)
-    {
-        ArgumentException.ThrowIfNullOrEmpty(basket.BuyerId);
-
-        var json = JsonSerializer.SerializeToUtf8Bytes(basket, JsonOptions);
-        var created = await _database.StringSetAsync(GetBasketKey(basket.BuyerId), json);
-
-        if (!created)
+        public async Task<CustomerBasket?> GetBasketAsync(string customerId)
         {
-            logger.LogInformation("Problem occurred persisting the item.");
-            return null;
+            using var data = await _database.StringGetLeaseAsync(GetBasketKey(customerId));
+
+            if (data is null || data.Length == 0)
+            {
+                return null;
+            }
+
+            return JsonSerializer.Deserialize<CustomerBasket>(data.Span, JsonOptions);
         }
 
+        public async Task<CustomerBasket?> UpdateBasketAsync(CustomerBasket basket)
+        {
+            ArgumentException.ThrowIfNullOrEmpty(basket.BuyerId);
 
-        logger.LogInformation("Basket item persisted successfully.");
-        return await GetBasketAsync(basket.BuyerId);
+            var json = JsonSerializer.SerializeToUtf8Bytes(basket, JsonOptions);
+            var created = await _database.StringSetAsync(GetBasketKey(basket.BuyerId), json);
+
+            if (!created)
+            {
+                logger.LogInformation("Problem occurred persisting the item.");
+                return null;
+            }
+
+
+            logger.LogInformation("Basket item persisted successfully.");
+            return await GetBasketAsync(basket.BuyerId);
+        }
     }
 }

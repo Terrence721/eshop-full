@@ -1,32 +1,33 @@
 ﻿using eShop.EventBus.Abstractions;
 using eShop.EventBus.Events;
 
-namespace eShop.EventBus.UnitTests.Abstractions;
-
-[TestClass]
-public class IIntegrationEventHandlerTests
+namespace eShop.EventBus.UnitTests.Abstractions
 {
-    private sealed record TestIntegrationEvent : IntegrationEvent;
-
-    private sealed class TestIntegrationEventHandler : IIntegrationEventHandler<TestIntegrationEvent>
+    [TestClass]
+    public class IIntegrationEventHandlerTests
     {
-        public TestIntegrationEvent? Received { get; private set; }
+        private sealed record TestIntegrationEvent : IntegrationEvent;
 
-        public Task Handle(TestIntegrationEvent @event)
+        private sealed class TestIntegrationEventHandler : IIntegrationEventHandler<TestIntegrationEvent>
         {
-            Received = @event;
-            return Task.CompletedTask;
+            public TestIntegrationEvent? Received { get; private set; }
+
+            public Task Handle(TestIntegrationEvent @event)
+            {
+                Received = @event;
+                return Task.CompletedTask;
+            }
         }
-    }
 
-    [TestMethod]
-    public async Task Handle_on_the_non_generic_interface_dispatches_to_the_typed_Handle_overload()
-    {
-        var handler = new TestIntegrationEventHandler();
-        var testEvent = new TestIntegrationEvent();
+        [TestMethod]
+        public async Task Handle_on_the_non_generic_interface_dispatches_to_the_typed_Handle_overload()
+        {
+            var handler = new TestIntegrationEventHandler();
+            var testEvent = new TestIntegrationEvent();
 
-        await ((IIntegrationEventHandler)handler).Handle(testEvent);
+            await ((IIntegrationEventHandler)handler).Handle(testEvent);
 
-        Assert.AreSame(testEvent, handler.Received);
+            Assert.AreSame(testEvent, handler.Received);
+        }
     }
 }

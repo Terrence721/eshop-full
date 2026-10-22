@@ -1,6 +1,7 @@
-﻿namespace eShop.ClientApp.Validations;
-
-public interface IValidity
+﻿namespace eShop.ClientApp.Validations
 {
-    bool IsValid { get; }
+    public interface IValidity
+    {
+        bool IsValid { get; }
+    }
 }

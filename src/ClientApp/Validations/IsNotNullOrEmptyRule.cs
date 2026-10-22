@@ -1,12 +1,13 @@
-﻿namespace eShop.ClientApp.Validations;
-
-public class IsNotNullOrEmptyRule<T> : IValidationRule<T>
+﻿namespace eShop.ClientApp.Validations
 {
-    public string ValidationMessage { get; set; } = null!;
-
-    public bool Check(T value)
+    public class IsNotNullOrEmptyRule<T> : IValidationRule<T>
     {
-        return value is string str &&
-               !string.IsNullOrWhiteSpace(str);
+        public string ValidationMessage { get; set; } = null!;
+
+        public bool Check(T value)
+        {
+            return value is string str &&
+                   !string.IsNullOrWhiteSpace(str);
+        }
     }
 }

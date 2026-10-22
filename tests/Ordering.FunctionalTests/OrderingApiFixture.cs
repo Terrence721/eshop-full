@@ -6,82 +6,83 @@ using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
-namespace eShop.Ordering.FunctionalTests;
-
-public sealed class OrderingApiFixture : WebApplicationFactory<Program>, IAsyncLifetime
+namespace eShop.Ordering.FunctionalTests
 {
-    private readonly IHost _app;
-
-    public IResourceBuilder<PostgresServerResource> Postgres { get; private set; }
-    public IResourceBuilder<PostgresServerResource> IdentityDB { get; private set; }
-    public IResourceBuilder<ProjectResource> IdentityApi { get; private set; }
-
-    private string _postgresConnectionString;
-
-    public OrderingApiFixture()
+    public sealed class OrderingApiFixture : WebApplicationFactory<Program>, IAsyncLifetime
     {
-        var options = new DistributedApplicationOptions { AssemblyName = typeof(OrderingApiFixture).Assembly.FullName, DisableDashboard = true };
-        var appBuilder = DistributedApplication.CreateBuilder(options);
-        Postgres = appBuilder.AddPostgres("OrderingDB");
-        IdentityDB = appBuilder.AddPostgres("IdentityDB");
-        IdentityApi = appBuilder.AddProject<Projects.Identity_API>("identity-api").WithReference(IdentityDB);
-        _app = appBuilder.Build();
-    }
+        private readonly IHost _app;
 
-    protected override IHost CreateHost(IHostBuilder builder)
-    {
-        builder.ConfigureHostConfiguration(config =>
+        public IResourceBuilder<PostgresServerResource> Postgres { get; private set; }
+        public IResourceBuilder<PostgresServerResource> IdentityDB { get; private set; }
+        public IResourceBuilder<ProjectResource> IdentityApi { get; private set; }
+
+        private string _postgresConnectionString;
+
+        public OrderingApiFixture()
         {
-            config.AddInMemoryCollection(new Dictionary<string, string>
+            var options = new DistributedApplicationOptions { AssemblyName = typeof(OrderingApiFixture).Assembly.FullName, DisableDashboard = true };
+            var appBuilder = DistributedApplication.CreateBuilder(options);
+            Postgres = appBuilder.AddPostgres("OrderingDB");
+            IdentityDB = appBuilder.AddPostgres("IdentityDB");
+            IdentityApi = appBuilder.AddProject<Projects.Identity_API>("identity-api").WithReference(IdentityDB);
+            _app = appBuilder.Build();
+        }
+
+        protected override IHost CreateHost(IHostBuilder builder)
+        {
+            builder.ConfigureHostConfiguration(config =>
             {
-                { $"ConnectionStrings:{Postgres.Resource.Name}", _postgresConnectionString },
-                { "Identity:Url", IdentityApi.GetEndpoint("http").Url },
-                { "Testing:DisableEventBus", "true" }
+                config.AddInMemoryCollection(new Dictionary<string, string>
+                {
+                    { $"ConnectionStrings:{Postgres.Resource.Name}", _postgresConnectionString },
+                    { "Identity:Url", IdentityApi.GetEndpoint("http").Url },
+                    { "Testing:DisableEventBus", "true" }
+                });
             });
-        });
-        builder.ConfigureServices(services =>
-        {
-            services.AddSingleton<IStartupFilter>(new AutoAuthorizeStartupFilter());
-
-            var descriptors = services.Where(s => s.ServiceType == typeof(IEventBus)).ToList();
-            foreach (var descriptor in descriptors)
+            builder.ConfigureServices(services =>
             {
-                services.Remove(descriptor);
+                services.AddSingleton<IStartupFilter>(new AutoAuthorizeStartupFilter());
+
+                var descriptors = services.Where(s => s.ServiceType == typeof(IEventBus)).ToList();
+                foreach (var descriptor in descriptors)
+                {
+                    services.Remove(descriptor);
+                }
+                services.AddTransient<IEventBus, NullEventBus>();
+            });
+            return base.CreateHost(builder);
+        }
+
+        public new async Task DisposeAsync()
+        {
+            await base.DisposeAsync();
+            await _app.StopAsync();
+            if (_app is IAsyncDisposable asyncDisposable)
+            {
+                await asyncDisposable.DisposeAsync().ConfigureAwait(false);
             }
-            services.AddTransient<IEventBus, NullEventBus>();
-        });
-        return base.CreateHost(builder);
-    }
-
-    public new async Task DisposeAsync()
-    {
-        await base.DisposeAsync();
-        await _app.StopAsync();
-        if (_app is IAsyncDisposable asyncDisposable)
-        {
-            await asyncDisposable.DisposeAsync().ConfigureAwait(false);
-        }
-        else
-        {
-            _app.Dispose();
-        }
-    }
-
-    public async ValueTask InitializeAsync()
-    {
-        await _app.StartAsync();
-        _postgresConnectionString = await Postgres.Resource.GetConnectionStringAsync();
-    }
-
-    private class AutoAuthorizeStartupFilter : IStartupFilter
-    {
-        public Action<IApplicationBuilder> Configure(Action<IApplicationBuilder> next)
-        {
-            return builder =>
+            else
             {
-                builder.UseMiddleware<AutoAuthorizeMiddleware>();
-                next(builder);
-            };
+                _app.Dispose();
+            }
+        }
+
+        public async ValueTask InitializeAsync()
+        {
+            await _app.StartAsync();
+            _postgresConnectionString = await Postgres.Resource.GetConnectionStringAsync();
+        }
+
+        private class AutoAuthorizeStartupFilter : IStartupFilter
+        {
+            public Action<IApplicationBuilder> Configure(Action<IApplicationBuilder> next)
+            {
+                return builder =>
+                {
+                    builder.UseMiddleware<AutoAuthorizeMiddleware>();
+                    next(builder);
+                };
+            }
         }
     }
 }

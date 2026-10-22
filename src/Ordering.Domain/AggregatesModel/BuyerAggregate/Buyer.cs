@@ -1,51 +1,52 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace eShop.Ordering.Domain.AggregatesModel.BuyerAggregate;
-
-public class Buyer
-    : Entity, IAggregateRoot
+namespace eShop.Ordering.Domain.AggregatesModel.BuyerAggregate
 {
-    [Required]
-    public string IdentityGuid { get; private set; } = null!;
-
-    public string Name { get; private set; } = null!;
-
-    private List<PaymentMethod> _paymentMethods;
-
-    public IEnumerable<PaymentMethod> PaymentMethods => _paymentMethods.AsReadOnly();
-
-    protected Buyer()
+    public class Buyer
+        : Entity, IAggregateRoot
     {
+        [Required]
+        public string IdentityGuid { get; private set; } = null!;
 
-        _paymentMethods = [];
-    }
+        public string Name { get; private set; } = null!;
 
-    public Buyer(string identity, string name) : this()
-    {
-        IdentityGuid = !string.IsNullOrWhiteSpace(identity) ? identity : throw new ArgumentNullException(nameof(identity));
-        Name = !string.IsNullOrWhiteSpace(name) ? name : throw new ArgumentNullException(nameof(name));
-    }
+        private List<PaymentMethod> _paymentMethods;
 
-    public PaymentMethod VerifyOrAddPaymentMethod(
-        int cardTypeId, string alias, string cardNumber,
-        string securityNumber, string cardHolderName, DateTime expiration, int orderId)
-    {
-        var existingPayment = _paymentMethods
-            .SingleOrDefault(p => p.IsEqualTo(cardTypeId, cardNumber, expiration));
+        public IEnumerable<PaymentMethod> PaymentMethods => _paymentMethods.AsReadOnly();
 
-        if (existingPayment != null)
+        protected Buyer()
         {
-            AddDomainEvent(new BuyerAndPaymentMethodVerifiedDomainEvent(this, existingPayment, orderId));
 
-            return existingPayment;
+            _paymentMethods = [];
         }
 
-        var payment = new PaymentMethod(cardTypeId, alias, cardNumber, securityNumber, cardHolderName, expiration);
+        public Buyer(string identity, string name) : this()
+        {
+            IdentityGuid = !string.IsNullOrWhiteSpace(identity) ? identity : throw new ArgumentNullException(nameof(identity));
+            Name = !string.IsNullOrWhiteSpace(name) ? name : throw new ArgumentNullException(nameof(name));
+        }
 
-        _paymentMethods.Add(payment);
+        public PaymentMethod VerifyOrAddPaymentMethod(
+            int cardTypeId, string alias, string cardNumber,
+            string securityNumber, string cardHolderName, DateTime expiration, int orderId)
+        {
+            var existingPayment = _paymentMethods
+                .SingleOrDefault(p => p.IsEqualTo(cardTypeId, cardNumber, expiration));
 
-        AddDomainEvent(new BuyerAndPaymentMethodVerifiedDomainEvent(this, payment, orderId));
+            if (existingPayment != null)
+            {
+                AddDomainEvent(new BuyerAndPaymentMethodVerifiedDomainEvent(this, existingPayment, orderId));
 
-        return payment;
+                return existingPayment;
+            }
+
+            var payment = new PaymentMethod(cardTypeId, alias, cardNumber, securityNumber, cardHolderName, expiration);
+
+            _paymentMethods.Add(payment);
+
+            AddDomainEvent(new BuyerAndPaymentMethodVerifiedDomainEvent(this, payment, orderId));
+
+            return payment;
+        }
     }
 }

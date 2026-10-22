@@ -1,45 +1,46 @@
-﻿namespace eShop.Ordering.API.Application.Commands;
-
-/// <summary>
-/// Handler moving an order to stock-rejected status (plus idempotent wrapper).
-/// </summary>
-// Regular CommandHandler
-public class SetStockRejectedOrderStatusCommandHandler(IOrderRepository orderRepository) : IRequestHandler<SetStockRejectedOrderStatusCommand, bool>
+﻿namespace eShop.Ordering.API.Application.Commands
 {
-    private readonly IOrderRepository _orderRepository = orderRepository;
-
     /// <summary>
-    /// Handler which processes the command when
-    /// Stock service rejects the request
+    /// Handler moving an order to stock-rejected status (plus idempotent wrapper).
     /// </summary>
-    /// <param name="command"></param>
-    /// <returns></returns>
-    public async Task<bool> Handle(SetStockRejectedOrderStatusCommand command, CancellationToken cancellationToken)
+    // Regular CommandHandler
+    public class SetStockRejectedOrderStatusCommandHandler(IOrderRepository orderRepository) : IRequestHandler<SetStockRejectedOrderStatusCommand, bool>
     {
-        // Simulate a work time for rejecting the stock
-        await Task.Delay(10000, cancellationToken);
+        private readonly IOrderRepository _orderRepository = orderRepository;
 
-        var orderToUpdate = await _orderRepository.GetAsync(command.OrderNumber);
-        if (orderToUpdate == null)
+        /// <summary>
+        /// Handler which processes the command when
+        /// Stock service rejects the request
+        /// </summary>
+        /// <param name="command"></param>
+        /// <returns></returns>
+        public async Task<bool> Handle(SetStockRejectedOrderStatusCommand command, CancellationToken cancellationToken)
         {
-            return false;
+            // Simulate a work time for rejecting the stock
+            await Task.Delay(10000, cancellationToken);
+
+            var orderToUpdate = await _orderRepository.GetAsync(command.OrderNumber);
+            if (orderToUpdate == null)
+            {
+                return false;
+            }
+
+            orderToUpdate.SetCancelledStatusWhenStockIsRejected(command.OrderStockItems);
+
+            return await _orderRepository.UnitOfWork.SaveEntitiesAsync(cancellationToken);
         }
-
-        orderToUpdate.SetCancelledStatusWhenStockIsRejected(command.OrderStockItems);
-
-        return await _orderRepository.UnitOfWork.SaveEntitiesAsync(cancellationToken);
     }
-}
 
 
-// Use for Idempotency in Command process
-public class SetStockRejectedOrderStatusIdentifiedCommandHandler(
-    IMediator mediator,
-    IRequestManager requestManager,
-    ILogger<IdentifiedCommandHandler<SetStockRejectedOrderStatusCommand, bool>> logger) : IdentifiedCommandHandler<SetStockRejectedOrderStatusCommand, bool>(mediator, requestManager, logger)
-{
-    protected override bool CreateResultForDuplicateRequest()
+    // Use for Idempotency in Command process
+    public class SetStockRejectedOrderStatusIdentifiedCommandHandler(
+        IMediator mediator,
+        IRequestManager requestManager,
+        ILogger<IdentifiedCommandHandler<SetStockRejectedOrderStatusCommand, bool>> logger) : IdentifiedCommandHandler<SetStockRejectedOrderStatusCommand, bool>(mediator, requestManager, logger)
     {
-        return true; // Ignore duplicate requests for processing order.
+        protected override bool CreateResultForDuplicateRequest()
+        {
+            return true; // Ignore duplicate requests for processing order.
+        }
     }
 }

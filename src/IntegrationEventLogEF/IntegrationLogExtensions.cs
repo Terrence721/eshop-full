@@ -1,14 +1,15 @@
-﻿namespace eShop.IntegrationEventLogEF;
-
-public static class IntegrationLogExtensions
+﻿namespace eShop.IntegrationEventLogEF
 {
-    public static void UseIntegrationEventLogs(this ModelBuilder builder)
+    public static class IntegrationLogExtensions
     {
-        builder.Entity<IntegrationEventLogEntry>(entityBuilder =>
+        public static void UseIntegrationEventLogs(this ModelBuilder builder)
         {
-            entityBuilder.ToTable("IntegrationEventLog");
+            builder.Entity<IntegrationEventLogEntry>(entityBuilder =>
+            {
+                entityBuilder.ToTable("IntegrationEventLog");
 
-            entityBuilder.HasKey(e => e.EventId);
-        });
+                entityBuilder.HasKey(e => e.EventId);
+            });
+        }
     }
 }

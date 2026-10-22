@@ -1,6 +1,7 @@
-﻿namespace eShop.ClientApp.Services;
-
-public interface IDialogService
+﻿namespace eShop.ClientApp.Services
 {
-    Task ShowAlertAsync(string message, string title, string buttonLabel);
+    public interface IDialogService
+    {
+        Task ShowAlertAsync(string message, string title, string buttonLabel);
+    }
 }

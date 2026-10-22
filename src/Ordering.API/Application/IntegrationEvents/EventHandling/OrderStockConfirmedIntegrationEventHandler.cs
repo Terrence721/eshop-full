@@ -1,26 +1,27 @@
-﻿namespace eShop.Ordering.API.Application.IntegrationEvents.EventHandling;
-
-/// <summary>
-/// Handles stock-confirmed integration events by moving order status to stock-confirmed.
-/// </summary>
-public class OrderStockConfirmedIntegrationEventHandler(
-    IMediator mediator,
-    ILogger<OrderStockConfirmedIntegrationEventHandler> logger) :
-    IIntegrationEventHandler<OrderStockConfirmedIntegrationEvent>
+﻿namespace eShop.Ordering.API.Application.IntegrationEvents.EventHandling
 {
-    public async Task Handle(OrderStockConfirmedIntegrationEvent @event)
+    /// <summary>
+    /// Handles stock-confirmed integration events by moving order status to stock-confirmed.
+    /// </summary>
+    public class OrderStockConfirmedIntegrationEventHandler(
+        IMediator mediator,
+        ILogger<OrderStockConfirmedIntegrationEventHandler> logger) :
+        IIntegrationEventHandler<OrderStockConfirmedIntegrationEvent>
     {
-        logger.LogInformation("Handling integration event: {IntegrationEventId} - ({@IntegrationEvent})", @event.Id, @event);
+        public async Task Handle(OrderStockConfirmedIntegrationEvent @event)
+        {
+            logger.LogInformation("Handling integration event: {IntegrationEventId} - ({@IntegrationEvent})", @event.Id, @event);
 
-        var command = new SetStockConfirmedOrderStatusCommand(@event.OrderId);
+            var command = new SetStockConfirmedOrderStatusCommand(@event.OrderId);
 
-        logger.LogInformation(
-            "Sending command: {CommandName} - {IdProperty}: {CommandId} ({@Command})",
-            command.GetGenericTypeName(),
-            nameof(command.OrderNumber),
-            command.OrderNumber,
-            command);
+            logger.LogInformation(
+                "Sending command: {CommandName} - {IdProperty}: {CommandId} ({@Command})",
+                command.GetGenericTypeName(),
+                nameof(command.OrderNumber),
+                command.OrderNumber,
+                command);
 
-        await mediator.Send(command);
+            await mediator.Send(command);
+        }
     }
 }

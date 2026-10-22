@@ -1,7 +1,8 @@
-﻿namespace eShop.ClientApp.Models.Location;
-
-public enum GeolocationError
+﻿namespace eShop.ClientApp.Models.Location
 {
-    PositionUnavailable,
-    Unauthorized
+    public enum GeolocationError
+    {
+        PositionUnavailable,
+        Unauthorized
+    }
 }

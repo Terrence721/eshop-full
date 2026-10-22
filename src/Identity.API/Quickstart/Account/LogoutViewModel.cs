@@ -1,6 +1,7 @@
-﻿namespace IdentityServerHost.Quickstart.UI;
-
-public class LogoutViewModel : LogoutInputModel
+﻿namespace IdentityServerHost.Quickstart.UI
 {
-    public bool ShowLogoutPrompt { get; set; } = true;
+    public class LogoutViewModel : LogoutInputModel
+    {
+        public bool ShowLogoutPrompt { get; set; } = true;
+    }
 }

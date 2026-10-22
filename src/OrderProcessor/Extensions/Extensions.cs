@@ -1,27 +1,28 @@
 ﻿using System.Text.Json.Serialization;
 using eShop.OrderProcessor.Events;
 
-namespace eShop.OrderProcessor.Extensions;
-
-public static class Extensions
+namespace eShop.OrderProcessor.Extensions
 {
-    public static void AddApplicationServices(this IHostApplicationBuilder builder)
+    public static class Extensions
     {
-        builder.AddKafkaEventBus("eventbus")
-               .ConfigureJsonOptions(options => options.TypeInfoResolverChain.Add(IntegrationEventContext.Default));
+        public static void AddApplicationServices(this IHostApplicationBuilder builder)
+        {
+            builder.AddKafkaEventBus("eventbus")
+                   .ConfigureJsonOptions(options => options.TypeInfoResolverChain.Add(IntegrationEventContext.Default));
 
-        builder.AddNpgsqlDataSource("orderingdb");
+            builder.AddNpgsqlDataSource("orderingdb");
 
-        builder.Services.AddOptions<BackgroundTaskOptions>()
-            .BindConfiguration(nameof(BackgroundTaskOptions));
+            builder.Services.AddOptions<BackgroundTaskOptions>()
+                .BindConfiguration(nameof(BackgroundTaskOptions));
 
-        builder.Services.AddHostedService<GracePeriodManagerService>();
+            builder.Services.AddHostedService<GracePeriodManagerService>();
+        }
     }
-}
 
-[JsonSerializable(typeof(GracePeriodConfirmedIntegrationEvent))]
-[JsonSourceGenerationOptions(GenerationMode = JsonSourceGenerationMode.Metadata)]
-public partial class IntegrationEventContext : JsonSerializerContext
-{
+    [JsonSerializable(typeof(GracePeriodConfirmedIntegrationEvent))]
+    [JsonSourceGenerationOptions(GenerationMode = JsonSourceGenerationMode.Metadata)]
+    public partial class IntegrationEventContext : JsonSerializerContext
+    {
 
+    }
 }

@@ -1,17 +1,18 @@
 ﻿using eShop.IntegrationEventLogEF;
 
-namespace eShop.IntegrationEventLogEF.UnitTests;
-
-[TestClass]
-public class EventStateTests
+namespace eShop.IntegrationEventLogEF.UnitTests
 {
-    [TestMethod]
-    [DataRow(EventState.NotPublished, 0)]
-    [DataRow(EventState.InProgress, 1)]
-    [DataRow(EventState.Published, 2)]
-    [DataRow(EventState.PublishedFailed, 3)]
-    public void Member_values_match_the_values_persisted_to_the_database(EventState state, int expectedValue)
+    [TestClass]
+    public class EventStateTests
     {
-        Assert.AreEqual(expectedValue, (int)state);
+        [TestMethod]
+        [DataRow(EventState.NotPublished, 0)]
+        [DataRow(EventState.InProgress, 1)]
+        [DataRow(EventState.Published, 2)]
+        [DataRow(EventState.PublishedFailed, 3)]
+        public void Member_values_match_the_values_persisted_to_the_database(EventState state, int expectedValue)
+        {
+            Assert.AreEqual(expectedValue, (int)state);
+        }
     }
 }

@@ -1,36 +1,37 @@
 ﻿using eShop.EventBus.Abstractions;
 
-namespace eShop.EventBus.UnitTests.Abstractions;
-
-[TestClass]
-public class EventBusSubscriptionInfoTests
+namespace eShop.EventBus.UnitTests.Abstractions
 {
-    [TestMethod]
-    public void EventTypes_starts_empty()
+    [TestClass]
+    public class EventBusSubscriptionInfoTests
     {
-        var info = new EventBusSubscriptionInfo();
+        [TestMethod]
+        public void EventTypes_starts_empty()
+        {
+            var info = new EventBusSubscriptionInfo();
 
-        Assert.AreEqual(0, info.EventTypes.Count);
-    }
+            Assert.AreEqual(0, info.EventTypes.Count);
+        }
 
-    [TestMethod]
-    public void JsonSerializerOptions_is_populated_with_a_TypeInfoResolver()
-    {
-        var info = new EventBusSubscriptionInfo();
+        [TestMethod]
+        public void JsonSerializerOptions_is_populated_with_a_TypeInfoResolver()
+        {
+            var info = new EventBusSubscriptionInfo();
 
-        Assert.IsNotNull(info.JsonSerializerOptions.TypeInfoResolver);
-    }
+            Assert.IsNotNull(info.JsonSerializerOptions.TypeInfoResolver);
+        }
 
-    [TestMethod]
-    public void JsonSerializerOptions_instances_are_independent_across_EventBusSubscriptionInfo_instances()
-    {
-        var first = new EventBusSubscriptionInfo();
-        var second = new EventBusSubscriptionInfo();
+        [TestMethod]
+        public void JsonSerializerOptions_instances_are_independent_across_EventBusSubscriptionInfo_instances()
+        {
+            var first = new EventBusSubscriptionInfo();
+            var second = new EventBusSubscriptionInfo();
 
-        Assert.AreNotSame(first.JsonSerializerOptions, second.JsonSerializerOptions);
+            Assert.AreNotSame(first.JsonSerializerOptions, second.JsonSerializerOptions);
 
-        first.JsonSerializerOptions.WriteIndented = true;
+            first.JsonSerializerOptions.WriteIndented = true;
 
-        Assert.IsFalse(second.JsonSerializerOptions.WriteIndented);
+            Assert.IsFalse(second.JsonSerializerOptions.WriteIndented);
+        }
     }
 }

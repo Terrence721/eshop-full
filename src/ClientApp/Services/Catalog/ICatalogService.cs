@@ -1,13 +1,14 @@
 ﻿using eShop.ClientApp.Models.Catalog;
 
-namespace eShop.ClientApp.Services.Catalog;
-
-public interface ICatalogService
+namespace eShop.ClientApp.Services.Catalog
 {
-    Task<IEnumerable<CatalogBrand>> GetCatalogBrandAsync();
-    Task<IEnumerable<CatalogItem>> FilterAsync(int catalogBrandId, int catalogTypeId);
-    Task<IEnumerable<CatalogType>> GetCatalogTypeAsync();
-    Task<IEnumerable<CatalogItem>> GetCatalogAsync();
+    public interface ICatalogService
+    {
+        Task<IEnumerable<CatalogBrand>> GetCatalogBrandAsync();
+        Task<IEnumerable<CatalogItem>> FilterAsync(int catalogBrandId, int catalogTypeId);
+        Task<IEnumerable<CatalogType>> GetCatalogTypeAsync();
+        Task<IEnumerable<CatalogItem>> GetCatalogAsync();
 
-    Task<CatalogItem?> GetCatalogItemAsync(int catalogItemId);
+        Task<CatalogItem?> GetCatalogItemAsync(int catalogItemId);
+    }
 }

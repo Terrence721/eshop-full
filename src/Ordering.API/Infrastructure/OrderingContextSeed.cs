@@ -1,28 +1,29 @@
-namespace eShop.Ordering.API.Infrastructure;
-
-using eShop.Ordering.Domain.AggregatesModel.BuyerAggregate;
-
-/// <summary>
-/// Seeds predefined card types into OrderingContext when missing.
-/// </summary>
-public class OrderingContextSeed : IDbSeeder<OrderingContext>
+namespace eShop.Ordering.API.Infrastructure
 {
-    public async Task SeedAsync(OrderingContext context)
+    using eShop.Ordering.Domain.AggregatesModel.BuyerAggregate;
+
+    /// <summary>
+    /// Seeds predefined card types into OrderingContext when missing.
+    /// </summary>
+    public class OrderingContextSeed : IDbSeeder<OrderingContext>
     {
-        if (!context.CardTypes.Any())
+        public async Task SeedAsync(OrderingContext context)
         {
-            context.CardTypes.AddRange(GetPredefinedCardTypes());
+            if (!context.CardTypes.Any())
+            {
+                context.CardTypes.AddRange(GetPredefinedCardTypes());
+
+                await context.SaveChangesAsync();
+            }
 
             await context.SaveChangesAsync();
         }
 
-        await context.SaveChangesAsync();
-    }
-
-    private static IEnumerable<CardType> GetPredefinedCardTypes()
-    {
-        yield return new CardType { Id = 1, Name = "Amex" };
-        yield return new CardType { Id = 2, Name = "Visa" };
-        yield return new CardType { Id = 3, Name = "MasterCard" };
+        private static IEnumerable<CardType> GetPredefinedCardTypes()
+        {
+            yield return new CardType { Id = 1, Name = "Amex" };
+            yield return new CardType { Id = 2, Name = "Visa" };
+            yield return new CardType { Id = 3, Name = "MasterCard" };
+        }
     }
 }

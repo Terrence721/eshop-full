@@ -1,8 +1,9 @@
 ﻿using Duende.IdentityServer.Models;
 
-namespace IdentityServerHost.Quickstart.UI;
-
-public class ErrorViewModel
+namespace IdentityServerHost.Quickstart.UI
 {
-    public ErrorMessage? Error { get; set; }
+    public class ErrorViewModel
+    {
+        public ErrorMessage? Error { get; set; }
+    }
 }

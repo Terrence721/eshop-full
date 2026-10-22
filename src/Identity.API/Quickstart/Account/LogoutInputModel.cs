@@ -1,6 +1,7 @@
-﻿namespace IdentityServerHost.Quickstart.UI;
-
-public class LogoutInputModel
+﻿namespace IdentityServerHost.Quickstart.UI
 {
-    public string? LogoutId { get; set; }
+    public class LogoutInputModel
+    {
+        public string? LogoutId { get; set; }
+    }
 }

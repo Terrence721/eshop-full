@@ -1,12 +1,13 @@
-﻿namespace Webhooks.API.Services;
-
-/// <summary>
-/// Retrieves webhook subscriptions filtered by type.
-/// </summary>
-public interface IWebhooksRetriever
+﻿namespace Webhooks.API.Services
 {
     /// <summary>
-    /// Returns all subscriptions of the given <paramref name="type" />.
+    /// Retrieves webhook subscriptions filtered by type.
     /// </summary>
-    Task<IEnumerable<WebhookSubscription>> GetSubscriptionsOfType(WebhookType type);
+    public interface IWebhooksRetriever
+    {
+        /// <summary>
+        /// Returns all subscriptions of the given <paramref name="type" />.
+        /// </summary>
+        Task<IEnumerable<WebhookSubscription>> GetSubscriptionsOfType(WebhookType type);
+    }
 }

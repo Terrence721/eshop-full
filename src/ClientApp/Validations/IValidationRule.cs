@@ -1,8 +1,9 @@
-﻿namespace eShop.ClientApp.Validations;
-
-public interface IValidationRule<T>
+﻿namespace eShop.ClientApp.Validations
 {
-    string ValidationMessage { get; set; }
+    public interface IValidationRule<T>
+    {
+        string ValidationMessage { get; set; }
 
-    bool Check(T value);
+        bool Check(T value);
+    }
 }

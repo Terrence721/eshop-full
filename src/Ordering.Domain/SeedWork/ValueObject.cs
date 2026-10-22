@@ -1,48 +1,49 @@
-﻿namespace eShop.Ordering.Domain.SeedWork;
-
-public abstract class ValueObject : IEquatable<ValueObject>
+﻿namespace eShop.Ordering.Domain.SeedWork
 {
-    protected static bool EqualOperator(ValueObject left, ValueObject right)
+    public abstract class ValueObject : IEquatable<ValueObject>
     {
-        if (ReferenceEquals(left, null) ^ ReferenceEquals(right, null))
+        protected static bool EqualOperator(ValueObject left, ValueObject right)
         {
-            return false;
+            if (ReferenceEquals(left, null) ^ ReferenceEquals(right, null))
+            {
+                return false;
+            }
+            return ReferenceEquals(left, null) || left.Equals(right);
         }
-        return ReferenceEquals(left, null) || left.Equals(right);
-    }
 
-    protected static bool NotEqualOperator(ValueObject left, ValueObject right)
-    {
-        return !(EqualOperator(left, right));
-    }
+        protected static bool NotEqualOperator(ValueObject left, ValueObject right)
+        {
+            return !(EqualOperator(left, right));
+        }
 
-    protected abstract IEnumerable<object> GetEqualityComponents();
+        protected abstract IEnumerable<object> GetEqualityComponents();
 
-    public override bool Equals(object? obj) => Equals(obj as ValueObject);
+        public override bool Equals(object? obj) => Equals(obj as ValueObject);
 
-    public bool Equals(ValueObject? other)
-    {
-        if (other is null)
-            return false;
+        public bool Equals(ValueObject? other)
+        {
+            if (other is null)
+                return false;
 
-        if (ReferenceEquals(this, other))
-            return true;
+            if (ReferenceEquals(this, other))
+                return true;
 
-        if (GetType() != other.GetType())
-            return false;
+            if (GetType() != other.GetType())
+                return false;
 
-        return GetEqualityComponents().SequenceEqual(other.GetEqualityComponents());
-    }
+            return GetEqualityComponents().SequenceEqual(other.GetEqualityComponents());
+        }
 
-    public override int GetHashCode()
-    {
-        return GetEqualityComponents()
-            .Select(x => x != null ? x.GetHashCode() : 0)
-            .Aggregate((x, y) => x ^ y);
-    }
+        public override int GetHashCode()
+        {
+            return GetEqualityComponents()
+                .Select(x => x != null ? x.GetHashCode() : 0)
+                .Aggregate((x, y) => x ^ y);
+        }
 
-    public ValueObject GetCopy()
-    {
-        return (this.MemberwiseClone() as ValueObject)!;
+        public ValueObject GetCopy()
+        {
+            return (this.MemberwiseClone() as ValueObject)!;
+        }
     }
 }

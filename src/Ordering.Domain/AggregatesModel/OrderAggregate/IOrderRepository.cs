@@ -1,13 +1,14 @@
-﻿namespace eShop.Ordering.Domain.AggregatesModel.OrderAggregate;
-
-//This is just the RepositoryContracts or Interface defined at the Domain Layer
-//as requisite for the Order Aggregate
-
-public interface IOrderRepository : IRepository<Order>
+﻿namespace eShop.Ordering.Domain.AggregatesModel.OrderAggregate
 {
-    Order Add(Order order);
+    //This is just the RepositoryContracts or Interface defined at the Domain Layer
+    //as requisite for the Order Aggregate
 
-    void Update(Order order);
+    public interface IOrderRepository : IRepository<Order>
+    {
+        Order Add(Order order);
 
-    Task<Order?> GetAsync(int orderId);
+        void Update(Order order);
+
+        Task<Order?> GetAsync(int orderId);
+    }
 }

@@ -1,13 +1,14 @@
-﻿namespace eShop.ClientApp.UnitTests.Services;
-
-[TestClass]
-public class BasketServiceTests
+﻿namespace eShop.ClientApp.UnitTests.Services
 {
-    [TestMethod]
-    public async Task GetFakeBasketTest()
+    [TestClass]
+    public class BasketServiceTests
     {
-        var catalogMockService = new CatalogMockService();
-        var result = await catalogMockService.GetCatalogAsync();
-        Assert.AreNotEqual(0, result.Count());
+        [TestMethod]
+        public async Task GetFakeBasketTest()
+        {
+            var catalogMockService = new CatalogMockService();
+            var result = await catalogMockService.GetCatalogAsync();
+            Assert.AreNotEqual(0, result.Count());
+        }
     }
 }

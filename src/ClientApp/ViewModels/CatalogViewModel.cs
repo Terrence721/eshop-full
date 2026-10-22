@@ -4,232 +4,233 @@ using eShop.ClientApp.Models.Catalog;
 using eShop.ClientApp.Services;
 using eShop.ClientApp.Services.AppEnvironment;
 
-namespace eShop.ClientApp.ViewModels;
-
-public partial class CatalogViewModel : ViewModelBase
+namespace eShop.ClientApp.ViewModels
 {
-    private readonly IAppEnvironmentService _appEnvironmentService;
-    private readonly ObservableCollectionEx<CatalogBrandSelectionViewModel> _brands = new();
-
-    private readonly ObservableCollectionEx<CatalogItem> _products = new();
-    private readonly ObservableCollectionEx<CatalogTypeSelectionViewModel> _types = new();
-
-    [ObservableProperty] public partial int BadgeCount { get; set; }
-
-    private bool _initialized;
-
-    [ObservableProperty] public partial bool IsFiltering { get; set; }
-
-    [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(CanFilter))]
-    [NotifyCanExecuteChangedFor(nameof(ApplyFilterCommand))]
-    public partial CatalogBrand? SelectedBrand { get; set; }
-
-    [ObservableProperty] public partial CatalogItem? SelectedProduct { get; set; }
-
-    [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(CanFilter))]
-    [NotifyCanExecuteChangedFor(nameof(ApplyFilterCommand))]
-    public partial CatalogType? SelectedType { get; set; }
-
-    public CatalogViewModel(
-        IAppEnvironmentService appEnvironmentService,
-        INavigationService navigationService)
-        : base(navigationService)
+    public partial class CatalogViewModel : ViewModelBase
     {
-        _appEnvironmentService = appEnvironmentService;
+        private readonly IAppEnvironmentService _appEnvironmentService;
+        private readonly ObservableCollectionEx<CatalogBrandSelectionViewModel> _brands = new();
 
-        _products = new ObservableCollectionEx<CatalogItem>();
-        _brands = new ObservableCollectionEx<CatalogBrandSelectionViewModel>();
-        _types = new ObservableCollectionEx<CatalogTypeSelectionViewModel>();
+        private readonly ObservableCollectionEx<CatalogItem> _products = new();
+        private readonly ObservableCollectionEx<CatalogTypeSelectionViewModel> _types = new();
 
-        WeakReferenceMessenger.Default
-            .Register<CatalogViewModel, ProductCountChangedMessage>(
-                this,
-                (_, message) =>
+        [ObservableProperty] public partial int BadgeCount { get; set; }
+
+        private bool _initialized;
+
+        [ObservableProperty] public partial bool IsFiltering { get; set; }
+
+        [ObservableProperty]
+        [NotifyPropertyChangedFor(nameof(CanFilter))]
+        [NotifyCanExecuteChangedFor(nameof(ApplyFilterCommand))]
+        public partial CatalogBrand? SelectedBrand { get; set; }
+
+        [ObservableProperty] public partial CatalogItem? SelectedProduct { get; set; }
+
+        [ObservableProperty]
+        [NotifyPropertyChangedFor(nameof(CanFilter))]
+        [NotifyCanExecuteChangedFor(nameof(ApplyFilterCommand))]
+        public partial CatalogType? SelectedType { get; set; }
+
+        public CatalogViewModel(
+            IAppEnvironmentService appEnvironmentService,
+            INavigationService navigationService)
+            : base(navigationService)
+        {
+            _appEnvironmentService = appEnvironmentService;
+
+            _products = new ObservableCollectionEx<CatalogItem>();
+            _brands = new ObservableCollectionEx<CatalogBrandSelectionViewModel>();
+            _types = new ObservableCollectionEx<CatalogTypeSelectionViewModel>();
+
+            WeakReferenceMessenger.Default
+                .Register<CatalogViewModel, ProductCountChangedMessage>(
+                    this,
+                    (_, message) =>
+                    {
+                        BadgeCount = message.Value;
+                    });
+        }
+
+        public bool CanFilter => SelectedBrand is not null && SelectedType is not null;
+
+        public IReadOnlyList<CatalogItem> Products => _products;
+
+        public IReadOnlyList<CatalogBrandSelectionViewModel> Brands => _brands;
+
+        public IReadOnlyList<CatalogTypeSelectionViewModel> Types => _types;
+
+        public override async Task InitializeAsync()
+        {
+            if (_initialized)
+            {
+                return;
+            }
+
+            _initialized = true;
+            await IsBusyFor(
+                async () =>
                 {
-                    BadgeCount = message.Value;
+                    // Get Catalog, Brands and Types
+                    var products = await _appEnvironmentService.CatalogService.GetCatalogAsync();
+                    var brands = await _appEnvironmentService.CatalogService.GetCatalogBrandAsync();
+                    var types = await _appEnvironmentService.CatalogService.GetCatalogTypeAsync();
+                    var basket = await _appEnvironmentService.BasketService.GetBasketAsync();
+
+                    BadgeCount = basket?.ItemCount ?? 0;
+
+                    _products.ReloadData(products);
+                    _brands.ReloadData(brands.Select(x => new CatalogBrandSelectionViewModel { Value = x }));
+                    _types.ReloadData(types.Select(x => new CatalogTypeSelectionViewModel { Value = x }));
                 });
-    }
-
-    public bool CanFilter => SelectedBrand is not null && SelectedType is not null;
-
-    public IReadOnlyList<CatalogItem> Products => _products;
-
-    public IReadOnlyList<CatalogBrandSelectionViewModel> Brands => _brands;
-
-    public IReadOnlyList<CatalogTypeSelectionViewModel> Types => _types;
-
-    public override async Task InitializeAsync()
-    {
-        if (_initialized)
-        {
-            return;
         }
 
-        _initialized = true;
-        await IsBusyFor(
-            async () =>
-            {
-                // Get Catalog, Brands and Types
-                var products = await _appEnvironmentService.CatalogService.GetCatalogAsync();
-                var brands = await _appEnvironmentService.CatalogService.GetCatalogBrandAsync();
-                var types = await _appEnvironmentService.CatalogService.GetCatalogTypeAsync();
-                var basket = await _appEnvironmentService.BasketService.GetBasketAsync();
-
-                BadgeCount = basket?.ItemCount ?? 0;
-
-                _products.ReloadData(products);
-                _brands.ReloadData(brands.Select(x => new CatalogBrandSelectionViewModel { Value = x }));
-                _types.ReloadData(types.Select(x => new CatalogTypeSelectionViewModel { Value = x }));
-            });
-    }
-
-    [RelayCommand]
-    private async Task ViewCatalogItemAsync(CatalogItem catalogItem)
-    {
-        SelectedProduct = null;
-
-        if (catalogItem is null)
+        [RelayCommand]
+        private async Task ViewCatalogItemAsync(CatalogItem catalogItem)
         {
-            return;
+            SelectedProduct = null;
+
+            if (catalogItem is null)
+            {
+                return;
+            }
+
+            await NavigationService.NavigateToAsync(
+                "ViewCatalogItem",
+                new Dictionary<string, object> { ["CatalogItem"] = catalogItem });
         }
 
-        await NavigationService.NavigateToAsync(
-            "ViewCatalogItem",
-            new Dictionary<string, object> { ["CatalogItem"] = catalogItem });
-    }
-
-    [RelayCommand]
-    private void Filter()
-    {
-        IsFiltering = !IsFiltering;
-    }
-
-    [RelayCommand]
-    public void SelectCatalogBrand(CatalogBrand? selectedItem)
-    {
-        foreach (var brand in Brands)
+        [RelayCommand]
+        private void Filter()
         {
-            var isSelection = brand.Value == selectedItem;
-
-            if (!isSelection)
-            {
-                brand.Selected = false;
-                continue;
-            }
-
-            if (brand.Selected)
-            {
-                SelectedBrand = null;
-                brand.Selected = false;
-                continue;
-            }
-
-            SelectedBrand = selectedItem;
-            brand.Selected = true;
+            IsFiltering = !IsFiltering;
         }
-    }
 
-    [RelayCommand]
-    public void SelectCatalogType(CatalogType? selectedItem)
-    {
-        foreach (var type in Types)
+        [RelayCommand]
+        public void SelectCatalogBrand(CatalogBrand? selectedItem)
         {
-            var isSelection = type.Value == selectedItem;
-
-            if (!isSelection)
+            foreach (var brand in Brands)
             {
-                type.Selected = false;
-                continue;
-            }
+                var isSelection = brand.Value == selectedItem;
 
-            if (type.Selected)
-            {
-                SelectedType = null;
-                type.Selected = false;
-                continue;
-            }
-
-            SelectedType = selectedItem;
-            type.Selected = true;
-        }
-    }
-
-    [RelayCommand]
-    private async Task ApplyFilterAsync()
-    {
-        await IsBusyFor(
-            async () =>
-            {
-                if (SelectedBrand is not null && SelectedType is not null)
+                if (!isSelection)
                 {
-                    var filteredProducts =
-                        await _appEnvironmentService.CatalogService.FilterAsync(SelectedBrand.Id, SelectedType.Id);
-                    _products.ReloadData(filteredProducts);
+                    brand.Selected = false;
+                    continue;
                 }
 
-                IsFiltering = false;
-            });
-    }
+                if (brand.Selected)
+                {
+                    SelectedBrand = null;
+                    brand.Selected = false;
+                    continue;
+                }
 
-    [RelayCommand]
-    private async Task ClearFilterAsync()
-    {
-        await IsBusyFor(
-            async () =>
+                SelectedBrand = selectedItem;
+                brand.Selected = true;
+            }
+        }
+
+        [RelayCommand]
+        public void SelectCatalogType(CatalogType? selectedItem)
+        {
+            foreach (var type in Types)
             {
-                SelectCatalogBrand(default);
-                SelectCatalogType(default);
-                var allProducts = await _appEnvironmentService.CatalogService.GetCatalogAsync();
-                _products.ReloadData(allProducts);
-                IsFiltering = false;
-            });
+                var isSelection = type.Value == selectedItem;
+
+                if (!isSelection)
+                {
+                    type.Selected = false;
+                    continue;
+                }
+
+                if (type.Selected)
+                {
+                    SelectedType = null;
+                    type.Selected = false;
+                    continue;
+                }
+
+                SelectedType = selectedItem;
+                type.Selected = true;
+            }
+        }
+
+        [RelayCommand]
+        private async Task ApplyFilterAsync()
+        {
+            await IsBusyFor(
+                async () =>
+                {
+                    if (SelectedBrand is not null && SelectedType is not null)
+                    {
+                        var filteredProducts =
+                            await _appEnvironmentService.CatalogService.FilterAsync(SelectedBrand.Id, SelectedType.Id);
+                        _products.ReloadData(filteredProducts);
+                    }
+
+                    IsFiltering = false;
+                });
+        }
+
+        [RelayCommand]
+        private async Task ClearFilterAsync()
+        {
+            await IsBusyFor(
+                async () =>
+                {
+                    SelectCatalogBrand(default);
+                    SelectCatalogType(default);
+                    var allProducts = await _appEnvironmentService.CatalogService.GetCatalogAsync();
+                    _products.ReloadData(allProducts);
+                    IsFiltering = false;
+                });
+        }
+
+        [RelayCommand]
+        private async Task ViewBasket()
+        {
+            await NavigationService.NavigateToAsync("Basket");
+        }
+
+        [RelayCommand]
+        private async Task ViewProfileAsync()
+        {
+            await NavigationService.NavigateToAsync("Profile");
+        }
+
+        [RelayCommand]
+        private async Task ViewMapAsync()
+        {
+            await NavigationService.NavigateToAsync("Map");
+        }
+
+        [RelayCommand]
+        private async Task ViewSettingsAsync()
+        {
+            await NavigationService.NavigateToAsync("Settings");
+        }
+
+        // Matches ProfileViewModel.LogoutAsync: LoginViewModel's ApplyQueryAttributes picks up the
+        // Logout flag and calls IdentityService.SignOutAsync().
+        [RelayCommand]
+        private async Task LogoutAsync()
+        {
+            await IsBusyFor(
+                async () =>
+                {
+                    await NavigationService.NavigateToAsync(
+                        "//Login",
+                        new Dictionary<string, object> { { "Logout", true } });
+                });
+        }
     }
 
-    [RelayCommand]
-    private async Task ViewBasket()
+    public class CatalogBrandSelectionViewModel : SelectionViewModel<CatalogBrand>
     {
-        await NavigationService.NavigateToAsync("Basket");
     }
 
-    [RelayCommand]
-    private async Task ViewProfileAsync()
+    public class CatalogTypeSelectionViewModel : SelectionViewModel<CatalogType>
     {
-        await NavigationService.NavigateToAsync("Profile");
     }
-
-    [RelayCommand]
-    private async Task ViewMapAsync()
-    {
-        await NavigationService.NavigateToAsync("Map");
-    }
-
-    [RelayCommand]
-    private async Task ViewSettingsAsync()
-    {
-        await NavigationService.NavigateToAsync("Settings");
-    }
-
-    // Matches ProfileViewModel.LogoutAsync: LoginViewModel's ApplyQueryAttributes picks up the
-    // Logout flag and calls IdentityService.SignOutAsync().
-    [RelayCommand]
-    private async Task LogoutAsync()
-    {
-        await IsBusyFor(
-            async () =>
-            {
-                await NavigationService.NavigateToAsync(
-                    "//Login",
-                    new Dictionary<string, object> { { "Logout", true } });
-            });
-    }
-}
-
-public class CatalogBrandSelectionViewModel : SelectionViewModel<CatalogBrand>
-{
-}
-
-public class CatalogTypeSelectionViewModel : SelectionViewModel<CatalogType>
-{
 }

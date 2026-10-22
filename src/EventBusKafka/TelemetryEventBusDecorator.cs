@@ -1,26 +1,27 @@
-﻿namespace eShop.EventBusKafka;
-
-using System.Diagnostics;
-
-public sealed class TelemetryEventBusDecorator(IEventBus inner, KafkaTelemetry kafkaTelemetry) : IEventBus
+﻿namespace eShop.EventBusKafka
 {
-    public async Task PublishAsync(IntegrationEvent @event)
+    using System.Diagnostics;
+
+    public sealed class TelemetryEventBusDecorator(IEventBus inner, KafkaTelemetry kafkaTelemetry) : IEventBus
     {
-        var topicName = @event.GetType().Name;
-
-        using var activity = kafkaTelemetry.ActivitySource.StartActivity($"{topicName} send", ActivityKind.Producer);
-
-        KafkaTelemetry.SetActivityContext(activity, topicName, "send");
-
-        try
+        public async Task PublishAsync(IntegrationEvent @event)
         {
-            await inner.PublishAsync(@event);
-        }
-        catch (Exception ex)
-        {
-            activity.SetExceptionTags(ex);
+            var topicName = @event.GetType().Name;
 
-            throw;
+            using var activity = kafkaTelemetry.ActivitySource.StartActivity($"{topicName} send", ActivityKind.Producer);
+
+            KafkaTelemetry.SetActivityContext(activity, topicName, "send");
+
+            try
+            {
+                await inner.PublishAsync(@event);
+            }
+            catch (Exception ex)
+            {
+                activity.SetExceptionTags(ex);
+
+                throw;
+            }
         }
     }
 }

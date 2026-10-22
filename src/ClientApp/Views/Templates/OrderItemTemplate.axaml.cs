@@ -1,11 +1,12 @@
 ﻿using Avalonia.Controls;
 
-namespace eShop.ClientApp.Views.Templates;
-
-public partial class OrderItemTemplate : UserControl
+namespace eShop.ClientApp.Views.Templates
 {
-    public OrderItemTemplate()
+    public partial class OrderItemTemplate : UserControl
     {
-        InitializeComponent();
+        public OrderItemTemplate()
+        {
+            InitializeComponent();
+        }
     }
 }

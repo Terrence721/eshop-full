@@ -1,21 +1,22 @@
-﻿namespace eShop.ClientApp.Helpers;
-
-public static class UriHelper
+﻿namespace eShop.ClientApp.Helpers
 {
-    private static readonly char[] _trims = ['\\', '/'];
-    public static string CombineUri(params string[] uriParts)
+    public static class UriHelper
     {
-        var uri = string.Empty;
-
-        if (uriParts != null && uriParts.Length > 0)
+        private static readonly char[] _trims = ['\\', '/'];
+        public static string CombineUri(params string[] uriParts)
         {
-            uri = (uriParts[0] ?? string.Empty).TrimEnd(_trims);
-            for (var i = 1; i < uriParts.Length; i++)
-            {
-                uri = $"{uri.TrimEnd(_trims)}/{(uriParts[i] ?? string.Empty).TrimStart(_trims)}";
-            }
-        }
+            var uri = string.Empty;
 
-        return uri;
+            if (uriParts != null && uriParts.Length > 0)
+            {
+                uri = (uriParts[0] ?? string.Empty).TrimEnd(_trims);
+                for (var i = 1; i < uriParts.Length; i++)
+                {
+                    uri = $"{uri.TrimEnd(_trims)}/{(uriParts[i] ?? string.Empty).TrimStart(_trims)}";
+                }
+            }
+
+            return uri;
+        }
     }
 }

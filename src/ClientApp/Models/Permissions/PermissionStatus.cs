@@ -1,10 +1,11 @@
-﻿namespace eShop.ClientApp.Models.Permissions;
-
-public enum PermissionStatus
+﻿namespace eShop.ClientApp.Models.Permissions
 {
-    Denied,
-    Disabled,
-    Granted,
-    Restricted,
-    Unknown
+    public enum PermissionStatus
+    {
+        Denied,
+        Disabled,
+        Granted,
+        Restricted,
+        Unknown
+    }
 }

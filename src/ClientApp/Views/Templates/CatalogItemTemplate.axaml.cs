@@ -1,11 +1,12 @@
 ﻿using Avalonia.Controls;
 
-namespace eShop.ClientApp.Views.Templates;
-
-public partial class CatalogItemTemplate : UserControl
+namespace eShop.ClientApp.Views.Templates
 {
-    public CatalogItemTemplate()
+    public partial class CatalogItemTemplate : UserControl
     {
-        InitializeComponent();
+        public CatalogItemTemplate()
+        {
+            InitializeComponent();
+        }
     }
 }

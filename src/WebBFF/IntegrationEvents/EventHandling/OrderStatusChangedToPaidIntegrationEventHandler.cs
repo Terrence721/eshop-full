@@ -1,14 +1,15 @@
-﻿namespace eShop.WebBFF.IntegrationEvents.EventHandling;
-
-public class OrderStatusChangedToPaidIntegrationEventHandler(
-    OrderStatusNotifications notifications,
-    ILogger<OrderStatusChangedToPaidIntegrationEventHandler> logger) :
-    IIntegrationEventHandler<OrderStatusChangedToPaidIntegrationEvent>
+﻿namespace eShop.WebBFF.IntegrationEvents.EventHandling
 {
-    public Task Handle(OrderStatusChangedToPaidIntegrationEvent @event)
+    public class OrderStatusChangedToPaidIntegrationEventHandler(
+        OrderStatusNotifications notifications,
+        ILogger<OrderStatusChangedToPaidIntegrationEventHandler> logger) :
+        IIntegrationEventHandler<OrderStatusChangedToPaidIntegrationEvent>
     {
-        logger.LogInformation("Handling integration event: {IntegrationEventId} - ({@IntegrationEvent})", @event.Id, @event);
+        public Task Handle(OrderStatusChangedToPaidIntegrationEvent @event)
+        {
+            logger.LogInformation("Handling integration event: {IntegrationEventId} - ({@IntegrationEvent})", @event.Id, @event);
 
-        return notifications.NotifyOrderStatusChangedAsync(@event.BuyerIdentityGuid);
+            return notifications.NotifyOrderStatusChangedAsync(@event.BuyerIdentityGuid);
+        }
     }
 }

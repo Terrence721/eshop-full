@@ -1,6 +1,7 @@
-﻿namespace Microsoft.AspNetCore.Hosting;
-
-public interface IDbSeeder<in TContext> where TContext : DbContext
+﻿namespace Microsoft.AspNetCore.Hosting
 {
-    Task SeedAsync(TContext context);
+    public interface IDbSeeder<in TContext> where TContext : DbContext
+    {
+        Task SeedAsync(TContext context);
+    }
 }

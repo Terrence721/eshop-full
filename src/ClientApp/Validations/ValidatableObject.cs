@@ -1,47 +1,48 @@
-﻿namespace eShop.ClientApp.Validations;
-
-public class ValidatableObject<T> : ObservableObject, IValidity
+﻿namespace eShop.ClientApp.Validations
 {
-    private IEnumerable<string> _errors;
-    private bool _isValid;
-    private T _value = default!;
-
-    public ValidatableObject()
+    public class ValidatableObject<T> : ObservableObject, IValidity
     {
-        _isValid = true;
-        _errors = [];
-    }
+        private IEnumerable<string> _errors;
+        private bool _isValid;
+        private T _value = default!;
 
-    public List<IValidationRule<T>> Validations { get; } = [];
+        public ValidatableObject()
+        {
+            _isValid = true;
+            _errors = [];
+        }
 
-    public IEnumerable<string> Errors
-    {
-        get => _errors;
-        private set => SetProperty(ref _errors, value);
-    }
+        public List<IValidationRule<T>> Validations { get; } = [];
 
-    public T Value
-    {
-        get => _value;
-        set => SetProperty(ref _value, value);
-    }
+        public IEnumerable<string> Errors
+        {
+            get => _errors;
+            private set => SetProperty(ref _errors, value);
+        }
 
-    public bool IsValid
-    {
-        get => _isValid;
-        private set => SetProperty(ref _isValid, value);
-    }
+        public T Value
+        {
+            get => _value;
+            set => SetProperty(ref _value, value);
+        }
 
-    public bool Validate()
-    {
-        Errors = Validations
-                     ?.Where(v => !v.Check(Value))
-                     ?.Select(v => v.ValidationMessage)
-                     ?.ToArray()
-                 ?? Enumerable.Empty<string>();
+        public bool IsValid
+        {
+            get => _isValid;
+            private set => SetProperty(ref _isValid, value);
+        }
 
-        IsValid = !Errors.Any();
+        public bool Validate()
+        {
+            Errors = Validations
+                         ?.Where(v => !v.Check(Value))
+                         ?.Select(v => v.ValidationMessage)
+                         ?.ToArray()
+                     ?? Enumerable.Empty<string>();
 
-        return IsValid;
+            IsValid = !Errors.Any();
+
+            return IsValid;
+        }
     }
 }

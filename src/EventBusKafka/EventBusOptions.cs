@@ -1,7 +1,8 @@
-﻿namespace eShop.EventBusKafka;
-
-public class EventBusOptions
+﻿namespace eShop.EventBusKafka
 {
-    public required string SubscriptionClientName { get; set; }
-    public int RetryCount { get; set; } = 10;
+    public class EventBusOptions
+    {
+        public required string SubscriptionClientName { get; set; }
+        public int RetryCount { get; set; } = 10;
+    }
 }

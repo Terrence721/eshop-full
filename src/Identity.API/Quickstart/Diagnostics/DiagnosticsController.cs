@@ -5,39 +5,40 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace IdentityServerHost.Quickstart.UI;
-
-[Authorize]
-public class DiagnosticsController : QuickstartControllerBase
+namespace IdentityServerHost.Quickstart.UI
 {
-    [HttpGet]
-    public async Task<ActionResult<DiagnosticsViewModel>> Index()
+    [Authorize]
+    public class DiagnosticsController : QuickstartControllerBase
     {
-        var remoteIpAddress = HttpContext.Connection.RemoteIpAddress?.ToString();
-        var localAddresses = new[] { "127.0.0.1", "::1", HttpContext.Connection.LocalIpAddress?.ToString() };
-        if (remoteIpAddress is null || !localAddresses.Contains(remoteIpAddress))
+        [HttpGet]
+        public async Task<ActionResult<DiagnosticsViewModel>> Index()
         {
-            return NotFound();
+            var remoteIpAddress = HttpContext.Connection.RemoteIpAddress?.ToString();
+            var localAddresses = new[] { "127.0.0.1", "::1", HttpContext.Connection.LocalIpAddress?.ToString() };
+            if (remoteIpAddress is null || !localAddresses.Contains(remoteIpAddress))
+            {
+                return NotFound();
+            }
+
+            var result = await HttpContext.AuthenticateAsync();
+            var properties = result.Properties?.Items ?? new Dictionary<string, string?>();
+
+            var clients = Enumerable.Empty<string>();
+            if (properties.TryGetValue("client_list", out var encoded) && encoded is not null)
+            {
+                var bytes = Base64Url.DecodeFromChars(encoded);
+                var value = Encoding.UTF8.GetString(bytes);
+                clients = JsonSerializer.Deserialize<string[]>(value) ?? [];
+            }
+
+            var model = new DiagnosticsViewModel
+            {
+                Claims = (result.Principal?.Claims ?? []).Select(c => new ClaimViewModel { Type = c.Type, Value = c.Value }),
+                Properties = properties,
+                Clients = clients
+            };
+
+            return Ok(model);
         }
-
-        var result = await HttpContext.AuthenticateAsync();
-        var properties = result.Properties?.Items ?? new Dictionary<string, string?>();
-
-        var clients = Enumerable.Empty<string>();
-        if (properties.TryGetValue("client_list", out var encoded) && encoded is not null)
-        {
-            var bytes = Base64Url.DecodeFromChars(encoded);
-            var value = Encoding.UTF8.GetString(bytes);
-            clients = JsonSerializer.Deserialize<string[]>(value) ?? [];
-        }
-
-        var model = new DiagnosticsViewModel
-        {
-            Claims = (result.Principal?.Claims ?? []).Select(c => new ClaimViewModel { Type = c.Type, Value = c.Value }),
-            Properties = properties,
-            Clients = clients
-        };
-
-        return Ok(model);
     }
 }

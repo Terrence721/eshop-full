@@ -1,6 +1,7 @@
-﻿namespace Microsoft.Extensions.DependencyInjection;
-
-public interface IEventBusBuilder
+﻿namespace Microsoft.Extensions.DependencyInjection
 {
-    public IServiceCollection Services { get; }
+    public interface IEventBusBuilder
+    {
+        public IServiceCollection Services { get; }
+    }
 }

@@ -3,59 +3,60 @@ using eShop.EventBus.Events;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 
-namespace eShop.EventBus.UnitTests.Extensions;
-
-[TestClass]
-public class EventBusBuilderExtensionsTests
+namespace eShop.EventBus.UnitTests.Extensions
 {
-    private sealed record TestEvent : IntegrationEvent;
-
-    private sealed class TestHandler : IIntegrationEventHandler<TestEvent>
+    [TestClass]
+    public class EventBusBuilderExtensionsTests
     {
-        public Task Handle(TestEvent @event) => Task.CompletedTask;
-    }
+        private sealed record TestEvent : IntegrationEvent;
 
-    private sealed class TestEventBusBuilder : IEventBusBuilder
-    {
-        public IServiceCollection Services { get; } = new ServiceCollection();
-    }
+        private sealed class TestHandler : IIntegrationEventHandler<TestEvent>
+        {
+            public Task Handle(TestEvent @event) => Task.CompletedTask;
+        }
 
-    [TestMethod]
-    public void ConfigureJsonOptions_applies_the_configure_action_to_the_subscription_JsonSerializerOptions()
-    {
-        var builder = new TestEventBusBuilder();
+        private sealed class TestEventBusBuilder : IEventBusBuilder
+        {
+            public IServiceCollection Services { get; } = new ServiceCollection();
+        }
 
-        builder.ConfigureJsonOptions(o => o.WriteIndented = true);
+        [TestMethod]
+        public void ConfigureJsonOptions_applies_the_configure_action_to_the_subscription_JsonSerializerOptions()
+        {
+            var builder = new TestEventBusBuilder();
 
-        using var provider = builder.Services.BuildServiceProvider();
-        var info = provider.GetRequiredService<IOptions<EventBusSubscriptionInfo>>().Value;
+            builder.ConfigureJsonOptions(o => o.WriteIndented = true);
 
-        Assert.IsTrue(info.JsonSerializerOptions.WriteIndented);
-    }
+            using var provider = builder.Services.BuildServiceProvider();
+            var info = provider.GetRequiredService<IOptions<EventBusSubscriptionInfo>>().Value;
 
-    [TestMethod]
-    public void AddSubscription_registers_the_handler_as_a_keyed_transient_service()
-    {
-        var builder = new TestEventBusBuilder();
+            Assert.IsTrue(info.JsonSerializerOptions.WriteIndented);
+        }
 
-        builder.AddSubscription<TestEvent, TestHandler>();
+        [TestMethod]
+        public void AddSubscription_registers_the_handler_as_a_keyed_transient_service()
+        {
+            var builder = new TestEventBusBuilder();
 
-        using var provider = builder.Services.BuildServiceProvider();
-        var handler = provider.GetRequiredKeyedService<IIntegrationEventHandler>(typeof(TestEvent));
+            builder.AddSubscription<TestEvent, TestHandler>();
 
-        Assert.IsInstanceOfType<TestHandler>(handler);
-    }
+            using var provider = builder.Services.BuildServiceProvider();
+            var handler = provider.GetRequiredKeyedService<IIntegrationEventHandler>(typeof(TestEvent));
 
-    [TestMethod]
-    public void AddSubscription_records_the_event_type_in_EventTypes()
-    {
-        var builder = new TestEventBusBuilder();
+            Assert.IsInstanceOfType<TestHandler>(handler);
+        }
 
-        builder.AddSubscription<TestEvent, TestHandler>();
+        [TestMethod]
+        public void AddSubscription_records_the_event_type_in_EventTypes()
+        {
+            var builder = new TestEventBusBuilder();
 
-        using var provider = builder.Services.BuildServiceProvider();
-        var info = provider.GetRequiredService<IOptions<EventBusSubscriptionInfo>>().Value;
+            builder.AddSubscription<TestEvent, TestHandler>();
 
-        Assert.AreEqual(typeof(TestEvent), info.EventTypes[nameof(TestEvent)]);
+            using var provider = builder.Services.BuildServiceProvider();
+            var info = provider.GetRequiredService<IOptions<EventBusSubscriptionInfo>>().Value;
+
+            Assert.AreEqual(typeof(TestEvent), info.EventTypes[nameof(TestEvent)]);
+        }
     }
 }

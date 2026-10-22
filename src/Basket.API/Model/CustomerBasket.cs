@@ -1,18 +1,19 @@
-namespace eShop.Basket.API.Model;
-
-/// <summary>
-/// A customer's basket, containing line items.
-/// </summary>
-public class CustomerBasket
+namespace eShop.Basket.API.Model
 {
-    public string? BuyerId { get; set; }
-
-    public List<BasketItem> Items { get; set; } = [];
-
-    public CustomerBasket() { }
-
-    public CustomerBasket(string customerId)
+    /// <summary>
+    /// A customer's basket, containing line items.
+    /// </summary>
+    public class CustomerBasket
     {
-        BuyerId = customerId;
+        public string? BuyerId { get; set; }
+
+        public List<BasketItem> Items { get; set; } = [];
+
+        public CustomerBasket() { }
+
+        public CustomerBasket(string customerId)
+        {
+            BuyerId = customerId;
+        }
     }
 }

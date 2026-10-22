@@ -1,12 +1,13 @@
-﻿namespace eShop.ClientApp.Models.Catalog;
-
-public class CatalogType
+﻿namespace eShop.ClientApp.Models.Catalog
 {
-    public int Id { get; set; }
-    public string Type { get; set; } = null!;
-
-    public override string ToString()
+    public class CatalogType
     {
-        return Type;
+        public int Id { get; set; }
+        public string Type { get; set; } = null!;
+
+        public override string ToString()
+        {
+            return Type;
+        }
     }
 }
