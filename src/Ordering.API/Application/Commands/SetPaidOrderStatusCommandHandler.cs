@@ -1,7 +1,7 @@
 ﻿namespace eShop.Ordering.API.Application.Commands;
 
 /// <summary>
-/// Handler moving an order to the paid status (plus idempotent wrapper).
+/// Handler moving an order to the paid status, plus its idempotent wrapper.
 /// </summary>
 // Regular CommandHandler
 public class SetPaidOrderStatusCommandHandler : IRequestHandler<SetPaidOrderStatusCommand, bool>
@@ -37,6 +37,9 @@ public class SetPaidOrderStatusCommandHandler : IRequestHandler<SetPaidOrderStat
 
 
 // Use for Idempotency in Command process
+/// <summary>
+/// Identified (idempotent) wrapper around <see cref="SetPaidOrderStatusCommandHandler" />.
+/// </summary>
 public class SetPaidIdentifiedOrderStatusCommandHandler : IdentifiedCommandHandler<SetPaidOrderStatusCommand, bool>
 {
     public SetPaidIdentifiedOrderStatusCommandHandler(
