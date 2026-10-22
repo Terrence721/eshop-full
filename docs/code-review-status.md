@@ -151,3 +151,4 @@ Result legend: `OK` = reviewed, no changes required; `FIX` = reviewed and change
 | `src/Ordering.API/Application/Models/BasketItem.cs` | OK | Bogus DTO handed over from Basket creation; init-only null-aware props; class-level XML doc added; no functional changes (primary-constructor N/A - no .ctor). |
 | `src/Ordering.API/Application/Queries/IOrderQueries.cs` | OK | Read-model contract (three methods); focused, ISP-compliant; interface-level XML doc added; no functional changes. |
 | `src/Ordering.API/Application/Queries/OrderQueries.cs` | OK | EF Core read-model implementation (order details, user orders, card types); primary-constructor cohesive; class-level XML doc added; SOLID/DRY/ISP checked; no functional changes. |
+| `src/Ordering.API/Application/Queries/OrderViewModel.cs` | OK | Query result DTO records (Order, Orderitem, OrderSummary, CardType); body records / init refs; class-level XML doc added; SOLID/DRY/ISP checked; no functional changes. |
