@@ -1,9 +1,24 @@
 ﻿namespace Webhooks.API.IntegrationEvents;
 
-public class ProductPriceChangedIntegrationEventHandler : IIntegrationEventHandler<ProductPriceChangedIntegrationEvent>
+/// <summary>
+/// Handles <see cref="ProductPriceChangedIntegrationEvent"/> by notifying price-change webhook subscribers.
+/// </summary>
+public class ProductPriceChangedIntegrationEventHandler(
+    IWebhooksRetriever retriever,
+    IWebhooksSender sender,
+    ILogger<ProductPriceChangedIntegrationEventHandler> logger) : IIntegrationEventHandler<ProductPriceChangedIntegrationEvent>
 {
-    public Task Handle(ProductPriceChangedIntegrationEvent @event)
+    /// <summary>
+    /// Retrieves price-change webhook subscriptions and dispatches the event payload to each.
+    /// </summary>
+    public async Task Handle(ProductPriceChangedIntegrationEvent @event)
     {
-        return Task.CompletedTask;
+        var subscriptions = await retriever.GetSubscriptionsOfType(WebhookType.CatalogItemPriceChange);
+
+        logger.LogInformation("Received ProductPriceChangedIntegrationEvent and got {SubscriptionsCount} subscriptions to process", subscriptions.Count());
+
+        var whook = new WebhookData(WebhookType.CatalogItemPriceChange, @event);
+
+        await sender.SendAll(subscriptions, whook);
     }
 }
