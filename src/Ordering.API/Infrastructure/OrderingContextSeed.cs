@@ -1,7 +1,10 @@
-﻿namespace eShop.Ordering.API.Infrastructure;
+namespace eShop.Ordering.API.Infrastructure;
 
 using eShop.Ordering.Domain.AggregatesModel.BuyerAggregate;
 
+/// <summary>
+/// Seeds predefined card types into OrderingContext when missing.
+/// </summary>
 public class OrderingContextSeed : IDbSeeder<OrderingContext>
 {
     public async Task SeedAsync(OrderingContext context)
