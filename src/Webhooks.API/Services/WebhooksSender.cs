@@ -1,7 +1,13 @@
 ﻿namespace Webhooks.API.Services;
 
+/// <summary>
+/// Sends webhook payloads to all receivers concurrently.
+/// </summary>
 public class WebhooksSender(IHttpClientFactory httpClientFactory, ILogger<WebhooksSender> logger) : IWebhooksSender
 {
+    /// <summary>
+    /// Sends <paramref name="data" /> to every receiver concurrently.
+    /// </summary>
     public async Task SendAll(IEnumerable<WebhookSubscription> receivers, WebhookData data)
     {
         var client = httpClientFactory.CreateClient();
@@ -31,5 +37,4 @@ public class WebhooksSender(IHttpClientFactory httpClientFactory, ILogger<Webhoo
 
         return client.SendAsync(request);
     }
-
 }
