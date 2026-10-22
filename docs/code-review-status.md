@@ -188,6 +188,7 @@ Result legend: `OK` = reviewed, no changes required; `FIX` = reviewed and change
 | `src/Ordering.API/Infrastructure/OrderingContextSeed.cs` | OK | Seeds predefined card types when missing; walks DB context (seed adapter); class-level XML doc added; no functional changes; primary constructor N/A. |
 | `src/Ordering.API/Infrastructure/Services/IIdentityService.cs` | OK | Focused two-method contract for resolving the current user's "sub" identity and display name from the ambient HttpContext; ISP-compliant, DIP-friendly seam; interface-level and member XML docs added; SOLID/DRY checked; no functional changes. |
 | `src/Ordering.API/Infrastructure/Services/IdentityService.cs` | OK | HttpContext-backed IIdentityService implementation (primary constructor); reads "sub" claim and Identity.Name; null-forgiving documented; class-level XML doc added; SOLID/DRY/ISP checked; no functional changes. |
+
 ## Webhooks.API
 
 | File | Result | Notes |

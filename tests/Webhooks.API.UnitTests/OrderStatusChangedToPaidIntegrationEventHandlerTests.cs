@@ -17,7 +17,7 @@ public class OrderStatusChangedToPaidIntegrationEventHandlerTests
         retriever.GetSubscriptionsOfType(WebhookType.OrderPaid).Returns(subscriptions);
         var sender = Substitute.For<IWebhooksSender>();
         var handler = new OrderStatusChangedToPaidIntegrationEventHandler(
-            retriever, sender, Substitute.For<ILogger<OrderStatusChangedToShippedIntegrationEventHandler>>());
+            retriever, sender, Substitute.For<ILogger<OrderStatusChangedToPaidIntegrationEventHandler>>());
         var @event = new OrderStatusChangedToPaidIntegrationEvent(1, [new OrderStockItem(10, 2)]);
 
         await handler.Handle(@event);
