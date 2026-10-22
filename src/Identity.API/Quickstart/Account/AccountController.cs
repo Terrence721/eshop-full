@@ -14,33 +14,22 @@ using Microsoft.AspNetCore.Mvc;
 namespace IdentityServerHost.Quickstart.UI;
 
 [AllowAnonymous]
-public class AccountController : QuickstartControllerBase
+public class AccountController(
+    UserManager<ApplicationUser> userManager,
+    SignInManager<ApplicationUser> signInManager,
+    IIdentityServerInteractionService interaction,
+    IClientStore clientStore,
+    IAuthenticationSchemeProvider schemeProvider,
+    IAuthenticationHandlerProvider handlerProvider,
+    IEventService events) : QuickstartControllerBase
 {
-    private readonly UserManager<ApplicationUser> _userManager;
-    private readonly SignInManager<ApplicationUser> _signInManager;
-    private readonly IIdentityServerInteractionService _interaction;
-    private readonly IClientStore _clientStore;
-    private readonly IAuthenticationSchemeProvider _schemeProvider;
-    private readonly IAuthenticationHandlerProvider _handlerProvider;
-    private readonly IEventService _events;
-
-    public AccountController(
-        UserManager<ApplicationUser> userManager,
-        SignInManager<ApplicationUser> signInManager,
-        IIdentityServerInteractionService interaction,
-        IClientStore clientStore,
-        IAuthenticationSchemeProvider schemeProvider,
-        IAuthenticationHandlerProvider handlerProvider,
-        IEventService events)
-    {
-        _userManager = userManager;
-        _signInManager = signInManager;
-        _interaction = interaction;
-        _clientStore = clientStore;
-        _schemeProvider = schemeProvider;
-        _handlerProvider = handlerProvider;
-        _events = events;
-    }
+    private readonly UserManager<ApplicationUser> _userManager = userManager;
+    private readonly SignInManager<ApplicationUser> _signInManager = signInManager;
+    private readonly IIdentityServerInteractionService _interaction = interaction;
+    private readonly IClientStore _clientStore = clientStore;
+    private readonly IAuthenticationSchemeProvider _schemeProvider = schemeProvider;
+    private readonly IAuthenticationHandlerProvider _handlerProvider = handlerProvider;
+    private readonly IEventService _events = events;
 
     /// <summary>
     /// Entry point into the login workflow

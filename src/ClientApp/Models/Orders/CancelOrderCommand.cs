@@ -1,11 +1,6 @@
 ﻿namespace eShop.ClientApp.Models.Orders;
 
-public class CancelOrderCommand
+public class CancelOrderCommand(int orderNumber)
 {
-    public CancelOrderCommand(int orderNumber)
-    {
-        OrderNumber = orderNumber;
-    }
-
-    public int OrderNumber { get; }
+    public int OrderNumber { get; } = orderNumber;
 }

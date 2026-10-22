@@ -12,21 +12,14 @@ namespace IdentityServerHost.Quickstart.UI;
 /// This controller processes the consent UI
 /// </summary>
 [Authorize]
-public class ConsentController : QuickstartControllerBase
+public class ConsentController(
+    IIdentityServerInteractionService interaction,
+    ConsentResponseBuilder responseBuilder,
+    ILogger<ConsentController> logger) : QuickstartControllerBase
 {
-    private readonly IIdentityServerInteractionService _interaction;
-    private readonly ConsentResponseBuilder _responseBuilder;
-    private readonly ILogger<ConsentController> _logger;
-
-    public ConsentController(
-        IIdentityServerInteractionService interaction,
-        ConsentResponseBuilder responseBuilder,
-        ILogger<ConsentController> logger)
-    {
-        _interaction = interaction;
-        _responseBuilder = responseBuilder;
-        _logger = logger;
-    }
+    private readonly IIdentityServerInteractionService _interaction = interaction;
+    private readonly ConsentResponseBuilder _responseBuilder = responseBuilder;
+    private readonly ILogger<ConsentController> _logger = logger;
 
     /// <summary>
     /// Shows the consent screen

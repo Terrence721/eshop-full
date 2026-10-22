@@ -11,11 +11,9 @@ public class ResilientEventBusDecoratorTests
 {
     private sealed record TestEvent : IntegrationEvent;
 
-    private sealed class FlakyEventBus : IEventBus
+    private sealed class FlakyEventBus(params Exception[] exceptionsToThrow) : IEventBus
     {
-        private readonly Queue<Exception> _exceptionsToThrow;
-
-        public FlakyEventBus(params Exception[] exceptionsToThrow) => _exceptionsToThrow = new(exceptionsToThrow);
+        private readonly Queue<Exception> _exceptionsToThrow = new(exceptionsToThrow);
 
         public int CallCount { get; private set; }
 

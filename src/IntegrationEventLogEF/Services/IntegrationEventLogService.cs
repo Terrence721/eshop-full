@@ -1,15 +1,10 @@
 ﻿namespace eShop.IntegrationEventLogEF.Services;
 
-public sealed class IntegrationEventLogService<TContext> : IIntegrationEventLogService, IDisposable
+public sealed class IntegrationEventLogService<TContext>(TContext context) : IIntegrationEventLogService, IDisposable
     where TContext : DbContext
 {
     private volatile bool _disposedValue;
-    private readonly TContext _context;
-
-    public IntegrationEventLogService(TContext context)
-    {
-        _context = context;
-    }
+    private readonly TContext _context = context;
 
     public async Task<IReadOnlyList<IntegrationEventLogEntry>> RetrieveEventLogsPendingToPublishAsync(Guid transactionId)
     {

@@ -3,25 +3,17 @@
 /// <summary>
 /// Publishes an order-status-changed (shipped) integration event when an order ships.
 /// </summary>
-public class OrderShippedDomainEventHandler
-                : INotificationHandler<OrderShippedDomainEvent>
+public class OrderShippedDomainEventHandler(
+    IOrderRepository orderRepository,
+    ILogger<OrderShippedDomainEventHandler> logger,
+    IBuyerRepository buyerRepository,
+    IOrderingIntegrationEventService orderingIntegrationEventService)
+                                : INotificationHandler<OrderShippedDomainEvent>
 {
-    private readonly IOrderRepository _orderRepository;
-    private readonly IBuyerRepository _buyerRepository;
-    private readonly IOrderingIntegrationEventService _orderingIntegrationEventService;
-    private readonly ILogger _logger;
-
-    public OrderShippedDomainEventHandler(
-        IOrderRepository orderRepository,
-        ILogger<OrderShippedDomainEventHandler> logger,
-        IBuyerRepository buyerRepository,
-        IOrderingIntegrationEventService orderingIntegrationEventService)
-    {
-        _orderRepository = orderRepository ?? throw new ArgumentNullException(nameof(orderRepository));
-        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-        _buyerRepository = buyerRepository ?? throw new ArgumentNullException(nameof(buyerRepository));
-        _orderingIntegrationEventService = orderingIntegrationEventService ?? throw new ArgumentNullException(nameof(orderingIntegrationEventService));
-    }
+    private readonly IOrderRepository _orderRepository = orderRepository ?? throw new ArgumentNullException(nameof(orderRepository));
+    private readonly IBuyerRepository _buyerRepository = buyerRepository ?? throw new ArgumentNullException(nameof(buyerRepository));
+    private readonly IOrderingIntegrationEventService _orderingIntegrationEventService = orderingIntegrationEventService ?? throw new ArgumentNullException(nameof(orderingIntegrationEventService));
+    private readonly ILogger _logger = logger ?? throw new ArgumentNullException(nameof(logger));
 
     public async Task Handle(OrderShippedDomainEvent domainEvent, CancellationToken cancellationToken)
     {

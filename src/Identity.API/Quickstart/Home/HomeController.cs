@@ -7,21 +7,14 @@ using Microsoft.AspNetCore.Mvc;
 namespace IdentityServerHost.Quickstart.UI;
 
 [AllowAnonymous]
-public class HomeController : QuickstartControllerBase
+public class HomeController(
+    IIdentityServerInteractionService interaction,
+    IWebHostEnvironment environment,
+    ILogger<HomeController> logger) : QuickstartControllerBase
 {
-    private readonly IIdentityServerInteractionService _interaction;
-    private readonly IWebHostEnvironment _environment;
-    private readonly ILogger _logger;
-
-    public HomeController(
-        IIdentityServerInteractionService interaction,
-        IWebHostEnvironment environment,
-        ILogger<HomeController> logger)
-    {
-        _interaction = interaction;
-        _environment = environment;
-        _logger = logger;
-    }
+    private readonly IIdentityServerInteractionService _interaction = interaction;
+    private readonly IWebHostEnvironment _environment = environment;
+    private readonly ILogger _logger = logger;
 
     [HttpGet]
     public ActionResult<IndexViewModel> Index()

@@ -3,30 +3,23 @@
 /// <summary>
 /// Serialized webhook payload sent to subscribers.
 /// </summary>
-public class WebhookData
+/// <remarks>
+/// Creates a <see cref="WebhookData" /> from a hook type and event payload.
+/// </remarks>
+public class WebhookData(WebhookType hookType, object data)
 {
     /// <summary>
     /// Timestamp (UTC) the payload was created.
     /// </summary>
-    public DateTime When { get; }
+    public DateTime When { get; } = DateTime.UtcNow;
 
     /// <summary>
     /// JSON-serialized webhook payload body.
     /// </summary>
-    public string Payload { get; }
+    public string Payload { get; } = JsonSerializer.Serialize(data);
 
     /// <summary>
     /// String name of the webhook event type.
     /// </summary>
-    public string Type { get; }
-
-    /// <summary>
-    /// Creates a <see cref="WebhookData" /> from a hook type and event payload.
-    /// </summary>
-    public WebhookData(WebhookType hookType, object data)
-    {
-        When = DateTime.UtcNow;
-        Type = hookType.ToString();
-        Payload = JsonSerializer.Serialize(data);
-    }
+    public string Type { get; } = hookType.ToString();
 }

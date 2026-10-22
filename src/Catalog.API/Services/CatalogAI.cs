@@ -7,20 +7,13 @@ namespace eShop.Catalog.API.Services;
 /// <summary>
 /// Provides embedding generation for catalog items using an optional <see cref="IEmbeddingGenerator{TInput,TEmbedding}"/>.
 /// </summary>
-public sealed class CatalogAI : ICatalogAI
+public sealed class CatalogAI(IOptions<CatalogOptions> options, ILogger<CatalogAI> logger, IEmbeddingGenerator<string, Embedding<float>>? embeddingGenerator = null) : ICatalogAI
 {
-    private readonly int _embeddingDimensions;
-    private readonly IEmbeddingGenerator<string, Embedding<float>>? _embeddingGenerator;
+    private readonly int _embeddingDimensions = options.Value.EmbeddingDimensions;
+    private readonly IEmbeddingGenerator<string, Embedding<float>>? _embeddingGenerator = embeddingGenerator;
 
     /// <summary>Logger for use in AI operations.</summary>
-    private readonly ILogger _logger;
-
-    public CatalogAI(IOptions<CatalogOptions> options, ILogger<CatalogAI> logger, IEmbeddingGenerator<string, Embedding<float>>? embeddingGenerator = null)
-    {
-        _embeddingDimensions = options.Value.EmbeddingDimensions;
-        _embeddingGenerator = embeddingGenerator;
-        _logger = logger;
-    }
+    private readonly ILogger _logger = logger;
 
     /// <inheritdoc/>
     public bool IsEnabled => _embeddingGenerator is not null;

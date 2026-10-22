@@ -9,21 +9,14 @@ using Microsoft.AspNetCore.Mvc;
 namespace IdentityServerHost.Quickstart.UI;
 
 [Authorize]
-public class DeviceController : QuickstartControllerBase
+public class DeviceController(
+    IDeviceFlowInteractionService interaction,
+    ConsentResponseBuilder responseBuilder,
+    ILogger<DeviceController> logger) : QuickstartControllerBase
 {
-    private readonly IDeviceFlowInteractionService _interaction;
-    private readonly ConsentResponseBuilder _responseBuilder;
-    private readonly ILogger<DeviceController> _logger;
-
-    public DeviceController(
-        IDeviceFlowInteractionService interaction,
-        ConsentResponseBuilder responseBuilder,
-        ILogger<DeviceController> logger)
-    {
-        _interaction = interaction;
-        _responseBuilder = responseBuilder;
-        _logger = logger;
-    }
+    private readonly IDeviceFlowInteractionService _interaction = interaction;
+    private readonly ConsentResponseBuilder _responseBuilder = responseBuilder;
+    private readonly ILogger<DeviceController> _logger = logger;
 
     [HttpGet]
     public async Task<ActionResult<DeviceIndexResult>> Index([FromQuery(Name = "userCode")] string? userCode, CancellationToken cancellationToken)

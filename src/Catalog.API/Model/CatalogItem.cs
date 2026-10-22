@@ -4,13 +4,12 @@ using Pgvector;
 
 namespace eShop.Catalog.API.Model;
 
-public class CatalogItem
+public class CatalogItem(string name)
 {
     public int Id { get; set; }
 
     [Required]
-    public string Name { get; set; }
-
+    public string Name { get; set; } = name;
     public string? Description { get; set; }
 
     public decimal Price { get; set; }
@@ -43,8 +42,6 @@ public class CatalogItem
     /// True if item is on reorder
     /// </summary>
     public bool OnReorder { get; set; }
-
-    public CatalogItem(string name) { Name = name; }
 
 
     /// <summary>

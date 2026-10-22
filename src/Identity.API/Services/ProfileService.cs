@@ -8,14 +8,9 @@ using Microsoft.AspNetCore.Identity;
 
 namespace eShop.Identity.API.Services;
 
-public class ProfileService : IProfileService
+public class ProfileService(UserManager<ApplicationUser> userManager) : IProfileService
 {
-    private readonly UserManager<ApplicationUser> _userManager;
-
-    public ProfileService(UserManager<ApplicationUser> userManager)
-    {
-        _userManager = userManager;
-    }
+    private readonly UserManager<ApplicationUser> _userManager = userManager;
 
     public async Task GetProfileDataAsync(ProfileDataRequestContext context, CancellationToken cancellationToken)
     {

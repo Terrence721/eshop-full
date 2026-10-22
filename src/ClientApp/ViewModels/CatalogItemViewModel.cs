@@ -7,17 +7,11 @@ using eShop.ClientApp.Services.AppEnvironment;
 
 namespace eShop.ClientApp.ViewModels;
 
-public partial class CatalogItemViewModel : ViewModelBase
+public partial class CatalogItemViewModel(IAppEnvironmentService appEnvironmentService, INavigationService navigationService) : ViewModelBase(navigationService)
 {
-    private readonly IAppEnvironmentService _appEnvironmentService;
+    private readonly IAppEnvironmentService _appEnvironmentService = appEnvironmentService;
 
     [ObservableProperty] public partial CatalogItem? CatalogItem { get; set; }
-
-    public CatalogItemViewModel(IAppEnvironmentService appEnvironmentService, INavigationService navigationService) :
-        base(navigationService)
-    {
-        _appEnvironmentService = appEnvironmentService;
-    }
 
     public override void ApplyQueryAttributes(IDictionary<string, object> query)
     {

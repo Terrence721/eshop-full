@@ -2,20 +2,13 @@
 
 using Microsoft.Extensions.Logging;
 
-public class TransactionBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse> where TRequest : IRequest<TResponse>
+public class TransactionBehavior<TRequest, TResponse>(OrderingContext dbContext,
+    IOrderingIntegrationEventService orderingIntegrationEventService,
+    ILogger<TransactionBehavior<TRequest, TResponse>> logger) : IPipelineBehavior<TRequest, TResponse> where TRequest : IRequest<TResponse>
 {
-    private readonly ILogger<TransactionBehavior<TRequest, TResponse>> _logger;
-    private readonly OrderingContext _dbContext;
-    private readonly IOrderingIntegrationEventService _orderingIntegrationEventService;
-
-    public TransactionBehavior(OrderingContext dbContext,
-        IOrderingIntegrationEventService orderingIntegrationEventService,
-        ILogger<TransactionBehavior<TRequest, TResponse>> logger)
-    {
-        _dbContext = dbContext ?? throw new ArgumentException(nameof(OrderingContext));
-        _orderingIntegrationEventService = orderingIntegrationEventService ?? throw new ArgumentException(nameof(orderingIntegrationEventService));
-        _logger = logger ?? throw new ArgumentException(nameof(ILogger));
-    }
+    private readonly ILogger<TransactionBehavior<TRequest, TResponse>> _logger = logger ?? throw new ArgumentException(nameof(ILogger));
+    private readonly OrderingContext _dbContext = dbContext ?? throw new ArgumentException(nameof(OrderingContext));
+    private readonly IOrderingIntegrationEventService _orderingIntegrationEventService = orderingIntegrationEventService ?? throw new ArgumentException(nameof(orderingIntegrationEventService));
 
     public async Task<TResponse> Handle(TRequest request, RequestHandlerDelegate<TResponse> next, CancellationToken cancellationToken)
     {
