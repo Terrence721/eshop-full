@@ -121,10 +121,12 @@ namespace eShop.ClientApp.Services.Basket
             return _basketClient;
         }
 
-        private Metadata CreateAuthenticationHeaders(string token)
+        private static Metadata CreateAuthenticationHeaders(string token)
         {
-            var headers = new Metadata();
-            headers.Add("authorization", $"Bearer {token}");
+            var headers = new Metadata
+            {
+                { "authorization", $"Bearer {token}" }
+            };
             return headers;
         }
 
