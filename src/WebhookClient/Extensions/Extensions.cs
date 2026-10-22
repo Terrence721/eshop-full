@@ -3,8 +3,14 @@ using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 
 namespace eShop.WebhookClient.Extensions;
 
+/// <summary>
+/// Application composition (service registration and authentication wiring) for WebhookClient.
+/// </summary>
 public static class Extensions
 {
+    /// <summary>
+    /// Registers all application services for WebhookClient.
+    /// </summary>
     public static void AddApplicationServices(this IHostApplicationBuilder builder)
     {
         builder.AddAuthenticationServices();
@@ -14,11 +20,14 @@ public static class Extensions
         builder.Services.AddSingleton<HooksRepository>();
 
         // HTTP client registrations
-        builder.Services.AddHttpClient<WebhooksClient>(o => o.BaseAddress = new("http://webhooks-api"))
+        builder.Services.AddHttpClient<WebhooksClient>(o => o.BaseAddress = new Uri("http://webhooks-api"))
             .AddApiVersion(1.0)
             .AddAuthToken();
     }
 
+    /// <summary>
+    /// Wires cookie/OpenID Connect authentication against the identity provider.
+    /// </summary>
     public static void AddAuthenticationServices(this IHostApplicationBuilder builder)
     {
         var configuration = builder.Configuration;
