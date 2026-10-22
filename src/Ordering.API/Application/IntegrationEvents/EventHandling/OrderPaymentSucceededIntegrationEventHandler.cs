@@ -1,26 +1,27 @@
-﻿namespace eShop.Ordering.API.Application.IntegrationEvents.EventHandling;
-
-/// <summary>
-/// Handles a payment-succeeded integration event by setting the associated order to paid status.
-/// </summary>
-public class OrderPaymentSucceededIntegrationEventHandler(
-    IMediator mediator,
-    ILogger<OrderPaymentSucceededIntegrationEventHandler> logger) :
-    IIntegrationEventHandler<OrderPaymentSucceededIntegrationEvent>
+﻿namespace eShop.Ordering.API.Application.IntegrationEvents.EventHandling
 {
-    public async Task Handle(OrderPaymentSucceededIntegrationEvent @event)
+    /// <summary>
+    /// Handles a payment-succeeded integration event by setting the associated order to paid status.
+    /// </summary>
+    public class OrderPaymentSucceededIntegrationEventHandler(
+        IMediator mediator,
+        ILogger<OrderPaymentSucceededIntegrationEventHandler> logger) :
+        IIntegrationEventHandler<OrderPaymentSucceededIntegrationEvent>
     {
-        logger.LogInformation("Handling integration event: {IntegrationEventId} - ({@IntegrationEvent})", @event.Id, @event);
+        public async Task Handle(OrderPaymentSucceededIntegrationEvent @event)
+        {
+            logger.LogInformation("Handling integration event: {IntegrationEventId} - ({@IntegrationEvent})", @event.Id, @event);
 
-        var command = new SetPaidOrderStatusCommand(@event.OrderId);
+            var command = new SetPaidOrderStatusCommand(@event.OrderId);
 
-        logger.LogInformation(
-            "Sending command: {CommandName} - {IdProperty}: {CommandId} ({@Command})",
-            command.GetGenericTypeName(),
-            nameof(command.OrderNumber),
-            command.OrderNumber,
-            command);
+            logger.LogInformation(
+                "Sending command: {CommandName} - {IdProperty}: {CommandId} ({@Command})",
+                command.GetGenericTypeName(),
+                nameof(command.OrderNumber),
+                command.OrderNumber,
+                command);
 
-        await mediator.Send(command);
+            await mediator.Send(command);
+        }
     }
 }

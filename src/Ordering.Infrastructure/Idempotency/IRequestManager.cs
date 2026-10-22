@@ -1,8 +1,9 @@
-﻿namespace eShop.Ordering.Infrastructure.Idempotency;
-
-public interface IRequestManager
+﻿namespace eShop.Ordering.Infrastructure.Idempotency
 {
-    Task<bool> ExistAsync(Guid id);
+    public interface IRequestManager
+    {
+        Task<bool> ExistAsync(Guid id);
 
-    Task CreateRequestForCommandAsync<T>(Guid id);
+        Task CreateRequestForCommandAsync<T>(Guid id);
+    }
 }

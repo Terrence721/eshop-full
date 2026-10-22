@@ -1,17 +1,18 @@
-﻿namespace eShop.Ordering.API.Application.Validations;
-
-/// <summary>
-/// Validates the wrapped idempotent command's request id is present.
-/// </summary>
-public class IdentifiedCommandValidator : AbstractValidator<IdentifiedCommand<CreateOrderCommand, bool>>
+﻿namespace eShop.Ordering.API.Application.Validations
 {
-    public IdentifiedCommandValidator(ILogger<IdentifiedCommandValidator> logger)
+    /// <summary>
+    /// Validates the wrapped idempotent command's request id is present.
+    /// </summary>
+    public class IdentifiedCommandValidator : AbstractValidator<IdentifiedCommand<CreateOrderCommand, bool>>
     {
-        RuleFor(command => command.Id).NotEmpty();
-
-        if (logger.IsEnabled(LogLevel.Trace))
+        public IdentifiedCommandValidator(ILogger<IdentifiedCommandValidator> logger)
         {
-            logger.LogTrace("INSTANCE CREATED - {ClassName}", GetType().Name);
+            RuleFor(command => command.Id).NotEmpty();
+
+            if (logger.IsEnabled(LogLevel.Trace))
+            {
+                logger.LogTrace("INSTANCE CREATED - {ClassName}", GetType().Name);
+            }
         }
     }
 }

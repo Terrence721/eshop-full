@@ -1,40 +1,41 @@
-﻿namespace eShop.EventBusKafka;
-
-using Microsoft.Extensions.Options;
-using Polly.Retry;
-
-public sealed class ResilientEventBusDecorator(IEventBus inner, IOptions<EventBusOptions> options) : IEventBus
+﻿namespace eShop.EventBusKafka
 {
-    private readonly IEventBus _inner = inner;
-    private readonly ResiliencePipeline _pipeline = CreateResiliencePipeline(options.Value.RetryCount);
+    using Microsoft.Extensions.Options;
+    using Polly.Retry;
 
-    public Task PublishAsync(IntegrationEvent @event) =>
-        _pipeline.ExecuteAsync(
-            static (state, cancellationToken) => new ValueTask(state.inner.PublishAsync(state.@event)),
-            (inner: _inner, @event),
-            CancellationToken.None).AsTask();
-
-    private static ResiliencePipeline CreateResiliencePipeline(int retryCount)
+    public sealed class ResilientEventBusDecorator(IEventBus inner, IOptions<EventBusOptions> options) : IEventBus
     {
-        // See https://www.pollydocs.org/strategies/retry.html
-        // KafkaRetriableException is Confluent.Kafka's own purpose-built "this error is safe to
-        // retry" exception type (confirmed via reflection on the installed package) -- a single,
-        // precise type rather than RabbitMQ's BrokerUnreachableException/SocketException pairing,
-        // since the Kafka client already classifies retriable-vs-fatal errors internally.
-        var retryOptions = new RetryStrategyOptions
-        {
-            ShouldHandle = new PredicateBuilder().Handle<KafkaRetriableException>(),
-            MaxRetryAttempts = retryCount,
-            DelayGenerator = (context) => ValueTask.FromResult(GenerateDelay(context.AttemptNumber))
-        };
+        private readonly IEventBus _inner = inner;
+        private readonly ResiliencePipeline _pipeline = CreateResiliencePipeline(options.Value.RetryCount);
 
-        return new ResiliencePipelineBuilder()
-            .AddRetry(retryOptions)
-            .Build();
+        public Task PublishAsync(IntegrationEvent @event) =>
+            _pipeline.ExecuteAsync(
+                static (state, cancellationToken) => new ValueTask(state.inner.PublishAsync(state.@event)),
+                (inner: _inner, @event),
+                CancellationToken.None).AsTask();
 
-        static TimeSpan? GenerateDelay(int attempt)
+        private static ResiliencePipeline CreateResiliencePipeline(int retryCount)
         {
-            return TimeSpan.FromSeconds(Math.Pow(2, attempt));
+            // See https://www.pollydocs.org/strategies/retry.html
+            // KafkaRetriableException is Confluent.Kafka's own purpose-built "this error is safe to
+            // retry" exception type (confirmed via reflection on the installed package) -- a single,
+            // precise type rather than RabbitMQ's BrokerUnreachableException/SocketException pairing,
+            // since the Kafka client already classifies retriable-vs-fatal errors internally.
+            var retryOptions = new RetryStrategyOptions
+            {
+                ShouldHandle = new PredicateBuilder().Handle<KafkaRetriableException>(),
+                MaxRetryAttempts = retryCount,
+                DelayGenerator = (context) => ValueTask.FromResult(GenerateDelay(context.AttemptNumber))
+            };
+
+            return new ResiliencePipelineBuilder()
+                .AddRetry(retryOptions)
+                .Build();
+
+            static TimeSpan? GenerateDelay(int attempt)
+            {
+                return TimeSpan.FromSeconds(Math.Pow(2, attempt));
+            }
         }
     }
 }

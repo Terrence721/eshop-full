@@ -3,17 +3,18 @@ using eShop.ClientApp.Services.Catalog;
 using eShop.ClientApp.Services.Identity;
 using eShop.ClientApp.Services.Order;
 
-namespace eShop.ClientApp.Services.AppEnvironment;
-
-public interface IAppEnvironmentService
+namespace eShop.ClientApp.Services.AppEnvironment
 {
-    IBasketService BasketService { get; }
+    public interface IAppEnvironmentService
+    {
+        IBasketService BasketService { get; }
 
-    ICatalogService CatalogService { get; }
+        ICatalogService CatalogService { get; }
 
-    IOrderService OrderService { get; }
+        IOrderService OrderService { get; }
 
-    IIdentityService IdentityService { get; }
+        IIdentityService IdentityService { get; }
 
-    void UpdateDependencies(bool useMockServices);
+        void UpdateDependencies(bool useMockServices);
+    }
 }

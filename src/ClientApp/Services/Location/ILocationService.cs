@@ -1,6 +1,7 @@
-﻿namespace eShop.ClientApp.Services.Location;
-
-public interface ILocationService
+﻿namespace eShop.ClientApp.Services.Location
 {
-    Task UpdateUserLocation(Models.Location.Location newLocReq);
+    public interface ILocationService
+    {
+        Task UpdateUserLocation(Models.Location.Location newLocReq);
+    }
 }

@@ -1,11 +1,12 @@
 ﻿using Avalonia.Controls;
 
-namespace eShop.ClientApp.Views;
-
-public partial class OrderDetailView : UserControl
+namespace eShop.ClientApp.Views
 {
-    public OrderDetailView()
+    public partial class OrderDetailView : UserControl
     {
-        InitializeComponent();
+        public OrderDetailView()
+        {
+            InitializeComponent();
+        }
     }
 }

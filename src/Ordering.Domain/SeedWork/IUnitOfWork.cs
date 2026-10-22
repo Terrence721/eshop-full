@@ -1,7 +1,8 @@
-﻿namespace eShop.Ordering.Domain.SeedWork;
-
-public interface IUnitOfWork : IDisposable
+﻿namespace eShop.Ordering.Domain.SeedWork
 {
-    Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
-    Task<bool> SaveEntitiesAsync(CancellationToken cancellationToken = default);
+    public interface IUnitOfWork : IDisposable
+    {
+        Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
+        Task<bool> SaveEntitiesAsync(CancellationToken cancellationToken = default);
+    }
 }

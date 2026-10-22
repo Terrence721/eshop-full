@@ -1,11 +1,12 @@
 ﻿using Avalonia.Controls;
 
-namespace eShop.ClientApp.Views;
-
-public partial class SettingsView : UserControl
+namespace eShop.ClientApp.Views
 {
-    public SettingsView()
+    public partial class SettingsView : UserControl
     {
-        InitializeComponent();
+        public SettingsView()
+        {
+            InitializeComponent();
+        }
     }
 }

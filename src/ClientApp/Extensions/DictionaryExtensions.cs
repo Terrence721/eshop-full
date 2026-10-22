@@ -1,25 +1,26 @@
-﻿namespace eShop.ClientApp;
-
-public static class DictionaryExtensions
+﻿namespace eShop.ClientApp
 {
-    public static bool ValueAsBool(this IDictionary<string, object> dictionary, string key, bool defaultValue = false)
+    public static class DictionaryExtensions
     {
-        return dictionary.TryGetValue(key, out var value) && value is bool dictValue
-            ? dictValue
-            : defaultValue;
-    }
+        public static bool ValueAsBool(this IDictionary<string, object> dictionary, string key, bool defaultValue = false)
+        {
+            return dictionary.TryGetValue(key, out var value) && value is bool dictValue
+                ? dictValue
+                : defaultValue;
+        }
 
-    public static int ValueAsInt(this IDictionary<string, object> dictionary, string key, int defaultValue = 0)
-    {
-        return dictionary.TryGetValue(key, out var value) && value is int intValue
-            ? intValue
-            : defaultValue;
-    }
+        public static int ValueAsInt(this IDictionary<string, object> dictionary, string key, int defaultValue = 0)
+        {
+            return dictionary.TryGetValue(key, out var value) && value is int intValue
+                ? intValue
+                : defaultValue;
+        }
 
-    public static T ValueAs<T>(this IDictionary<string, object> dictionary, string key, T defaultValue = default!)
-    {
-        return dictionary.TryGetValue(key, out var value1) && value1 is T value
-            ? value
-            : defaultValue;
+        public static T ValueAs<T>(this IDictionary<string, object> dictionary, string key, T defaultValue = default!)
+        {
+            return dictionary.TryGetValue(key, out var value1) && value1 is T value
+                ? value
+                : defaultValue;
+        }
     }
 }

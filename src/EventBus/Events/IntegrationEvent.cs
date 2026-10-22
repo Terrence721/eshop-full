@@ -1,14 +1,15 @@
-﻿namespace eShop.EventBus.Events;
-
-public record IntegrationEvent
+﻿namespace eShop.EventBus.Events
 {
-    public IntegrationEvent()
+    public record IntegrationEvent
     {
-        Id = Guid.NewGuid();
-        CreationDate = DateTime.UtcNow;
+        public IntegrationEvent()
+        {
+            Id = Guid.NewGuid();
+            CreationDate = DateTime.UtcNow;
+        }
+
+        public Guid Id { get; init; }
+
+        public DateTime CreationDate { get; init; }
     }
-
-    public Guid Id { get; init; }
-
-    public DateTime CreationDate { get; init; }
 }

@@ -4,25 +4,26 @@ using Avalonia.VisualTree;
 using eShop.ClientApp.Models.Basket;
 using eShop.ClientApp.ViewModels;
 
-namespace eShop.ClientApp.Views.Templates;
-
-public partial class BasketItemTemplate : UserControl
+namespace eShop.ClientApp.Views.Templates
 {
-    public BasketItemTemplate()
+    public partial class BasketItemTemplate : UserControl
     {
-        InitializeComponent();
-    }
-
-    private void OnDeleteClick(object? sender, RoutedEventArgs e)
-    {
-        if (DataContext is not BasketItem item)
+        public BasketItemTemplate()
         {
-            return;
+            InitializeComponent();
         }
 
-        if (this.FindAncestorOfType<ListBox>()?.DataContext is BasketViewModel basketViewModel)
+        private void OnDeleteClick(object? sender, RoutedEventArgs e)
         {
-            basketViewModel.DeleteCommand.Execute(item);
+            if (DataContext is not BasketItem item)
+            {
+                return;
+            }
+
+            if (this.FindAncestorOfType<ListBox>()?.DataContext is BasketViewModel basketViewModel)
+            {
+                basketViewModel.DeleteCommand.Execute(item);
+            }
         }
     }
 }

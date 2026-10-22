@@ -1,10 +1,11 @@
-﻿namespace eShop.Ordering.Infrastructure.EntityConfigurations;
-
-class ClientRequestEntityTypeConfiguration
-    : IEntityTypeConfiguration<ClientRequest>
+﻿namespace eShop.Ordering.Infrastructure.EntityConfigurations
 {
-    public void Configure(EntityTypeBuilder<ClientRequest> requestConfiguration)
+    class ClientRequestEntityTypeConfiguration
+        : IEntityTypeConfiguration<ClientRequest>
     {
-        requestConfiguration.ToTable("requests");
+        public void Configure(EntityTypeBuilder<ClientRequest> requestConfiguration)
+        {
+            requestConfiguration.ToTable("requests");
+        }
     }
 }

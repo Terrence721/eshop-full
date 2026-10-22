@@ -1,16 +1,17 @@
 ﻿using Duende.IdentityServer.Models;
 
-namespace IdentityServerHost.Quickstart.UI;
-
-public static class Extensions
+namespace IdentityServerHost.Quickstart.UI
 {
-    /// <summary>
-    /// Checks if the redirect URI is for a native client.
-    /// </summary>
-    /// <returns></returns>
-    public static bool IsNativeClient(this AuthorizationRequest context)
+    public static class Extensions
     {
-        return !context.RedirectUri.StartsWith("https", StringComparison.Ordinal)
-           && !context.RedirectUri.StartsWith("http", StringComparison.Ordinal);
+        /// <summary>
+        /// Checks if the redirect URI is for a native client.
+        /// </summary>
+        /// <returns></returns>
+        public static bool IsNativeClient(this AuthorizationRequest context)
+        {
+            return !context.RedirectUri.StartsWith("https", StringComparison.Ordinal)
+               && !context.RedirectUri.StartsWith("http", StringComparison.Ordinal);
+        }
     }
 }

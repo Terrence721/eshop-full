@@ -1,16 +1,17 @@
-namespace eShop.Catalog.API.Infrastructure.EntityConfigurations;
-
-/// <summary>
-/// EF Core mapping for <see cref="CatalogType"/>, including its table name and column constraints.
-/// </summary>
-class CatalogTypeEntityTypeConfiguration
-    : IEntityTypeConfiguration<CatalogType>
+namespace eShop.Catalog.API.Infrastructure.EntityConfigurations
 {
-    public void Configure(EntityTypeBuilder<CatalogType> builder)
+    /// <summary>
+    /// EF Core mapping for <see cref="CatalogType"/>, including its table name and column constraints.
+    /// </summary>
+    class CatalogTypeEntityTypeConfiguration
+        : IEntityTypeConfiguration<CatalogType>
     {
-        builder.ToTable("CatalogType");
+        public void Configure(EntityTypeBuilder<CatalogType> builder)
+        {
+            builder.ToTable("CatalogType");
 
-        builder.Property(cb => cb.Type)
-            .HasMaxLength(100);
+            builder.Property(cb => cb.Type)
+                .HasMaxLength(100);
+        }
     }
 }

@@ -1,28 +1,29 @@
 ﻿using eShop.ClientApp.UnitTests.Mocks;
 
-namespace eShop.ClientApp.UnitTests.ViewModels;
-
-[TestClass]
-public class MainViewModelTests
+namespace eShop.ClientApp.UnitTests.ViewModels
 {
-    private readonly INavigationService _navigationService;
-
-    public MainViewModelTests()
+    [TestClass]
+    public class MainViewModelTests
     {
-        _navigationService = new MockNavigationService();
-    }
+        private readonly INavigationService _navigationService;
 
-    [TestMethod]
-    public void SettingsCommandIsNotNullWhenViewModelInstantiatedTest()
-    {
-        var mainViewModel = new MainViewModel(_navigationService);
-        Assert.IsNull(mainViewModel.CurrentViewModel);
-    }
+        public MainViewModelTests()
+        {
+            _navigationService = new MockNavigationService();
+        }
 
-    [TestMethod]
-    public void IsBusyPropertyIsFalseWhenViewModelInstantiatedTest()
-    {
-        var mainViewModel = new MainViewModel(_navigationService);
-        Assert.IsFalse(mainViewModel.IsBusy);
+        [TestMethod]
+        public void SettingsCommandIsNotNullWhenViewModelInstantiatedTest()
+        {
+            var mainViewModel = new MainViewModel(_navigationService);
+            Assert.IsNull(mainViewModel.CurrentViewModel);
+        }
+
+        [TestMethod]
+        public void IsBusyPropertyIsFalseWhenViewModelInstantiatedTest()
+        {
+            var mainViewModel = new MainViewModel(_navigationService);
+            Assert.IsFalse(mainViewModel.IsBusy);
+        }
     }
 }

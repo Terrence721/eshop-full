@@ -1,81 +1,82 @@
 ﻿using eShop.Identity.API.Configuration;
 using Microsoft.Extensions.Configuration;
 
-namespace IdentityServerHost.Quickstart.UI.UnitTests;
-
-[TestClass]
-public class ConfigTests
+namespace IdentityServerHost.Quickstart.UI.UnitTests
 {
-    private static IConfiguration BuildConfiguration(params (string Key, string Value)[] overrides)
+    [TestClass]
+    public class ConfigTests
     {
-        var values = new Dictionary<string, string?>
+        private static IConfiguration BuildConfiguration(params (string Key, string Value)[] overrides)
         {
-            ["ClientAppCallback"] = "eshop://authcallback",
-            ["WebAppClient"] = "https://webapp.example",
-            ["WebBffClient"] = "https://webbff.example",
-            ["WebhooksWebClient"] = "https://webhooksclient.example",
-            ["BasketApiClient"] = "https://basket-api.example",
-            ["OrderingApiClient"] = "https://ordering-api.example",
-            ["WebhooksApiClient"] = "https://webhooks-api.example"
-        };
+            var values = new Dictionary<string, string?>
+            {
+                ["ClientAppCallback"] = "eshop://authcallback",
+                ["WebAppClient"] = "https://webapp.example",
+                ["WebBffClient"] = "https://webbff.example",
+                ["WebhooksWebClient"] = "https://webhooksclient.example",
+                ["BasketApiClient"] = "https://basket-api.example",
+                ["OrderingApiClient"] = "https://ordering-api.example",
+                ["WebhooksApiClient"] = "https://webhooks-api.example"
+            };
 
-        foreach (var (key, value) in overrides)
-        {
-            values[key] = value;
+            foreach (var (key, value) in overrides)
+            {
+                values[key] = value;
+            }
+
+            return new ConfigurationBuilder().AddInMemoryCollection(values).Build();
         }
 
-        return new ConfigurationBuilder().AddInMemoryCollection(values).Build();
-    }
+        [TestMethod]
+        public void GetClients_returns_all_six_clients()
+        {
+            var clients = Config.GetClients(BuildConfiguration()).ToList();
 
-    [TestMethod]
-    public void GetClients_returns_all_six_clients()
-    {
-        var clients = Config.GetClients(BuildConfiguration()).ToList();
+            Assert.HasCount(6, clients);
+            CollectionAssert.AreEquivalent(
+                new[] { "eshop-client", "webapp", "webhooksclient", "basketswaggerui", "orderingswaggerui", "webhooksswaggerui" },
+                clients.Select(c => c.ClientId).Distinct().ToList());
+        }
 
-        Assert.HasCount(6, clients);
-        CollectionAssert.AreEquivalent(
-            new[] { "eshop-client", "webapp", "webhooksclient", "basketswaggerui", "orderingswaggerui", "webhooksswaggerui" },
-            clients.Select(c => c.ClientId).Distinct().ToList());
-    }
+        [TestMethod]
+        public void GetClients_substitutes_ClientAppCallback_into_the_eshop_client_redirect_uris()
+        {
+            var clients = Config.GetClients(BuildConfiguration(("ClientAppCallback", "myapp://custom-callback")));
 
-    [TestMethod]
-    public void GetClients_substitutes_ClientAppCallback_into_the_eshop_client_redirect_uris()
-    {
-        var clients = Config.GetClients(BuildConfiguration(("ClientAppCallback", "myapp://custom-callback")));
+            var eshopClient = clients.Single(c => c.ClientId == "eshop-client");
+            Assert.Contains("myapp://custom-callback", eshopClient.RedirectUris);
+            Assert.Contains("myapp://custom-callback/Account/Redirecting", eshopClient.PostLogoutRedirectUris);
+        }
 
-        var eshopClient = clients.Single(c => c.ClientId == "eshop-client");
-        Assert.Contains("myapp://custom-callback", eshopClient.RedirectUris);
-        Assert.Contains("myapp://custom-callback/Account/Redirecting", eshopClient.PostLogoutRedirectUris);
-    }
+        [TestMethod]
+        public void GetClients_substitutes_WebAppClient_into_the_webapp_client_uri()
+        {
+            var clients = Config.GetClients(BuildConfiguration(("WebAppClient", "https://custom-webapp.example")));
 
-    [TestMethod]
-    public void GetClients_substitutes_WebAppClient_into_the_webapp_client_uri()
-    {
-        var clients = Config.GetClients(BuildConfiguration(("WebAppClient", "https://custom-webapp.example")));
+            var webapp = clients.Single(c => c.ClientId == "webapp");
+            Assert.AreEqual("https://custom-webapp.example", webapp.ClientUri);
+        }
 
-        var webapp = clients.Single(c => c.ClientId == "webapp");
-        Assert.AreEqual("https://custom-webapp.example", webapp.ClientUri);
-    }
+        // WebBFF performs the actual OIDC code exchange (the browser never leaves its origin
+        // during the redirect dance), so the webapp client's redirect URIs substitute
+        // WebBffClient, not WebAppClient -- ClientUri (the SPA's own, user-facing URL) is the
+        // only property that still comes from WebAppClient, covered by the test above.
+        [TestMethod]
+        public void GetClients_substitutes_WebBffClient_into_the_webapp_client_redirect_uris()
+        {
+            var clients = Config.GetClients(BuildConfiguration(("WebBffClient", "https://custom-webbff.example")));
 
-    // WebBFF performs the actual OIDC code exchange (the browser never leaves its origin
-    // during the redirect dance), so the webapp client's redirect URIs substitute
-    // WebBffClient, not WebAppClient -- ClientUri (the SPA's own, user-facing URL) is the
-    // only property that still comes from WebAppClient, covered by the test above.
-    [TestMethod]
-    public void GetClients_substitutes_WebBffClient_into_the_webapp_client_redirect_uris()
-    {
-        var clients = Config.GetClients(BuildConfiguration(("WebBffClient", "https://custom-webbff.example")));
+            var webapp = clients.Single(c => c.ClientId == "webapp");
+            Assert.Contains("https://custom-webbff.example/signin-oidc", webapp.RedirectUris);
+            Assert.Contains("https://custom-webbff.example/signout-callback-oidc", webapp.PostLogoutRedirectUris);
+        }
 
-        var webapp = clients.Single(c => c.ClientId == "webapp");
-        Assert.Contains("https://custom-webbff.example/signin-oidc", webapp.RedirectUris);
-        Assert.Contains("https://custom-webbff.example/signout-callback-oidc", webapp.PostLogoutRedirectUris);
-    }
+        [TestMethod]
+        public void GetClients_throws_when_a_required_config_value_is_missing()
+        {
+            var configuration = new ConfigurationBuilder().Build();
 
-    [TestMethod]
-    public void GetClients_throws_when_a_required_config_value_is_missing()
-    {
-        var configuration = new ConfigurationBuilder().Build();
-
-        Assert.ThrowsExactly<InvalidOperationException>(() => Config.GetClients(configuration).ToList());
+            Assert.ThrowsExactly<InvalidOperationException>(() => Config.GetClients(configuration).ToList());
+        }
     }
 }

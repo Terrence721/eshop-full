@@ -1,32 +1,33 @@
-﻿namespace eShop.Ordering.Infrastructure.Idempotency;
-
-public class RequestManager(OrderingContext context) : IRequestManager
+﻿namespace eShop.Ordering.Infrastructure.Idempotency
 {
-    private readonly OrderingContext _context = context ?? throw new ArgumentNullException(nameof(context));
-
-    public async Task<bool> ExistAsync(Guid id)
+    public class RequestManager(OrderingContext context) : IRequestManager
     {
-        var request = await _context.
-            FindAsync<ClientRequest>(id);
+        private readonly OrderingContext _context = context ?? throw new ArgumentNullException(nameof(context));
 
-        return request != null;
-    }
+        public async Task<bool> ExistAsync(Guid id)
+        {
+            var request = await _context.
+                FindAsync<ClientRequest>(id);
 
-    public async Task CreateRequestForCommandAsync<T>(Guid id)
-    {
-        var exists = await ExistAsync(id);
+            return request != null;
+        }
 
-        var request = exists ?
-            throw new OrderingDomainException($"Request with {id} already exists") :
-            new ClientRequest()
-            {
-                Id = id,
-                Name = typeof(T).Name,
-                Time = DateTime.UtcNow
-            };
+        public async Task CreateRequestForCommandAsync<T>(Guid id)
+        {
+            var exists = await ExistAsync(id);
 
-        _context.Add(request);
+            var request = exists ?
+                throw new OrderingDomainException($"Request with {id} already exists") :
+                new ClientRequest()
+                {
+                    Id = id,
+                    Name = typeof(T).Name,
+                    Time = DateTime.UtcNow
+                };
 
-        await _context.SaveChangesAsync();
+            _context.Add(request);
+
+            await _context.SaveChangesAsync();
+        }
     }
 }

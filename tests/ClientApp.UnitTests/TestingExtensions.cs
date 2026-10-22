@@ -1,19 +1,20 @@
 ﻿using System.Windows.Input;
 using CommunityToolkit.Mvvm.Input;
 
-namespace eShop.ClientApp.UnitTests;
-
-public static class TestingExtensions
+namespace eShop.ClientApp.UnitTests
 {
-    public static async Task ExecuteUntilComplete(this ICommand command, object? parameter = null)
+    public static class TestingExtensions
     {
-        if (command is IAsyncRelayCommand arc)
+        public static async Task ExecuteUntilComplete(this ICommand command, object? parameter = null)
         {
-            await arc.ExecuteAsync(parameter);
-            return;
+            if (command is IAsyncRelayCommand arc)
+            {
+                await arc.ExecuteAsync(parameter);
+                return;
+            }
+
+            command.Execute(parameter);
         }
-
-        command.Execute(parameter);
     }
-}
 
+}

@@ -1,9 +1,10 @@
-﻿namespace eShop.IntegrationEventLogEF;
-
-public enum EventState
+﻿namespace eShop.IntegrationEventLogEF
 {
-    NotPublished = 0,
-    InProgress = 1,
-    Published = 2,
-    PublishedFailed = 3
+    public enum EventState
+    {
+        NotPublished = 0,
+        InProgress = 1,
+        Published = 2,
+        PublishedFailed = 3
+    }
 }

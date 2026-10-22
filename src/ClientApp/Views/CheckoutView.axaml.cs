@@ -1,11 +1,12 @@
 ﻿using Avalonia.Controls;
 
-namespace eShop.ClientApp.Views;
-
-public partial class CheckoutView : UserControl
+namespace eShop.ClientApp.Views
 {
-    public CheckoutView()
+    public partial class CheckoutView : UserControl
     {
-        InitializeComponent();
+        public CheckoutView()
+        {
+            InitializeComponent();
+        }
     }
 }

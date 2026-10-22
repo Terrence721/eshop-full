@@ -1,33 +1,34 @@
-﻿namespace eShop.Ordering.Infrastructure.Repositories;
-
-public class OrderRepository(OrderingContext context)
-        : IOrderRepository
+﻿namespace eShop.Ordering.Infrastructure.Repositories
 {
-    private readonly OrderingContext _context = context ?? throw new ArgumentNullException(nameof(context));
-
-    public IUnitOfWork UnitOfWork => _context;
-
-    public Order Add(Order order)
+    public class OrderRepository(OrderingContext context)
+            : IOrderRepository
     {
-        return _context.Orders.Add(order).Entity;
+        private readonly OrderingContext _context = context ?? throw new ArgumentNullException(nameof(context));
 
-    }
+        public IUnitOfWork UnitOfWork => _context;
 
-    public async Task<Order?> GetAsync(int orderId)
-    {
-        var order = await _context.Orders.FindAsync(orderId);
-
-        if (order != null)
+        public Order Add(Order order)
         {
-            await _context.Entry(order)
-                .Collection(i => i.OrderItems).LoadAsync();
+            return _context.Orders.Add(order).Entity;
+
         }
 
-        return order;
-    }
+        public async Task<Order?> GetAsync(int orderId)
+        {
+            var order = await _context.Orders.FindAsync(orderId);
 
-    public void Update(Order order)
-    {
-        _context.Entry(order).State = EntityState.Modified;
+            if (order != null)
+            {
+                await _context.Entry(order)
+                    .Collection(i => i.OrderItems).LoadAsync();
+            }
+
+            return order;
+        }
+
+        public void Update(Order order)
+        {
+            _context.Entry(order).State = EntityState.Modified;
+        }
     }
 }

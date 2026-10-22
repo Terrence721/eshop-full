@@ -1,13 +1,14 @@
-﻿namespace IdentityServerHost.Quickstart.UI.UnitTests;
-
-[TestClass]
-public class LogoutViewModelTests
+﻿namespace IdentityServerHost.Quickstart.UI.UnitTests
 {
-    [TestMethod]
-    public void ShowLogoutPrompt_defaults_to_true()
+    [TestClass]
+    public class LogoutViewModelTests
     {
-        var vm = new LogoutViewModel();
+        [TestMethod]
+        public void ShowLogoutPrompt_defaults_to_true()
+        {
+            var vm = new LogoutViewModel();
 
-        Assert.IsTrue(vm.ShowLogoutPrompt);
+            Assert.IsTrue(vm.ShowLogoutPrompt);
+        }
     }
 }

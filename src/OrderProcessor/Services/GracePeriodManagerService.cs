@@ -3,102 +3,103 @@ using eShop.OrderProcessor.Events;
 using Microsoft.Extensions.Options;
 using Npgsql;
 
-namespace eShop.OrderProcessor.Services;
-
-/// <summary>
-/// Checks orders whose grace period has elapsed and publishes grace-period-confirmed events.
-/// </summary>
-public class GracePeriodManagerService(
-    IOptions<BackgroundTaskOptions> options,
-    IEventBus eventBus,
-    ILogger<GracePeriodManagerService> logger,
-    NpgsqlDataSource dataSource) : BackgroundService
+namespace eShop.OrderProcessor.Services
 {
-    private readonly BackgroundTaskOptions _options = options?.Value ?? throw new ArgumentNullException(nameof(options));
-
-    /// <inheritdoc />
-    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+    /// <summary>
+    /// Checks orders whose grace period has elapsed and publishes grace-period-confirmed events.
+    /// </summary>
+    public class GracePeriodManagerService(
+        IOptions<BackgroundTaskOptions> options,
+        IEventBus eventBus,
+        ILogger<GracePeriodManagerService> logger,
+        NpgsqlDataSource dataSource) : BackgroundService
     {
-        var delayTime = TimeSpan.FromSeconds(_options.CheckUpdateTime);
+        private readonly BackgroundTaskOptions _options = options?.Value ?? throw new ArgumentNullException(nameof(options));
 
-        if (logger.IsEnabled(LogLevel.Debug))
+        /// <inheritdoc />
+        protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            logger.LogDebug("GracePeriodManagerService is starting.");
-            stoppingToken.Register(() => logger.LogDebug("GracePeriodManagerService background task is stopping."));
+            var delayTime = TimeSpan.FromSeconds(_options.CheckUpdateTime);
+
+            if (logger.IsEnabled(LogLevel.Debug))
+            {
+                logger.LogDebug("GracePeriodManagerService is starting.");
+                stoppingToken.Register(() => logger.LogDebug("GracePeriodManagerService background task is stopping."));
+            }
+
+            while (!stoppingToken.IsCancellationRequested)
+            {
+                if (logger.IsEnabled(LogLevel.Debug))
+                {
+                    logger.LogDebug("GracePeriodManagerService background task is doing background work.");
+                }
+
+                await CheckConfirmedGracePeriodOrders();
+
+                await Task.Delay(delayTime, stoppingToken);
+            }
+
+            if (logger.IsEnabled(LogLevel.Debug))
+            {
+                logger.LogDebug("GracePeriodManagerService background task is stopping.");
+            }
         }
 
-        while (!stoppingToken.IsCancellationRequested)
+        /// <summary>
+        /// Reads eligible orders and publishes a grace-period-confirmed event for each.
+        /// </summary>
+        private async Task CheckConfirmedGracePeriodOrders()
         {
             if (logger.IsEnabled(LogLevel.Debug))
             {
-                logger.LogDebug("GracePeriodManagerService background task is doing background work.");
+                logger.LogDebug("Checking confirmed grace period orders");
             }
 
-            await CheckConfirmedGracePeriodOrders();
+            var orderIds = await GetConfirmedGracePeriodOrders();
 
-            await Task.Delay(delayTime, stoppingToken);
+            foreach (var orderId in orderIds)
+            {
+                var confirmGracePeriodEvent = new GracePeriodConfirmedIntegrationEvent(orderId);
+
+                logger.LogInformation("Publishing integration event: {IntegrationEventId} - ({@IntegrationEvent})", confirmGracePeriodEvent.Id, confirmGracePeriodEvent);
+
+                await eventBus.PublishAsync(confirmGracePeriodEvent);
+            }
         }
 
-        if (logger.IsEnabled(LogLevel.Debug))
+        /// <summary>
+        /// Retrieves order ids that have passed the configured grace period while still submitted.
+        /// </summary>
+        private async ValueTask<List<int>> GetConfirmedGracePeriodOrders()
         {
-            logger.LogDebug("GracePeriodManagerService background task is stopping.");
-        }
-    }
-
-    /// <summary>
-    /// Reads eligible orders and publishes a grace-period-confirmed event for each.
-    /// </summary>
-    private async Task CheckConfirmedGracePeriodOrders()
-    {
-        if (logger.IsEnabled(LogLevel.Debug))
-        {
-            logger.LogDebug("Checking confirmed grace period orders");
-        }
-
-        var orderIds = await GetConfirmedGracePeriodOrders();
-
-        foreach (var orderId in orderIds)
-        {
-            var confirmGracePeriodEvent = new GracePeriodConfirmedIntegrationEvent(orderId);
-
-            logger.LogInformation("Publishing integration event: {IntegrationEventId} - ({@IntegrationEvent})", confirmGracePeriodEvent.Id, confirmGracePeriodEvent);
-
-            await eventBus.PublishAsync(confirmGracePeriodEvent);
-        }
-    }
-
-    /// <summary>
-    /// Retrieves order ids that have passed the configured grace period while still submitted.
-    /// </summary>
-    private async ValueTask<List<int>> GetConfirmedGracePeriodOrders()
-    {
-        try
-        {
-            using var conn = dataSource.CreateConnection();
-            using var command = conn.CreateCommand();
-            command.CommandText = """
+            try
+            {
+                using var conn = dataSource.CreateConnection();
+                using var command = conn.CreateCommand();
+                command.CommandText = """
                 SELECT "Id"
                 FROM ordering.orders
                 WHERE CURRENT_TIMESTAMP - "OrderDate" >= @GracePeriodTime AND "OrderStatus" = 'Submitted'
                 """;
-            command.Parameters.AddWithValue("GracePeriodTime", TimeSpan.FromMinutes(_options.GracePeriodTime));
+                command.Parameters.AddWithValue("GracePeriodTime", TimeSpan.FromMinutes(_options.GracePeriodTime));
 
-            List<int> ids = [];
+                List<int> ids = [];
 
-            await conn.OpenAsync();
-            using var reader = await command.ExecuteReaderAsync();
-            while (await reader.ReadAsync())
+                await conn.OpenAsync();
+                using var reader = await command.ExecuteReaderAsync();
+                while (await reader.ReadAsync())
+                {
+                    ids.Add(reader.GetInt32(0));
+                }
+
+                return ids;
+            }
+            catch (NpgsqlException exception)
             {
-                ids.Add(reader.GetInt32(0));
+                logger.LogError(exception, "Fatal error establishing database connection");
             }
 
-            return ids;
+            return [];
         }
-        catch (NpgsqlException exception)
-        {
-            logger.LogError(exception, "Fatal error establishing database connection");
-        }
-
-        return [];
     }
 }

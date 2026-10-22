@@ -1,15 +1,16 @@
 ﻿using eShop.EventBusKafka;
 
-namespace eShop.EventBusKafka.UnitTests;
-
-[TestClass]
-public class EventBusOptionsTests
+namespace eShop.EventBusKafka.UnitTests
 {
-    [TestMethod]
-    public void RetryCount_defaults_to_ten()
+    [TestClass]
+    public class EventBusOptionsTests
     {
-        var options = new EventBusOptions { SubscriptionClientName = "test" };
+        [TestMethod]
+        public void RetryCount_defaults_to_ten()
+        {
+            var options = new EventBusOptions { SubscriptionClientName = "test" };
 
-        Assert.AreEqual(10, options.RetryCount);
+            Assert.AreEqual(10, options.RetryCount);
+        }
     }
 }

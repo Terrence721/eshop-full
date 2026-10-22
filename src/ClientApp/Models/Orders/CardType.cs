@@ -1,7 +1,8 @@
-﻿namespace eShop.ClientApp.Models.Orders;
-
-public class CardType
+﻿namespace eShop.ClientApp.Models.Orders
 {
-    public int Id { get; set; }
-    public string Name { get; set; } = null!;
+    public class CardType
+    {
+        public int Id { get; set; }
+        public string Name { get; set; } = null!;
+    }
 }

@@ -1,15 +1,16 @@
-﻿namespace eShop.ClientApp.Exceptions;
-
-public class ServiceAuthenticationException : Exception
+﻿namespace eShop.ClientApp.Exceptions
 {
-    public ServiceAuthenticationException()
+    public class ServiceAuthenticationException : Exception
     {
-    }
+        public ServiceAuthenticationException()
+        {
+        }
 
-    public ServiceAuthenticationException(string content)
-    {
-        Content = content;
-    }
+        public ServiceAuthenticationException(string content)
+        {
+            Content = content;
+        }
 
-    public string? Content { get; }
+        public string? Content { get; }
+    }
 }

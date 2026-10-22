@@ -1,14 +1,15 @@
-﻿namespace eShop.WebBFF.IntegrationEvents.EventHandling;
-
-public class OrderStatusChangedToAwaitingValidationIntegrationEventHandler(
-    OrderStatusNotifications notifications,
-    ILogger<OrderStatusChangedToAwaitingValidationIntegrationEventHandler> logger) :
-    IIntegrationEventHandler<OrderStatusChangedToAwaitingValidationIntegrationEvent>
+﻿namespace eShop.WebBFF.IntegrationEvents.EventHandling
 {
-    public Task Handle(OrderStatusChangedToAwaitingValidationIntegrationEvent @event)
+    public class OrderStatusChangedToAwaitingValidationIntegrationEventHandler(
+        OrderStatusNotifications notifications,
+        ILogger<OrderStatusChangedToAwaitingValidationIntegrationEventHandler> logger) :
+        IIntegrationEventHandler<OrderStatusChangedToAwaitingValidationIntegrationEvent>
     {
-        logger.LogInformation("Handling integration event: {IntegrationEventId} - ({@IntegrationEvent})", @event.Id, @event);
+        public Task Handle(OrderStatusChangedToAwaitingValidationIntegrationEvent @event)
+        {
+            logger.LogInformation("Handling integration event: {IntegrationEventId} - ({@IntegrationEvent})", @event.Id, @event);
 
-        return notifications.NotifyOrderStatusChangedAsync(@event.BuyerIdentityGuid);
+            return notifications.NotifyOrderStatusChangedAsync(@event.BuyerIdentityGuid);
+        }
     }
 }

@@ -1,7 +1,8 @@
-﻿namespace IdentityServerHost.Quickstart.UI;
-
-public class DeviceAuthorizationViewModel : ConsentScopesViewModel
+﻿namespace IdentityServerHost.Quickstart.UI
 {
-    public required string UserCode { get; set; }
-    public bool ConfirmUserCode { get; set; }
+    public class DeviceAuthorizationViewModel : ConsentScopesViewModel
+    {
+        public required string UserCode { get; set; }
+        public bool ConfirmUserCode { get; set; }
+    }
 }

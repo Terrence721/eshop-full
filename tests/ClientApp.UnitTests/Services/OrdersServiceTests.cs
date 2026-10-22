@@ -1,32 +1,33 @@
 ﻿using eShop.ClientApp.UnitTests.Mocks;
 
-namespace eShop.ClientApp.UnitTests.Services;
-
-[TestClass]
-public class OrdersServiceTests
+namespace eShop.ClientApp.UnitTests.Services
 {
-    private readonly ISettingsService _settingsService;
-
-    public OrdersServiceTests()
+    [TestClass]
+    public class OrdersServiceTests
     {
-        _settingsService = new MockSettingsService();
-    }
+        private readonly ISettingsService _settingsService;
 
-    [TestMethod]
-    public async Task GetFakeOrderTest()
-    {
-        var ordersMockService = new OrderMockService();
-        var order = await ordersMockService.GetOrderAsync(1);
+        public OrdersServiceTests()
+        {
+            _settingsService = new MockSettingsService();
+        }
 
-        Assert.IsNotNull(order);
-    }
+        [TestMethod]
+        public async Task GetFakeOrderTest()
+        {
+            var ordersMockService = new OrderMockService();
+            var order = await ordersMockService.GetOrderAsync(1);
 
-    [TestMethod]
-    public async Task GetFakeOrdersTest()
-    {
-        var ordersMockService = new OrderMockService();
-        var result = await ordersMockService.GetOrdersAsync();
+            Assert.IsNotNull(order);
+        }
 
-        Assert.AreNotEqual(0, result.Count());
+        [TestMethod]
+        public async Task GetFakeOrdersTest()
+        {
+            var ordersMockService = new OrderMockService();
+            var result = await ordersMockService.GetOrdersAsync();
+
+            Assert.AreNotEqual(0, result.Count());
+        }
     }
 }

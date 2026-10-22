@@ -1,21 +1,22 @@
-﻿namespace eShop.Ordering.FunctionalTests;
-
-class AutoAuthorizeMiddleware(RequestDelegate rd)
+﻿namespace eShop.Ordering.FunctionalTests
 {
-    public const string IDENTITY_ID = "9e3163b9-1ae6-4652-9dc6-7898ab7b7a00";
-
-    private readonly RequestDelegate _next = rd;
-
-    public async Task Invoke(HttpContext httpContext)
+    class AutoAuthorizeMiddleware(RequestDelegate rd)
     {
-        var identity = new ClaimsIdentity("cookies");
+        public const string IDENTITY_ID = "9e3163b9-1ae6-4652-9dc6-7898ab7b7a00";
 
-        identity.AddClaim(new Claim("sub", IDENTITY_ID));
-        identity.AddClaim(new Claim("unique_name", IDENTITY_ID));
-        identity.AddClaim(new Claim(ClaimTypes.Name, IDENTITY_ID));
+        private readonly RequestDelegate _next = rd;
 
-        httpContext.User.AddIdentity(identity);
+        public async Task Invoke(HttpContext httpContext)
+        {
+            var identity = new ClaimsIdentity("cookies");
 
-        await _next.Invoke(httpContext);
+            identity.AddClaim(new Claim("sub", IDENTITY_ID));
+            identity.AddClaim(new Claim("unique_name", IDENTITY_ID));
+            identity.AddClaim(new Claim(ClaimTypes.Name, IDENTITY_ID));
+
+            httpContext.User.AddIdentity(identity);
+
+            await _next.Invoke(httpContext);
+        }
     }
 }

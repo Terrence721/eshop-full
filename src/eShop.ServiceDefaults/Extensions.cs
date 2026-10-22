@@ -9,121 +9,122 @@ using OpenTelemetry.Logs;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Trace;
 
-namespace eShop.ServiceDefaults;
-
-public static partial class Extensions
+namespace eShop.ServiceDefaults
 {
-    // Matches Microsoft.Extensions.AI.OpenTelemetryConsts.DefaultSourceName, not referenced as a package here.
-    private const string ExperimentalAIActivitySourceName = "Experimental.Microsoft.Extensions.AI";
-
-    public static IHostApplicationBuilder AddServiceDefaults(this IHostApplicationBuilder builder)
+    public static partial class Extensions
     {
-        builder.AddBasicServiceDefaults();
+        // Matches Microsoft.Extensions.AI.OpenTelemetryConsts.DefaultSourceName, not referenced as a package here.
+        private const string ExperimentalAIActivitySourceName = "Experimental.Microsoft.Extensions.AI";
 
-        builder.Services.AddServiceDiscovery();
-
-        builder.Services.ConfigureHttpClientDefaults(http =>
+        public static IHostApplicationBuilder AddServiceDefaults(this IHostApplicationBuilder builder)
         {
-            // Turn on resilience by default
-            http.AddStandardResilienceHandler();
+            builder.AddBasicServiceDefaults();
 
-            // Turn on service discovery by default
-            http.AddServiceDiscovery();
-        });
+            builder.Services.AddServiceDiscovery();
 
-        return builder;
-    }
+            builder.Services.ConfigureHttpClientDefaults(http =>
+            {
+                // Turn on resilience by default
+                http.AddStandardResilienceHandler();
 
-    /// <summary>
-    /// Adds the services except for making outgoing HTTP calls.
-    /// </summary>
-    /// <remarks>
-    /// This allows for things like Polly to be trimmed out of the app if it isn't used.
-    /// </remarks>
-    public static IHostApplicationBuilder AddBasicServiceDefaults(this IHostApplicationBuilder builder)
-    {
-        // "self" only here -- Kafka's own check is auto-registered by Aspire's AddKafkaProducer/AddKafkaConsumer elsewhere.
-        builder.AddDefaultHealthChecks();
+                // Turn on service discovery by default
+                http.AddServiceDiscovery();
+            });
 
-        builder.ConfigureOpenTelemetry();
+            return builder;
+        }
 
-        return builder;
-    }
-
-    public static IHostApplicationBuilder ConfigureOpenTelemetry(this IHostApplicationBuilder builder)
-    {
-        builder.Logging.AddOpenTelemetry(logging =>
+        /// <summary>
+        /// Adds the services except for making outgoing HTTP calls.
+        /// </summary>
+        /// <remarks>
+        /// This allows for things like Polly to be trimmed out of the app if it isn't used.
+        /// </remarks>
+        public static IHostApplicationBuilder AddBasicServiceDefaults(this IHostApplicationBuilder builder)
         {
-            logging.IncludeFormattedMessage = true;
-            logging.IncludeScopes = true;
-        });
+            // "self" only here -- Kafka's own check is auto-registered by Aspire's AddKafkaProducer/AddKafkaConsumer elsewhere.
+            builder.AddDefaultHealthChecks();
 
-        builder.Services.AddOpenTelemetry()
-            .WithMetrics(metrics =>
+            builder.ConfigureOpenTelemetry();
+
+            return builder;
+        }
+
+        public static IHostApplicationBuilder ConfigureOpenTelemetry(this IHostApplicationBuilder builder)
+        {
+            builder.Logging.AddOpenTelemetry(logging =>
             {
-                metrics.AddAspNetCoreInstrumentation()
-                    .AddHttpClientInstrumentation()
-                    .AddRuntimeInstrumentation()
-                    .AddMeter(ExperimentalAIActivitySourceName);
-            })
-            .WithTracing(tracing =>
-            {
-                if (builder.Environment.IsDevelopment())
+                logging.IncludeFormattedMessage = true;
+                logging.IncludeScopes = true;
+            });
+
+            builder.Services.AddOpenTelemetry()
+                .WithMetrics(metrics =>
                 {
-                    // We want to view all traces in development
-                    tracing.SetSampler(new AlwaysOnSampler());
-                }
+                    metrics.AddAspNetCoreInstrumentation()
+                        .AddHttpClientInstrumentation()
+                        .AddRuntimeInstrumentation()
+                        .AddMeter(ExperimentalAIActivitySourceName);
+                })
+                .WithTracing(tracing =>
+                {
+                    if (builder.Environment.IsDevelopment())
+                    {
+                        // We want to view all traces in development
+                        tracing.SetSampler(new AlwaysOnSampler());
+                    }
 
-                tracing.AddAspNetCoreInstrumentation()
-                    .AddGrpcClientInstrumentation()
-                    .AddHttpClientInstrumentation()
-                    .AddSource(ExperimentalAIActivitySourceName);
-            });
+                    tracing.AddAspNetCoreInstrumentation()
+                        .AddGrpcClientInstrumentation()
+                        .AddHttpClientInstrumentation()
+                        .AddSource(ExperimentalAIActivitySourceName);
+                });
 
-        builder.AddOpenTelemetryExporters();
+            builder.AddOpenTelemetryExporters();
 
-        return builder;
-    }
-
-    private static IHostApplicationBuilder AddOpenTelemetryExporters(this IHostApplicationBuilder builder)
-    {
-        var useOtlpExporter = !string.IsNullOrWhiteSpace(builder.Configuration["OTEL_EXPORTER_OTLP_ENDPOINT"]);
-
-        if (useOtlpExporter)
-        {
-            builder.Services.Configure<OpenTelemetryLoggerOptions>(logging => logging.AddOtlpExporter());
-            builder.Services.ConfigureOpenTelemetryMeterProvider(metrics => metrics.AddOtlpExporter());
-            builder.Services.ConfigureOpenTelemetryTracerProvider(tracing => tracing.AddOtlpExporter());
+            return builder;
         }
 
-        return builder;
-    }
-
-    public static IHostApplicationBuilder AddDefaultHealthChecks(this IHostApplicationBuilder builder)
-    {
-        builder.Services.AddHealthChecks()
-            // Add a default liveness check to ensure app is responsive
-            .AddCheck("self", () => HealthCheckResult.Healthy(), ["live"]);
-
-        return builder;
-    }
-
-    public static WebApplication MapDefaultEndpoints(this WebApplication app)
-    {
-        // Adding health checks endpoints to applications in non-development environments has security implications.
-        // See https://aka.ms/dotnet/aspire/healthchecks for details before enabling these endpoints in non-development environments.
-        if (app.Environment.IsDevelopment())
+        private static IHostApplicationBuilder AddOpenTelemetryExporters(this IHostApplicationBuilder builder)
         {
-            // All health checks must pass for app to be considered ready to accept traffic after starting
-            app.MapHealthChecks("/health");
+            var useOtlpExporter = !string.IsNullOrWhiteSpace(builder.Configuration["OTEL_EXPORTER_OTLP_ENDPOINT"]);
 
-            // Only health checks tagged with the "live" tag must pass for app to be considered alive
-            app.MapHealthChecks("/alive", new HealthCheckOptions
+            if (useOtlpExporter)
             {
-                Predicate = r => r.Tags.Contains("live")
-            });
+                builder.Services.Configure<OpenTelemetryLoggerOptions>(logging => logging.AddOtlpExporter());
+                builder.Services.ConfigureOpenTelemetryMeterProvider(metrics => metrics.AddOtlpExporter());
+                builder.Services.ConfigureOpenTelemetryTracerProvider(tracing => tracing.AddOtlpExporter());
+            }
+
+            return builder;
         }
 
-        return app;
+        public static IHostApplicationBuilder AddDefaultHealthChecks(this IHostApplicationBuilder builder)
+        {
+            builder.Services.AddHealthChecks()
+                // Add a default liveness check to ensure app is responsive
+                .AddCheck("self", () => HealthCheckResult.Healthy(), ["live"]);
+
+            return builder;
+        }
+
+        public static WebApplication MapDefaultEndpoints(this WebApplication app)
+        {
+            // Adding health checks endpoints to applications in non-development environments has security implications.
+            // See https://aka.ms/dotnet/aspire/healthchecks for details before enabling these endpoints in non-development environments.
+            if (app.Environment.IsDevelopment())
+            {
+                // All health checks must pass for app to be considered ready to accept traffic after starting
+                app.MapHealthChecks("/health");
+
+                // Only health checks tagged with the "live" tag must pass for app to be considered alive
+                app.MapHealthChecks("/alive", new HealthCheckOptions
+                {
+                    Predicate = r => r.Tags.Contains("live")
+                });
+            }
+
+            return app;
+        }
     }
 }

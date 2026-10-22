@@ -2,200 +2,201 @@
 using eShop.ClientApp.Models.Orders;
 using eShop.ClientApp.Models.User;
 
-namespace eShop.ClientApp.Services.Order;
-
-public class OrderMockService : IOrderService
+namespace eShop.ClientApp.Services.Order
 {
-    private static readonly DateTime MockExpirationDate = DateTime.Now.AddYears(5);
-
-    private static readonly Address MockAdress = new()
+    public class OrderMockService : IOrderService
     {
-        Id = Guid.NewGuid(),
-        City = "Seattle, WA",
-        Street = "120 E 87th Street",
-        CountryCode = "98122",
-        Country = "United States",
-        Latitude = 40.785091,
-        Longitude = -73.968285,
-        State = "Seattle",
-        StateCode = "WA",
-        ZipCode = "98101"
-    };
+        private static readonly DateTime MockExpirationDate = DateTime.Now.AddYears(5);
 
-    private static readonly PaymentInfo MockPaymentInfo = new()
-    {
-        Id = Guid.NewGuid(),
-        CardHolderName = "American Express",
-        CardNumber = "XXXXXXXXXXXX0005",
-        CardType = new CardType
+        private static readonly Address MockAdress = new()
         {
-            Id = 3,
-            Name = "MasterCard"
-        },
-        Expiration = MockExpirationDate.ToString(),
-        ExpirationMonth = MockExpirationDate.Month,
-        ExpirationYear = MockExpirationDate.Year,
-        SecurityNumber = "123"
-    };
+            Id = Guid.NewGuid(),
+            City = "Seattle, WA",
+            Street = "120 E 87th Street",
+            CountryCode = "98122",
+            Country = "United States",
+            Latitude = 40.785091,
+            Longitude = -73.968285,
+            State = "Seattle",
+            StateCode = "WA",
+            ZipCode = "98101"
+        };
 
-    private static readonly List<OrderItem> MockOrderItems =
-    [
-        new OrderItem
+        private static readonly PaymentInfo MockPaymentInfo = new()
         {
-            OrderId = Guid.NewGuid(),
-            ProductId = Common.Common.MockCatalogItemId01,
-            Discount = 15,
-            ProductName = ".NET Bot Blue Sweatshirt (M)",
-            Quantity = 1,
-            UnitPrice = 16.50M,
-            PictureUrl = "fake_product_01.png"
-        },
-        new OrderItem
+            Id = Guid.NewGuid(),
+            CardHolderName = "American Express",
+            CardNumber = "XXXXXXXXXXXX0005",
+            CardType = new CardType
+            {
+                Id = 3,
+                Name = "MasterCard"
+            },
+            Expiration = MockExpirationDate.ToString(),
+            ExpirationMonth = MockExpirationDate.Month,
+            ExpirationYear = MockExpirationDate.Year,
+            SecurityNumber = "123"
+        };
+
+        private static readonly List<OrderItem> MockOrderItems =
+        [
+            new OrderItem
+            {
+                OrderId = Guid.NewGuid(),
+                ProductId = Common.Common.MockCatalogItemId01,
+                Discount = 15,
+                ProductName = ".NET Bot Blue Sweatshirt (M)",
+                Quantity = 1,
+                UnitPrice = 16.50M,
+                PictureUrl = "fake_product_01.png"
+            },
+            new OrderItem
+            {
+                OrderId = Guid.NewGuid(),
+                ProductId = Common.Common.MockCatalogItemId03,
+                Discount = 0,
+                ProductName = ".NET Bot Black Sweatshirt (M)",
+                Quantity = 2,
+                UnitPrice = 19.95M,
+                PictureUrl = "fake_product_03.png"
+            }
+        ];
+
+        private static readonly OrderCheckout MockOrderCheckout = new()
         {
-            OrderId = Guid.NewGuid(),
-            ProductId = Common.Common.MockCatalogItemId03,
-            Discount = 0,
-            ProductName = ".NET Bot Black Sweatshirt (M)",
-            Quantity = 2,
-            UnitPrice = 19.95M,
-            PictureUrl = "fake_product_03.png"
-        }
-    ];
+            CardExpiration = DateTime.UtcNow,
+            CardHolderName = "FakeCardHolderName",
+            CardNumber = "XXXXXXXXXXXX3224",
+            CardSecurityNumber = "1234",
+            CardTypeId = 1,
+            City = "FakeCity",
+            Country = "FakeCountry",
+            ZipCode = "FakeZipCode",
+            Street = "FakeStreet"
+        };
 
-    private static readonly OrderCheckout MockOrderCheckout = new()
-    {
-        CardExpiration = DateTime.UtcNow,
-        CardHolderName = "FakeCardHolderName",
-        CardNumber = "XXXXXXXXXXXX3224",
-        CardSecurityNumber = "1234",
-        CardTypeId = 1,
-        City = "FakeCity",
-        Country = "FakeCountry",
-        ZipCode = "FakeZipCode",
-        Street = "FakeStreet"
-    };
+        private readonly List<Models.Orders.Order> MockOrders =
+        [
+            new Models.Orders.Order
+            {
+                OrderNumber = 1,
+                SequenceNumber = 123,
+                OrderDate = DateTime.Now,
+                OrderStatus = "Submitted",
+                OrderItems = MockOrderItems,
+                CardTypeId = MockPaymentInfo.CardType!.Id,
+                CardHolderName = MockPaymentInfo.CardHolderName,
+                CardNumber = MockPaymentInfo.CardNumber,
+                CardSecurityNumber = MockPaymentInfo.SecurityNumber,
+                CardExpiration = new DateTime(MockPaymentInfo.ExpirationYear, MockPaymentInfo.ExpirationMonth, 1),
+                ShippingCity = MockAdress.City!,
+                ShippingState = MockAdress.State!,
+                ShippingCountry = MockAdress.Country!,
+                ShippingStreet = MockAdress.Street!,
+                Total = 36.46M
+            },
+            new Models.Orders.Order
+            {
+                OrderNumber = 2,
+                SequenceNumber = 132,
+                OrderDate = DateTime.Now,
+                OrderStatus = "Paid",
+                OrderItems = MockOrderItems,
+                CardTypeId = MockPaymentInfo.CardType!.Id,
+                CardHolderName = MockPaymentInfo.CardHolderName,
+                CardNumber = MockPaymentInfo.CardNumber,
+                CardSecurityNumber = MockPaymentInfo.SecurityNumber,
+                CardExpiration = new DateTime(MockPaymentInfo.ExpirationYear, MockPaymentInfo.ExpirationMonth, 1),
+                ShippingCity = MockAdress.City!,
+                ShippingState = MockAdress.State!,
+                ShippingCountry = MockAdress.Country!,
+                ShippingStreet = MockAdress.Street!,
+                Total = 36.46M
+            },
+            new Models.Orders.Order
+            {
+                OrderNumber = 3,
+                SequenceNumber = 231,
+                OrderDate = DateTime.Now,
+                OrderStatus = "Cancelled",
+                OrderItems = MockOrderItems,
+                CardTypeId = MockPaymentInfo.CardType!.Id,
+                CardHolderName = MockPaymentInfo.CardHolderName,
+                CardNumber = MockPaymentInfo.CardNumber,
+                CardSecurityNumber = MockPaymentInfo.SecurityNumber,
+                CardExpiration = new DateTime(MockPaymentInfo.ExpirationYear, MockPaymentInfo.ExpirationMonth, 1),
+                ShippingCity = MockAdress.City!,
+                ShippingState = MockAdress.State!,
+                ShippingCountry = MockAdress.Country!,
+                ShippingStreet = MockAdress.Street!,
+                Total = 36.46M
+            },
+            new Models.Orders.Order
+            {
+                OrderNumber = 4,
+                SequenceNumber = 131,
+                OrderDate = DateTime.Now,
+                OrderStatus = "Shipped",
+                OrderItems = MockOrderItems,
+                CardTypeId = MockPaymentInfo.CardType!.Id,
+                CardHolderName = MockPaymentInfo.CardHolderName,
+                CardNumber = MockPaymentInfo.CardNumber,
+                CardSecurityNumber = MockPaymentInfo.SecurityNumber,
+                CardExpiration = new DateTime(MockPaymentInfo.ExpirationYear, MockPaymentInfo.ExpirationMonth, 1),
+                ShippingCity = MockAdress.City!,
+                ShippingState = MockAdress.State!,
+                ShippingCountry = MockAdress.Country!,
+                ShippingStreet = MockAdress.Street!,
+                Total = 36.46M
+            }
+        ];
 
-    private readonly List<Models.Orders.Order> MockOrders =
-    [
-        new Models.Orders.Order
+        public async Task<IEnumerable<Models.Orders.Order>> GetOrdersAsync()
         {
-            OrderNumber = 1,
-            SequenceNumber = 123,
-            OrderDate = DateTime.Now,
-            OrderStatus = "Submitted",
-            OrderItems = MockOrderItems,
-            CardTypeId = MockPaymentInfo.CardType!.Id,
-            CardHolderName = MockPaymentInfo.CardHolderName,
-            CardNumber = MockPaymentInfo.CardNumber,
-            CardSecurityNumber = MockPaymentInfo.SecurityNumber,
-            CardExpiration = new DateTime(MockPaymentInfo.ExpirationYear, MockPaymentInfo.ExpirationMonth, 1),
-            ShippingCity = MockAdress.City!,
-            ShippingState = MockAdress.State!,
-            ShippingCountry = MockAdress.Country!,
-            ShippingStreet = MockAdress.Street!,
-            Total = 36.46M
-        },
-        new Models.Orders.Order
-        {
-            OrderNumber = 2,
-            SequenceNumber = 132,
-            OrderDate = DateTime.Now,
-            OrderStatus = "Paid",
-            OrderItems = MockOrderItems,
-            CardTypeId = MockPaymentInfo.CardType!.Id,
-            CardHolderName = MockPaymentInfo.CardHolderName,
-            CardNumber = MockPaymentInfo.CardNumber,
-            CardSecurityNumber = MockPaymentInfo.SecurityNumber,
-            CardExpiration = new DateTime(MockPaymentInfo.ExpirationYear, MockPaymentInfo.ExpirationMonth, 1),
-            ShippingCity = MockAdress.City!,
-            ShippingState = MockAdress.State!,
-            ShippingCountry = MockAdress.Country!,
-            ShippingStreet = MockAdress.Street!,
-            Total = 36.46M
-        },
-        new Models.Orders.Order
-        {
-            OrderNumber = 3,
-            SequenceNumber = 231,
-            OrderDate = DateTime.Now,
-            OrderStatus = "Cancelled",
-            OrderItems = MockOrderItems,
-            CardTypeId = MockPaymentInfo.CardType!.Id,
-            CardHolderName = MockPaymentInfo.CardHolderName,
-            CardNumber = MockPaymentInfo.CardNumber,
-            CardSecurityNumber = MockPaymentInfo.SecurityNumber,
-            CardExpiration = new DateTime(MockPaymentInfo.ExpirationYear, MockPaymentInfo.ExpirationMonth, 1),
-            ShippingCity = MockAdress.City!,
-            ShippingState = MockAdress.State!,
-            ShippingCountry = MockAdress.Country!,
-            ShippingStreet = MockAdress.Street!,
-            Total = 36.46M
-        },
-        new Models.Orders.Order
-        {
-            OrderNumber = 4,
-            SequenceNumber = 131,
-            OrderDate = DateTime.Now,
-            OrderStatus = "Shipped",
-            OrderItems = MockOrderItems,
-            CardTypeId = MockPaymentInfo.CardType!.Id,
-            CardHolderName = MockPaymentInfo.CardHolderName,
-            CardNumber = MockPaymentInfo.CardNumber,
-            CardSecurityNumber = MockPaymentInfo.SecurityNumber,
-            CardExpiration = new DateTime(MockPaymentInfo.ExpirationYear, MockPaymentInfo.ExpirationMonth, 1),
-            ShippingCity = MockAdress.City!,
-            ShippingState = MockAdress.State!,
-            ShippingCountry = MockAdress.Country!,
-            ShippingStreet = MockAdress.Street!,
-            Total = 36.46M
-        }
-    ];
+            await Task.Delay(10);
 
-    public async Task<IEnumerable<Models.Orders.Order>> GetOrdersAsync()
-    {
-        await Task.Delay(10);
-
-        return [.. MockOrders.OrderByDescending(o => o.OrderNumber)];
-    }
-
-    public async Task<Models.Orders.Order> GetOrderAsync(int orderId)
-    {
-        await Task.Delay(10);
-
-        return MockOrders
-            .FirstOrDefault(o => o.OrderNumber.Equals(orderId)) ?? new Models.Orders.Order();
-    }
-
-    public async Task CreateOrderAsync(Models.Orders.Order newOrder)
-    {
-        await Task.Delay(10);
-
-        MockOrders.Add(newOrder);
-    }
-
-    public OrderCheckout MapOrderToBasket(Models.Orders.Order order)
-    {
-        return MockOrderCheckout;
-    }
-
-    // Real upstream gap carried over verbatim: this returned true without touching MockOrders,
-    // so OrderDetailViewModel.ToggleCancelOrderCommand's "Cancelled" status only ever showed on
-    // the detail screen itself -- navigating back to Profile still showed "Submitted", since the
-    // real OrderService (live, non-mock) actually calls the Ordering.API cancel endpoint and gets
-    // real persistence for free, a guarantee the mock needs to provide explicitly instead. The
-    // delay mimics that same real call's round-trip, since ToggleCancelOrderCommand is now
-    // wrapped in IsBusyFor and should show real processing feedback rather than resolve instantly.
-    public async Task<bool> CancelOrderAsync(int orderId)
-    {
-        await Task.Delay(TimeSpan.FromSeconds(11));
-
-        var order = MockOrders.FirstOrDefault(o => o.OrderNumber == orderId);
-
-        if (order is not null)
-        {
-            order.OrderStatus = "Cancelled";
+            return [.. MockOrders.OrderByDescending(o => o.OrderNumber)];
         }
 
-        return true;
+        public async Task<Models.Orders.Order> GetOrderAsync(int orderId)
+        {
+            await Task.Delay(10);
+
+            return MockOrders
+                .FirstOrDefault(o => o.OrderNumber.Equals(orderId)) ?? new Models.Orders.Order();
+        }
+
+        public async Task CreateOrderAsync(Models.Orders.Order newOrder)
+        {
+            await Task.Delay(10);
+
+            MockOrders.Add(newOrder);
+        }
+
+        public OrderCheckout MapOrderToBasket(Models.Orders.Order order)
+        {
+            return MockOrderCheckout;
+        }
+
+        // Real upstream gap carried over verbatim: this returned true without touching MockOrders,
+        // so OrderDetailViewModel.ToggleCancelOrderCommand's "Cancelled" status only ever showed on
+        // the detail screen itself -- navigating back to Profile still showed "Submitted", since the
+        // real OrderService (live, non-mock) actually calls the Ordering.API cancel endpoint and gets
+        // real persistence for free, a guarantee the mock needs to provide explicitly instead. The
+        // delay mimics that same real call's round-trip, since ToggleCancelOrderCommand is now
+        // wrapped in IsBusyFor and should show real processing feedback rather than resolve instantly.
+        public async Task<bool> CancelOrderAsync(int orderId)
+        {
+            await Task.Delay(TimeSpan.FromSeconds(11));
+
+            var order = MockOrders.FirstOrDefault(o => o.OrderNumber == orderId);
+
+            if (order is not null)
+            {
+                order.OrderStatus = "Cancelled";
+            }
+
+            return true;
+        }
     }
 }

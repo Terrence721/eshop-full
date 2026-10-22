@@ -1,60 +1,61 @@
 ﻿using System.Collections.Concurrent;
 
-namespace eShop.WebhookClient.Services;
-
-/// <summary>
-/// In-memory store of received webhooks plus change subscription notifications.
-/// </summary>
-public class HooksRepository
+namespace eShop.WebhookClient.Services
 {
-    private readonly ConcurrentQueue<WebHookReceived> _data = new();
-    private readonly ConcurrentDictionary<OnChangeSubscription, object?> _onChangeSubscriptions = new();
-
     /// <summary>
-    /// Stores a newly received webhook and notifies all subscribers.
+    /// In-memory store of received webhooks plus change subscription notifications.
     /// </summary>
-    public Task AddNew(WebHookReceived hook)
+    public class HooksRepository
     {
-        _data.Enqueue(hook);
+        private readonly ConcurrentQueue<WebHookReceived> _data = new();
+        private readonly ConcurrentDictionary<OnChangeSubscription, object?> _onChangeSubscriptions = new();
 
-        foreach (var subscription in _onChangeSubscriptions)
+        /// <summary>
+        /// Stores a newly received webhook and notifies all subscribers.
+        /// </summary>
+        public Task AddNew(WebHookReceived hook)
         {
-            try
+            _data.Enqueue(hook);
+
+            foreach (var subscription in _onChangeSubscriptions)
             {
-                _ = subscription.Key.NotifyAsync();
+                try
+                {
+                    _ = subscription.Key.NotifyAsync();
+                }
+                catch (Exception)
+                {
+                    // It's the subscriber's responsibility to report/handle any exceptions
+                    // that occur during their callback
+                }
             }
-            catch (Exception)
-            {
-                // It's the subscriber's responsibility to report/handle any exceptions
-                // that occur during their callback
-            }
+
+            return Task.CompletedTask;
         }
 
-        return Task.CompletedTask;
-    }
+        /// <summary>
+        /// Returns all received webhooks.
+        /// </summary>
+        public Task<IEnumerable<WebHookReceived>> GetAll()
+        {
+            return Task.FromResult(_data.AsEnumerable());
+        }
 
-    /// <summary>
-    /// Returns all received webhooks.
-    /// </summary>
-    public Task<IEnumerable<WebHookReceived>> GetAll()
-    {
-        return Task.FromResult(_data.AsEnumerable());
-    }
+        /// <summary>
+        /// Registers a callback to be invoked whenever a new webhook arrives.
+        /// </summary>
+        public IDisposable Subscribe(Func<Task> callback)
+        {
+            var subscription = new OnChangeSubscription(callback, this);
+            _onChangeSubscriptions.TryAdd(subscription, null);
+            return subscription;
+        }
 
-    /// <summary>
-    /// Registers a callback to be invoked whenever a new webhook arrives.
-    /// </summary>
-    public IDisposable Subscribe(Func<Task> callback)
-    {
-        var subscription = new OnChangeSubscription(callback, this);
-        _onChangeSubscriptions.TryAdd(subscription, null);
-        return subscription;
-    }
+        private class OnChangeSubscription(Func<Task> callback, HooksRepository owner) : IDisposable
+        {
+            public Task NotifyAsync() => callback();
 
-    private class OnChangeSubscription(Func<Task> callback, HooksRepository owner) : IDisposable
-    {
-        public Task NotifyAsync() => callback();
-
-        public void Dispose() => owner._onChangeSubscriptions.Remove(this, out _);
+            public void Dispose() => owner._onChangeSubscriptions.Remove(this, out _);
+        }
     }
 }

@@ -4,77 +4,78 @@ using MediatR;
 using Microsoft.EntityFrameworkCore;
 using NSubstitute;
 
-namespace eShop.Ordering.Infrastructure.UnitTests;
-
-[TestClass]
-public class OrderRepositoryTests
+namespace eShop.Ordering.Infrastructure.UnitTests
 {
-    private static readonly DateTime FutureExpiration = DateTime.UtcNow.AddYears(1);
-
-    private static Order CreateOrder() =>
-        new("user-1", "Alice", new Address("123 Main St", "Springfield", "IL", "USA", "62704"),
-            1, "4111111111111111", "123", "Alice", FutureExpiration);
-
-    [TestMethod]
-    public void UnitOfWork_returns_the_underlying_context()
+    [TestClass]
+    public class OrderRepositoryTests
     {
-        var context = TestOrderingContext.Create(Substitute.For<IMediator>());
-        var repository = new OrderRepository(context);
+        private static readonly DateTime FutureExpiration = DateTime.UtcNow.AddYears(1);
 
-        Assert.AreSame(context, repository.UnitOfWork);
-    }
+        private static Order CreateOrder() =>
+            new("user-1", "Alice", new Address("123 Main St", "Springfield", "IL", "USA", "62704"),
+                1, "4111111111111111", "123", "Alice", FutureExpiration);
 
-    [TestMethod]
-    public void Add_adds_the_order_to_the_context()
-    {
-        var context = TestOrderingContext.Create(Substitute.For<IMediator>());
-        var repository = new OrderRepository(context);
-        var order = CreateOrder();
+        [TestMethod]
+        public void UnitOfWork_returns_the_underlying_context()
+        {
+            var context = TestOrderingContext.Create(Substitute.For<IMediator>());
+            var repository = new OrderRepository(context);
 
-        repository.Add(order);
+            Assert.AreSame(context, repository.UnitOfWork);
+        }
 
-        Assert.AreEqual(EntityState.Added, context.Entry(order).State);
-    }
+        [TestMethod]
+        public void Add_adds_the_order_to_the_context()
+        {
+            var context = TestOrderingContext.Create(Substitute.For<IMediator>());
+            var repository = new OrderRepository(context);
+            var order = CreateOrder();
 
-    [TestMethod]
-    public async Task GetAsync_returns_the_order_with_its_items_loaded()
-    {
-        var dbName = Guid.NewGuid().ToString();
-        var mediator = Substitute.For<IMediator>();
-        var writeContext = TestOrderingContext.CreateNamed(dbName, mediator);
-        var order = CreateOrder();
-        order.AddOrderItem(1, "Widget", 10.00m, 0, "widget.png", 2);
-        new OrderRepository(writeContext).Add(order);
-        await writeContext.SaveChangesAsync();
+            repository.Add(order);
 
-        var readContext = TestOrderingContext.CreateNamed(dbName, mediator);
-        var found = await new OrderRepository(readContext).GetAsync(order.Id);
+            Assert.AreEqual(EntityState.Added, context.Entry(order).State);
+        }
 
-        Assert.IsNotNull(found);
-        Assert.HasCount(1, found.OrderItems);
-        Assert.AreEqual("Widget", found.OrderItems.Single().ProductName);
-    }
+        [TestMethod]
+        public async Task GetAsync_returns_the_order_with_its_items_loaded()
+        {
+            var dbName = Guid.NewGuid().ToString();
+            var mediator = Substitute.For<IMediator>();
+            var writeContext = TestOrderingContext.CreateNamed(dbName, mediator);
+            var order = CreateOrder();
+            order.AddOrderItem(1, "Widget", 10.00m, 0, "widget.png", 2);
+            new OrderRepository(writeContext).Add(order);
+            await writeContext.SaveChangesAsync();
 
-    [TestMethod]
-    public async Task GetAsync_returns_null_when_no_order_matches()
-    {
-        var context = TestOrderingContext.Create(Substitute.For<IMediator>());
-        var repository = new OrderRepository(context);
+            var readContext = TestOrderingContext.CreateNamed(dbName, mediator);
+            var found = await new OrderRepository(readContext).GetAsync(order.Id);
 
-        var found = await repository.GetAsync(999);
+            Assert.IsNotNull(found);
+            Assert.HasCount(1, found.OrderItems);
+            Assert.AreEqual("Widget", found.OrderItems.Single().ProductName);
+        }
 
-        Assert.IsNull(found);
-    }
+        [TestMethod]
+        public async Task GetAsync_returns_null_when_no_order_matches()
+        {
+            var context = TestOrderingContext.Create(Substitute.For<IMediator>());
+            var repository = new OrderRepository(context);
 
-    [TestMethod]
-    public void Update_marks_the_order_as_modified()
-    {
-        var context = TestOrderingContext.Create(Substitute.For<IMediator>());
-        var repository = new OrderRepository(context);
-        var order = CreateOrder();
+            var found = await repository.GetAsync(999);
 
-        repository.Update(order);
+            Assert.IsNull(found);
+        }
 
-        Assert.AreEqual(EntityState.Modified, context.Entry(order).State);
+        [TestMethod]
+        public void Update_marks_the_order_as_modified()
+        {
+            var context = TestOrderingContext.Create(Substitute.For<IMediator>());
+            var repository = new OrderRepository(context);
+            var order = CreateOrder();
+
+            repository.Update(order);
+
+            Assert.AreEqual(EntityState.Modified, context.Entry(order).State);
+        }
     }
 }

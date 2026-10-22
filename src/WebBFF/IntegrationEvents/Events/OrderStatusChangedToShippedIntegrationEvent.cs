@@ -1,18 +1,19 @@
-﻿namespace eShop.WebBFF.IntegrationEvents.Events;
-
-public record OrderStatusChangedToShippedIntegrationEvent : IntegrationEvent
+﻿namespace eShop.WebBFF.IntegrationEvents.Events
 {
-    public int OrderId { get; }
-    public string OrderStatus { get; }
-    public string BuyerName { get; }
-    public string BuyerIdentityGuid { get; }
-
-    public OrderStatusChangedToShippedIntegrationEvent(
-        int orderId, string orderStatus, string buyerName, string buyerIdentityGuid)
+    public record OrderStatusChangedToShippedIntegrationEvent : IntegrationEvent
     {
-        OrderId = orderId;
-        OrderStatus = orderStatus;
-        BuyerName = buyerName;
-        BuyerIdentityGuid = buyerIdentityGuid;
+        public int OrderId { get; }
+        public string OrderStatus { get; }
+        public string BuyerName { get; }
+        public string BuyerIdentityGuid { get; }
+
+        public OrderStatusChangedToShippedIntegrationEvent(
+            int orderId, string orderStatus, string buyerName, string buyerIdentityGuid)
+        {
+            OrderId = orderId;
+            OrderStatus = orderStatus;
+            BuyerName = buyerName;
+            BuyerIdentityGuid = buyerIdentityGuid;
+        }
     }
 }

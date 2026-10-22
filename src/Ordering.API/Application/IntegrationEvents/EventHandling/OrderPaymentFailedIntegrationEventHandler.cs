@@ -1,26 +1,27 @@
-﻿namespace eShop.Ordering.API.Application.IntegrationEvents.EventHandling;
-
-/// <summary>
-/// Handles a payment-failed integration event by cancelling the associated order.
-/// </summary>
-public class OrderPaymentFailedIntegrationEventHandler(
-    IMediator mediator,
-    ILogger<OrderPaymentFailedIntegrationEventHandler> logger) :
-    IIntegrationEventHandler<OrderPaymentFailedIntegrationEvent>
+﻿namespace eShop.Ordering.API.Application.IntegrationEvents.EventHandling
 {
-    public async Task Handle(OrderPaymentFailedIntegrationEvent @event)
+    /// <summary>
+    /// Handles a payment-failed integration event by cancelling the associated order.
+    /// </summary>
+    public class OrderPaymentFailedIntegrationEventHandler(
+        IMediator mediator,
+        ILogger<OrderPaymentFailedIntegrationEventHandler> logger) :
+        IIntegrationEventHandler<OrderPaymentFailedIntegrationEvent>
     {
-        logger.LogInformation("Handling integration event: {IntegrationEventId} - ({@IntegrationEvent})", @event.Id, @event);
+        public async Task Handle(OrderPaymentFailedIntegrationEvent @event)
+        {
+            logger.LogInformation("Handling integration event: {IntegrationEventId} - ({@IntegrationEvent})", @event.Id, @event);
 
-        var command = new CancelOrderCommand(@event.OrderId);
+            var command = new CancelOrderCommand(@event.OrderId);
 
-        logger.LogInformation(
-            "Sending command: {CommandName} - {IdProperty}: {CommandId} ({@Command})",
-            command.GetGenericTypeName(),
-            nameof(command.OrderNumber),
-            command.OrderNumber,
-            command);
+            logger.LogInformation(
+                "Sending command: {CommandName} - {IdProperty}: {CommandId} ({@Command})",
+                command.GetGenericTypeName(),
+                nameof(command.OrderNumber),
+                command.OrderNumber,
+                command);
 
-        await mediator.Send(command);
+            await mediator.Send(command);
+        }
     }
 }

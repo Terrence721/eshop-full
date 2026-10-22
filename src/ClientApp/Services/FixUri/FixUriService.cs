@@ -5,99 +5,100 @@ using eShop.ClientApp.Models.Catalog;
 using eShop.ClientApp.Models.Marketing;
 using eShop.ClientApp.Services.Settings;
 
-namespace eShop.ClientApp.Services.FixUri;
-
-public class FixUriService(ISettingsService settingsService) : IFixUriService
+namespace eShop.ClientApp.Services.FixUri
 {
-    private const string ApiVersion = "api-version=2.0";
-
-    private readonly ISettingsService _settingsService = settingsService;
-
-    private readonly Regex IpRegex = new(@"\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b");
-
-    public void FixCatalogItemPictureUri(IEnumerable<CatalogItem>? catalogItems)
+    public class FixUriService(ISettingsService settingsService) : IFixUriService
     {
-        if (catalogItems is null)
-        {
-            return;
-        }
+        private const string ApiVersion = "api-version=2.0";
 
-        try
+        private readonly ISettingsService _settingsService = settingsService;
+
+        private readonly Regex IpRegex = new(@"\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b");
+
+        public void FixCatalogItemPictureUri(IEnumerable<CatalogItem>? catalogItems)
         {
-            if (!_settingsService.UseMocks && _settingsService.GatewayCatalogEndpointBase != _settingsService.DefaultEndpoint)
+            if (catalogItems is null)
             {
-                foreach (var catalogItem in catalogItems)
-                {
-                    catalogItem.PictureUri = Path.Combine(_settingsService.GatewayCatalogEndpointBase, $"api/catalog/items/{catalogItem.Id}/pic?{ApiVersion}");
-                }
+                return;
             }
-        }
-        catch (Exception ex)
-        {
-            Debug.WriteLine(ex.Message);
-        }
-    }
 
-    public void FixBasketItemPictureUri(IEnumerable<BasketItem>? basketItems)
-    {
-        if (basketItems is null)
-        {
-            return;
-        }
-
-        try
-        {
-            if (!_settingsService.UseMocks && _settingsService.IdentityEndpointBase != _settingsService.DefaultEndpoint)
+            try
             {
-                foreach (var basketItem in basketItems)
+                if (!_settingsService.UseMocks && _settingsService.GatewayCatalogEndpointBase != _settingsService.DefaultEndpoint)
                 {
-                    var serverResult = IpRegex.Matches(basketItem.PictureUrl);
-                    var localResult = IpRegex.Matches(_settingsService.IdentityEndpointBase);
-
-                    if (serverResult.Count != -1 && localResult.Count != -1)
+                    foreach (var catalogItem in catalogItems)
                     {
-                        var serviceIp = serverResult[0].Value;
-                        var localIp = localResult[0].Value;
-                        basketItem.PictureUrl = basketItem.PictureUrl.Replace(serviceIp, localIp);
+                        catalogItem.PictureUri = Path.Combine(_settingsService.GatewayCatalogEndpointBase, $"api/catalog/items/{catalogItem.Id}/pic?{ApiVersion}");
                     }
                 }
             }
-        }
-        catch (Exception ex)
-        {
-            Debug.WriteLine(ex.Message);
-        }
-    }
-
-    public void FixCampaignItemPictureUri(IEnumerable<CampaignItem>? campaignItems)
-    {
-        if (campaignItems is null)
-        {
-            return;
-        }
-
-        try
-        {
-            if (!_settingsService.UseMocks && _settingsService.IdentityEndpointBase != _settingsService.DefaultEndpoint)
+            catch (Exception ex)
             {
-                foreach (var campaignItem in campaignItems)
+                Debug.WriteLine(ex.Message);
+            }
+        }
+
+        public void FixBasketItemPictureUri(IEnumerable<BasketItem>? basketItems)
+        {
+            if (basketItems is null)
+            {
+                return;
+            }
+
+            try
+            {
+                if (!_settingsService.UseMocks && _settingsService.IdentityEndpointBase != _settingsService.DefaultEndpoint)
                 {
-                    var serverResult = IpRegex.Matches(campaignItem.PictureUri);
-                    var localResult = IpRegex.Matches(_settingsService.IdentityEndpointBase);
-
-                    if (serverResult.Count != -1 && localResult.Count != -1)
+                    foreach (var basketItem in basketItems)
                     {
-                        var serviceIp = serverResult[0].Value;
-                        var localIp = localResult[0].Value;
+                        var serverResult = IpRegex.Matches(basketItem.PictureUrl);
+                        var localResult = IpRegex.Matches(_settingsService.IdentityEndpointBase);
 
-                        campaignItem.PictureUri = campaignItem.PictureUri.Replace(serviceIp, localIp);
+                        if (serverResult.Count != -1 && localResult.Count != -1)
+                        {
+                            var serviceIp = serverResult[0].Value;
+                            var localIp = localResult[0].Value;
+                            basketItem.PictureUrl = basketItem.PictureUrl.Replace(serviceIp, localIp);
+                        }
                     }
                 }
             }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(ex.Message);
+            }
         }
-        catch (Exception ex)
+
+        public void FixCampaignItemPictureUri(IEnumerable<CampaignItem>? campaignItems)
         {
-            Debug.WriteLine(ex.Message);
+            if (campaignItems is null)
+            {
+                return;
+            }
+
+            try
+            {
+                if (!_settingsService.UseMocks && _settingsService.IdentityEndpointBase != _settingsService.DefaultEndpoint)
+                {
+                    foreach (var campaignItem in campaignItems)
+                    {
+                        var serverResult = IpRegex.Matches(campaignItem.PictureUri);
+                        var localResult = IpRegex.Matches(_settingsService.IdentityEndpointBase);
+
+                        if (serverResult.Count != -1 && localResult.Count != -1)
+                        {
+                            var serviceIp = serverResult[0].Value;
+                            var localIp = localResult[0].Value;
+
+                            campaignItem.PictureUri = campaignItem.PictureUri.Replace(serviceIp, localIp);
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(ex.Message);
+            }
         }
     }
 }

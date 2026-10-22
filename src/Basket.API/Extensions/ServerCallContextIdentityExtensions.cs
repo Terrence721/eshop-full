@@ -3,10 +3,11 @@
 /// from a <see cref="ServerCallContext"/>. Both lookups tolerate missing claims and return
 /// <see langword="null" /> instead of throwing.
 /// </summary>
-namespace eShop.Basket.API.Extensions;
-
-internal static class ServerCallContextIdentityExtensions
+namespace eShop.Basket.API.Extensions
 {
-    public static string? GetUserIdentity(this ServerCallContext context) => context.GetHttpContext().User.FindFirst("sub")?.Value;
-    public static string? GetUserName(this ServerCallContext context) => context.GetHttpContext().User.FindFirst(x => x.Type == ClaimTypes.Name)?.Value;
+    internal static class ServerCallContextIdentityExtensions
+    {
+        public static string? GetUserIdentity(this ServerCallContext context) => context.GetHttpContext().User.FindFirst("sub")?.Value;
+        public static string? GetUserName(this ServerCallContext context) => context.GetHttpContext().User.FindFirst(x => x.Type == ClaimTypes.Name)?.Value;
+    }
 }

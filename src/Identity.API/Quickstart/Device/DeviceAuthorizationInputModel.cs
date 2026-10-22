@@ -1,6 +1,7 @@
-﻿namespace IdentityServerHost.Quickstart.UI;
-
-public class DeviceAuthorizationInputModel : ConsentDecisionInputModel
+﻿namespace IdentityServerHost.Quickstart.UI
 {
-    public required string UserCode { get; set; }
+    public class DeviceAuthorizationInputModel : ConsentDecisionInputModel
+    {
+        public required string UserCode { get; set; }
+    }
 }

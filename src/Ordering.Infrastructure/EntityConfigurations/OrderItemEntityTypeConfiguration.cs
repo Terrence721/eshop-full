@@ -1,15 +1,16 @@
-﻿namespace eShop.Ordering.Infrastructure.EntityConfigurations;
-
-class OrderItemEntityTypeConfiguration
-    : IEntityTypeConfiguration<OrderItem>
+﻿namespace eShop.Ordering.Infrastructure.EntityConfigurations
 {
-    public void Configure(EntityTypeBuilder<OrderItem> orderItemConfiguration)
+    class OrderItemEntityTypeConfiguration
+        : IEntityTypeConfiguration<OrderItem>
     {
-        orderItemConfiguration.ToTable("orderItems");
+        public void Configure(EntityTypeBuilder<OrderItem> orderItemConfiguration)
+        {
+            orderItemConfiguration.ToTable("orderItems");
 
-        orderItemConfiguration.Property(o => o.Id)
-            .UseHiLo("orderitemseq");
+            orderItemConfiguration.Property(o => o.Id)
+                .UseHiLo("orderitemseq");
 
-        orderItemConfiguration.Property<int>("OrderId");
+            orderItemConfiguration.Property<int>("OrderId");
+        }
     }
 }

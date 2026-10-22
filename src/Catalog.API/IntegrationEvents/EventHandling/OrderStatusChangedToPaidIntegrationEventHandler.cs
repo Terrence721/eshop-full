@@ -1,25 +1,26 @@
-namespace eShop.Catalog.API.IntegrationEvents.EventHandling;
-
-/// <summary>
-/// Handles paid order events by decrementing stock for each ordered item.
-/// </summary>
-public class OrderStatusChangedToPaidIntegrationEventHandler(
-    CatalogContext catalogContext,
-    ILogger<OrderStatusChangedToPaidIntegrationEventHandler> logger) :
-    IIntegrationEventHandler<OrderStatusChangedToPaidIntegrationEvent>
+namespace eShop.Catalog.API.IntegrationEvents.EventHandling
 {
-    public async Task Handle(OrderStatusChangedToPaidIntegrationEvent @event)
+    /// <summary>
+    /// Handles paid order events by decrementing stock for each ordered item.
+    /// </summary>
+    public class OrderStatusChangedToPaidIntegrationEventHandler(
+        CatalogContext catalogContext,
+        ILogger<OrderStatusChangedToPaidIntegrationEventHandler> logger) :
+        IIntegrationEventHandler<OrderStatusChangedToPaidIntegrationEvent>
     {
-        logger.LogInformation("Handling integration event: {IntegrationEventId} - ({@IntegrationEvent})", @event.Id, @event);
-
-        //we're not blocking stock/inventory
-        foreach (var orderStockItem in @event.OrderStockItems)
+        public async Task Handle(OrderStatusChangedToPaidIntegrationEvent @event)
         {
-            var catalogItem = catalogContext.CatalogItems.Find(orderStockItem.ProductId);
+            logger.LogInformation("Handling integration event: {IntegrationEventId} - ({@IntegrationEvent})", @event.Id, @event);
 
-            catalogItem?.RemoveStock(orderStockItem.Units);
+            //we're not blocking stock/inventory
+            foreach (var orderStockItem in @event.OrderStockItems)
+            {
+                var catalogItem = catalogContext.CatalogItems.Find(orderStockItem.ProductId);
+
+                catalogItem?.RemoveStock(orderStockItem.Units);
+            }
+
+            await catalogContext.SaveChangesAsync();
         }
-
-        await catalogContext.SaveChangesAsync();
     }
 }

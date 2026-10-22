@@ -1,9 +1,10 @@
-﻿namespace eShop.ClientApp.Models.Permissions;
-
-public enum Permission
+﻿namespace eShop.ClientApp.Models.Permissions
 {
-    Unknown,
-    Location,
-    LocationAlways,
-    LocationWhenInUse
+    public enum Permission
+    {
+        Unknown,
+        Location,
+        LocationAlways,
+        LocationWhenInUse
+    }
 }

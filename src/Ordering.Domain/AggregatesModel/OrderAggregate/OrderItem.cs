@@ -1,63 +1,64 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace eShop.Ordering.Domain.AggregatesModel.OrderAggregate;
-
-public class OrderItem
-    : Entity
+namespace eShop.Ordering.Domain.AggregatesModel.OrderAggregate
 {
-    [Required]
-    public string ProductName { get; private set; } = null!;
-
-    public string PictureUrl { get; private set; } = null!;
-
-    public decimal UnitPrice { get; private set; }
-
-    public decimal Discount { get; private set; }
-
-    public int Units { get; private set; }
-
-    public int ProductId { get; private set; }
-
-    protected OrderItem() { }
-
-    public OrderItem(int productId, string productName, decimal unitPrice, decimal discount, string pictureUrl, int units = 1)
+    public class OrderItem
+        : Entity
     {
-        if (units <= 0)
+        [Required]
+        public string ProductName { get; private set; } = null!;
+
+        public string PictureUrl { get; private set; } = null!;
+
+        public decimal UnitPrice { get; private set; }
+
+        public decimal Discount { get; private set; }
+
+        public int Units { get; private set; }
+
+        public int ProductId { get; private set; }
+
+        protected OrderItem() { }
+
+        public OrderItem(int productId, string productName, decimal unitPrice, decimal discount, string pictureUrl, int units = 1)
         {
-            throw new OrderingDomainException("Invalid number of units");
+            if (units <= 0)
+            {
+                throw new OrderingDomainException("Invalid number of units");
+            }
+
+            if ((unitPrice * units) < discount)
+            {
+                throw new OrderingDomainException("The total of order item is lower than applied discount");
+            }
+
+            ProductId = productId;
+
+            ProductName = productName;
+            UnitPrice = unitPrice;
+            Discount = discount;
+            Units = units;
+            PictureUrl = pictureUrl;
         }
 
-        if ((unitPrice * units) < discount)
+        public void SetNewDiscount(decimal discount)
         {
-            throw new OrderingDomainException("The total of order item is lower than applied discount");
+            if (discount < 0)
+            {
+                throw new OrderingDomainException("Discount is not valid");
+            }
+
+            Discount = discount;
         }
 
-        ProductId = productId;
-
-        ProductName = productName;
-        UnitPrice = unitPrice;
-        Discount = discount;
-        Units = units;
-        PictureUrl = pictureUrl;
-    }
-
-    public void SetNewDiscount(decimal discount)
-    {
-        if (discount < 0)
+        public void AddUnits(int units)
         {
-            throw new OrderingDomainException("Discount is not valid");
+            if (units < 0)
+            {
+                throw new OrderingDomainException("Invalid units");
+            }
+
+            Units += units;
         }
-
-        Discount = discount;
-    }
-
-    public void AddUnits(int units)
-    {
-        if (units < 0)
-        {
-            throw new OrderingDomainException("Invalid units");
-        }
-
-        Units += units;
     }
 }

@@ -1,14 +1,15 @@
 ﻿using eShop.ClientApp.Models.User;
 
-namespace eShop.ClientApp.Services.Identity;
-
-public interface IIdentityService
+namespace eShop.ClientApp.Services.Identity
 {
-    Task<bool> SignInAsync();
+    public interface IIdentityService
+    {
+        Task<bool> SignInAsync();
 
-    Task<bool> SignOutAsync();
+        Task<bool> SignOutAsync();
 
-    Task<UserInfo> GetUserInfoAsync();
+        Task<UserInfo> GetUserInfoAsync();
 
-    Task<string> GetAuthTokenAsync();
+        Task<string> GetAuthTokenAsync();
+    }
 }

@@ -1,24 +1,25 @@
-﻿namespace Webhooks.API.IntegrationEvents;
-
-/// <summary>
-/// Handles <see cref="OrderStatusChangedToShippedIntegrationEvent"/> by notifying shipped webhook subscribers.
-/// </summary>
-public class OrderStatusChangedToShippedIntegrationEventHandler(
-    IWebhooksRetriever retriever,
-    IWebhooksSender sender,
-    ILogger<OrderStatusChangedToShippedIntegrationEventHandler> logger) : IIntegrationEventHandler<OrderStatusChangedToShippedIntegrationEvent>
+﻿namespace Webhooks.API.IntegrationEvents
 {
     /// <summary>
-    /// Retrieves shipped-order webhook subscriptions and dispatches the event payload to each.
+    /// Handles <see cref="OrderStatusChangedToShippedIntegrationEvent"/> by notifying shipped webhook subscribers.
     /// </summary>
-    public async Task Handle(OrderStatusChangedToShippedIntegrationEvent @event)
+    public class OrderStatusChangedToShippedIntegrationEventHandler(
+        IWebhooksRetriever retriever,
+        IWebhooksSender sender,
+        ILogger<OrderStatusChangedToShippedIntegrationEventHandler> logger) : IIntegrationEventHandler<OrderStatusChangedToShippedIntegrationEvent>
     {
-        var subscriptions = await retriever.GetSubscriptionsOfType(WebhookType.OrderShipped);
+        /// <summary>
+        /// Retrieves shipped-order webhook subscriptions and dispatches the event payload to each.
+        /// </summary>
+        public async Task Handle(OrderStatusChangedToShippedIntegrationEvent @event)
+        {
+            var subscriptions = await retriever.GetSubscriptionsOfType(WebhookType.OrderShipped);
 
-        logger.LogInformation("Received OrderStatusChangedToShippedIntegrationEvent and got {SubscriptionCount} subscriptions to process", subscriptions.Count());
+            logger.LogInformation("Received OrderStatusChangedToShippedIntegrationEvent and got {SubscriptionCount} subscriptions to process", subscriptions.Count());
 
-        var whook = new WebhookData(WebhookType.OrderShipped, @event);
+            var whook = new WebhookData(WebhookType.OrderShipped, @event);
 
-        await sender.SendAll(subscriptions, whook);
+            await sender.SendAll(subscriptions, whook);
+        }
     }
 }

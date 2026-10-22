@@ -1,59 +1,60 @@
-﻿namespace Webhooks.API.Extensions;
-
-/// <summary>
-/// Endpoint-filter helpers for Webhooks.API request validation.
-/// </summary>
-public static class RouteHandlerBuilderExtensions
+﻿namespace Webhooks.API.Extensions
 {
     /// <summary>
-    /// Adds an endpoint filter that validates the <see cref="WebhookSubscriptionRequest"/> argument.
+    /// Endpoint-filter helpers for Webhooks.API request validation.
     /// </summary>
-    public static RouteHandlerBuilder ValidateWebhookSubscriptionRequest(this RouteHandlerBuilder routeHandlerBuilder)
+    public static class RouteHandlerBuilderExtensions
     {
-        return routeHandlerBuilder.AddEndpointFilter(async (context, next) =>
+        /// <summary>
+        /// Adds an endpoint filter that validates the <see cref="WebhookSubscriptionRequest"/> argument.
+        /// </summary>
+        public static RouteHandlerBuilder ValidateWebhookSubscriptionRequest(this RouteHandlerBuilder routeHandlerBuilder)
         {
-            var webhookSubscriptionRequest = context.Arguments.OfType<WebhookSubscriptionRequest>().SingleOrDefault();
-
-            if (webhookSubscriptionRequest == null)
+            return routeHandlerBuilder.AddEndpointFilter(async (context, next) =>
             {
-                return TypedResults.BadRequest("No WebhookSubscriptionRequest found.");
-            }
+                var webhookSubscriptionRequest = context.Arguments.OfType<WebhookSubscriptionRequest>().SingleOrDefault();
 
-            var validationResults = webhookSubscriptionRequest.Validate(new ValidationContext(webhookSubscriptionRequest));
-
-            if (validationResults.Any())
-            {
-                return TypedResults.ValidationProblem(validationResults.ToErrors());
-            }
-
-            return await next(context);
-        });
-    }
-
-    /// <summary>
-    /// Projects <see cref="ValidationResult"/> items into the error dictionary shape expected by
-    /// <see cref="TypedResults.ValidationProblem(IDictionary{string, string[]})"/>.
-    /// </summary>
-    private static Dictionary<string, string[]> ToErrors(this IEnumerable<ValidationResult> validationResults)
-    {
-        Dictionary<string, string[]> errors = [];
-
-        foreach (var validationResult in validationResults)
-        {
-            var propertyNames = validationResult.MemberNames.Any() ? validationResult.MemberNames : [string.Empty];
-
-            foreach (string propertyName in propertyNames)
-            {
-                if (errors.TryGetValue(propertyName, out var value))
+                if (webhookSubscriptionRequest == null)
                 {
-                    errors[propertyName] = [.. value, validationResult.ErrorMessage!];
+                    return TypedResults.BadRequest("No WebhookSubscriptionRequest found.");
                 }
-                else
+
+                var validationResults = webhookSubscriptionRequest.Validate(new ValidationContext(webhookSubscriptionRequest));
+
+                if (validationResults.Any())
                 {
-                    errors.Add(propertyName, [validationResult.ErrorMessage!]);
+                    return TypedResults.ValidationProblem(validationResults.ToErrors());
                 }
-            }
+
+                return await next(context);
+            });
         }
-        return errors;
+
+        /// <summary>
+        /// Projects <see cref="ValidationResult"/> items into the error dictionary shape expected by
+        /// <see cref="TypedResults.ValidationProblem(IDictionary{string, string[]})"/>.
+        /// </summary>
+        private static Dictionary<string, string[]> ToErrors(this IEnumerable<ValidationResult> validationResults)
+        {
+            Dictionary<string, string[]> errors = [];
+
+            foreach (var validationResult in validationResults)
+            {
+                var propertyNames = validationResult.MemberNames.Any() ? validationResult.MemberNames : [string.Empty];
+
+                foreach (string propertyName in propertyNames)
+                {
+                    if (errors.TryGetValue(propertyName, out var value))
+                    {
+                        errors[propertyName] = [.. value, validationResult.ErrorMessage!];
+                    }
+                    else
+                    {
+                        errors.Add(propertyName, [validationResult.ErrorMessage!]);
+                    }
+                }
+            }
+            return errors;
+        }
     }
 }

@@ -1,6 +1,7 @@
-﻿namespace eShop.EventBus.Abstractions;
-
-public interface IEventBus
+﻿namespace eShop.EventBus.Abstractions
 {
-    Task PublishAsync(IntegrationEvent @event);
+    public interface IEventBus
+    {
+        Task PublishAsync(IntegrationEvent @event);
+    }
 }

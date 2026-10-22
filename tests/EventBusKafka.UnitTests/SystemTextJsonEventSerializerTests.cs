@@ -3,40 +3,41 @@ using eShop.EventBus.Events;
 using eShop.EventBusKafka;
 using Microsoft.Extensions.Options;
 
-namespace eShop.EventBusKafka.UnitTests;
-
-[TestClass]
-public class SystemTextJsonEventSerializerTests
+namespace eShop.EventBusKafka.UnitTests
 {
-    private sealed record TestEvent(string Message) : IntegrationEvent;
-
-    private static SystemTextJsonEventSerializer CreateSerializer() =>
-        new(Options.Create(new EventBusSubscriptionInfo()));
-
-    [TestMethod]
-    public void Serialize_then_Deserialize_round_trips_the_event()
+    [TestClass]
+    public class SystemTextJsonEventSerializerTests
     {
-        var serializer = CreateSerializer();
-        var original = new TestEvent("hello");
+        private sealed record TestEvent(string Message) : IntegrationEvent;
 
-        var bytes = serializer.Serialize(original);
-        var result = serializer.Deserialize(System.Text.Encoding.UTF8.GetString(bytes), typeof(TestEvent));
+        private static SystemTextJsonEventSerializer CreateSerializer() =>
+            new(Options.Create(new EventBusSubscriptionInfo()));
 
-        var roundTripped = Assert.IsInstanceOfType<TestEvent>(result);
-        Assert.AreEqual(original.Id, roundTripped.Id);
-        Assert.AreEqual(original.CreationDate, roundTripped.CreationDate);
-        Assert.AreEqual(original.Message, roundTripped.Message);
+        [TestMethod]
+        public void Serialize_then_Deserialize_round_trips_the_event()
+        {
+            var serializer = CreateSerializer();
+            var original = new TestEvent("hello");
+
+            var bytes = serializer.Serialize(original);
+            var result = serializer.Deserialize(System.Text.Encoding.UTF8.GetString(bytes), typeof(TestEvent));
+
+            var roundTripped = Assert.IsInstanceOfType<TestEvent>(result);
+            Assert.AreEqual(original.Id, roundTripped.Id);
+            Assert.AreEqual(original.CreationDate, roundTripped.CreationDate);
+            Assert.AreEqual(original.Message, roundTripped.Message);
+        }
+
+        [TestMethod]
+        public void Deserialize_returns_null_for_a_type_that_is_not_an_IntegrationEvent()
+        {
+            var serializer = CreateSerializer();
+
+            var result = serializer.Deserialize("""{"value":1}""", typeof(NotAnIntegrationEvent));
+
+            Assert.IsNull(result);
+        }
+
+        private sealed record NotAnIntegrationEvent(int Value);
     }
-
-    [TestMethod]
-    public void Deserialize_returns_null_for_a_type_that_is_not_an_IntegrationEvent()
-    {
-        var serializer = CreateSerializer();
-
-        var result = serializer.Deserialize("""{"value":1}""", typeof(NotAnIntegrationEvent));
-
-        Assert.IsNull(result);
-    }
-
-    private sealed record NotAnIntegrationEvent(int Value);
 }

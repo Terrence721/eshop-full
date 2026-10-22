@@ -1,58 +1,59 @@
 ﻿using eShop.ClientApp.Services;
 
-namespace eShop.ClientApp.ViewModels;
-
-// The old MAUI build split this into ViewModelBase + an IViewModelBase : IQueryAttributable
-// interface. Nothing here consumes ViewModels polymorphically through an interface, so
-// ViewModelBase implements IQueryAttributable directly instead of introducing that extra layer.
-public abstract partial class ViewModelBase : ObservableObject, IQueryAttributable
+namespace eShop.ClientApp.ViewModels
 {
-    private long _isBusy;
-
-    [ObservableProperty] public partial bool IsInitialized { get; set; }
-
-    protected ViewModelBase(INavigationService navigationService)
+    // The old MAUI build split this into ViewModelBase + an IViewModelBase : IQueryAttributable
+    // interface. Nothing here consumes ViewModels polymorphically through an interface, so
+    // ViewModelBase implements IQueryAttributable directly instead of introducing that extra layer.
+    public abstract partial class ViewModelBase : ObservableObject, IQueryAttributable
     {
-        NavigationService = navigationService;
+        private long _isBusy;
 
-        InitializeAsyncCommand =
-            new AsyncRelayCommand(
-                async () =>
-                {
-                    await IsBusyFor(InitializeAsync);
-                    IsInitialized = true;
-                },
-                AsyncRelayCommandOptions.FlowExceptionsToTaskScheduler);
-    }
+        [ObservableProperty] public partial bool IsInitialized { get; set; }
 
-    public bool IsBusy => Interlocked.Read(ref _isBusy) > 0;
-
-    public INavigationService NavigationService { get; }
-
-    public IAsyncRelayCommand InitializeAsyncCommand { get; }
-
-    public virtual void ApplyQueryAttributes(IDictionary<string, object> query)
-    {
-    }
-
-    public virtual Task InitializeAsync()
-    {
-        return Task.CompletedTask;
-    }
-
-    protected async Task IsBusyFor(Func<Task> unitOfWork)
-    {
-        Interlocked.Increment(ref _isBusy);
-        OnPropertyChanged(nameof(IsBusy));
-
-        try
+        protected ViewModelBase(INavigationService navigationService)
         {
-            await unitOfWork();
+            NavigationService = navigationService;
+
+            InitializeAsyncCommand =
+                new AsyncRelayCommand(
+                    async () =>
+                    {
+                        await IsBusyFor(InitializeAsync);
+                        IsInitialized = true;
+                    },
+                    AsyncRelayCommandOptions.FlowExceptionsToTaskScheduler);
         }
-        finally
+
+        public bool IsBusy => Interlocked.Read(ref _isBusy) > 0;
+
+        public INavigationService NavigationService { get; }
+
+        public IAsyncRelayCommand InitializeAsyncCommand { get; }
+
+        public virtual void ApplyQueryAttributes(IDictionary<string, object> query)
         {
-            Interlocked.Decrement(ref _isBusy);
+        }
+
+        public virtual Task InitializeAsync()
+        {
+            return Task.CompletedTask;
+        }
+
+        protected async Task IsBusyFor(Func<Task> unitOfWork)
+        {
+            Interlocked.Increment(ref _isBusy);
             OnPropertyChanged(nameof(IsBusy));
+
+            try
+            {
+                await unitOfWork();
+            }
+            finally
+            {
+                Interlocked.Decrement(ref _isBusy);
+                OnPropertyChanged(nameof(IsBusy));
+            }
         }
     }
 }

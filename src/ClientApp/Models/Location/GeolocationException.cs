@@ -1,28 +1,29 @@
-﻿namespace eShop.ClientApp.Models.Location;
-
-public class GeolocationException : Exception
+﻿namespace eShop.ClientApp.Models.Location
 {
-    public GeolocationException(GeolocationError error)
-        : base("A geolocation error occurred: " + error)
+    public class GeolocationException : Exception
     {
-        if (!Enum.IsDefined(error))
+        public GeolocationException(GeolocationError error)
+            : base("A geolocation error occurred: " + error)
         {
-            throw new ArgumentException("error is not a valid GeolocationError member", nameof(error));
+            if (!Enum.IsDefined(error))
+            {
+                throw new ArgumentException("error is not a valid GeolocationError member", nameof(error));
+            }
+
+            Error = error;
         }
 
-        Error = error;
-    }
-
-    public GeolocationException(GeolocationError error, Exception innerException)
-        : base("A geolocation error occurred: " + error, innerException)
-    {
-        if (!Enum.IsDefined(error))
+        public GeolocationException(GeolocationError error, Exception innerException)
+            : base("A geolocation error occurred: " + error, innerException)
         {
-            throw new ArgumentException("error is not a valid GeolocationError member", nameof(error));
+            if (!Enum.IsDefined(error))
+            {
+                throw new ArgumentException("error is not a valid GeolocationError member", nameof(error));
+            }
+
+            Error = error;
         }
 
-        Error = error;
+        public GeolocationError Error { get; private set; }
     }
-
-    public GeolocationError Error { get; private set; }
 }

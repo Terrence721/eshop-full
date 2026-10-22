@@ -1,17 +1,18 @@
 ﻿using System.ComponentModel;
 using eShop.ClientApp.ViewModels;
 
-namespace eShop.ClientApp.Services;
-
-public interface INavigationService : INotifyPropertyChanged
+namespace eShop.ClientApp.Services
 {
-    ViewModelBase? CurrentViewModel { get; }
+    public interface INavigationService : INotifyPropertyChanged
+    {
+        ViewModelBase? CurrentViewModel { get; }
 
-    void RegisterRoute(string route, Func<ViewModelBase> factory);
+        void RegisterRoute(string route, Func<ViewModelBase> factory);
 
-    Task InitializeAsync();
+        Task InitializeAsync();
 
-    Task NavigateToAsync(string route, IDictionary<string, object>? routeParameters = null);
+        Task NavigateToAsync(string route, IDictionary<string, object>? routeParameters = null);
 
-    Task PopAsync();
+        Task PopAsync();
+    }
 }

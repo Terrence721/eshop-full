@@ -1,63 +1,64 @@
-﻿namespace eShop.Ordering.API.Application.Behaviors;
-
-using Microsoft.Extensions.Logging;
-
-public class TransactionBehavior<TRequest, TResponse>(OrderingContext dbContext,
-    IOrderingIntegrationEventService orderingIntegrationEventService,
-    ILogger<TransactionBehavior<TRequest, TResponse>> logger) : IPipelineBehavior<TRequest, TResponse> where TRequest : IRequest<TResponse>
+﻿namespace eShop.Ordering.API.Application.Behaviors
 {
-    private readonly ILogger<TransactionBehavior<TRequest, TResponse>> _logger = logger ?? throw new ArgumentException(nameof(ILogger));
-    private readonly OrderingContext _dbContext = dbContext ?? throw new ArgumentException(nameof(OrderingContext));
-    private readonly IOrderingIntegrationEventService _orderingIntegrationEventService = orderingIntegrationEventService ?? throw new ArgumentException(nameof(orderingIntegrationEventService));
+    using Microsoft.Extensions.Logging;
 
-    public async Task<TResponse> Handle(TRequest request, RequestHandlerDelegate<TResponse> next, CancellationToken cancellationToken)
+    public class TransactionBehavior<TRequest, TResponse>(OrderingContext dbContext,
+        IOrderingIntegrationEventService orderingIntegrationEventService,
+        ILogger<TransactionBehavior<TRequest, TResponse>> logger) : IPipelineBehavior<TRequest, TResponse> where TRequest : IRequest<TResponse>
     {
-        var response = default(TResponse);
-        var typeName = request.GetGenericTypeName();
+        private readonly ILogger<TransactionBehavior<TRequest, TResponse>> _logger = logger ?? throw new ArgumentException(nameof(ILogger));
+        private readonly OrderingContext _dbContext = dbContext ?? throw new ArgumentException(nameof(OrderingContext));
+        private readonly IOrderingIntegrationEventService _orderingIntegrationEventService = orderingIntegrationEventService ?? throw new ArgumentException(nameof(orderingIntegrationEventService));
 
-        try
+        public async Task<TResponse> Handle(TRequest request, RequestHandlerDelegate<TResponse> next, CancellationToken cancellationToken)
         {
-            if (_dbContext.HasActiveTransaction)
+            var response = default(TResponse);
+            var typeName = request.GetGenericTypeName();
+
+            try
             {
-                return await next();
-            }
-
-            var strategy = _dbContext.Database.CreateExecutionStrategy();
-
-            await strategy.ExecuteAsync(async () =>
-            {
-                Guid transactionId;
-
-                // Guarded by the HasActiveTransaction check above: BeginTransactionAsync only
-                // returns null when a transaction is already active, which can't be the case here.
-                await using var transaction = (await _dbContext.BeginTransactionAsync())!;
-                using (_logger.BeginScope(new List<KeyValuePair<string, object>> { new("TransactionContext", transaction.TransactionId) }))
+                if (_dbContext.HasActiveTransaction)
                 {
-                    _logger.LogInformation("Begin transaction {TransactionId} for {CommandName} ({@Command})", transaction.TransactionId, typeName, request);
-
-                    response = await next();
-
-                    _logger.LogInformation("Commit transaction {TransactionId} for {CommandName}", transaction.TransactionId, typeName);
-
-                    await _dbContext.CommitTransactionAsync(transaction);
-
-                    transactionId = transaction.TransactionId;
+                    return await next();
                 }
 
-                await _orderingIntegrationEventService.PublishEventsThroughEventBusAsync(transactionId);
-            });
+                var strategy = _dbContext.Database.CreateExecutionStrategy();
 
-            // response is always set by strategy.ExecuteAsync's lambda on the success path --
-            // any failure inside it propagates as an exception to the catch block below instead,
-            // which rethrows without reaching this line. The compiler can't see across that
-            // lambda boundary for an unconstrained TResponse.
-            return response!;
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error Handling transaction for {CommandName} ({@Command})", typeName, request);
+                await strategy.ExecuteAsync(async () =>
+                {
+                    Guid transactionId;
 
-            throw;
+                    // Guarded by the HasActiveTransaction check above: BeginTransactionAsync only
+                    // returns null when a transaction is already active, which can't be the case here.
+                    await using var transaction = (await _dbContext.BeginTransactionAsync())!;
+                    using (_logger.BeginScope(new List<KeyValuePair<string, object>> { new("TransactionContext", transaction.TransactionId) }))
+                    {
+                        _logger.LogInformation("Begin transaction {TransactionId} for {CommandName} ({@Command})", transaction.TransactionId, typeName, request);
+
+                        response = await next();
+
+                        _logger.LogInformation("Commit transaction {TransactionId} for {CommandName}", transaction.TransactionId, typeName);
+
+                        await _dbContext.CommitTransactionAsync(transaction);
+
+                        transactionId = transaction.TransactionId;
+                    }
+
+                    await _orderingIntegrationEventService.PublishEventsThroughEventBusAsync(transactionId);
+                });
+
+                // response is always set by strategy.ExecuteAsync's lambda on the success path --
+                // any failure inside it propagates as an exception to the catch block below instead,
+                // which rethrows without reaching this line. The compiler can't see across that
+                // lambda boundary for an unconstrained TResponse.
+                return response!;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error Handling transaction for {CommandName} ({@Command})", typeName, request);
+
+                throw;
+            }
         }
     }
 }

@@ -1,11 +1,12 @@
 ﻿using Avalonia.Controls;
 
-namespace eShop.ClientApp.Views;
-
-public partial class MapView : UserControl
+namespace eShop.ClientApp.Views
 {
-    public MapView()
+    public partial class MapView : UserControl
     {
-        InitializeComponent();
+        public MapView()
+        {
+            InitializeComponent();
+        }
     }
 }

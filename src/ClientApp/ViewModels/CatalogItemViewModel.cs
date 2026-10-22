@@ -5,54 +5,55 @@ using eShop.ClientApp.Models.Catalog;
 using eShop.ClientApp.Services;
 using eShop.ClientApp.Services.AppEnvironment;
 
-namespace eShop.ClientApp.ViewModels;
-
-public partial class CatalogItemViewModel(IAppEnvironmentService appEnvironmentService, INavigationService navigationService) : ViewModelBase(navigationService)
+namespace eShop.ClientApp.ViewModels
 {
-    private readonly IAppEnvironmentService _appEnvironmentService = appEnvironmentService;
-
-    [ObservableProperty] public partial CatalogItem? CatalogItem { get; set; }
-
-    public override void ApplyQueryAttributes(IDictionary<string, object> query)
+    public partial class CatalogItemViewModel(IAppEnvironmentService appEnvironmentService, INavigationService navigationService) : ViewModelBase(navigationService)
     {
-        base.ApplyQueryAttributes(query);
+        private readonly IAppEnvironmentService _appEnvironmentService = appEnvironmentService;
 
-        CatalogItem = query.ValueAs<CatalogItem>("CatalogItem");
-    }
+        [ObservableProperty] public partial CatalogItem? CatalogItem { get; set; }
 
-    [RelayCommand]
-    private async Task AddCatalogItemAsync()
-    {
-        if (CatalogItem is null)
+        public override void ApplyQueryAttributes(IDictionary<string, object> query)
         {
-            return;
+            base.ApplyQueryAttributes(query);
+
+            CatalogItem = query.ValueAs<CatalogItem>("CatalogItem");
         }
 
-        var basket = await _appEnvironmentService.BasketService.GetBasketAsync();
-        if (basket is not null)
+        [RelayCommand]
+        private async Task AddCatalogItemAsync()
         {
-            basket.AddItemToBasket(
-                new BasketItem
-                {
-                    ProductId = CatalogItem.Id,
-                    ProductName = CatalogItem.Name,
-                    PictureUrl = CatalogItem.PictureUri ?? string.Empty,
-                    UnitPrice = CatalogItem.Price,
-                    Quantity = 1
-                });
+            if (CatalogItem is null)
+            {
+                return;
+            }
 
-            var basketUpdate = await _appEnvironmentService.BasketService.UpdateBasketAsync(basket);
+            var basket = await _appEnvironmentService.BasketService.GetBasketAsync();
+            if (basket is not null)
+            {
+                basket.AddItemToBasket(
+                    new BasketItem
+                    {
+                        ProductId = CatalogItem.Id,
+                        ProductName = CatalogItem.Name,
+                        PictureUrl = CatalogItem.PictureUri ?? string.Empty,
+                        UnitPrice = CatalogItem.Price,
+                        Quantity = 1
+                    });
 
-            WeakReferenceMessenger.Default
-                .Send(new ProductCountChangedMessage(basketUpdate.ItemCount));
+                var basketUpdate = await _appEnvironmentService.BasketService.UpdateBasketAsync(basket);
 
+                WeakReferenceMessenger.Default
+                    .Send(new ProductCountChangedMessage(basketUpdate.ItemCount));
+
+                await NavigationService.PopAsync();
+            }
+        }
+
+        [RelayCommand]
+        private async Task DismissAsync()
+        {
             await NavigationService.PopAsync();
         }
-    }
-
-    [RelayCommand]
-    private async Task DismissAsync()
-    {
-        await NavigationService.PopAsync();
     }
 }

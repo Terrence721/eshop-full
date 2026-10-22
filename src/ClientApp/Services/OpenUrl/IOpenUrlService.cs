@@ -1,6 +1,7 @@
-﻿namespace eShop.ClientApp.Services.OpenUrl;
-
-public interface IOpenUrlService
+﻿namespace eShop.ClientApp.Services.OpenUrl
 {
-    Task OpenUrl(string url);
+    public interface IOpenUrlService
+    {
+        Task OpenUrl(string url);
+    }
 }

@@ -1,63 +1,64 @@
-﻿namespace eShop.Ordering.API.Application.Commands;
-
-using eShop.Ordering.Domain.AggregatesModel.OrderAggregate;
-
-// Regular CommandHandler
-/// <summary>
-/// Creates an order from a basket-derived draft, persisting it and publishing the
-/// order-started integration event through the outbox.
-/// </summary>
-public class CreateOrderCommandHandler(IMediator mediator,
-    IOrderingIntegrationEventService orderingIntegrationEventService,
-    IOrderRepository orderRepository,
-    IIdentityService identityService,
-    ILogger<CreateOrderCommandHandler> logger)
-        : IRequestHandler<CreateOrderCommand, bool>
+﻿namespace eShop.Ordering.API.Application.Commands
 {
-    private readonly IOrderRepository _orderRepository = orderRepository ?? throw new ArgumentNullException(nameof(orderRepository));
-    private readonly IIdentityService _identityService = identityService ?? throw new ArgumentNullException(nameof(identityService));
-    private readonly IMediator _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
-    private readonly IOrderingIntegrationEventService _orderingIntegrationEventService = orderingIntegrationEventService ?? throw new ArgumentNullException(nameof(orderingIntegrationEventService));
-    private readonly ILogger<CreateOrderCommandHandler> _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+    using eShop.Ordering.Domain.AggregatesModel.OrderAggregate;
 
-    public async Task<bool> Handle(CreateOrderCommand message, CancellationToken cancellationToken)
+    // Regular CommandHandler
+    /// <summary>
+    /// Creates an order from a basket-derived draft, persisting it and publishing the
+    /// order-started integration event through the outbox.
+    /// </summary>
+    public class CreateOrderCommandHandler(IMediator mediator,
+        IOrderingIntegrationEventService orderingIntegrationEventService,
+        IOrderRepository orderRepository,
+        IIdentityService identityService,
+        ILogger<CreateOrderCommandHandler> logger)
+            : IRequestHandler<CreateOrderCommand, bool>
     {
-        // Add Integration event to clean the basket
-        var orderStartedIntegrationEvent = new OrderStartedIntegrationEvent(message.UserId);
-        await _orderingIntegrationEventService.AddAndSaveEventAsync(orderStartedIntegrationEvent);
+        private readonly IOrderRepository _orderRepository = orderRepository ?? throw new ArgumentNullException(nameof(orderRepository));
+        private readonly IIdentityService _identityService = identityService ?? throw new ArgumentNullException(nameof(identityService));
+        private readonly IMediator _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+        private readonly IOrderingIntegrationEventService _orderingIntegrationEventService = orderingIntegrationEventService ?? throw new ArgumentNullException(nameof(orderingIntegrationEventService));
+        private readonly ILogger<CreateOrderCommandHandler> _logger = logger ?? throw new ArgumentNullException(nameof(logger));
 
-        // Add/Update the Buyer AggregateRoot
-        // DDD patterns comment: Add child entities and value-objects through the Order Aggregate-Root
-        // methods and constructor so validations, invariants and business logic
-        // make sure that consistency is preserved across the whole aggregate
-        var address = new Address(message.Street, message.City, message.State, message.Country, message.ZipCode);
-        var order = new Order(message.UserId, message.UserName, address, message.CardTypeId, message.CardNumber, message.CardSecurityNumber, message.CardHolderName, message.CardExpiration);
-
-        foreach (var item in message.OrderItems)
+        public async Task<bool> Handle(CreateOrderCommand message, CancellationToken cancellationToken)
         {
-            order.AddOrderItem(item.ProductId, item.ProductName, item.UnitPrice, item.Discount, item.PictureUrl, item.Units);
+            // Add Integration event to clean the basket
+            var orderStartedIntegrationEvent = new OrderStartedIntegrationEvent(message.UserId);
+            await _orderingIntegrationEventService.AddAndSaveEventAsync(orderStartedIntegrationEvent);
+
+            // Add/Update the Buyer AggregateRoot
+            // DDD patterns comment: Add child entities and value-objects through the Order Aggregate-Root
+            // methods and constructor so validations, invariants and business logic
+            // make sure that consistency is preserved across the whole aggregate
+            var address = new Address(message.Street, message.City, message.State, message.Country, message.ZipCode);
+            var order = new Order(message.UserId, message.UserName, address, message.CardTypeId, message.CardNumber, message.CardSecurityNumber, message.CardHolderName, message.CardExpiration);
+
+            foreach (var item in message.OrderItems)
+            {
+                order.AddOrderItem(item.ProductId, item.ProductName, item.UnitPrice, item.Discount, item.PictureUrl, item.Units);
+            }
+
+            _logger.LogInformation("Creating Order - Order: {@Order}", order);
+
+            _orderRepository.Add(order);
+
+            return await _orderRepository.UnitOfWork.SaveEntitiesAsync(cancellationToken);
         }
-
-        _logger.LogInformation("Creating Order - Order: {@Order}", order);
-
-        _orderRepository.Add(order);
-
-        return await _orderRepository.UnitOfWork.SaveEntitiesAsync(cancellationToken);
     }
-}
 
 
-// Use for Idempotency in Command process
-/// <summary>
-/// Identified-command (idempotent) wrapper around <see cref="CreateOrderCommandHandler" />.
-/// </summary>
-public class CreateOrderIdentifiedCommandHandler(
-    IMediator mediator,
-    IRequestManager requestManager,
-    ILogger<IdentifiedCommandHandler<CreateOrderCommand, bool>> logger) : IdentifiedCommandHandler<CreateOrderCommand, bool>(mediator, requestManager, logger)
-{
-    protected override bool CreateResultForDuplicateRequest()
+    // Use for Idempotency in Command process
+    /// <summary>
+    /// Identified-command (idempotent) wrapper around <see cref="CreateOrderCommandHandler" />.
+    /// </summary>
+    public class CreateOrderIdentifiedCommandHandler(
+        IMediator mediator,
+        IRequestManager requestManager,
+        ILogger<IdentifiedCommandHandler<CreateOrderCommand, bool>> logger) : IdentifiedCommandHandler<CreateOrderCommand, bool>(mediator, requestManager, logger)
     {
-        return true; // Ignore duplicate requests for creating order.
+        protected override bool CreateResultForDuplicateRequest()
+        {
+            return true; // Ignore duplicate requests for creating order.
+        }
     }
 }

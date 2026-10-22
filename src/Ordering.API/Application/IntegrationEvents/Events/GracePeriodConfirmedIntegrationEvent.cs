@@ -1,12 +1,13 @@
-﻿namespace eShop.Ordering.API.Application.IntegrationEvents.Events;
-
-/// <summary>
-/// Integration event confirming the grace period for an order has elapsed.
-/// </summary>
-public record GracePeriodConfirmedIntegrationEvent : IntegrationEvent
+﻿namespace eShop.Ordering.API.Application.IntegrationEvents.Events
 {
-    public int OrderId { get; }
+    /// <summary>
+    /// Integration event confirming the grace period for an order has elapsed.
+    /// </summary>
+    public record GracePeriodConfirmedIntegrationEvent : IntegrationEvent
+    {
+        public int OrderId { get; }
 
-    public GracePeriodConfirmedIntegrationEvent(int orderId) =>
-        OrderId = orderId;
+        public GracePeriodConfirmedIntegrationEvent(int orderId) =>
+            OrderId = orderId;
+    }
 }
