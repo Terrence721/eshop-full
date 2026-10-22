@@ -1,4 +1,5 @@
-﻿var builder = WebApplication.CreateBuilder(args);
+// Payment processor application host and event bus wiring.
+var builder = WebApplication.CreateBuilder(args);
 
 builder.AddServiceDefaults();
 
