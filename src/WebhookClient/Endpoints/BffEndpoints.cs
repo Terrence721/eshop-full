@@ -7,8 +7,14 @@ namespace eShop.WebhookClient.Endpoints;
 // New endpoints a React frontend needs that upstream's Blazor Server app never did --
 // Razor components called WebhooksClient/HooksRepository directly in C#, with no HTTP
 // boundary, so there was nothing to log in to from the browser's own perspective.
+/// <summary>
+/// BFF-style login/user endpoints for the React frontend.
+/// </summary>
 public static class BffEndpoints
 {
+    /// <summary>
+    /// Maps the BFF login and user endpoints.
+    /// </summary>
     public static IEndpointRouteBuilder MapBffEndpoints(this IEndpointRouteBuilder app)
     {
         app.MapGet("/bff/login", Login).AllowAnonymous();
@@ -17,6 +23,9 @@ public static class BffEndpoints
         return app;
     }
 
+    /// <summary>
+    /// Challenges the OIDC scheme and redirects to the sanitized return URL.
+    /// </summary>
     public static IResult Login(string? returnUrl)
     {
         var properties = new AuthenticationProperties
@@ -27,6 +36,9 @@ public static class BffEndpoints
         return Results.Challenge(properties, [OpenIdConnectDefaults.AuthenticationScheme]);
     }
 
+    /// <summary>
+    /// Returns the current authenticated user's claims, or 401 when anonymous.
+    /// </summary>
     public static IResult GetUser(ClaimsPrincipal user)
     {
         if (user.Identity?.IsAuthenticated != true)
@@ -38,7 +50,9 @@ public static class BffEndpoints
         return Results.Ok(claims);
     }
 
-    // Prevent open redirects -- only ever redirect back into this same app.
+    /// <summary>
+    /// Prevents open redirects by ensuring the return URL resolves inside this app.
+    /// </summary>
     public static string SanitizeReturnUrl(string? returnUrl)
     {
         const string fallback = "/";
