@@ -45,6 +45,8 @@ namespace eShop.ClientApp.Services
 
         public async Task NavigateToAsync(string route, IDictionary<string, object>? routeParameters = null)
         {
+            ArgumentNullException.ThrowIfNull(route);
+
             var isAbsolute = route.StartsWith("//", StringComparison.Ordinal);
             var destination = Resolve(route[(route.LastIndexOf('/') + 1)..]);
 
