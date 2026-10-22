@@ -2,11 +2,17 @@
 
 namespace eShop.WebhookClient.Services;
 
+/// <summary>
+/// In-memory store of received webhooks plus change subscription notifications.
+/// </summary>
 public class HooksRepository
 {
     private readonly ConcurrentQueue<WebHookReceived> _data = new();
     private readonly ConcurrentDictionary<OnChangeSubscription, object?> _onChangeSubscriptions = new();
 
+    /// <summary>
+    /// Stores a newly received webhook and notifies all subscribers.
+    /// </summary>
     public Task AddNew(WebHookReceived hook)
     {
         _data.Enqueue(hook);
@@ -27,11 +33,17 @@ public class HooksRepository
         return Task.CompletedTask;
     }
 
+    /// <summary>
+    /// Returns all received webhooks.
+    /// </summary>
     public Task<IEnumerable<WebHookReceived>> GetAll()
     {
         return Task.FromResult(_data.AsEnumerable());
     }
 
+    /// <summary>
+    /// Registers a callback to be invoked whenever a new webhook arrives.
+    /// </summary>
     public IDisposable Subscribe(Func<Task> callback)
     {
         var subscription = new OnChangeSubscription(callback, this);
