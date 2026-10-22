@@ -7,6 +7,8 @@
     {
         public CreateOrderCommandValidator(ILogger<CreateOrderCommandValidator> logger)
         {
+            RuleFor(command => command.UserId).NotEmpty();
+            RuleFor(command => command.UserName).NotEmpty();
             RuleFor(command => command.City).NotEmpty();
             RuleFor(command => command.Street).NotEmpty();
             RuleFor(command => command.State).NotEmpty();
@@ -30,9 +32,9 @@
             return dateTime >= DateTime.UtcNow;
         }
 
-        private bool ContainOrderItems(IEnumerable<OrderItemDTO> orderItems)
+        private bool ContainOrderItems(IEnumerable<OrderItemDTO>? orderItems)
         {
-            return orderItems.Any();
+            return orderItems is not null && orderItems.Any();
         }
     }
 }

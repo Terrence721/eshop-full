@@ -7,7 +7,7 @@
     /// Creates an order from a basket-derived draft, persisting it and publishing the
     /// order-started integration event through the outbox.
     /// </summary>
-    public class CreateOrderCommandHandler(IMediator mediator,
+    public class CreateOrderCommandHandler(
         IOrderingIntegrationEventService orderingIntegrationEventService,
         IOrderRepository orderRepository,
         IIdentityService identityService,
@@ -16,12 +16,13 @@
     {
         private readonly IOrderRepository _orderRepository = orderRepository ?? throw new ArgumentNullException(nameof(orderRepository));
         private readonly IIdentityService _identityService = identityService ?? throw new ArgumentNullException(nameof(identityService));
-        private readonly IMediator _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         private readonly IOrderingIntegrationEventService _orderingIntegrationEventService = orderingIntegrationEventService ?? throw new ArgumentNullException(nameof(orderingIntegrationEventService));
         private readonly ILogger<CreateOrderCommandHandler> _logger = logger ?? throw new ArgumentNullException(nameof(logger));
 
         public async Task<bool> Handle(CreateOrderCommand message, CancellationToken cancellationToken)
         {
+            ArgumentNullException.ThrowIfNull(message);
+
             // Add Integration event to clean the basket
             var orderStartedIntegrationEvent = new OrderStartedIntegrationEvent(message.UserId);
             await _orderingIntegrationEventService.AddAndSaveEventAsync(orderStartedIntegrationEvent);
@@ -38,7 +39,10 @@
                 order.AddOrderItem(item.ProductId, item.ProductName, item.UnitPrice, item.Discount, item.PictureUrl, item.Units);
             }
 
-            _logger.LogInformation("Creating Order - Order: {@Order}", order);
+            if (_logger.IsEnabled(LogLevel.Information))
+            {
+                _logger.LogInformation("Creating Order - Order: {@Order}", order);
+            }
 
             _orderRepository.Add(order);
 

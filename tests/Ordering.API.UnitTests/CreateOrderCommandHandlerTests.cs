@@ -23,7 +23,6 @@ namespace eShop.Ordering.API.UnitTests
             IOrderRepository orderRepository, IOrderingIntegrationEventService integrationEventService)
         {
             return new CreateOrderCommandHandler(
-                Substitute.For<IMediator>(),
                 integrationEventService,
                 orderRepository,
                 Substitute.For<IIdentityService>(),
