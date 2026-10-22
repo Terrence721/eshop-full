@@ -1,5 +1,8 @@
-﻿namespace eShop.Ordering.API.Application.Queries;
+namespace eShop.Ordering.API.Application.Queries;
 
+/// <summary>
+/// EF Core read-model query implementation of IOrderQueries.
+/// </summary>
 public class OrderQueries(OrderingContext context)
     : IOrderQueries
 {
