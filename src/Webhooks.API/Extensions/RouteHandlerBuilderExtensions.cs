@@ -1,7 +1,13 @@
 ﻿namespace Webhooks.API.Extensions;
 
+/// <summary>
+/// Endpoint-filter helpers for Webhooks.API request validation.
+/// </summary>
 public static class RouteHandlerBuilderExtensions
 {
+    /// <summary>
+    /// Adds an endpoint filter that validates the <see cref="WebhookSubscriptionRequest"/> argument.
+    /// </summary>
     public static RouteHandlerBuilder ValidateWebhookSubscriptionRequest(this RouteHandlerBuilder routeHandlerBuilder)
     {
         return routeHandlerBuilder.AddEndpointFilter(async (context, next) =>
@@ -24,6 +30,10 @@ public static class RouteHandlerBuilderExtensions
         });
     }
 
+    /// <summary>
+    /// Projects <see cref="ValidationResult"/> items into the error dictionary shape expected by
+    /// <see cref="TypedResults.ValidationProblem(IDictionary{string, string[]})"/>.
+    /// </summary>
     private static Dictionary<string, string[]> ToErrors(this IEnumerable<ValidationResult> validationResults)
     {
         Dictionary<string, string[]> errors = [];
@@ -32,9 +42,6 @@ public static class RouteHandlerBuilderExtensions
         {
             var propertyNames = validationResult.MemberNames.Any() ? validationResult.MemberNames : [string.Empty];
 
-            // ErrorMessage is nullable per its own BCL declaration, but every
-            // ValidationResult reaching here comes from WebhookSubscriptionRequest.Validate(),
-            // which always passes a non-null string literal.
             foreach (string propertyName in propertyNames)
             {
                 if (errors.TryGetValue(propertyName, out var value))
