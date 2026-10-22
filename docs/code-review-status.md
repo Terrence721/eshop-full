@@ -216,3 +216,22 @@ Result legend: `OK` = reviewed, no changes required; `FIX` = reviewed and change
 | `src/Webhooks.API/Model/WebhookSubscription.cs` | OK | Added XML documentation; nullability preserved. |
 | `src/Webhooks.API/Model/WebhookSubscriptionRequest.cs` | OK | Added XML documentation; validation retained. |
 | `src/Webhooks.API/Program.cs` | OK | Added composition-root header comment; wiring retained. |
+
+## WebhookClient
+
+| File | Result | Notes |
+| --- | --- | --- |
+| `src/WebhookClient/Services/WebhookType.cs` | FIX | Added XML documentation to enum and members; no functional changes. |
+| `src/WebhookClient/Services/WebhookData.cs` | OK | Added XML documentation; mutable POCO retained for binding/display. |
+| `src/WebhookClient/Services/WebhookResponse.cs` | OK | Added XML documentation; properties retained. |
+| `src/WebhookClient/Extensions/Extensions.cs` | FIX | Added XML documentation; used explicit `Uri` for HTTP base address; no behavior change. |
+| `src/WebhookClient/GlobalUsings.cs` | OK | Added header comment; global usings verified. |
+| `src/WebhookClient/Services/HooksRepository.cs` | OK | Added XML documentation; concurrency/subscriber notification retained. |
+| `src/WebhookClient/Services/WebHooksClient.cs` | OK | Added XML documentation; HTTP client calls retained. |
+| `src/WebhookClient/Services/WebhookSubscriptionRequest.cs` | OK | Added XML documentation; nullable request shape retained. |
+| `src/WebhookClient/Services/WebhookClientOptions.cs` | OK | Added XML documentation; options shape retained. |
+| `src/WebhookClient/Endpoints/AuthenticationEndpoints.cs` | OK | Added XML documentation; documented antiforgery gap retained. |
+| `src/WebhookClient/Endpoints/BffEndpoints.cs` | OK | Added XML documentation; open-redirect sanitization retained. |
+| `src/WebhookClient/Endpoints/HooksApiEndpoints.cs` | OK | Added XML documentation; hook/receive/stream flow retained. |
+| `src/WebhookClient/Endpoints/WebhookEndpoints.cs` | OK | Added XML documentation; grant/receive flow retained. |
+| `src/WebhookClient/Program.cs` | OK | Added composition-root header comment; endpoint mapping retained. |
