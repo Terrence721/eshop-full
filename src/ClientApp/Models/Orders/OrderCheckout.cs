@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using eShop.ClientApp.Models.Orders;
 
-namespace eShop.ClientApp.Models.Basket
+namespace eShop.ClientApp.Models.Orders
 {
     public class OrderCheckout
     {

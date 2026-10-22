@@ -1,6 +1,5 @@
 ﻿using System.Net;
 using eShop.ClientApp.Helpers;
-using eShop.ClientApp.Models.Basket;
 using eShop.ClientApp.Models.Orders;
 using eShop.ClientApp.Services.Identity;
 using eShop.ClientApp.Services.RequestProvider;
