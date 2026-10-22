@@ -1,6 +1,9 @@
 using eShop.Catalog.API.Services;
 using Microsoft.AspNetCore.Mvc;
 
+
+namespace eShop.Catalog.API.Model;
+
 /// <summary>
 /// ASP.NET Core minimal API parameter object (<c>[AsParameters]</c>) that aggregates
 /// the services the Catalog endpoints need, so each handler takes a single argument
