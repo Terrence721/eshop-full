@@ -1,5 +1,11 @@
-﻿internal static class Extensions
+﻿/// <summary>
+/// Application composition (service registration and event-bus wiring) for Webhooks.API.
+/// </summary>
+internal static class Extensions
 {
+    /// <summary>
+    /// Registers all application services and infrastructure for Webhooks.API.
+    /// </summary>
     public static void AddApplicationServices(this IHostApplicationBuilder builder)
     {
         builder.AddDefaultAuthentication();
@@ -16,6 +22,9 @@
         builder.Services.AddTransient<IWebhooksSender, WebhooksSender>();
     }
 
+    /// <summary>
+    /// Subscribes Webhooks.API to the integration events it reacts to.
+    /// </summary>
     private static void AddEventBusSubscriptions(this IEventBusBuilder eventBus)
     {
         eventBus.AddSubscription<ProductPriceChangedIntegrationEvent, ProductPriceChangedIntegrationEventHandler>();
