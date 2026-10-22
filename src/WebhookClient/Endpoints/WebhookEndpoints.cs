@@ -3,10 +3,19 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace eShop.WebhookClient.Endpoints;
 
+/// <summary>
+/// Webhook receiving endpoints invoked by Webhooks.API.
+/// </summary>
 public static class WebhookEndpoints
 {
+    /// <summary>
+    /// Header carrying the shared webhook token.
+    /// </summary>
     public const string WebhookCheckHeader = "X-eshop-whtoken";
 
+    /// <summary>
+    /// Maps the OPTIONS check and POST receive endpoints.
+    /// </summary>
     public static IEndpointRouteBuilder MapWebhookEndpoints(this IEndpointRouteBuilder app)
     {
         var configuration = app.ServiceProvider.GetRequiredService<IConfiguration>();
@@ -22,6 +31,9 @@ public static class WebhookEndpoints
         return app;
     }
 
+    /// <summary>
+    /// Validates/gates the shared token for a grant OPTIONS request.
+    /// </summary>
     public static Results<Ok, BadRequest<string>> CheckToken(string value, HttpResponse response, bool validateToken, string? tokenToValidate)
     {
         if (!validateToken || value == tokenToValidate)
@@ -37,6 +49,9 @@ public static class WebhookEndpoints
         return TypedResults.BadRequest("Invalid token");
     }
 
+    /// <summary>
+    /// Receives a posted webhook payload, validates the token, and stores it.
+    /// </summary>
     public static async Task<IResult> ReceiveWebhookAsync(WebhookData hook, HttpRequest request, ILogger<Program> logger, HooksRepository hooksRepository, bool validateToken, string? tokenToValidate)
     {
         var token = request.Headers[WebhookCheckHeader];
