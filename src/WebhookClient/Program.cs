@@ -1,4 +1,5 @@
-﻿var builder = WebApplication.CreateBuilder(args);
+﻿// WebhookClient composition root.
+var builder = WebApplication.CreateBuilder(args);
 
 builder.AddServiceDefaults();
 
