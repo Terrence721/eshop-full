@@ -41,8 +41,7 @@ internal static class Extensions
         // Configure mediatR
         services.AddMediatR(cfg =>
         {
-            cfg.RegisterServicesFromAssemblyContaining(typeof(Program));
-
+            cfg.RegisterServicesFromAssemblyContaining<Program>();
             cfg.AddOpenBehavior(typeof(LoggingBehavior<,>));
             cfg.AddOpenBehavior(typeof(ValidatorBehavior<,>));
             cfg.AddOpenBehavior(typeof(TransactionBehavior<,>));
