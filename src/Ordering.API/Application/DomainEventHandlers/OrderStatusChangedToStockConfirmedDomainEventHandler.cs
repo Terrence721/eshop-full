@@ -17,6 +17,8 @@
 
         public async Task Handle(OrderStatusChangedToStockConfirmedDomainEvent domainEvent, CancellationToken cancellationToken)
         {
+            ArgumentNullException.ThrowIfNull(domainEvent);
+
             OrderingApiTrace.LogOrderStatusUpdated(_logger, domainEvent.OrderId, OrderStatus.StockConfirmed);
 
             // GetAsync/FindByIdAsync are nullable by signature, but upstream has no guard here
