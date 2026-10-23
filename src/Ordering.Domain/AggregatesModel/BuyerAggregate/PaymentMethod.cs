@@ -5,15 +5,15 @@ namespace eShop.Ordering.Domain.AggregatesModel.BuyerAggregate
     public class PaymentMethod : Entity
     {
         [Required]
-        private string _alias = null!;
+        private readonly string _alias = null!;
         [Required]
-        private string _cardNumber = null!;
-        private string _securityNumber = null!;
+        private readonly string _cardNumber = null!;
+        private readonly string _securityNumber = null!;
         [Required]
-        private string _cardHolderName = null!;
-        private DateTime _expiration;
+        private readonly string _cardHolderName = null!;
+        private readonly DateTime _expiration;
 
-        private int _cardTypeId;
+        private readonly int _cardTypeId;
         public CardType CardType { get; private set; } = null!;
 
         protected PaymentMethod() { }
