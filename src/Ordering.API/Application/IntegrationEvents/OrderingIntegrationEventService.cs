@@ -19,8 +19,10 @@ namespace eShop.Ordering.API.Application.IntegrationEvents
 
             foreach (var logEvt in pendingLogEvents)
             {
-                _logger.LogInformation("Publishing integration event: {IntegrationEventId} - ({@IntegrationEvent})", logEvt.EventId, logEvt.IntegrationEvent);
-
+                if (_logger.IsEnabled(LogLevel.Information))
+                    {
+                        _logger.LogInformation("Publishing integration event: {IntegrationEventId} - ({@IntegrationEvent})", logEvt.EventId, logEvt.IntegrationEvent);
+                    }
                 try
                 {
                     await _eventLogService.MarkEventAsInProgressAsync(logEvt.EventId);
@@ -41,8 +43,10 @@ namespace eShop.Ordering.API.Application.IntegrationEvents
 
         public async Task AddAndSaveEventAsync(IntegrationEvent evt)
         {
-            _logger.LogInformation("Enqueuing integration event {IntegrationEventId} to repository ({@IntegrationEvent})", evt.Id, evt);
-
+            if (_logger.IsEnabled(LogLevel.Information))
+            {
+                _logger.LogInformation("Enqueuing integration event {IntegrationEventId} to repository ({@IntegrationEvent})", evt.Id, evt);
+            }
             // TransactionBehavior<,> guarantees a transaction is already active by the time any
             // command handler (and therefore this method) runs -- it begins one itself before
             // calling next() if one wasn't already active. Never genuinely null here.
