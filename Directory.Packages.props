@@ -7,7 +7,7 @@
     <AspireVersion>13.6.1</AspireVersion>
     <AspireUnstablePackagesVersion>13.4.6-preview.1.26319.6</AspireUnstablePackagesVersion>
     <GrpcVersion>2.84.0</GrpcVersion>
-    <DuendeVersion>8.0.9</DuendeVersion>
+    <DuendeVersion>8.0.10</DuendeVersion>
     <AvaloniaVersion>12.1.4</AvaloniaVersion>
     <!-- Asp.Versioning.Http/Mvc.ApiExplorer/OpenApi hit a stable 10.0.0 release; Http.Client diverged onto its own 8.x line and is pinned separately below. -->
     <ApiVersioningVersion>10.2.1</ApiVersioningVersion>
@@ -143,7 +143,7 @@
     <!-- IdentityModel.OidcClient is archived/renamed upstream, same story as IdentityModel ->
          Duende.IdentityModel above; Duende.IdentityModel.OidcClient is the maintained
          successor. A separate pin from Duende.IdentityModel: different product/version line. -->
-    <PackageVersion Include="Duende.IdentityModel.OidcClient" Version="7.1.0" />
+    <PackageVersion Include="Duende.IdentityModel.OidcClient" Version="7.1.1" />
     <PackageVersion Include="Microsoft.Extensions.Logging.Debug" Version="$(DotnetPackagesVersion)" />
   </ItemGroup>
 </Project>
