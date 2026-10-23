@@ -25,7 +25,8 @@
     "run:clientapp:android:emulator": "\"%LOCALAPPDATA%\\Android\\Sdk\\emulator\\emulator.exe\" -avd eShop_Emulator",
     "run:clientapp:android": "dotnet build src/ClientApp.Android/ClientApp.Android.csproj -c Release -p:RuntimeIdentifier=android-x64 -t:Run",
     "run:clientapp:browser:publish": "dotnet publish src/ClientApp.Browser/ClientApp.Browser.csproj -c Release",
-    "run:clientapp:browser:serve": "python -m http.server 8080 --directory artifacts/publish/ClientApp.Browser/release/wwwroot"
+    "run:clientapp:browser:serve": "python -m http.server 8080 --directory artifacts/publish/ClientApp.Browser/release/wwwroot",
+    "run:clientapp:all": "pwsh -NoProfile -File scripts/Run-ClientApps.ps1 -All"
   },
   "keywords": [],
   "author": "",
