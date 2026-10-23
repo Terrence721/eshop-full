@@ -18,6 +18,8 @@
         // then we can update the original Order with the BuyerId and PaymentId (foreign keys)
         public async Task Handle(BuyerAndPaymentMethodVerifiedDomainEvent domainEvent, CancellationToken cancellationToken)
         {
+            ArgumentNullException.ThrowIfNull(domainEvent);
+
             // GetAsync is nullable by signature, but upstream has no guard here either --
             // preserving its exact assumption (the order that triggered this domain event
             // still exists) rather than adding a defensive check it doesn't have.
