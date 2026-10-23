@@ -44,14 +44,30 @@ else {
 }
 if (-not $targets.Count) { Write-Host "No target selected. Use -All, -Desktop, -Browser, or -Android."; exit 1 }
 
+Add-Type -Namespace Win32 -Name Window -MemberDefinition '
+    [DllImport("user32.dll")] public static extern bool ShowWindowAsync(IntPtr hWnd, int nCmdShow);
+    [DllImport("user32.dll")] public static extern bool SetForegroundWindow(IntPtr hWnd);
+' -ErrorAction SilentlyContinue | Out-Null
+
 if ($targets.Desktop) {
     Write-Host "Starting desktop host..."
-    Start-Process -FilePath "dotnet" -ArgumentList "run --project src/ClientApp.Desktop/ClientApp.Desktop.csproj" -WorkingDirectory $repoRoot | Out-Null
+    $desktopProc = Start-Process -FilePath "dotnet" -ArgumentList "run --project src/ClientApp.Desktop/ClientApp.Desktop.csproj" -WorkingDirectory $repoRoot -PassThru
+    $deadline = (Get-Date).AddSeconds(10)
+    do {
+        Start-Sleep -Milliseconds 250
+        $desktopProc.Refresh()
+    } while ($desktopProc.MainWindowHandle -eq 0 -and (Get-Date) -lt $deadline)
+    if ($desktopProc.MainWindowHandle -ne 0) {
+        [Win32.Window]::ShowWindowAsync($desktopProc.MainWindowHandle, 3) | Out-Null
+        [Win32.Window]::SetForegroundWindow($desktopProc.MainWindowHandle) | Out-Null
+    }
 }
 
 if ($targets.Browser) {
     Write-Host "Starting browser on http://localhost:$BrowserPort..."
-    Start-Process -FilePath "powershell.exe" -ArgumentList "-NoProfile","-Command", "`$env:ASPNETCORE_URLS='http://localhost:$BrowserPort'; dotnet run --no-launch-profile --project src/ClientApp.Browser/ClientApp.Browser.csproj" -WorkingDirectory $repoRoot | Out-Null
+    Start-Process -FilePath "powershell.exe" -ArgumentList "-NoProfile","-Command", "`$env:ASPNETCORE_URLS='http://localhost:$BrowserPort'; dotnet run --no-launch-profile --project src/ClientApp.Browser/ClientApp.Browser.csproj" -WorkingDirectory $repoRoot -WindowStyle Normal | Out-Null
+    Start-Sleep -Seconds 2
+    Start-Process "http://localhost:$BrowserPort/" | Out-Null
 }
 
 if ($targets.Android) {
