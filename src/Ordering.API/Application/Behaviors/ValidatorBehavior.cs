@@ -25,7 +25,7 @@ namespace eShop.Ordering.API.Application.Behaviors
                 .Where(error => error != null)
                 .ToList();
 
-            if (failures.Any())
+            if (failures.Count > 0)
             {
                 if (_logger.IsEnabled(LogLevel.Warning))
                 {
