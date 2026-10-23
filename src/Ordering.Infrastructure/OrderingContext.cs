@@ -27,7 +27,8 @@ namespace eShop.Ordering.Infrastructure
 
         public OrderingContext(DbContextOptions<OrderingContext> options, IMediator mediator) : base(options)
         {
-            _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+            ArgumentNullException.ThrowIfNull(mediator);
+            _mediator = mediator;
 
 
             System.Diagnostics.Debug.WriteLine("OrderingContext::ctor ->" + this.GetHashCode());
@@ -86,7 +87,7 @@ namespace eShop.Ordering.Infrastructure
 
         public async Task CommitTransactionAsync(IDbContextTransaction transaction)
         {
-            if (transaction == null) throw new ArgumentNullException(nameof(transaction));
+            ArgumentNullException.ThrowIfNull(transaction);
             if (transaction != _currentTransaction) throw new InvalidOperationException($"Transaction {transaction.TransactionId} is not current");
 
             try
