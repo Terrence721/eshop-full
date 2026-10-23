@@ -18,6 +18,8 @@
 
         public async Task Handle(OrderStartedDomainEvent domainEvent, CancellationToken cancellationToken)
         {
+            ArgumentNullException.ThrowIfNull(domainEvent);
+
             var cardTypeId = domainEvent.CardTypeId != 0 ? domainEvent.CardTypeId : 1;
             var buyer = await _buyerRepository.FindAsync(domainEvent.UserId);
             var buyerExisted = buyer is not null;
