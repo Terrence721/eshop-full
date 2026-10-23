@@ -49,7 +49,7 @@ Add-Type -Namespace Win32 -Name Window -MemberDefinition '
     [DllImport("user32.dll")] public static extern bool SetForegroundWindow(IntPtr hWnd);
 ' -ErrorAction SilentlyContinue | Out-Null
 
-if ($targets.Desktop) {
+if ($targets.ContainsKey("Desktop") -and $targets["Desktop"]) {
     $existingDesktop = Get-Process -Name "ClientApp.Desktop" -ErrorAction SilentlyContinue | Select-Object -First 1
     if ($existingDesktop) {
         Write-Host "Desktop host already running; bringing window forward..."
@@ -73,23 +73,49 @@ if ($targets.Desktop) {
     }
 }
 
-if ($targets.Browser) {
+if ($targets.ContainsKey("Browser") -and $targets["Browser"]) {
     # Close any stale process occupying the requested browser port before launching.
     $browserPids = (Get-NetTCPConnection -LocalPort $BrowserPort -ErrorAction SilentlyContinue | Select-Object -ExpandProperty OwningProcess -Unique)
-    foreach ($pid in $browserPids) {
-        if ($pid -gt 0) {
-            Stop-Process -Id $pid -Force -ErrorAction SilentlyContinue
+    foreach ($portPid in $browserPids) {
+        if ($portPid -gt 0 -and $portPid -ne $PID) {
+            Stop-Process -Id $portPid -Force -ErrorAction SilentlyContinue
         }
     }
-    Start-Sleep -Seconds 1
+    Start-Sleep -Seconds 2
 
     Write-Host "Starting browser on http://localhost:$BrowserPort..."
     Start-Process -FilePath "powershell.exe" -ArgumentList "-NoProfile","-Command", "`$env:ASPNETCORE_URLS='http://localhost:$BrowserPort'; dotnet run --no-launch-profile --project src/ClientApp.Browser/ClientApp.Browser.csproj" -WorkingDirectory $repoRoot -WindowStyle Normal | Out-Null
-    Start-Sleep -Seconds 2
-    Start-Process "http://localhost:$BrowserPort/" | Out-Null
+
+    # Wait for the Wasm development server to be ready before opening a browser tab.
+    # Opening too early makes the URL appear unreachable; only trigger a navigation
+    # once the page has been served successfully.
+    $browserUrl = "http://localhost:$BrowserPort/"
+    $browserReady = $false
+    $browserDeadline = (Get-Date).AddSeconds(45)
+    do {
+        Start-Sleep -Seconds 2
+        try {
+            $response = Invoke-WebRequest -Uri $browserUrl -UseBasicParsing -TimeoutSec 3 -ErrorAction Stop
+            if ($response.StatusCode -eq 200) {
+                $browserReady = $true
+            }
+        } catch {
+            $browserReady = $false
+        }
+    } while (-not $browserReady -and (Get-Date) -lt $browserDeadline)
+
+    if ($browserReady) {
+        Start-Sleep -Seconds 1
+        # Add a cache-busting query component so browsers do not keep a stale
+        # error/unreachable page cached from an earlier failed attempt.
+        $launchUrl = "http://localhost:$BrowserPort/?nocache=$([DateTime]::Now.Ticks)"
+        Start-Process $launchUrl | Out-Null
+    } else {
+        Write-Warning "Browser development server did not become ready within 45 seconds; open http://localhost:$BrowserPort/ manually."
+    }
 }
 
-if ($targets.Android) {
+if ($targets.ContainsKey("Android") -and $targets["Android"]) {
     $sdkRoot = "$env:LOCALAPPDATA\Android\Sdk"
     $adb = Join-Path $sdkRoot "platform-tools\adb.exe"
     $emulator = Join-Path $sdkRoot "emulator\emulator.exe"
