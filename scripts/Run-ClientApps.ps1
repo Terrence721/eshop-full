@@ -79,23 +79,35 @@ if ($targets.Android) {
     if (-not (Test-Path $adb)) {
         $adb = "C:\Program Files (x86)\Android\android-sdk\platform-tools\adb.exe"
     }
-    $devs = & $adb devices
-    if (-not ($devs -match "device`$")) {
+
+    function Test-AndroidDeviceReady {
+        param([string]$AdbPath)
+        $lines = (& $AdbPath devices 2>&1) | Out-String
+        return [bool]($lines -match '(?m)^\S+\s+device\s*$')
+    }
+
+    if (-not (Test-AndroidDeviceReady -AdbPath $adb)) {
         if (-not (Test-Path $emulator)) {
             throw "Android emulator binary not found at $emulator"
         }
-        Write-Host "Starting emulator '$Avd'..."
-        Start-Process -FilePath $emulator -ArgumentList "-avd",$Avd -WindowStyle Normal | Out-Null
 
-        $deadline = (Get-Date).AddMinutes(3)
+        $runningEmus = Get-Process -Name "emulator*" -ErrorAction SilentlyContinue
+        if (-not $runningEmus) {
+            Write-Host "Starting emulator '$Avd'..."
+            Start-Process -FilePath $emulator -ArgumentList "-avd",$Avd -WindowStyle Normal | Out-Null
+        } else {
+            Write-Host "An emulator process is already running; waiting for it to connect..."
+        }
+
+        $deadline = (Get-Date).AddMinutes(6)
         do {
             Start-Sleep -Seconds 5
-            $devs = & $adb devices
-        } while (($devs -notmatch "device`$") -and ((Get-Date) -lt $deadline))
+            Write-Host "Waiting for emulator..." -NoNewline
+            Write-Host ""
+        } while (-not (Test-AndroidDeviceReady -AdbPath $adb) -and ((Get-Date) -lt $deadline))
     }
 
-    $devs = & $adb devices
-    if (-not ($devs -match "device`$")) {
+    if (-not (Test-AndroidDeviceReady -AdbPath $adb)) {
         throw "No Android device available after waiting."
     }
 
