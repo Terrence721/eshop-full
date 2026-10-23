@@ -127,7 +127,7 @@ Result legend: `OK` = reviewed, no changes required; `FIX` = reviewed and change
 | `src/Ordering.API/Extensions/Extensions.cs` | OK | Composition root (auth, EF Core/Npgsql, migration, integration services, identity, mediator, validators, repositories, event bus); class-level XML doc added; SOLID/DRY/ISP checked. |
 | `src/Ordering.API/Extensions/LinqSelectExtensions.cs` | OK | Per-element try/select with captured exceptions and pluggable handlers; class-level XML doc added; SOLID/DRY/ISP checked. |
 | `src/Ordering.API/Extensions/OrderingApiTrace.cs` | OK | Source-generated partial logger for ordering trace events (status/payment/buyer changes); internal, focused; class-level XML doc added. |
-| `src/Ordering.API/GlobalUsings.cs` | OK | Global using consolidation for Ordering.API cross-cutting namespaces; header comment added; consistent with layering. |
+| `src/Ordering.API/GlobalUsings.cs` | FIX | Global using consolidation; split accidentally combined directive (behaviors/commands) onto separate lines. |
 | `src/Ordering.API/Program.cs` | OK | Composition root (defaults, app services, problem details, versioning, OpenAPI, MapOrdersApiV1, authorization); entry-point comment added. |
 | `src/Ordering.API/Program.Testing.cs` | OK | Public partial `Program` for WebApplicationFactory integration tests; XML doc added; no functional changes. |
 | `src/Ordering.API/Application/Behaviors/LoggingBehavior.cs` | OK | MediatR pipeline behavior logging request/response; single responsibility; XML doc added; no functional changes. |
@@ -188,6 +188,51 @@ Result legend: `OK` = reviewed, no changes required; `FIX` = reviewed and change
 | `src/Ordering.API/Infrastructure/OrderingContextSeed.cs` | OK | Seeds predefined card types when missing; walks DB context (seed adapter); class-level XML doc added; no functional changes; primary constructor N/A. |
 | `src/Ordering.API/Infrastructure/Services/IIdentityService.cs` | OK | Focused two-method contract for resolving the current user's "sub" identity and display name from the ambient HttpContext; ISP-compliant, DIP-friendly seam; interface-level and member XML docs added; SOLID/DRY checked; no functional changes. |
 | `src/Ordering.API/Infrastructure/Services/IdentityService.cs` | OK | HttpContext-backed IIdentityService implementation (primary constructor); reads "sub" claim and Identity.Name; null-forgiving documented; class-level XML doc added; SOLID/DRY/ISP checked; no functional changes. |
+
+## Ordering.Domain
+
+| File | Result | Notes |
+| --- | --- | --- |
+| `src/Ordering.Domain/AggregatesModel/BuyerAggregate/Buyer.cs` | OK | VerifyOrAddPaymentMethod ensures idempotency; no functional changes. |
+| `src/Ordering.Domain/AggregatesModel/BuyerAggregate/CardType.cs` | OK | Simple lookup type; no functional changes. |
+| `src/Ordering.Domain/AggregatesModel/BuyerAggregate/PaymentMethod.cs` | FIX | Made constructor-only backing fields (`_alias`, `_cardNumber`, `_securityNumber`, `_cardHolderName`, `_expiration`, `_cardTypeId`) readonly. |
+| `src/Ordering.Domain/AggregatesModel/OrderAggregate/Order.cs` | OK | Status-transition guards and domain-event invariants intact; no functional changes. |
+| `src/Ordering.Domain/AggregatesModel/OrderAggregate/OrderItem.cs` | OK | Units/discount invariants intact; no functional changes. |
+| `src/Ordering.Domain/AggregatesModel/OrderAggregate/Address.cs` | OK | Value-object equality components intact; no functional changes. |
+| `src/Ordering.Domain/AggregatesModel/OrderAggregate/OrderStatus.cs` | OK | JSON-string enum converter preserved; no functional changes. |
+| `src/Ordering.Domain/SeedWork/Entity.cs` | FIX | Used compound assignment for domain events and simplified equality conditional expression. |
+| `src/Ordering.Domain/SeedWork/IAggregateRoot.cs` | OK | Marker interface; no functional changes. |
+| `src/Ordering.Domain/SeedWork/IRepository.cs` | OK | Generic repository contract; no functional changes. |
+| `src/Ordering.Domain/SeedWork/IUnitOfWork.cs` | OK | Cancellation-aware persistence contract; no functional changes. |
+| `src/Ordering.Domain/SeedWork/ValueObject.cs` | FIX | Removed redundant parentheses in `NotEqualOperator`. |
+| `src/Ordering.Domain/Events/BuyerAndPaymentMethodVerifiedDomainEvent.cs` | OK | Simple domain event; no functional changes. |
+| `src/Ordering.Domain/Events/OrderCancelledDomainEvent.cs` | OK | Simple domain event; no functional changes. |
+| `src/Ordering.Domain/Events/OrderShippedDomainEvent.cs` | OK | Simple domain event; no functional changes. |
+| `src/Ordering.Domain/Events/OrderStartedDomainEvent.cs` | OK | Simple domain event; no functional changes. |
+| `src/Ordering.Domain/Events/OrderStatusChangedToAwaitingValidationDomainEvent.cs` | OK | Simple domain event; no functional changes. |
+| `src/Ordering.Domain/Events/OrderStatusChangedToPaidDomainEvent.cs` | OK | Simple domain event; no functional changes. |
+| `src/Ordering.Domain/Events/OrderStatusChangedToStockConfirmedDomainEvent.cs` | OK | Simple domain event; no functional changes. |
+| `src/Ordering.Domain/Exceptions/OrderingDomainException.cs` | OK | Standard domain exception; no functional changes. |
+| `src/Ordering.Domain/GlobalUsings.cs` | OK | Covers domain namespaces; no functional changes. |
+
+## Ordering.Infrastructure
+
+| File | Result | Notes |
+| --- | --- | --- |
+| `src/Ordering.Infrastructure/EntityConfigurations/BuyerEntityTypeConfiguration.cs` | OK | Buyer mapping; no functional changes. |
+| `src/Ordering.Infrastructure/EntityConfigurations/OrderEntityTypeConfiguration.cs` | OK | Order mapping; no functional changes. |
+| `src/Ordering.Infrastructure/EntityConfigurations/PaymentMethodEntityTypeConfiguration.cs` | OK | Payment-method backing-field mapping; no functional changes. |
+| `src/Ordering.Infrastructure/EntityConfigurations/CardTypeEntityTypeConfiguration.cs` | OK | Card-type mapping; no functional changes. |
+| `src/Ordering.Infrastructure/EntityConfigurations/ClientRequestEntityTypeConfiguration.cs` | OK | Request mapping; no functional changes. |
+| `src/Ordering.Infrastructure/EntityConfigurations/OrderItemEntityTypeConfiguration.cs` | OK | Order-item mapping; no functional changes. |
+| `src/Ordering.Infrastructure/Idempotency/ClientRequest.cs` | OK | Idempotency request model; no functional changes. |
+| `src/Ordering.Infrastructure/Idempotency/IRequestManager.cs` | OK | Idempotency contract; no functional changes. |
+| `src/Ordering.Infrastructure/Idempotency/RequestManager.cs` | OK | Null guard and idempotency preserved; no functional changes. |
+| `src/Ordering.Infrastructure/MediatorExtension.cs` | OK | Domain-event dispatch preserved; no functional changes. |
+| `src/Ordering.Infrastructure/OrderingContext.cs` | FIX | Centralized ignored domain-events configuration and retained `ArgumentNullException.ThrowIfNull`. |
+| `src/Ordering.Infrastructure/GlobalUsings.cs` | OK | Infrastructure namespaces; no functional changes. |
+| `src/Ordering.Infrastructure/Repositories/OrderRepository.cs` | OK | Reviewed previously; repository contract and persistence intact. |
+| `src/Ordering.Infrastructure/Repositories/BuyerRepository.cs` | OK | Reviewed previously; repository contract and persistence intact. |
 
 ## Webhooks.API
 
