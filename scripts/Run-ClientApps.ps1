@@ -74,16 +74,19 @@ if ($targets.Desktop) {
 }
 
 if ($targets.Browser) {
-    $browserPortInUse = (Get-NetTCPConnection -LocalPort $BrowserPort -ErrorAction SilentlyContinue | Select-Object -First 1)
-    if ($browserPortInUse) {
-        Write-Host "Browser dev server is already running on port $BrowserPort; opening tab..."
-        Start-Process "http://localhost:$BrowserPort/" | Out-Null
-    } else {
-        Write-Host "Starting browser on http://localhost:$BrowserPort..."
-        Start-Process -FilePath "powershell.exe" -ArgumentList "-NoProfile","-Command", "`$env:ASPNETCORE_URLS='http://localhost:$BrowserPort'; dotnet run --no-launch-profile --project src/ClientApp.Browser/ClientApp.Browser.csproj" -WorkingDirectory $repoRoot -WindowStyle Normal | Out-Null
-        Start-Sleep -Seconds 2
-        Start-Process "http://localhost:$BrowserPort/" | Out-Null
+    # Close any stale process occupying the requested browser port before launching.
+    $browserPids = (Get-NetTCPConnection -LocalPort $BrowserPort -ErrorAction SilentlyContinue | Select-Object -ExpandProperty OwningProcess -Unique)
+    foreach ($pid in $browserPids) {
+        if ($pid -gt 0) {
+            Stop-Process -Id $pid -Force -ErrorAction SilentlyContinue
+        }
     }
+    Start-Sleep -Seconds 1
+
+    Write-Host "Starting browser on http://localhost:$BrowserPort..."
+    Start-Process -FilePath "powershell.exe" -ArgumentList "-NoProfile","-Command", "`$env:ASPNETCORE_URLS='http://localhost:$BrowserPort'; dotnet run --no-launch-profile --project src/ClientApp.Browser/ClientApp.Browser.csproj" -WorkingDirectory $repoRoot -WindowStyle Normal | Out-Null
+    Start-Sleep -Seconds 2
+    Start-Process "http://localhost:$BrowserPort/" | Out-Null
 }
 
 if ($targets.Android) {
