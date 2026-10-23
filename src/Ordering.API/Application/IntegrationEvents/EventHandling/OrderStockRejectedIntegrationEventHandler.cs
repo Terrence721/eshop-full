@@ -9,7 +9,10 @@
     {
         public async Task Handle(OrderStockRejectedIntegrationEvent @event)
         {
-            logger.LogInformation("Handling integration event: {IntegrationEventId} - ({@IntegrationEvent})", @event.Id, @event);
+            if (logger.IsEnabled(LogLevel.Information))
+            {
+                logger.LogInformation("Handling integration event: {IntegrationEventId} - ({@IntegrationEvent})", @event.Id, @event);
+            }
 
             var orderStockRejectedItems = @event.OrderStockItems
                 .FindAll(c => !c.HasStock)
@@ -18,12 +21,15 @@
 
             var command = new SetStockRejectedOrderStatusCommand(@event.OrderId, orderStockRejectedItems);
 
-            logger.LogInformation(
-                "Sending command: {CommandName} - {IdProperty}: {CommandId} ({@Command})",
-                command.GetGenericTypeName(),
-                nameof(command.OrderNumber),
-                command.OrderNumber,
-                command);
+            if (logger.IsEnabled(LogLevel.Information))
+            {
+                logger.LogInformation(
+                    "Sending command: {CommandName} - {IdProperty}: {CommandId} ({@Command})",
+                    command.GetGenericTypeName(),
+                    nameof(command.OrderNumber),
+                    command.OrderNumber,
+                    command);
+            }
 
             await mediator.Send(command);
         }
