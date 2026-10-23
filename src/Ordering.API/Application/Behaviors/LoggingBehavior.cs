@@ -13,7 +13,7 @@ namespace eShop.Ordering.API.Application.Behaviors
             {
                 _logger.LogInformation("Handling command {CommandName} ({@Command})", request.GetGenericTypeName(), request);
             }
-            var response = await next();
+            var response = await next(cancellationToken);
             if (_logger.IsEnabled(LogLevel.Information))
             {
                 _logger.LogInformation("Command {CommandName} handled - response: {@Response}", request.GetGenericTypeName(), response);
