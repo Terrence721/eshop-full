@@ -35,12 +35,15 @@ public static class OrdersApi
 
         var requestCancelOrder = new IdentifiedCommand<CancelOrderCommand, bool>(command, requestId);
 
-        services.Logger.LogInformation(
-            "Sending command: {CommandName} - {IdProperty}: {CommandId} ({@Command})",
-            requestCancelOrder.GetGenericTypeName(),
-            nameof(requestCancelOrder.Command.OrderNumber),
-            requestCancelOrder.Command.OrderNumber,
-            requestCancelOrder);
+        if (services.Logger.IsEnabled(LogLevel.Information))
+        {
+            services.Logger.LogInformation(
+                "Sending command: {CommandName} - {IdProperty}: {CommandId} ({@Command})",
+                requestCancelOrder.GetGenericTypeName(),
+                nameof(requestCancelOrder.Command.OrderNumber),
+                requestCancelOrder.Command.OrderNumber,
+                requestCancelOrder);
+        }
 
         var commandResult = await services.Mediator.Send(requestCancelOrder);
 
@@ -64,12 +67,15 @@ public static class OrdersApi
 
         var requestShipOrder = new IdentifiedCommand<ShipOrderCommand, bool>(command, requestId);
 
-        services.Logger.LogInformation(
-            "Sending command: {CommandName} - {IdProperty}: {CommandId} ({@Command})",
-            requestShipOrder.GetGenericTypeName(),
-            nameof(requestShipOrder.Command.OrderNumber),
-            requestShipOrder.Command.OrderNumber,
-            requestShipOrder);
+        if (services.Logger.IsEnabled(LogLevel.Information))
+        {
+            services.Logger.LogInformation(
+                "Sending command: {CommandName} - {IdProperty}: {CommandId} ({@Command})",
+                requestShipOrder.GetGenericTypeName(),
+                nameof(requestShipOrder.Command.OrderNumber),
+                requestShipOrder.Command.OrderNumber,
+                requestShipOrder);
+        }
 
         var commandResult = await services.Mediator.Send(requestShipOrder);
 
@@ -109,12 +115,15 @@ public static class OrdersApi
 
     public static async Task<OrderDraftDTO> CreateOrderDraftAsync(CreateOrderDraftCommand command, [AsParameters] OrderServices services)
     {
-        services.Logger.LogInformation(
-            "Sending command: {CommandName} - {IdProperty}: {CommandId} ({@Command})",
-            command.GetGenericTypeName(),
-            nameof(command.BuyerId),
-            command.BuyerId,
-            command);
+        if (services.Logger.IsEnabled(LogLevel.Information))
+        {
+            services.Logger.LogInformation(
+                "Sending command: {CommandName} - {IdProperty}: {CommandId} ({@Command})",
+                command.GetGenericTypeName(),
+                nameof(command.BuyerId),
+                command.BuyerId,
+                command);
+        }
 
         return await services.Mediator.Send(command);
     }
@@ -127,15 +136,21 @@ public static class OrdersApi
 
         //mask the credit card number
 
-        services.Logger.LogInformation(
-            "Sending command: {CommandName} - {IdProperty}: {CommandId}",
-            request.GetGenericTypeName(),
-            nameof(request.UserId),
-            request.UserId); //don't log the request as it has CC number
+        if (services.Logger.IsEnabled(LogLevel.Information))
+        {
+            services.Logger.LogInformation(
+                "Sending command: {CommandName} - {IdProperty}: {CommandId}",
+                request.GetGenericTypeName(),
+                nameof(request.UserId),
+                request.UserId); //don't log the request as it has CC number
+        }
 
         if (requestId == Guid.Empty)
         {
-            services.Logger.LogWarning("Invalid IntegrationEvent - RequestId is missing - {@IntegrationEvent}", request);
+            if (services.Logger.IsEnabled(LogLevel.Warning))
+            {
+                services.Logger.LogWarning("Invalid IntegrationEvent - RequestId is missing - {@IntegrationEvent}", request);
+            }
             return TypedResults.BadRequest("RequestId is missing.");
         }
 
@@ -154,12 +169,15 @@ public static class OrdersApi
 
             var requestCreateOrder = new IdentifiedCommand<CreateOrderCommand, bool>(createOrderCommand, requestId);
 
-            services.Logger.LogInformation(
-                "Sending command: {CommandName} - {IdProperty}: {CommandId} ({@Command})",
-                requestCreateOrder.GetGenericTypeName(),
-                nameof(requestCreateOrder.Id),
-                requestCreateOrder.Id,
-                requestCreateOrder);
+            if (services.Logger.IsEnabled(LogLevel.Information))
+            {
+                services.Logger.LogInformation(
+                    "Sending command: {CommandName} - {IdProperty}: {CommandId} ({@Command})",
+                    requestCreateOrder.GetGenericTypeName(),
+                    nameof(requestCreateOrder.Id),
+                    requestCreateOrder.Id,
+                    requestCreateOrder);
+            }
 
             var result = await services.Mediator.Send(requestCreateOrder);
 
