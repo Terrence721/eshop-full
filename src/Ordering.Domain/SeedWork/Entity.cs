@@ -21,7 +21,7 @@
 
         public void AddDomainEvent(INotification eventItem)
         {
-            _domainEvents = _domainEvents ?? [];
+            _domainEvents ??= [];
             _domainEvents.Add(eventItem);
         }
 
@@ -75,7 +75,7 @@
         public static bool operator ==(Entity? left, Entity? right)
         {
             if (Object.Equals(left, null))
-                return (Object.Equals(right, null)) ? true : false;
+                return Object.Equals(right, null);
             else
                 return left.Equals(right);
         }
