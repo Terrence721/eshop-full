@@ -19,7 +19,7 @@
             {
                 if (_dbContext.HasActiveTransaction)
                 {
-                    return await next();
+                    return await next(cancellationToken);
                 }
 
                 var strategy = _dbContext.Database.CreateExecutionStrategy();

@@ -30,7 +30,7 @@ namespace eShop.Ordering.API.Application.Behaviors
                     $"Command Validation Errors for type {typeof(TRequest).Name}", new ValidationException("Validation exception", failures));
             }
 
-            return await next();
+            return await next(cancellationToken);
         }
     }
 }
