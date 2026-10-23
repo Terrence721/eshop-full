@@ -12,7 +12,10 @@ namespace eShop.Ordering.API.Application.Behaviors
         {
             var typeName = request.GetGenericTypeName();
 
-            _logger.LogInformation("Validating command {CommandType}", typeName);
+            if (_logger.IsEnabled(LogLevel.Information))
+            {
+                _logger.LogInformation("Validating command {CommandType}", typeName);
+            }
 
             var validationTasks = _validators.Select(v => v.ValidateAsync(request, cancellationToken));
             var validationResults = await Task.WhenAll(validationTasks);
@@ -24,7 +27,10 @@ namespace eShop.Ordering.API.Application.Behaviors
 
             if (failures.Any())
             {
-                _logger.LogWarning("Validation errors - {CommandType} - Command: {@Command} - Errors: {@ValidationErrors}", typeName, request, failures);
+                if (_logger.IsEnabled(LogLevel.Warning))
+                {
+                    _logger.LogWarning("Validation errors - {CommandType} - Command: {@Command} - Errors: {@ValidationErrors}", typeName, request, failures);
+                }
 
                 throw new OrderingDomainException(
                     $"Command Validation Errors for type {typeof(TRequest).Name}", new ValidationException("Validation exception", failures));
