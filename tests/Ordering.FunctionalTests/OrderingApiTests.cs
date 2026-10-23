@@ -3,6 +3,7 @@ using System.Text;
 using System.Text.Json;
 using Asp.Versioning;
 using Asp.Versioning.Http;
+using eShop.Ordering.API.Apis;
 using eShop.Ordering.API.Application.Commands;
 using eShop.Ordering.API.Application.Models;
 using eShop.Ordering.API.Application.Queries;
@@ -148,10 +149,9 @@ namespace eShop.Ordering.FunctionalTests
             };
             var cardExpirationDate = Convert.ToDateTime("2023-12-22T12:34:24.334Z");
             var OrderRequest = new CreateOrderRequest("1", "TestUser", null, null, null, null, null, "XXXXXXXXXXXX0005", "Test User", cardExpirationDate, "test buyer", 1, null, [item]);
-            var content = new StringContent(JsonSerializer.Serialize(OrderRequest), Encoding.UTF8, "application/json")
-            {
-                Headers = { { "x-requestid", Guid.NewGuid().ToString() } }
-            };
+            var content = new StringContent(JsonSerializer.Serialize(OrderRequest), Encoding.UTF8);
+            content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("application/json");
+            content.Headers.Add("x-requestid", Guid.NewGuid().ToString());
             var response = await _httpClient.PostAsync("api/orders", content, TestContext.Current.CancellationToken);
             var s = await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
 
