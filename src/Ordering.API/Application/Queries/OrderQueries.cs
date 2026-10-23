@@ -10,10 +10,8 @@ namespace eShop.Ordering.API.Application.Queries
         {
             var order = await context.Orders
                 .Include(o => o.OrderItems)
-                .FirstOrDefaultAsync(o => o.Id == id);
-
-            if (order is null)
-                throw new KeyNotFoundException();
+                .FirstOrDefaultAsync(o => o.Id == id)
+                ?? throw new KeyNotFoundException();
 
             return new Order
             {
@@ -27,13 +25,13 @@ namespace eShop.Ordering.API.Application.Queries
                 Zipcode = order.Address.ZipCode,
                 Status = order.OrderStatus.ToString(),
                 Total = order.GetTotal(),
-                OrderItems = order.OrderItems.Select(oi => new Orderitem
+                OrderItems = [.. order.OrderItems.Select(oi => new Orderitem
                 {
                     ProductName = oi.ProductName,
                     Units = oi.Units,
                     UnitPrice = (double)oi.UnitPrice,
                     PictureUrl = oi.PictureUrl
-                }).ToList()
+                })]
             };
         }
 
