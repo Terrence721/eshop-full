@@ -40,6 +40,8 @@
         /// <returns>Return value of inner command or default value if request same ID was found</returns>
         public async Task<R> Handle(IdentifiedCommand<T, R> message, CancellationToken cancellationToken)
         {
+            ArgumentNullException.ThrowIfNull(message);
+
             var alreadyExists = await _requestManager.ExistAsync(message.Id);
             if (alreadyExists)
             {
