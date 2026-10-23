@@ -34,7 +34,7 @@
 
         private bool ContainOrderItems(IEnumerable<OrderItemDTO>? orderItems)
         {
-            return orderItems is not null && orderItems.Count() > 0;
+            return orderItems is not null && orderItems.Any();
         }
     }
 }
