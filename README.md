@@ -98,6 +98,16 @@ dotnet build eShop.Web.slnf
 
 `eShop.slnx`/`eShop.Web.slnf` only ever list projects that actually exist on disk, so this builds cleanly against the 5 done projects above without failing on anything not yet added.
 
+### Running tests
+
+Functional/integration test projects (for example `tests/Catalog.FunctionalTests` and `tests/Ordering.FunctionalTests`) are backed by the .NET Aspire AppHost and their container dependencies (PostgreSQL, Kafka/Redpanda, Redis, etc.). **Docker Desktop and Aspire must be up and running before running any of these tests** — running them with the Docker daemon stopped (or with no Aspire host running) will fail trying to connect to the infrastructure endpoints:
+
+- Start Docker Desktop first.
+- Start the Aspire orchestrator with `npm run run:aspire` (or `pwsh -NoProfile -File scripts/Start-Aspire.ps1`) and wait for the dashboard/resources to be healthy.
+- Then run the tests, for example: `dotnet test tests/Ordering.FunctionalTests/Ordering.FunctionalTests.csproj`.
+
+Unit test projects that do not need services can run directly with `dotnet test`, but use the same Docker + Aspire-first rule for anything that launches an AppHost or reaches live infrastructure.
+
 ### Running the client app hosts
 
 With npm:
