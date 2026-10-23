@@ -9,9 +9,15 @@ namespace eShop.Ordering.API.Application.Behaviors
 
         public async Task<TResponse> Handle(TRequest request, RequestHandlerDelegate<TResponse> next, CancellationToken cancellationToken)
         {
-            _logger.LogInformation("Handling command {CommandName} ({@Command})", request.GetGenericTypeName(), request);
+            if (_logger.IsEnabled(LogLevel.Information))
+            {
+                _logger.LogInformation("Handling command {CommandName} ({@Command})", request.GetGenericTypeName(), request);
+            }
             var response = await next();
-            _logger.LogInformation("Command {CommandName} handled - response: {@Response}", request.GetGenericTypeName(), response);
+            if (_logger.IsEnabled(LogLevel.Information))
+            {
+                _logger.LogInformation("Command {CommandName} handled - response: {@Response}", request.GetGenericTypeName(), response);
+            }
 
             return response;
         }
