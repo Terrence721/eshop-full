@@ -50,24 +50,40 @@ Add-Type -Namespace Win32 -Name Window -MemberDefinition '
 ' -ErrorAction SilentlyContinue | Out-Null
 
 if ($targets.Desktop) {
-    Write-Host "Starting desktop host..."
-    $desktopProc = Start-Process -FilePath "dotnet" -ArgumentList "run --project src/ClientApp.Desktop/ClientApp.Desktop.csproj" -WorkingDirectory $repoRoot -PassThru
-    $deadline = (Get-Date).AddSeconds(10)
-    do {
-        Start-Sleep -Milliseconds 250
-        $desktopProc.Refresh()
-    } while ($desktopProc.MainWindowHandle -eq 0 -and (Get-Date) -lt $deadline)
-    if ($desktopProc.MainWindowHandle -ne 0) {
-        [Win32.Window]::ShowWindowAsync($desktopProc.MainWindowHandle, 3) | Out-Null
-        [Win32.Window]::SetForegroundWindow($desktopProc.MainWindowHandle) | Out-Null
+    $existingDesktop = Get-Process -Name "ClientApp.Desktop" -ErrorAction SilentlyContinue | Select-Object -First 1
+    if ($existingDesktop) {
+        Write-Host "Desktop host already running; bringing window forward..."
+        $existingDesktop.Refresh()
+        if ($existingDesktop.MainWindowHandle -ne 0) {
+            [Win32.Window]::ShowWindowAsync($existingDesktop.MainWindowHandle, 3) | Out-Null
+            [Win32.Window]::SetForegroundWindow($existingDesktop.MainWindowHandle) | Out-Null
+        }
+    } else {
+        Write-Host "Starting desktop host..."
+        $desktopProc = Start-Process -FilePath "dotnet" -ArgumentList "run --project src/ClientApp.Desktop/ClientApp.Desktop.csproj" -WorkingDirectory $repoRoot -PassThru
+        $deadline = (Get-Date).AddSeconds(10)
+        do {
+            Start-Sleep -Milliseconds 250
+            $desktopProc.Refresh()
+        } while ($desktopProc.MainWindowHandle -eq 0 -and (Get-Date) -lt $deadline)
+        if ($desktopProc.MainWindowHandle -ne 0) {
+            [Win32.Window]::ShowWindowAsync($desktopProc.MainWindowHandle, 3) | Out-Null
+            [Win32.Window]::SetForegroundWindow($desktopProc.MainWindowHandle) | Out-Null
+        }
     }
 }
 
 if ($targets.Browser) {
-    Write-Host "Starting browser on http://localhost:$BrowserPort..."
-    Start-Process -FilePath "powershell.exe" -ArgumentList "-NoProfile","-Command", "`$env:ASPNETCORE_URLS='http://localhost:$BrowserPort'; dotnet run --no-launch-profile --project src/ClientApp.Browser/ClientApp.Browser.csproj" -WorkingDirectory $repoRoot -WindowStyle Normal | Out-Null
-    Start-Sleep -Seconds 2
-    Start-Process "http://localhost:$BrowserPort/" | Out-Null
+    $browserPortInUse = (Get-NetTCPConnection -LocalPort $BrowserPort -ErrorAction SilentlyContinue | Select-Object -First 1)
+    if ($browserPortInUse) {
+        Write-Host "Browser dev server is already running on port $BrowserPort; opening tab..."
+        Start-Process "http://localhost:$BrowserPort/" | Out-Null
+    } else {
+        Write-Host "Starting browser on http://localhost:$BrowserPort..."
+        Start-Process -FilePath "powershell.exe" -ArgumentList "-NoProfile","-Command", "`$env:ASPNETCORE_URLS='http://localhost:$BrowserPort'; dotnet run --no-launch-profile --project src/ClientApp.Browser/ClientApp.Browser.csproj" -WorkingDirectory $repoRoot -WindowStyle Normal | Out-Null
+        Start-Sleep -Seconds 2
+        Start-Process "http://localhost:$BrowserPort/" | Out-Null
+    }
 }
 
 if ($targets.Android) {
