@@ -98,6 +98,22 @@ dotnet build eShop.Web.slnf
 
 `eShop.slnx`/`eShop.Web.slnf` only ever list projects that actually exist on disk, so this builds cleanly against the 5 done projects above without failing on anything not yet added.
 
+### Running the client app hosts
+
+With npm:
+
+```powershell
+npm run run:clientapp:all
+```
+
+With Yarn:
+
+```powershell
+yarn run run:clientapp:all
+```
+
+Those launch the desktop, browser, and Android hosts (the Android target still requires an emulator to be running first).
+
 ## Contributing
 
 For more information on contributing to this repo, read [the contribution documentation](./CONTRIBUTING.md) and [the Code of Conduct](CODE-OF-CONDUCT.md).
