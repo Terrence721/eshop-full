@@ -6,7 +6,9 @@ using Order = eShop.Ordering.API.Application.Queries.Order;
 /// Minimal-API endpoints that expose the ordering operations (list, get, draft, create,
 /// cancel and ship) under <c>api/orders</c>.
 /// </summary>
-public static class OrdersApi
+namespace eShop.Ordering.API.Apis
+{
+    public static class OrdersApi
 {
     public static RouteGroupBuilder MapOrdersApiV1(this IEndpointRouteBuilder app)
     {
@@ -210,3 +212,4 @@ public record CreateOrderRequest(
     int CardTypeId,
     string Buyer,
     List<BasketItem> Items);
+}
