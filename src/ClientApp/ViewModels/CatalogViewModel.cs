@@ -162,11 +162,18 @@ namespace eShop.ClientApp.ViewModels
             await IsBusyFor(
                 async () =>
                 {
-                    if (SelectedBrand is not null && SelectedType is not null)
+                    if (SelectedBrand is not null || SelectedType is not null)
                     {
-                        var filteredProducts =
-                            await _appEnvironmentService.CatalogService.FilterAsync(SelectedBrand.Id, SelectedType.Id);
+                        var allProducts = await _appEnvironmentService.CatalogService.GetCatalogAsync();
+                        var filteredProducts = allProducts.Where(item =>
+                            (SelectedBrand is null || item.CatalogBrandId == SelectedBrand.Id) &&
+                            (SelectedType is null || item.CatalogTypeId == SelectedType.Id));
                         _products.ReloadData(filteredProducts);
+                    }
+                    else
+                    {
+                        var allProducts = await _appEnvironmentService.CatalogService.GetCatalogAsync();
+                        _products.ReloadData(allProducts);
                     }
 
                     IsFiltering = false;

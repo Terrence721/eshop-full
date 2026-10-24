@@ -25,8 +25,15 @@
              xmlns:templates="using:eShop.ClientApp.Views.Templates"
              x:Class="eShop.ClientApp.Views.CatalogView"
              x:DataType="vm:CatalogViewModel">
-    <Grid Background="#2556CB">
-        <ScrollViewer>
+    <Grid Background="#2556CB" RowDefinitions="Auto,*">
+        <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="8" Spacing="8">
+            <TextBlock Text="Type:" Foreground="White" VerticalAlignment="Center"/>
+            <ComboBox x:Name="TypeFilterComboBox" ItemsSource="{Binding Types}" DisplayMemberBinding="{Binding Value.Type}" Width="140" SelectionChanged="OnTypeFilterChanged"/>
+            <TextBlock Text="Brand:" Foreground="White" VerticalAlignment="Center"/>
+            <ComboBox x:Name="BrandFilterComboBox" ItemsSource="{Binding Brands}" DisplayMemberBinding="{Binding Value.Brand}" Width="140" SelectionChanged="OnBrandFilterChanged"/>
+            <Button Content="Clear" Command="{Binding ClearFilterCommand}" />
+        </StackPanel>
+        <ScrollViewer Grid.Row="1">
             <ListBox Background="Transparent"
                      ItemsSource="{Binding Products}"
                      SelectedItem="{Binding SelectedProduct, Mode=TwoWay}"
@@ -45,7 +52,7 @@
             </ListBox>
         </ScrollViewer>
 
-        <Button Content="{Binding BadgeCount}"
+        <Button Grid.Row="1" Content="{Binding BadgeCount}"
                 Command="{Binding ViewBasketCommand}"
                 HorizontalAlignment="Right"
                 VerticalAlignment="Bottom"
