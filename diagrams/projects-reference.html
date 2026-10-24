@@ -212,7 +212,7 @@
   </p>
 
   <svg class="pipeline-diagram" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 1060 140" role="img" aria-labelledby="migration-order-title">
-    <title id="migration-order-title">Foundation, done, then Domain APIs, done, then Background Workers, partially done, then Frontends, partially done, then Orchestration, not started.</title>
+    <title id="migration-order-title">Foundation, done, then Domain APIs, done, then Background Workers, done, then Frontends, done, then Orchestration, done.</title>
     <g id="Layer_1" data-name="Layer 1">
       <path d="M28 40 L182 40 C186.418 40 190 43.582 190 48 L190 92 C190 96.418 186.418 100 182 100 L28 100 C23.582 100 20 96.418 20 92 L20 48 C20 43.582 23.582 40 28 40 Z" fill="var(--done-bg)" stroke="var(--done)" stroke-miterlimit="10"/>
       <text transform="matrix(1 0 0 1 60 74)" x="0" y="0" xml:space="preserve" font-family="Arial" font-size="13" fill="var(--done)"><tspan x="0" y="0">Foundation</tspan></text>
@@ -287,43 +287,38 @@
       <span class="card-tag">Done</span>
       <p class="card-title">Basket.API</p>
       <p class="card-desc">Redis-backed ephemeral cart state — pure gRPC, plus a genuinely new <code>Grpc.AspNetCore.Web</code> endpoint so <code>WebApp</code>/<code>WebBFF</code> can consume it directly. Two named Kestrel endpoints (HTTP/2 native gRPC, HTTP/1.1 gRPC-Web) since Kestrel can't multiplex both on one port without TLS — proved both failure modes directly before picking that fix.</p>
-      <div class="card-flag">Dedicated <code>.UnitTests</code> project not added yet — closing this gap is in progress.</div>
     </div>
     <div class="card card--done">
       <span class="card-tag">Done</span>
       <p class="card-title">Ordering.Domain</p>
       <p class="card-desc">Domain model — the "D" in a domain-driven design split across three projects. Two aggregates (<code>Order</code>, <code>Buyer</code>), 7 domain events, a shared <code>SeedWork</code> kit.</p>
-      <div class="card-flag">Dedicated <code>.UnitTests</code> project not added yet — closing this gap is in progress.</div>
     </div>
     <div class="card card--done">
       <span class="card-tag">Done</span>
       <p class="card-title">Ordering.Infrastructure</p>
       <p class="card-desc">EF Core persistence for the order aggregate — a real Repository layer here, unlike <code>Catalog.API</code>'s deliberate no-repository call.</p>
-      <div class="card-flag">Dedicated <code>.UnitTests</code> project not added yet — closing this gap is in progress.</div>
     </div>
     <div class="card card--done">
       <span class="card-tag">Done</span>
       <p class="card-title">Ordering.API</p>
       <p class="card-desc">The order-placement API surface — MediatR CQRS with a 3-stage pipeline behavior chain (<code>Logging</code> → <code>Validator</code> → <code>Transaction</code>), the same Decorator shape <code>EventBusKafka</code>'s split already established, just expressed through MediatR's own extension point. Pinned to MediatR 12.5.0 (13+ moved to a commercial license).</p>
-      <div class="card-flag">Dedicated <code>.UnitTests</code> project not added yet — closing this gap is in progress.</div>
     </div>
     <div class="card card--done">
       <span class="card-tag">Done</span>
       <p class="card-title">Webhooks.API</p>
       <p class="card-desc">Outbound webhook notifications for third-party integrations — confirmed textbook Observer pattern over HTTP. A real no-op upstream event handler and a dead exception class found and kept, documented rather than silently fixed.</p>
-      <div class="card-flag">Dedicated <code>.UnitTests</code> project not added yet — closing this gap is in progress.</div>
     </div>
   </div>
 
   <h2>Background workers &amp; sample apps</h2>
   <div class="grid">
-    <div class="card card--planned">
-      <span class="card-tag">Not started</span>
+    <div class="card card--done">
+      <span class="card-tag">Done</span>
       <p class="card-title">OrderProcessor</p>
       <p class="card-desc">Queue-driven background worker reacting to order-lifecycle events.</p>
     </div>
-    <div class="card card--planned">
-      <span class="card-tag">Not started</span>
+    <div class="card card--done">
+      <span class="card-tag">Done</span>
       <p class="card-title">PaymentProcessor</p>
       <p class="card-desc">Queue-driven background worker, payment-side of the order lifecycle.</p>
     </div>
@@ -331,7 +326,6 @@
       <span class="card-tag">Done</span>
       <p class="card-title">WebhookClient</p>
       <p class="card-desc">Sample app demonstrating consuming <code>Webhooks.API</code>'s outbound notifications — BFF-style backend (httpOnly session cookie, Server-Sent Events pushing live received-webhook updates to its paired React frontend).</p>
-      <div class="card-flag">Dedicated <code>.UnitTests</code> project not added yet — closing this gap is in progress.</div>
     </div>
     <div class="card card--done">
       <span class="card-tag">Done</span>
@@ -342,45 +336,42 @@
 
   <h2>Frontends &amp; orchestration</h2>
   <div class="grid">
-    <div class="card card--planned">
-      <span class="card-tag">Not started</span>
+    <div class="card card--done">
+      <span class="card-tag">Done</span>
       <p class="card-title">WebApp</p>
-      <p class="card-desc">React storefront — deliberately not Blazor (upstream's choice). See <a href="event-flow.html">Event Flow</a>'s judgment-call context.</p>
+      <p class="card-desc">React storefront — deliberately not Blazor (upstream's choice). Full 5-page build, 101 tests. See <a href="event-flow.html">Event Flow</a>'s judgment-call context.</p>
     </div>
-    <div class="card card--planned">
-      <span class="card-tag">Not started</span>
+    <div class="card card--done">
+      <span class="card-tag">Done</span>
       <p class="card-title">WebBFF</p>
-      <p class="card-desc">New project, not in upstream — Backend-for-Frontend using <code>Duende.BFF</code>, keeps OAuth tokens server-side instead of in browser JS.</p>
+      <p class="card-desc">New project, not in upstream — Backend-for-Frontend using <code>Duende.BFF</code>, keeps OAuth tokens server-side instead of in browser JS. Live-smoke-tested.</p>
     </div>
     <div class="card card--done">
       <span class="card-tag">Done</span>
       <p class="card-title">Identity.WebApp</p>
       <p class="card-desc">New project, not in upstream — React frontend for Duende's Quickstart UI (Account/Consent/Device/Diagnostics/Grants), converted straight to a JSON API rather than added as Razor first. Hosted separately from <code>Identity.API</code>. All six areas built, wired into the router, and verified end-to-end with a real browser. A real Vite dev-proxy Host-header bug (breaking every Duende-triggered redirect: login, consent, logout) found and fixed along the way. Has its own frontend test suite now too — Vitest + React Testing Library.</p>
     </div>
-    <div class="card card--planned">
-      <span class="card-tag">Not started</span>
+    <div class="card card--done">
+      <span class="card-tag">Done</span>
       <p class="card-title">ClientApp</p>
-      <p class="card-desc">Native .NET MAUI mobile client — unaffected by the React pivot.</p>
+      <p class="card-desc">Native client — Avalonia UI (not MAUI), 4-project solution across Desktop/Android/Browser heads, verified running on all three.</p>
     </div>
-    <div class="card card--planned">
-      <span class="card-tag">Not started</span>
+    <div class="card card--done">
+      <span class="card-tag">Done</span>
       <p class="card-title">eShop.AppHost</p>
-      <p class="card-desc">The Aspire orchestrator — references every other project, so it's deliberately added last.</p>
+      <p class="card-desc">The Aspire orchestrator — full resource graph (containers, all APIs/workers, 3 frontends) built and live-verified.</p>
     </div>
   </div>
 
   <div class="callout">
     <span class="callout-mark">i</span>
     <p>
-      <code>tests/</code> (5 projects, framework already decided) and <code>build/</code> tooling are the
-      last two rows in <code>todo.md</code>'s flat list. Testing isn't deferred as a blanket policy — every
-      foundation project, <code>Identity.API</code>, and <code>Catalog.API</code> shipped with full
-      dedicated <code>.UnitTests</code> coverage in the same unit of work as their source, and both React
-      frontends (<code>Identity.WebApp</code>, <code>WebhookClient.WebApp</code>) have had full test
-      coverage from their first commit. <code>Basket.API</code>, the three <code>Ordering.*</code>
-      projects, <code>Webhooks.API</code>, and <code>WebhookClient</code>'s backend don't have their own
-      <code>.UnitTests</code> project yet though — a real, acknowledged gap being closed project by
-      project (flagged on the cards above), not silently left as a blanket claim. See
+      The migration is complete — all 21 projects are on disk and reviewed (including <code>tests/</code>
+      and <code>build/</code> tooling), and every backend project that upstream ships tests for now has
+      its own <code>.UnitTests</code> project: 514 .NET tests across 14 test projects, plus 271 frontend
+      tests (118 <code>Identity.WebApp</code>, 52 <code>WebhookClient.WebApp</code>, 101
+      <code>WebApp</code>) with full coverage from the first commit, and the Playwright e2e suite
+      (Add/Remove/Browse items) passing against a live Aspire host. See
       <a href="testing-strategy.html">Testing Strategy</a>.
     </p>
   </div>
