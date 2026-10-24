@@ -1,7 +1,7 @@
 # 📝 TODO
 
 <!-- markdownlint-disable-next-line MD036 -->
-**Last Updated: October 16, 2026**
+**Last Updated: October 24, 2026**
 
 A living list of what's done and what's left on this build. This is an independently modernized version of Microsoft's [dotnet/eShop](https://github.com/dotnet/eShop) reference app — a .NET Aspire microservices e-commerce platform added **one file at a time**, evaluated and upgraded as it comes in, not a wholesale copy of the source repo. See [docs/architecturedesign.md](docs/architecturedesign.md) for how it's put together and the [project board](https://github.com/users/Terrence721/projects/5) for the live per-project Kanban view of the migration itself.
 
@@ -68,11 +68,15 @@ Every one of ~50 central package pins was checked against its actual current-lat
 | --- | --- | --- |
 | `Asp.Versioning.Http`/`.Mvc.ApiExplorer`/`.OpenApi` | `10.0.0-preview.2` → stable `10.0.0` | Hit GA since the source snapshot was taken |
 | `Asp.Versioning.Http.Client` | Split out to `8.1.0` | Diverged from the rest of the `Asp.Versioning.*` family onto its own version line — pinning it to the same variable as the others would have been wrong |
-| `Aspire.*` | `13.2.0` → `13.4.6` | Routine, but `Aspire.Azure.AI.OpenAI` stays on the unstable/preview variable — Microsoft genuinely hasn't shipped a stable release of that one yet |
+| `Aspire.*` | `13.2.0` → `13.4.6` → `13.6.4` | Routine, including latest patch upgrades to `13.6.4` (`Aspire.Hosting.*`, `Aspire.Npgsql`, `Aspire.StackExchange.Redis`, `Aspire.Confluent.Kafka`); `Aspire.Azure.AI.OpenAI` stays on the unstable/preview variable — Microsoft genuinely hasn't shipped a stable release of that one yet |
 | `Microsoft.VisualStudio.Web.CodeGeneration.Design` | `8.0.0-rc.1.23461.3` → `10.0.2` | Was stuck on a .NET-8-RC-era prerelease; a real stable release exists now |
 | `Duende.IdentityServer*` | Unused `DuendeVersion` variable (source declared `7.3.1` but every package was hardcoded to `7.3.2` instead) wired up properly; bumped to `8.x` | User decision (major version bump, breaking-change risk deferred to verification when `Identity.API` is actually added — see "Still to do") |
 | `IdentityModel` → `Duende.IdentityModel` | `7.0.0` → `8.1.0`, package renamed | Upstream `IdentityModel` is archived; `Duende.IdentityModel` is the maintained successor, still Apache-2.0. Any `using IdentityModel;` code will need a namespace update when added |
 | `MediatR` | Pinned to `12.5.0` | User decision. MediatR v13+ moved to a dual RPL-1.5/commercial license (LuckyPenny Software, July 2025); `12.5.0` is the last MIT/Apache-2.0 release |
+| `Confluent.Kafka` | `2.15.0` → `2.16.0` | Routine patch bump, verified against `EventBusKafka` build |
+| `Polly.Core` | `8.7.0` → `8.8.0` | Routine patch bump | 
+| `Scalar.AspNetCore` | `2.17.1` → `2.18.3` | Routine patch bump (docs UI) |
+| Frontend (`dotenv`, `vite`) | `dotenv` `18.0.7` → `18.0.9`, `vite` `8.3.4` → `8.3.5` | Routine patch bumps; lockfile repaired via `yarn install` |
 
 Commit: `ffa2730`.
 
