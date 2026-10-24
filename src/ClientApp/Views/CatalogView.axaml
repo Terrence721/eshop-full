@@ -43,42 +43,7 @@
             Width="56"
             Height="56" />
 
-    <DropDownButton Content="Settings"
-                     Background="Black"
-                     Foreground="White"
-                     HorizontalAlignment="Right"
-                     VerticalAlignment="Top"
-                     Margin="16">
-        <DropDownButton.Flyout>
-            <MenuFlyout Placement="BottomEdgeAlignedRight">
-                <MenuItem Command="{Binding ViewProfileCommand}">
-                    <MenuItem.Header>
-                        <TextBlock Text="My Orders" Foreground="White" TextDecorations="Underline" />
-                    </MenuItem.Header>
-                </MenuItem>
-                <MenuItem Command="{Binding ViewSettingsCommand}">
-                    <MenuItem.Header>
-                        <TextBlock Text="Settings" Foreground="White" TextDecorations="Underline" />
-                    </MenuItem.Header>
-                </MenuItem>
-                <MenuItem Command="{Binding ViewMapCommand}">
-                    <MenuItem.Header>
-                        <TextBlock Text="Map" Foreground="White" TextDecorations="Underline" />
-                    </MenuItem.Header>
-                </MenuItem>
-                <MenuItem Command="{Binding LogoutCommand}">
-                    <MenuItem.Header>
-                        <TextBlock Text="Logout" Foreground="White" TextDecorations="Underline" />
-                    </MenuItem.Header>
-                </MenuItem>
-                <MenuItem Click="OnQuitClick">
-                    <MenuItem.Header>
-                        <TextBlock Text="Close" Foreground="White" TextDecorations="Underline" />
-                    </MenuItem.Header>
-                </MenuItem>
-            </MenuFlyout>
-        </DropDownButton.Flyout>
-    </DropDownButton>
+
 
     <ProgressBar IsIndeterminate="True"
                  IsVisible="{Binding IsBusy}"
