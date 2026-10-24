@@ -2,6 +2,7 @@ using System;
 using System.Globalization;
 using Avalonia.Data.Converters;
 using Avalonia.Media.Imaging;
+using Avalonia.Platform;
 
 namespace eShop.ClientApp.Converters
 {
@@ -18,7 +19,8 @@ namespace eShop.ClientApp.Converters
 
             try
             {
-                return new Bitmap(path);
+                using var stream = AssetLoader.Open(new Uri(path));
+                return new Bitmap(stream);
             }
             catch
             {
