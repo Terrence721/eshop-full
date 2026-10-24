@@ -25,7 +25,7 @@
              xmlns:templates="using:eShop.ClientApp.Views.Templates"
              x:Class="eShop.ClientApp.Views.CatalogView"
              x:DataType="vm:CatalogViewModel">
-    <Grid Background="#2556CB">
+    <Grid Background="Black">
     <ScrollViewer HorizontalScrollBarVisibility="Auto"
                  VerticalScrollBarVisibility="Auto">
         <Image Source="avares://ClientApp/Assets/eshop_homepage.png"
@@ -53,27 +53,27 @@
             <MenuFlyout Placement="BottomEdgeAlignedRight">
                 <MenuItem Command="{Binding ViewProfileCommand}">
                     <MenuItem.Header>
-                        <TextBlock Text="My Orders" Foreground="#4EA1F7" TextDecorations="Underline" />
+                        <TextBlock Text="My Orders" Foreground="White" TextDecorations="Underline" />
                     </MenuItem.Header>
                 </MenuItem>
                 <MenuItem Command="{Binding ViewSettingsCommand}">
                     <MenuItem.Header>
-                        <TextBlock Text="Settings" Foreground="#4EA1F7" TextDecorations="Underline" />
+                        <TextBlock Text="Settings" Foreground="White" TextDecorations="Underline" />
                     </MenuItem.Header>
                 </MenuItem>
                 <MenuItem Command="{Binding ViewMapCommand}">
                     <MenuItem.Header>
-                        <TextBlock Text="Map" Foreground="#4EA1F7" TextDecorations="Underline" />
+                        <TextBlock Text="Map" Foreground="White" TextDecorations="Underline" />
                     </MenuItem.Header>
                 </MenuItem>
                 <MenuItem Command="{Binding LogoutCommand}">
                     <MenuItem.Header>
-                        <TextBlock Text="Logout" Foreground="#4EA1F7" TextDecorations="Underline" />
+                        <TextBlock Text="Logout" Foreground="White" TextDecorations="Underline" />
                     </MenuItem.Header>
                 </MenuItem>
                 <MenuItem Click="OnQuitClick">
                     <MenuItem.Header>
-                        <TextBlock Text="Close" Foreground="#4EA1F7" TextDecorations="Underline" />
+                        <TextBlock Text="Close" Foreground="White" TextDecorations="Underline" />
                     </MenuItem.Header>
                 </MenuItem>
             </MenuFlyout>
