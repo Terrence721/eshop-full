@@ -14,7 +14,7 @@
              x:Class="eShop.ClientApp.Views.MapView"
              x:DataType="vm:MapViewModel"
              Foreground="White">
-    <Grid Background="#2556CB" RowDefinitions="Auto,*">
+    <Grid Background="White" RowDefinitions="Auto,*">
         <Button Grid.Row="0"
                 Content="Back"
                 Command="{Binding DismissCommand}"

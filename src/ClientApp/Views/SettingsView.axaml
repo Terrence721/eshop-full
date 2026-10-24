@@ -13,7 +13,7 @@
              x:Class="eShop.ClientApp.Views.SettingsView"
              x:DataType="vm:SettingsViewModel"
              Foreground="White">
-    <Grid Background="#2556CB">
+    <Grid Background="White">
         <ScrollViewer>
             <StackPanel Margin="16" Spacing="16">
                 <Button Content="Back"

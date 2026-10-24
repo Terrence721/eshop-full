@@ -27,6 +27,8 @@ namespace eShop.ClientApp.ViewModels
 
         [ObservableProperty] public partial CatalogItem? SelectedProduct { get; set; }
 
+        [ObservableProperty] public partial bool CatalogVisible { get; set; }
+
         [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(CanFilter))]
         [NotifyCanExecuteChangedFor(nameof(ApplyFilterCommand))]
@@ -104,6 +106,18 @@ namespace eShop.ClientApp.ViewModels
         private void Filter()
         {
             IsFiltering = !IsFiltering;
+        }
+
+        [RelayCommand]
+        private void OpenCatalog()
+        {
+            CatalogVisible = true;
+        }
+
+        [RelayCommand]
+        private void BackToHome()
+        {
+            CatalogVisible = false;
         }
 
         [RelayCommand]
