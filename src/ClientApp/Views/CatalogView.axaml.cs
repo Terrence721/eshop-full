@@ -24,6 +24,26 @@ namespace eShop.ClientApp.Views
             }
         }
 
+        private void OnTypeFilterChanged(object? sender, SelectionChangedEventArgs e)
+        {
+            if (DataContext is CatalogViewModel viewModel && e.AddedItems.Count > 0 &&
+                e.AddedItems[0] is CatalogTypeSelectionViewModel selection)
+            {
+                viewModel.SelectCatalogTypeCommand.Execute(selection.Value);
+                viewModel.ApplyFilterCommand.Execute(null);
+            }
+        }
+
+        private void OnBrandFilterChanged(object? sender, SelectionChangedEventArgs e)
+        {
+            if (DataContext is CatalogViewModel viewModel && e.AddedItems.Count > 0 &&
+                e.AddedItems[0] is CatalogBrandSelectionViewModel selection)
+            {
+                viewModel.SelectCatalogBrandCommand.Execute(selection.Value);
+                viewModel.ApplyFilterCommand.Execute(null);
+            }
+        }
+
         // App-exit is a platform concern (no equivalent on mobile/browser heads), not ViewModel
         // business logic, so it is handled here rather than via a command on CatalogViewModel.
         private void OnQuitClick(object? sender, RoutedEventArgs e)
