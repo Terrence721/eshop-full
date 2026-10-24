@@ -15,7 +15,7 @@ test('Remove item from cart', async ({ page }) => {
   
   await page.getByLabel('product quantity').fill('0');
 
-  await page.getByRole('button', { name: 'Update' }).click();
-
+  // Quantity changes flow through onChange -> updateBasket, so there is no
+  // separate "Update" button; wait for the empty-cart state instead.
   await expect(page.getByText('Your shopping bag is empty')).toBeVisible();
 });

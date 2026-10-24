@@ -14,6 +14,7 @@ export function MainLayout() {
           <Link to="/">eShop</Link>
         </h1>
         <div className="user-info">
+          <Link to="/cart">shopping bag</Link>
           <UserMenu />
         </div>
       </header>
