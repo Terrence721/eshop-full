@@ -26,37 +26,12 @@
              x:Class="eShop.ClientApp.Views.CatalogView"
              x:DataType="vm:CatalogViewModel">
     <Grid Background="#2556CB">
-        <Grid IsVisible="{Binding !CatalogVisible}">
-            <Image Source="avares://ClientApp/Assets/eshop_homepage.png" Stretch="UniformToFill" />
-            <StackPanel VerticalAlignment="Center" Spacing="12" Margin="24">
-                <TextBlock Text="Welcome to eShop" FontSize="32" FontWeight="Bold" Foreground="White" HorizontalAlignment="Center" />
-                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Spacing="12">
-                    <Button Content="Catalog" Command="{Binding OpenCatalogCommand}" Width="120" Height="48" />
-                    <Button Content="Basket" Command="{Binding ViewBasketCommand}" Width="120" Height="48" />
-                </StackPanel>
-                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Spacing="12">
-                    <Button Content="Settings" Command="{Binding ViewSettingsCommand}" Width="120" Height="48" />
-                    <Button Content="Map" Command="{Binding ViewMapCommand}" Width="120" Height="48" />
-                </StackPanel>
-            </StackPanel>
-        </Grid>
+    <ScrollViewer>
+        <StackPanel>
+            <Image Source="avares://ClientApp/Assets/eshop_homepage.png"
+                   Stretch="Uniform"
+                   HorizontalAlignment="Center" />
 
-        <Grid IsVisible="{Binding CatalogVisible}">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="*" />
-            </Grid.RowDefinitions>
-            <TextBlock Grid.Row="0" Text="Catalog" FontSize="24" FontWeight="Bold" Foreground="White" Margin="12,8" />
-            <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="8" Spacing="8">
-                <TextBlock Text="Type:" Foreground="White" VerticalAlignment="Center"/>
-                <ComboBox x:Name="TypeFilterComboBox" ItemsSource="{Binding Types}" DisplayMemberBinding="{Binding Value.Type}" Width="140" SelectionChanged="OnTypeFilterChanged"/>
-                <TextBlock Text="Brand:" Foreground="White" VerticalAlignment="Center"/>
-                <ComboBox x:Name="BrandFilterComboBox" ItemsSource="{Binding Brands}" DisplayMemberBinding="{Binding Value.Brand}" Width="140" SelectionChanged="OnBrandFilterChanged"/>
-                <Button Content="Clear" Command="{Binding ClearFilterCommand}" />
-                <Button Content="Home" Command="{Binding BackToHomeCommand}" />
-            </StackPanel>
-            <ScrollViewer Grid.Row="2">
             <ListBox Background="Transparent"
                      ItemsSource="{Binding Products}"
                      SelectedItem="{Binding SelectedProduct, Mode=TwoWay}"
@@ -73,59 +48,60 @@
                     </DataTemplate>
                 </ListBox.ItemTemplate>
             </ListBox>
-        </ScrollViewer>
+        </StackPanel>
+    </ScrollViewer>
 
-        <Button Content="{Binding BadgeCount}"
-                Command="{Binding ViewBasketCommand}"
-                HorizontalAlignment="Right"
-                VerticalAlignment="Bottom"
-                Margin="16"
-                CornerRadius="28"
-                Width="56"
-                Height="56" />
+    <Button Content="{Binding BadgeCount}"
+            Command="{Binding ViewBasketCommand}"
+            HorizontalAlignment="Right"
+            VerticalAlignment="Bottom"
+            Margin="16"
+            CornerRadius="28"
+            Width="56"
+            Height="56" />
 
-        <DropDownButton Content="Settings"
-                         Background="Black"
-                         Foreground="White"
-                         HorizontalAlignment="Right"
-                         VerticalAlignment="Top"
-                         Margin="16">
-            <DropDownButton.Flyout>
-                <MenuFlyout Placement="BottomEdgeAlignedRight">
-                    <MenuItem Command="{Binding ViewProfileCommand}">
-                        <MenuItem.Header>
-                            <TextBlock Text="My Orders" Foreground="#4EA1F7" TextDecorations="Underline" />
-                        </MenuItem.Header>
-                    </MenuItem>
-                    <MenuItem Command="{Binding ViewSettingsCommand}">
-                        <MenuItem.Header>
-                            <TextBlock Text="Settings" Foreground="#4EA1F7" TextDecorations="Underline" />
-                        </MenuItem.Header>
-                    </MenuItem>
-                    <MenuItem Command="{Binding ViewMapCommand}">
-                        <MenuItem.Header>
-                            <TextBlock Text="Map" Foreground="#4EA1F7" TextDecorations="Underline" />
-                        </MenuItem.Header>
-                    </MenuItem>
-                    <MenuItem Command="{Binding LogoutCommand}">
-                        <MenuItem.Header>
-                            <TextBlock Text="Logout" Foreground="#4EA1F7" TextDecorations="Underline" />
-                        </MenuItem.Header>
-                    </MenuItem>
-                    <MenuItem Click="OnQuitClick">
-                        <MenuItem.Header>
-                            <TextBlock Text="Close" Foreground="#4EA1F7" TextDecorations="Underline" />
-                        </MenuItem.Header>
-                    </MenuItem>
-                </MenuFlyout>
-            </DropDownButton.Flyout>
-        </DropDownButton>
+    <DropDownButton Content="Settings"
+                     Background="Black"
+                     Foreground="White"
+                     HorizontalAlignment="Right"
+                     VerticalAlignment="Top"
+                     Margin="16">
+        <DropDownButton.Flyout>
+            <MenuFlyout Placement="BottomEdgeAlignedRight">
+                <MenuItem Command="{Binding ViewProfileCommand}">
+                    <MenuItem.Header>
+                        <TextBlock Text="My Orders" Foreground="#4EA1F7" TextDecorations="Underline" />
+                    </MenuItem.Header>
+                </MenuItem>
+                <MenuItem Command="{Binding ViewSettingsCommand}">
+                    <MenuItem.Header>
+                        <TextBlock Text="Settings" Foreground="#4EA1F7" TextDecorations="Underline" />
+                    </MenuItem.Header>
+                </MenuItem>
+                <MenuItem Command="{Binding ViewMapCommand}">
+                    <MenuItem.Header>
+                        <TextBlock Text="Map" Foreground="#4EA1F7" TextDecorations="Underline" />
+                    </MenuItem.Header>
+                </MenuItem>
+                <MenuItem Command="{Binding LogoutCommand}">
+                    <MenuItem.Header>
+                        <TextBlock Text="Logout" Foreground="#4EA1F7" TextDecorations="Underline" />
+                    </MenuItem.Header>
+                </MenuItem>
+                <MenuItem Click="OnQuitClick">
+                    <MenuItem.Header>
+                        <TextBlock Text="Close" Foreground="#4EA1F7" TextDecorations="Underline" />
+                    </MenuItem.Header>
+                </MenuItem>
+            </MenuFlyout>
+        </DropDownButton.Flyout>
+    </DropDownButton>
 
-        <ProgressBar IsIndeterminate="True"
-                     IsVisible="{Binding IsBusy}"
-                     HorizontalAlignment="Center"
-                     VerticalAlignment="Center"
-                     Width="200" />
-    </Grid>
-    </Grid>
+    <ProgressBar IsIndeterminate="True"
+                 IsVisible="{Binding IsBusy}"
+                 HorizontalAlignment="Center"
+                 VerticalAlignment="Center"
+                 Width="200" />
+</Grid>
+
 </UserControl>
