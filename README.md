@@ -6,13 +6,13 @@
 
 **[📜 View the portfolio page →](https://terrence721.github.io/eshop-full/portfolio.html)**
 
-Last updated: September 11, 2026 (6 of 21 projects done — `EventBus`, `EventBusKafka`, `eShop.ServiceDefaults`, `IntegrationEventLogEF`, `Identity.API`, `Identity.WebApp`, plus `Shared` — `Catalog.API` now in progress — 304/304 tests passing, 186 .NET + 118 `Identity.WebApp` frontend tests; `EventBusRabbitMQ` was later replaced outright by `EventBusKafka` — see `portfolio.html`)
+Last updated: October 24, 2026 (migration complete — all 21 target projects added and reviewed; 785 tests passing — 514 .NET across 14 test projects + 271 frontend (118 `Identity.WebApp`, 52 `WebhookClient.WebApp`, 101 `WebApp`); full Playwright e2e suite (Add/Remove/Browse items) passes against a live Aspire host; project board 71/71 Done — see `todo.md`)
 
 This is an independently modernized version of Microsoft's [dotnet/eShop](https://github.com/dotnet/eShop) reference app — a .NET Aspire microservices e-commerce platform (product catalog, basket, ordering, identity, payments, outbound webhooks) added **one file at a time**, each file evaluated and upgraded against actual current-latest package versions rather than copied over wholesale.
 
 Not a fork left as-is. Every package version was individually re-researched, several real bugs were found and fixed in Microsoft's own reference source (verified against real assemblies and real builds, not assumed), and a handful of deliberate design departures — a Decorator split for the event bus (`EventBusRabbitMQ`, later replaced outright by `EventBusKafka`), React instead of Blazor for the web frontend — were made and recorded as this fork's own choices.
 
-**At a glance:** 304/304 tests passing — 186 across `eShop.ServiceDefaults.UnitTests` + `EventBus.UnitTests` + `EventBusKafka.UnitTests` + `IntegrationEventLogEF.UnitTests` + `Identity.API.UnitTests` (added ahead of the `tests/` migration slot so every completed project ships with full coverage rather than deferring it to the end), plus 118 in `Identity.WebApp`'s own Vitest + React Testing Library suite — see the **[Testing Strategy diagram](https://terrence721.github.io/eshop-full/diagrams/testing-strategy.html)**.
+**At a glance:** 785/785 tests passing — 514 .NET across 14 test projects plus 271 frontend (118 in `Identity.WebApp`, 52 in `WebhookClient.WebApp`, 101 in `WebApp`), plus the full Playwright e2e suite (Add/Remove/Browse items) passing against a live Aspire host — see [`todo.md`](todo.md) and the **[Testing Strategy diagram](https://terrence721.github.io/eshop-full/diagrams/testing-strategy.html)**.
 
 ## 🧭 Start Here
 
@@ -37,7 +37,7 @@ On AI-assisted development: this project is built with Claude Code, directed, re
 
 ## 🏗 What's Here So Far
 
-`Shared` (linked-source utilities), `EventBus` (transport-agnostic event abstractions), `EventBusKafka` (the Kafka implementation, using the 3-layer Decorator chain built for its RabbitMQ predecessor after two real bugs turned up in the original single-class version — RabbitMQ was later replaced outright once every consumer was migrated), `eShop.ServiceDefaults` (Aspire telemetry/health-check/resilience defaults), `IntegrationEventLogEF` (the EF Core-backed transactional outbox every event-publishing service will write through), `Identity.API` (Duende IdentityServer, its Quickstart UI converted straight to a JSON API rather than shipping Razor views), and `Identity.WebApp` (React, replacing Duende's Quickstart Razor UI) are complete, reviewed, and fully tested. `Identity.WebApp`'s six areas — `Home`, `Account`, `Consent`, `Diagnostics`, `Grants`, `Device` — are all built, wired into the router, and verified end-to-end with a real browser. A real, significant bug turned up along the way: the Vite dev proxy wasn't preserving the original `Host` header, breaking every OIDC redirect Duende itself triggers (login, consent, logout) — found, fixed, and reverified against all three flows, including a full device-flow round trip. `Identity.WebApp` also has its own frontend test suite (Vitest + React Testing Library, 118 tests and growing). `Catalog.API` is now in progress — its entire domain-logic layer (`Model`, `Infrastructure` including the DB seeder, `IntegrationEvents`, `Services`) and the real v1/v2 API surface are on disk; only the real `Program.cs` startup wiring remains. The other 13 projects don't exist on disk yet. See [`todo.md`](todo.md) for the full build-out plan and the honest current state.
+The migration is complete: all 21 target projects are on disk and reviewed — `Shared` (linked-source utilities), `EventBus` + `EventBusKafka` (the 3-layer Decorator chain, Kafka after a RabbitMQ predecessor was replaced outright), `eShop.ServiceDefaults`, `IntegrationEventLogEF`, `Identity.API`, `Identity.WebApp`, `Catalog.API`, `Basket.API`, `Ordering.Domain`/`Ordering.Infrastructure`/`Ordering.API`, `OrderProcessor`, `PaymentProcessor`, `Webhooks.API`, `WebhookClient` (backend + `WebhookClient.WebApp`), `WebApp` (React, not Blazor), `WebBFF` (Duende.BFF), `ClientApp` (Avalonia, not MAUI), and `eShop.AppHost` (the Aspire orchestrator). Each was added one file at a time, evaluated and upgraded against actual current-latest versions rather than copied wholesale. See [`todo.md`](todo.md) for the evidence-backed log.
 
 ```text
   Shared/                 linked-source utilities                          ✅ done
@@ -47,22 +47,22 @@ On AI-assisted development: this project is built with Claude Code, directed, re
   IntegrationEventLogEF/  EF Core transactional outbox                     ✅ done
   Identity.API/            Duende IdentityServer (OIDC)                     ✅ done
   Identity.WebApp/         React replacement for Quickstart UI (new)        ✅ done
-  Catalog.API/             product catalog                                 🚧 in progress
-  Basket.API/              Redis-backed cart (gRPC)                        ⬜ not started
-  Ordering.Domain/.Infrastructure/.API/  order placement (DDD split)        ⬜ not started
-  OrderProcessor/          background worker                               ⬜ not started
-  PaymentProcessor/        background worker                               ⬜ not started
-  Webhooks.API/            outbound webhook notifications                  ⬜ not started
-  WebhookClient/           sample Webhooks.API consumer                    ⬜ not started
-  WebApp/                  React storefront (not Blazor — see below)       ⬜ not started
-  WebBFF/                  Backend-for-Frontend, Duende.BFF (new)          ⬜ not started
-  ClientApp/               native app, Avalonia UI (not MAUI — see below)   🚧 in progress
-  eShop.AppHost/           Aspire orchestrator, added last                 ⬜ not started
+  Catalog.API/             product catalog, v1/v2 API                       ✅ done
+  Basket.API/              Redis-backed cart (gRPC + gRPC-Web)              ✅ done
+  Ordering.Domain/.Infrastructure/.API/  order placement (DDD split)        ✅ done
+  OrderProcessor/          background worker                               ✅ done
+  PaymentProcessor/        background worker                               ✅ done
+  Webhooks.API/            outbound webhook notifications                  ✅ done
+  WebhookClient/           sample Webhooks.API consumer                    ✅ done
+  WebApp/                  React storefront (not Blazor)                   ✅ done
+  WebBFF/                  Backend-for-Frontend, Duende.BFF (new)          ✅ done
+  ClientApp/               native app, Avalonia UI (not MAUI)              ✅ done
+  eShop.AppHost/           Aspire orchestrator                             ✅ done
 ```
 
 ## 🖥 Getting Started
 
-**Not runnable end-to-end yet** — `eShop.AppHost` (the Aspire orchestrator every service registers with) is deliberately the last project added, since it can't meaningfully exist until the things it orchestrates do. See [`todo.md`](todo.md) for the honest current state. What follows is prerequisite setup, useful today regardless of how much of the app exists.
+**Runnable end-to-end** — `eShop.AppHost` now orchestrates every service, their container dependencies (PostgreSQL, Kafka, Redis), and inter-service discovery. Start it with `npm run run:aspire` (or `pwsh -NoProfile -File scripts/Start-Aspire.ps1`) and open the Aspire dashboard. See [`todo.md`](todo.md) for the full build-out log. What follows is prerequisite setup.
 
 - Clone this repository: `https://github.com/Terrence721/eshop-full`
 - [Install & start Docker Desktop](https://docs.docker.com/engine/install/)
@@ -96,7 +96,7 @@ get-WinGetConfiguration -file .\.config\configuration.vsCode.winget | Invoke-Win
 dotnet build eShop.Web.slnf
 ```
 
-`eShop.slnx`/`eShop.Web.slnf` only ever list projects that actually exist on disk, so this builds cleanly against the 5 done projects above without failing on anything not yet added.
+`eShop.slnx`/`eShop.Web.slnf` now list every project that exists on disk, so this builds cleanly against the complete (21-project) migration.
 
 ### Running tests
 
