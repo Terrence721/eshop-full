@@ -32,22 +32,11 @@
                    Stretch="Uniform"
                    HorizontalAlignment="Center" />
 
-            <ListBox Background="Transparent"
-                     ItemsSource="{Binding Products}"
-                     SelectedItem="{Binding SelectedProduct, Mode=TwoWay}"
-                     SelectionMode="Single"
-                     SelectionChanged="OnProductSelectionChanged">
-                <ListBox.ItemsPanel>
-                    <ItemsPanelTemplate>
-                        <WrapPanel />
-                    </ItemsPanelTemplate>
-                </ListBox.ItemsPanel>
-                <ListBox.ItemTemplate>
-                    <DataTemplate>
-                        <templates:CatalogItemTemplate />
-                    </DataTemplate>
-                </ListBox.ItemTemplate>
-            </ListBox>
+            <Button Content="Catalog"
+                    Command="{Binding OpenCatalogCommand}"
+                    HorizontalAlignment="Center"
+                    Margin="12" />
+
         </StackPanel>
     </ScrollViewer>
 
