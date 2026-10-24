@@ -26,13 +26,12 @@
              x:Class="eShop.ClientApp.Views.CatalogView"
              x:DataType="vm:CatalogViewModel">
     <Grid Background="#2556CB">
-    <ScrollViewer>
-        <StackPanel>
-            <Image Source="avares://ClientApp/Assets/eshop_homepage.png"
-                   Stretch="Uniform"
-                   HorizontalAlignment="Center" />
-
-        </StackPanel>
+    <ScrollViewer HorizontalScrollBarVisibility="Auto"
+                 VerticalScrollBarVisibility="Auto">
+        <Image Source="avares://ClientApp/Assets/eshop_homepage.png"
+               Stretch="None"
+               HorizontalAlignment="Left"
+               VerticalAlignment="Top" />
     </ScrollViewer>
 
     <Button Content="{Binding BadgeCount}"
