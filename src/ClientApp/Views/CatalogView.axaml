@@ -26,11 +26,10 @@
              x:Class="eShop.ClientApp.Views.CatalogView"
              x:DataType="vm:CatalogViewModel">
     <Grid Background="White">
-    <ScrollViewer HorizontalScrollBarVisibility="Auto"
+    <ScrollViewer HorizontalScrollBarVisibility="Disabled"
                  VerticalScrollBarVisibility="Auto">
         <Image Source="avares://ClientApp/Assets/eshop_homepage.png"
                Stretch="Uniform"
-               StretchDirection="DownOnly"
                HorizontalAlignment="Center"
                VerticalAlignment="Top" />
     </ScrollViewer>
