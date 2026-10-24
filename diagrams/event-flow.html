@@ -214,8 +214,8 @@
     defines the abstraction (<code>IEventBus</code>), <code>EventBusKafka</code> is the only
     implementation today (replacing an original RabbitMQ-backed implementation — see the callout
     below), and <code>IntegrationEventLogEF</code> (done) gives every publisher a
-    transactional outbox instead of a fire-and-forget publish — not wired into a consumer yet, since no
-    service that would call it exists on disk. Reviewing <code>RabbitMQEventBus</code>
+    transactional outbox instead of a fire-and-forget publish — now wired into `Catalog.API` and
+    `Ordering.API`. Reviewing <code>RabbitMQEventBus</code>
     closely enough to split it turned up two real bugs, both present verbatim in Microsoft's own reference
     source. See <a href="system-architecture.html">System Architecture</a> for where this foundation layer
     sits relative to everything still to come.
@@ -372,7 +372,7 @@
       <p class="zoom-title">Domain write and event-to-publish, one transaction</p>
     </div>
     <p>
-      All 7 source files reviewed, but not wired up yet — no service that would call it exists on disk.
+      All 7 source files reviewed and now wired into `Catalog.API` and `Ordering.API`'s publish paths.
       The target shape: a publishing
       service writes its domain change and an <code>IntegrationEventLogEntry</code> row in the
       <strong>same</strong> database transaction, so a crash between "domain write committed" and "event
@@ -388,7 +388,7 @@
     <span class="callout-mark">i</span>
     <p>
       Neither bug above was provable end-to-end until the Decorator split made the resilience layer
-      testable on its own — no real RabbitMQ broker exists yet (no <code>eShop.AppHost</code>). See
+      testable on its own — a real broker is now reachable via <code>eShop.AppHost</code>, which shipped after the migration. See
       <a href="testing-strategy.html">Testing Strategy</a> for how a fake inner <code>IEventBus</code>
       finally closed that gap.
     </p>
