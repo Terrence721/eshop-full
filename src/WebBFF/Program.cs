@@ -55,6 +55,8 @@ builder.AddKafkaEventBus("eventbus")
     .AddSubscription<OrderStatusChangedToShippedIntegrationEvent, OrderStatusChangedToShippedIntegrationEventHandler>()
     .AddSubscription<OrderStatusChangedToCancelledIntegrationEvent, OrderStatusChangedToCancelledIntegrationEventHandler>();
 
+builder.Services.AddHttpClient();
+
 var app = builder.Build();
 
 app.MapDefaultEndpoints();
@@ -63,6 +65,21 @@ app.UseAuthentication();
 app.UseRouting();
 app.UseBff();
 app.UseAuthorization();
+
+// Serve catalog item pictures anonymously so <img> tags (which cannot attach a
+// Bearer token) can load them through the BFF without an authenticated session.
+app.MapGet("/remoteapi/catalog/api/catalog/items/{id:int}/pic", async (int id, IHttpClientFactory factory, CancellationToken ct) =>
+{
+    using var client = factory.CreateClient();
+    var response = await client.GetAsync($"http://catalog-api/api/catalog/items/{id}/pic", ct);
+    if (!response.IsSuccessStatusCode)
+    {
+        return Results.StatusCode((int)response.StatusCode);
+    }
+    var stream = await response.Content.ReadAsStreamAsync(ct);
+    var contentType = response.Content.Headers.ContentType?.ToString() ?? "image/webp";
+    return Results.Stream(stream, contentType);
+}).AllowAnonymous();
 
 app.MapReverseProxy().AsBffApiEndpoint();
 app.MapOrderStatusEndpoints();
