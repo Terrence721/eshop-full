@@ -3,7 +3,7 @@
              xmlns:vm="using:eShop.ClientApp.ViewModels"
              x:Class="eShop.ClientApp.Views.MainView"
              x:DataType="vm:MainViewModel">
-    <Grid Background="#2556CB">
+    <Grid Background="White">
         <ContentControl Content="{Binding CurrentViewModel}" />
     </Grid>
 </UserControl>

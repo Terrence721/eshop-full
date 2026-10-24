@@ -10,7 +10,7 @@
              x:Class="eShop.ClientApp.Views.CheckoutView"
              x:DataType="vm:CheckoutViewModel"
              Foreground="White">
-    <Grid Background="#2556CB" RowDefinitions="Auto,*,Auto">
+    <Grid Background="White" RowDefinitions="Auto,*,Auto">
         <Grid Grid.Row="0"
               Margin="16"
               ColumnDefinitions="*,*"

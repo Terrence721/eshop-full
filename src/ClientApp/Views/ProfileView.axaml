@@ -16,7 +16,7 @@
              x:Class="eShop.ClientApp.Views.ProfileView"
              x:DataType="vm:ProfileViewModel"
              Foreground="White">
-    <Grid Background="#2556CB">
+    <Grid Background="White">
         <ListBox Background="Transparent"
                   ItemsSource="{Binding Orders}"
                   SelectedItem="{Binding SelectedOrder, Mode=TwoWay}"

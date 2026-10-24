@@ -18,7 +18,7 @@
              x:DataType="vm:BasketViewModel"
              Foreground="White">
     <Grid RowDefinitions="*,Auto">
-        <Grid Grid.Row="0" Background="#2556CB">
+        <Grid Grid.Row="0" Background="White">
             <ListBox Background="Transparent" Margin="0,56,0,0" ItemsSource="{Binding BasketItems}">
                 <ListBox.ItemTemplate>
                     <DataTemplate>
