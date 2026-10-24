@@ -25,16 +25,38 @@
              xmlns:templates="using:eShop.ClientApp.Views.Templates"
              x:Class="eShop.ClientApp.Views.CatalogView"
              x:DataType="vm:CatalogViewModel">
-    <Grid Background="#2556CB" RowDefinitions="Auto,Auto,*">
-        <Image Grid.Row="0" Source="avares://ClientApp/Assets/eshop_homepage.png" Height="180" Stretch="UniformToFill" />
-        <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="8" Spacing="8">
-            <TextBlock Text="Type:" Foreground="White" VerticalAlignment="Center"/>
-            <ComboBox x:Name="TypeFilterComboBox" ItemsSource="{Binding Types}" DisplayMemberBinding="{Binding Value.Type}" Width="140" SelectionChanged="OnTypeFilterChanged"/>
-            <TextBlock Text="Brand:" Foreground="White" VerticalAlignment="Center"/>
-            <ComboBox x:Name="BrandFilterComboBox" ItemsSource="{Binding Brands}" DisplayMemberBinding="{Binding Value.Brand}" Width="140" SelectionChanged="OnBrandFilterChanged"/>
-            <Button Content="Clear" Command="{Binding ClearFilterCommand}" />
-        </StackPanel>
-        <ScrollViewer Grid.Row="2">
+    <Grid Background="#2556CB">
+        <Grid IsVisible="{Binding !CatalogVisible}">
+            <Image Source="avares://ClientApp/Assets/eshop_homepage.png" Stretch="UniformToFill" />
+            <StackPanel VerticalAlignment="Center" Spacing="12" Margin="24">
+                <TextBlock Text="Welcome to eShop" FontSize="32" FontWeight="Bold" Foreground="White" HorizontalAlignment="Center" />
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Spacing="12">
+                    <Button Content="Catalog" Command="{Binding OpenCatalogCommand}" Width="120" Height="48" />
+                    <Button Content="Basket" Command="{Binding ViewBasketCommand}" Width="120" Height="48" />
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Spacing="12">
+                    <Button Content="Settings" Command="{Binding ViewSettingsCommand}" Width="120" Height="48" />
+                    <Button Content="Map" Command="{Binding ViewMapCommand}" Width="120" Height="48" />
+                </StackPanel>
+            </StackPanel>
+        </Grid>
+
+        <Grid IsVisible="{Binding CatalogVisible}">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+            <TextBlock Grid.Row="0" Text="Catalog" FontSize="24" FontWeight="Bold" Foreground="White" Margin="12,8" />
+            <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="8" Spacing="8">
+                <TextBlock Text="Type:" Foreground="White" VerticalAlignment="Center"/>
+                <ComboBox x:Name="TypeFilterComboBox" ItemsSource="{Binding Types}" DisplayMemberBinding="{Binding Value.Type}" Width="140" SelectionChanged="OnTypeFilterChanged"/>
+                <TextBlock Text="Brand:" Foreground="White" VerticalAlignment="Center"/>
+                <ComboBox x:Name="BrandFilterComboBox" ItemsSource="{Binding Brands}" DisplayMemberBinding="{Binding Value.Brand}" Width="140" SelectionChanged="OnBrandFilterChanged"/>
+                <Button Content="Clear" Command="{Binding ClearFilterCommand}" />
+                <Button Content="Home" Command="{Binding BackToHomeCommand}" />
+            </StackPanel>
+            <ScrollViewer Grid.Row="2">
             <ListBox Background="Transparent"
                      ItemsSource="{Binding Products}"
                      SelectedItem="{Binding SelectedProduct, Mode=TwoWay}"
@@ -53,7 +75,7 @@
             </ListBox>
         </ScrollViewer>
 
-        <Button Grid.Row="2" Content="{Binding BadgeCount}"
+        <Button Content="{Binding BadgeCount}"
                 Command="{Binding ViewBasketCommand}"
                 HorizontalAlignment="Right"
                 VerticalAlignment="Bottom"
@@ -104,5 +126,6 @@
                      HorizontalAlignment="Center"
                      VerticalAlignment="Center"
                      Width="200" />
+    </Grid>
     </Grid>
 </UserControl>
