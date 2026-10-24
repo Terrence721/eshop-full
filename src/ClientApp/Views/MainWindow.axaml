@@ -5,6 +5,6 @@
         x:DataType="vm:MainViewModel"
         Title="eShop"
         Icon="avares://ClientApp/Assets/app-icon-draft.png"
-        Background="#2556CB">
+        Background="White">
     <ContentControl Content="{Binding CurrentViewModel}" />
 </Window>
