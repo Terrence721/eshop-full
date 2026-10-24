@@ -43,7 +43,7 @@ Result legend: `OK` = reviewed, no changes required; `FIX` = reviewed and change
 
 | File | Result | Notes |
 | --- | --- | --- |
-| `src/eShop.ServiceDefaults/AuthenticationExtensions.cs` | OK | JWT auth setup and Android emulator issuer handling; no changes needed. |
+| `src/eShop.ServiceDefaults/AuthenticationExtensions.cs` | FIX | Default authentication scheme set to `JwtBearerDefaults.AuthenticationScheme` in `AddJwtBearer` registration (was `AddAuthentication()` with no default); Android emulator issuer handling retained. |
 | `src/eShop.ServiceDefaults/ClaimsPrincipalExtensions.cs` | OK | "sub" + NameIdentifier fallback; no changes needed. |
 | `src/eShop.ServiceDefaults/ConfigurationExtensions.cs` | OK | Required config value helper; no changes needed. |
 | `src/eShop.ServiceDefaults/Extensions.cs` | OK | OTel/metrics/tracing/health/discovery defaults; no changes needed. |
@@ -94,7 +94,7 @@ Result legend: `OK` = reviewed, no changes required; `FIX` = reviewed and change
 | `src/Catalog.API/IntegrationEvents/Events/OrderStockItem.cs` | OK | Stock item line record (ProductId, Units); no changes needed. |
 | `src/Catalog.API/IntegrationEvents/Events/OrderStockRejectedIntegrationEvent.cs` | OK | Rejection event with per-item stock availability; no changes needed. |
 | `src/Catalog.API/IntegrationEvents/Events/ProductPriceChangedIntegrationEvent.cs` | OK | Price change event (ProductId, NewPrice, OldPrice); no changes needed. |
-| `src/Catalog.API/Program.cs` | OK | Startup wiring (service defaults, application services, OpenAPI, catalog API); no changes needed. |
+| `src/Catalog.API/Program.cs` | FIX | Added `AssumeDefaultVersionWhenUnspecified` + `DefaultApiVersion = 1.0` so unversioned callers (e.g. WebApp paths) resolve instead of failing with "Unspecified API version"; startup wiring otherwise unchanged. |
 | `src/Catalog.API/Program.Testing.cs` | OK | Public partial Program marker for WebApplicationFactory integration tests; no changes needed. |
 | `src/Catalog.API/GlobalUsings.cs` | OK | Project-wide global usings (asp.net versioning, EF, Npgsql, service defaults); no changes needed. |
 | `src/Catalog.API/Infrastructure/Exceptions/CatalogDomainException.cs` | OK | Standard exception type (parameterless/message/inner) with doc summary; no changes needed. |
@@ -111,7 +111,7 @@ Result legend: `OK` = reviewed, no changes required; `FIX` = reviewed and change
 | `src/Basket.API/Repositories/RedisBasketRepository.cs` | FIX | Redis-backed basket repository (get/update/delete, JSON serialization); marked `BasketKeyPrefix` `readonly` (it was mutable despite being a `static` prefix). |
 | `src/Basket.API/Extensions/ServerCallContextIdentityExtensions.cs` | OK | Two single-responsibility gRPC extension methods (sub/name claim extraction); focused, ISP-compliant; class-level XML doc added; no functional changes. |
 | `src/Basket.API/Extensions/Extensions.cs` | OK | Application composition root (auth, Redis, singleton basket repository, event-bus subscriptions, JSON context); SRP respected at composition layer; class-level XML doc added; no functional changes. |
-| `src/Basket.API/Grpc/BasketService.cs` | OK | gRPC controller (get/update/delete), caller-scoped identity checks, mapping helpers; repository interface only (ISP); class-level XML doc added; no functional changes. |
+| `src/Basket.API/Grpc/BasketService.cs` | FIX | Removed guarded `LogDebug` from `UpdateBasket` (debug-only logging, no functional change); SOLID/DRY/ISP unchanged. |
 | `src/Basket.API/IntegrationEvents/EventHandling/OrderStartedIntegrationEventHandler.cs` | OK | Posts-order basket deletion via IBasketRepository; focused, SRP/ISP compliant; class-level XML doc added; no functional changes. |
 | `src/Basket.API/IntegrationEvents/Events/OrderStartedIntegrationEvent.cs` | OK | Immutable record (UserId) inheriting IntegrationEvent; XML doc added; no functional changes. |
 | `src/Basket.API/Program.cs` | OK | Composition root (basic defaults, app services, gRPC, gRPC-Web, MapGrpcService); SRP compliant; entrypoint comment added. |
@@ -293,3 +293,19 @@ Result legend: `OK` = reviewed, no changes required; `FIX` = reviewed and change
 | `src/PaymentProcessor/IntegrationEvents/Events/OrderStatusChangedToStockConfirmedIntegrationEvent.cs` | FIX | Added XML documentation with order id detail. |
 | `src/PaymentProcessor/PaymentOptions.cs` | FIX | Added XML documentation for payment options. |
 | `src/PaymentProcessor/Program.cs` | FIX | Added header comment for app host wiring. |
+
+## Recent updates (2026-10-24)
+
+Code-quality entries above remain accurate; the following records the additional changes shipped since that review pass.
+
+| File / Area | Result | Notes |
+| --- | --- | --- |
+| `src/Identity.API/Configuration/Config.cs` | FIX | Added `Scopes = { "basket" }` to the basket `ApiResource` so basket tokens carry the `basket` scope. |
+| `src/eShop.AppHost/AppHost.cs` | FIX | Injected `BasketUrl` (`basketApi.GetEndpoint("Grpc")`) into WebBFF; WebBFF reads it via `GetRequiredValue` with no service-discovery fallback. |
+| `src/WebApp/src/components/CartLineItem.tsx` | FIX | aria-label changed to `"product quantity"` to match e2e selectors. |
+| `src/WebApp/src/components/MainLayout.tsx` | FIX | Added "shopping bag" link in header for cart navigation. |
+| `src/WebApp/src/pages/Cart/Index.tsx` | FIX | Added `<h1>Shopping bag</h1>` to both empty and populated cart views. |
+| `e2e/AddItemTest.spec.ts` | FIX | Added `1 in your shopping bag` assertion; removed stray no-op "Total" click. |
+| `e2e/RemoveItemTest.spec.ts` | FIX | Removed obsolete "Update" button click; waits for empty-cart state (quantity flows via onChange). |
+| Package upgrades | FIX | Patch bumps: Aspire 13.6.3→13.6.4, Confluent.Kafka 2.15.0→2.16.0, Polly.Core 8.7.0→8.8.0, Scalar 2.17.1→2.18.3, dotenv 18.0.7→18.0.9, vite 8.3.4→8.3.5. |
+| Security audit | OK | No NuGet or npm vulnerabilities found; `Asp.Versioning.*`/`Microsoft.OpenApi` remain at 10.2.1/2.12.2 (latest unavailable/incompatible). |
