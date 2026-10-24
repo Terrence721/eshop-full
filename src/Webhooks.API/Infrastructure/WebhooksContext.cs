@@ -13,7 +13,7 @@
         /// <summary>
         /// Webhook subscriptions keyed by user and event type.
         /// </summary>
-        public required DbSet<WebhookSubscription> Subscriptions { get; set; }
+        public DbSet<WebhookSubscription> Subscriptions { get; set; } = null!;
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

@@ -9,11 +9,11 @@ namespace eShop.Ordering.Infrastructure
     /// </remarks>
     public class OrderingContext : DbContext, IUnitOfWork
     {
-        public required DbSet<Order> Orders { get; set; }
-        public required DbSet<OrderItem> OrderItems { get; set; }
-        public required DbSet<PaymentMethod> Payments { get; set; }
-        public required DbSet<Buyer> Buyers { get; set; }
-        public required DbSet<CardType> CardTypes { get; set; }
+        public DbSet<Order> Orders { get; set; } = null!;
+        public DbSet<OrderItem> OrderItems { get; set; } = null!;
+        public DbSet<PaymentMethod> Payments { get; set; } = null!;
+        public DbSet<Buyer> Buyers { get; set; } = null!;
+        public DbSet<CardType> CardTypes { get; set; } = null!;
 
         private readonly IMediator _mediator = null!;
         private IDbContextTransaction? _currentTransaction;
