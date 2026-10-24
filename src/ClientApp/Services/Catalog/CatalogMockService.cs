@@ -15,7 +15,7 @@ namespace eShop.ClientApp.Services.Catalog
                 new CatalogItem
                 {
                     Id = Common.Common.MockCatalogItemId01,
-                    PictureUri = "fake_product_01.png",
+                    PictureUri = "avares://ClientApp/Assets/fake_product_01.png",
                     Name = "Adventurer GPS Watch",
                     Price = 199.99M,
                     CatalogBrandId = 2,
@@ -27,7 +27,7 @@ namespace eShop.ClientApp.Services.Catalog
                 new CatalogItem
                 {
                     Id = Common.Common.MockCatalogItemId02,
-                    PictureUri = "fake_product_02.png",
+                    PictureUri = "avares://ClientApp/Assets/fake_product_02.png",
                     Name = "AeroLite Cycling Helmet",
                     Price = 129.99M,
                     CatalogBrandId = 2,
@@ -39,7 +39,7 @@ namespace eShop.ClientApp.Services.Catalog
                 new CatalogItem
                 {
                     Id = Common.Common.MockCatalogItemId03,
-                    PictureUri = "fake_product_03.png",
+                    PictureUri = "avares://ClientApp/Assets/fake_product_03.png",
                     Name = "Alpine AlpinePack Backpack",
                     Price = 129.00M,
                     CatalogBrandId = 2,
@@ -51,7 +51,7 @@ namespace eShop.ClientApp.Services.Catalog
                 new CatalogItem
                 {
                     Id = Common.Common.MockCatalogItemId04,
-                    PictureUri = "fake_product_04.png",
+                    PictureUri = "avares://ClientApp/Assets/fake_product_04.png",
                     Name = "Alpine Fusion Goggles",
                     Price = 79.99M,
                     CatalogBrandId = 2,
@@ -63,7 +63,7 @@ namespace eShop.ClientApp.Services.Catalog
                 new CatalogItem
                 {
                     Id = Common.Common.MockCatalogItemId05,
-                    PictureUri = "fake_product_05.png",
+                    PictureUri = "avares://ClientApp/Assets/fake_product_05.png",
                     Name = "Alpine PeakDown Jacket",
                     Price = 249.99M,
                     CatalogBrandId = 1,

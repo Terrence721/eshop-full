@@ -11,7 +11,10 @@
              x:DataType="models:CatalogItem"
              Width="150">
     <StackPanel Margin="8">
-        <Border Background="Gray" CornerRadius="8" Height="150" Width="150" />
+        <Image Source="{Binding PictureUri}"
+               Height="150"
+               Width="150"
+               Stretch="UniformToFill" />
 
         <TextBlock Text="{Binding Name}"
                    HorizontalAlignment="Center"
