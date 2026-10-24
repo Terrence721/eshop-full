@@ -39,6 +39,7 @@ A living list of what's done and what's left on this build. This is an independe
 | `ClientApp` catalog images | Mock catalog expanded to all 101 products/pictures; added a `StringToImageConverter` (avares + HTTP asset loading w/ caching), rendered pictures on both template and detail modal for desktop/browser/android, and added an anonymous pic proxy in WebBFF. See commit `76e1709`, `c5619b6`, `d8ee0b0`, `a87bf1e`, `6e405d2`, `5edf228`, `f243897`, `d8ee0b0`, `467f168` |
 | `ClientApp` catalog filters | Added type/brand filter bars to CatalogView (wired to Select/Apply/Clear), applied client-side filtering; browser/desktop/android all verified |
 | Dead-code cleanup | Removed unused Marketing/Campaign, PermissionStatus, TabParameter, LogoutParameter models plus FixCampaignItemPictureUri (and corresponding tests); unit/integration suite still 650/650 passing |
+| `LocalSettingsStore` testing | Left as indirect coverage through `SettingsServiceTests` (no InternalsVisibleTo / no direct tests); avoids touching the user settings file and per-test state issues |
 
 **Still to do:** 0 of 21 `.csproj`-equivalent items remain — migration complete. All 21 items done (see "At a glance" above and [project board](https://github.com/users/Terrence721/projects/5)).
 
