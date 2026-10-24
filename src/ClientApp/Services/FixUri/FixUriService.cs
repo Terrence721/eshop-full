@@ -2,7 +2,6 @@
 using System.Text.RegularExpressions;
 using eShop.ClientApp.Models.Basket;
 using eShop.ClientApp.Models.Catalog;
-using eShop.ClientApp.Models.Marketing;
 using eShop.ClientApp.Services.Settings;
 
 namespace eShop.ClientApp.Services.FixUri
@@ -73,39 +72,5 @@ namespace eShop.ClientApp.Services.FixUri
             }
         }
 
-        public void FixCampaignItemPictureUri(IEnumerable<CampaignItem>? campaignItems)
-        {
-            if (campaignItems is null)
-            {
-                return;
-            }
-
-            try
-            {
-                if (!_settingsService.UseMocks && _settingsService.IdentityEndpointBase != _settingsService.DefaultEndpoint)
-                {
-                    var localResult = IpRegex.Matches(_settingsService.IdentityEndpointBase);
-                    if (localResult.Count > 0)
-                    {
-                        var localIp = localResult[0].Value;
-                        foreach (var campaignItem in campaignItems)
-                        {
-                            var serverResult = IpRegex.Matches(campaignItem.PictureUri);
-                            if (serverResult.Count == 0)
-                            {
-                                continue;
-                            }
-
-                            var serviceIp = serverResult[0].Value;
-                            campaignItem.PictureUri = campaignItem.PictureUri.Replace(serviceIp, localIp);
-                        }
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine(ex.Message);
-            }
-        }
     }
 }
