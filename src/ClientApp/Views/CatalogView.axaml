@@ -43,22 +43,8 @@
             Width="90"
             Height="32" />
 
-    <Button Content="{Binding BadgeCount}"
-            Command="{Binding ViewBasketCommand}"
-            HorizontalAlignment="Right"
-            VerticalAlignment="Bottom"
-            Margin="16"
-            CornerRadius="28"
-            Width="56"
-            Height="56" />
 
 
-
-    <ProgressBar IsIndeterminate="True"
-                 IsVisible="{Binding IsBusy}"
-                 HorizontalAlignment="Center"
-                 VerticalAlignment="Center"
-                 Width="200" />
 </Grid>
 
 </UserControl>
