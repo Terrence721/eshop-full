@@ -17,15 +17,24 @@ namespace eShop.ClientApp.Converters
                 return null;
             }
 
-            try
+            string[] candidates = path.StartsWith("avares://", StringComparison.OrdinalIgnoreCase)
+                ? new[] { path }
+                : new[] { path, $"avares://ClientApp/Assets/{path}", $"avares://ClientApp/{path}" };
+
+            foreach (var candidate in candidates)
             {
-                using var stream = AssetLoader.Open(new Uri(path));
-                return new Bitmap(stream);
+                try
+                {
+                    using var stream = AssetLoader.Open(new Uri(candidate));
+                    return new Bitmap(stream);
+                }
+                catch
+                {
+                    // Try the next candidate URI.
+                }
             }
-            catch
-            {
-                return null;
-            }
+
+            return null;
         }
 
         public object? ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
