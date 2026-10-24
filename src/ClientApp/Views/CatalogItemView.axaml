@@ -7,10 +7,14 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:vm="using:eShop.ClientApp.ViewModels"
+             xmlns:conv="using:eShop.ClientApp.Converters"
              x:Class="eShop.ClientApp.Views.CatalogItemView"
              x:DataType="vm:CatalogItemViewModel"
              Foreground="Black">
     <Grid Background="#AA000000">
+        <Grid.Resources>
+            <conv:StringToImageConverter x:Key="ImageConverter" />
+        </Grid.Resources>
         <Border Background="White" CornerRadius="8" Margin="24" MaxWidth="600">
             <ScrollViewer>
                 <Grid Margin="16" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto" RowSpacing="8">
@@ -21,7 +25,10 @@
                             Foreground="White"
                             HorizontalAlignment="Left" />
 
-                    <Border Grid.Row="1" Background="Gray" CornerRadius="8" Height="250" />
+                    <Image Grid.Row="1"
+                           Source="{Binding CatalogItem.PictureUri, Converter={StaticResource ImageConverter}}"
+                           Height="250"
+                           Stretch="UniformToFill" />
 
                     <TextBlock Grid.Row="2"
                                Text="{Binding CatalogItem.Name}"
