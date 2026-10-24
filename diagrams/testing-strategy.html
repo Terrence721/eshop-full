@@ -211,7 +211,7 @@
 
 <div class="page">
   <p class="eyebrow">eshop-full — testing strategy</p>
-  <h1>231 tests, six projects deep — and the fix decorators finally let get proven.</h1>
+  <h1>785 tests, repo-wide — and the fix decorators finally let get proven.</h1>
   <p class="dek">
     <code>MSTest.Sdk</code> on .NET's newer <code>Microsoft.Testing.Platform</code> (MTP) runner — already
     pinned in <code>global.json</code> from the original SDK research, not a new choice. Testing isn't a
@@ -243,13 +243,12 @@
   </p>
   <p class="dek dek--footnote">
     <strong>Honest gap, not silently left out:</strong> <code>Basket.API</code>, the three
-    <code>Ordering.*</code> projects, <code>Webhooks.API</code>, and <code>WebhookClient</code>'s backend
-    are all feature-complete but don't have their own <code>.UnitTests</code> project yet — a real,
-    acknowledged backlog being closed project by project, not a blanket "every done project has full
-    coverage" claim. Both React frontends (<code>Identity.WebApp</code>, 118 tests;
-    <code>WebhookClient.WebApp</code>, 52 tests) have had full Vitest + React Testing Library coverage
-    from their first commit instead — 170 more tests, 403 total across the repo, not counted in the
-    .NET-only table above.
+    The migration is complete: every backend project that upstream ships tests for now has its own
+    <code>.UnitTests</code> project (514 .NET tests across 14 test projects). All three React
+    frontends (<code>Identity.WebApp</code>, 118 tests; <code>WebhookClient.WebApp</code>, 52 tests;
+    <code>WebApp</code>, 101 tests) have full Vitest + React Testing Library coverage from their first
+    commit — 271 frontend tests, 785 total across the repo, with the Playwright e2e suite
+    (Add/Remove/Browse items) added on top and passing against a live Aspire host.
   </p>
 
   <h2>Patterns worth carrying forward</h2>
@@ -347,5 +346,5 @@
     </p>
   </div>
 
-  <footer>eshop-full · MSTest 4.3.3 on Microsoft.Testing.Platform · 231/231 .NET passing (401 repo-wide) · decorator-enabled fake-bus testing</footer>
+  <footer>eshop-full · MSTest 4.3.3 on Microsoft.Testing.Platform · 514/514 .NET passing (785 repo-wide) · decorator-enabled fake-bus testing</footer>
 </div>
