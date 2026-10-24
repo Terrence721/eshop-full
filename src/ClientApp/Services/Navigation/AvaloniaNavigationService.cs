@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel;
 using eShop.ClientApp.Models.User;
 using eShop.ClientApp.Services.AppEnvironment;
+using eShop.ClientApp.Services.Identity;
 using eShop.ClientApp.ViewModels;
 
 namespace eShop.ClientApp.Services
@@ -38,6 +39,13 @@ namespace eShop.ClientApp.Services
 
         public async Task InitializeAsync()
         {
+            // In mock/development mode, auto-sign in so the app lands on the
+            // catalog/homepage instead of the login screen.
+            if (_appEnvironmentService.IdentityService is IdentityMockService mockIdentityService)
+            {
+                await mockIdentityService.SignInAsync();
+            }
+
             var user = await _appEnvironmentService.IdentityService.GetUserInfoAsync();
 
             await NavigateToAsync(user == UserInfo.Default ? "//Login" : "//Main/Catalog");
