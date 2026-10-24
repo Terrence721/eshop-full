@@ -11,9 +11,9 @@
     /// </remarks>
     public class CatalogContext(DbContextOptions<CatalogContext> options) : DbContext(options)
     {
-        public required DbSet<CatalogItem> CatalogItems { get; set; }
-        public required DbSet<CatalogBrand> CatalogBrands { get; set; }
-        public required DbSet<CatalogType> CatalogTypes { get; set; }
+        public DbSet<CatalogItem> CatalogItems { get; set; } = null!;
+        public DbSet<CatalogBrand> CatalogBrands { get; set; } = null!;
+        public DbSet<CatalogType> CatalogTypes { get; set; } = null!;
 
         protected override void OnModelCreating(ModelBuilder builder)
         {

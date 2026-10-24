@@ -304,7 +304,7 @@
         <code>OnModelCreating</code> and ignores just that one property, the standard EF Core pattern for
         this exact situation, made real <code>DbSet</code> queries and saves testable in-memory.
       </p>
-      <p class="proof">Also needed: constructing the context via <code>Activator.CreateInstance</code> instead of <code>new</code> — the <code>required</code> DbSet properties force an object initializer that would otherwise clobber EF's own auto-wired DbSets.</p>
+      <p class="proof">Both the custom <code>IModelCustomizer</code> and a normal <code>new CatalogContext(options)</code> construction now suffice — the <code>required</code> DbSet workaround via <code>Activator.CreateInstance</code> has been removed from both <code>TestCatalogContext</code> and <code>TestOrderingContext</code>.</p>
     </div>
   </div>
 

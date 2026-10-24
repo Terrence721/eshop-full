@@ -37,15 +37,11 @@ namespace eShop.Catalog.API.UnitTests
                 .ReplaceService<IModelCustomizer, IgnoreEmbeddingModelCustomizer>()
                 .Options;
 
-            // The `required` DbSet properties force an object initializer on a
-            // `new CatalogContext(options)` expression -- but EF Core already
-            // auto-wires those DbSets inside the base constructor, so anything
-            // assigned afterward (even non-null placeholders) clobbers EF's own
-            // real instances. required-member enforcement is a C#-source-level
-            // check on `new` expressions, not a runtime constraint, so
-            // constructing via reflection sidesteps it while still running the
-            // same real constructor (and EF's real auto-init) underneath.
-            return (CatalogContext)Activator.CreateInstance(typeof(CatalogContext), options)!;
+            // With `required` removed from CatalogContext's DbSets, a normal `new`
+            // expression now works: EF Core auto-wires the DbSets inside the base
+            // constructor and a plain initializer is no longer forced. No reflection
+            // workaround needed.
+            return new CatalogContext(options);
         }
     }
 }

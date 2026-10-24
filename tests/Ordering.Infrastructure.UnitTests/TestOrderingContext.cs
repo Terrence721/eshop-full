@@ -20,7 +20,7 @@ namespace eShop.Ordering.Infrastructure.UnitTests
             // null. Constructing via reflection runs the same real constructor
             // while sidestepping the compiler's required-member check
             // entirely - same technique already used for CatalogContext.
-            return (OrderingContext)Activator.CreateInstance(typeof(OrderingContext), options, mediator)!;
+            return new OrderingContext(options, mediator);
         }
     }
 }
