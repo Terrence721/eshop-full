@@ -2,11 +2,11 @@
 ![Architecture Overview](../img/architecturedesign-banner.png)
 
 <!-- markdownlint-disable-next-line MD036 -->
-**Last Updated: September 11, 2026**
+**Last Updated: October 24, 2026**
 
 This document describes the architecture eShop-full is being built toward — verified against the real source app (Microsoft's [dotnet/eShop](https://github.com/dotnet/eShop), snapshotted locally at `F:\eShop-main\eShop-main`) and against what has actually landed in this repo, not a generic description of what an e-commerce microservices app "usually" looks like. See [todo.md](../todo.md) for exactly how much of this exists right now, and the [project board](https://github.com/users/Terrence721/projects/5) for the live per-project status.
 
-**Current status, stated plainly:** as of this writing, `src/Shared/` (2 linked-source files), `EventBus`, `EventBusRabbitMQ`, `eShop.ServiceDefaults`, `IntegrationEventLogEF`, `Identity.API`, and `Identity.WebApp` are all added and reviewed, with complete test coverage (16, 19, 33, 17, 101, and 118 passing tests respectively, 304 total) — see Section 11. `Identity.API`'s full source tree (`Models`/`Configuration`/`Data`/`Quickstart`/`Services`/`Program.cs`) is done, its Quickstart UI converted directly to a JSON API rather than added as Razor UI first (see Section 9). `Identity.WebApp` (real Vite/React/TypeScript project) is now fully done — all six areas (`Home`/`Account`/`Consent`/`Diagnostics`/`Grants`/`Device`) built, wired into the router, and verified end-to-end with a real browser. A real, significant bug turned up building `Consent`: Duende's own internally-triggered OIDC redirects (login, consent, logout) were landing on `Identity.API`'s raw port instead of the SPA's own origin, because the Vite dev proxy wasn't preserving the original `Host` header — found, fixed with a `proxyReq` hook, and reverified against all three redirect chains plus a full device-flow round trip. `Identity.WebApp` also has its own frontend test suite (Vitest + React Testing Library + jsdom, 118 tests and growing, wired into CI). `Catalog.API` is now in progress — its entire domain-logic layer (`Model`, `Infrastructure` including the DB seeder, `IntegrationEvents`, `Services`) and the real v1/v2 API surface (`Apis/CatalogApi.cs`) are already on disk; only `Program.cs`'s real startup wiring remains. The other 14 projects don't exist on disk yet. Everything below describing the full system is the target this repo is being built toward one file at a time, not a claim that it already runs end-to-end.
+**Current status, stated plainly:** the migration is complete — all 21 target projects are on disk and reviewed (see `todo.md` "At a glance" and the project board, now 71/71 Done). The repo carries 785 tests (514 .NET across 14 test projects plus 271 frontend: `Identity.WebApp` 118, `WebhookClient.WebApp` 52, `WebApp` 101), and the full Playwright e2e suite (Add/Remove/Browse items) passes against a live Aspire host. The remainder of this document describes the architectural patterns and conventions in force; it is no longer an "in-progress" snapshot.
 
 ## 1. What this is
 
@@ -39,7 +39,7 @@ eShop-full/
 │   ├── IntegrationEventLogEF/   ✅ added and reviewed
 │   ├── Identity.API/            ✅ added and reviewed
 │   ├── Identity.WebApp/           # new, not in upstream — see Section 9
-│   ├── Catalog.API/               🚧 in progress
+│   ├── Catalog.API/               ✅ added and reviewed
 │   ├── Basket.API/
 │   ├── Ordering.Domain/
 │   ├── Ordering.Infrastructure/
@@ -79,7 +79,7 @@ See [todo.md's Milestones section](../todo.md#-milestones) for the current done/
 
 ## 5. Package management and tooling
 
-- **.NET 10** (SDK pinned to `10.0.400` in `global.json`, stable — not the preview channel the source snapshot was on), **.NET Aspire 13.4.6**.
+- **.NET 10** (SDK pinned to `10.0.400` in `global.json`, stable — not the preview channel the source snapshot was on), **.NET Aspire 13.6.4**.
 - **Central NuGet package management** via `Directory.Packages.props` — every version pin individually researched against actual current-latest rather than copied from source. See `todo.md`'s "Directory.Packages.props research" for the notable deviations (license-driven pins, packages that diverged from a shared version variable, etc.).
 - **`.slnx`** (the newer XML solution format) instead of the legacy `.sln`, plus **`.slnf`** (a solution filter) for the Windows/non-MAUI dev loop — `eShop.Web.slnf` excludes `ClientApp`/`ClientApp.UnitTests` since those need the MAUI workload.
 - **Yarn 4.18.0** (Berry, `node-modules` linker) for the Playwright e2e suite — the only JavaScript in this repo. Source used npm; switched to Yarn per the project requirements, using the `node-modules` linker rather than Berry's PnP default because Playwright's browser-install tooling and VS Code extension both assume a standard `node_modules` layout.
