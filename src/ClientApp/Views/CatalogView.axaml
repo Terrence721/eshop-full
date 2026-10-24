@@ -32,11 +32,6 @@
                    Stretch="Uniform"
                    HorizontalAlignment="Center" />
 
-            <Button Content="Catalog"
-                    Command="{Binding OpenCatalogCommand}"
-                    HorizontalAlignment="Center"
-                    Margin="12" />
-
         </StackPanel>
     </ScrollViewer>
 
