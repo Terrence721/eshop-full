@@ -29,10 +29,9 @@
     <ScrollViewer HorizontalScrollBarVisibility="Auto"
                  VerticalScrollBarVisibility="Auto">
         <Image Source="avares://ClientApp/Assets/eshop_homepage.png"
-               Width="1757"
-               Height="1660"
-               Stretch="None"
-               HorizontalAlignment="Left"
+               Stretch="Uniform"
+               StretchDirection="DownOnly"
+               HorizontalAlignment="Center"
                VerticalAlignment="Top" />
     </ScrollViewer>
 
