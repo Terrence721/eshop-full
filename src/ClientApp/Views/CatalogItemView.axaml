@@ -28,7 +28,8 @@
                     <Image Grid.Row="1"
                            Source="{Binding CatalogItem.PictureUri, Converter={StaticResource ImageConverter}}"
                            Height="250"
-                           Stretch="UniformToFill" />
+                           HorizontalAlignment="Center"
+                           Stretch="Uniform" />
 
                     <TextBlock Grid.Row="2"
                                Text="{Binding CatalogItem.Name}"
