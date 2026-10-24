@@ -1,4 +1,9 @@
-﻿using CommunityToolkit.Mvvm.Messaging;
+using System;
+using System.Net.Http;
+using System.Threading.Tasks;
+using Avalonia.Media.Imaging;
+using Avalonia.Platform;
+using CommunityToolkit.Mvvm.Messaging;
 using eShop.ClientApp.Messages;
 using eShop.ClientApp.Models.Basket;
 using eShop.ClientApp.Models.Catalog;
@@ -13,11 +18,52 @@ namespace eShop.ClientApp.ViewModels
 
         [ObservableProperty] public partial CatalogItem? CatalogItem { get; set; }
 
+        [ObservableProperty] public partial Bitmap? ItemImage { get; set; }
+
         public override void ApplyQueryAttributes(IDictionary<string, object> query)
         {
             base.ApplyQueryAttributes(query);
 
             CatalogItem = query.ValueAs<CatalogItem>("CatalogItem");
+            _ = LoadImageAsync();
+        }
+
+        private async Task LoadImageAsync()
+        {
+            var uri = CatalogItem?.PictureUri;
+            if (string.IsNullOrWhiteSpace(uri))
+            {
+                ItemImage = null;
+                return;
+            }
+
+            try
+            {
+                Bitmap? bitmap = null;
+                if (uri.StartsWith("avares://", StringComparison.OrdinalIgnoreCase))
+                {
+                    bitmap = await Task.Run(() =>
+                    {
+                        using var stream = AssetLoader.Open(new Uri(uri));
+                        return new Bitmap(stream);
+                    });
+                }
+                else
+                {
+                    bitmap = await Task.Run(async () =>
+                    {
+                        using var http = new HttpClient();
+                        using var stream = await http.GetStreamAsync(uri);
+                        return new Bitmap(stream);
+                    });
+                }
+
+                ItemImage = bitmap;
+            }
+            catch
+            {
+                ItemImage = null;
+            }
         }
 
         [RelayCommand]
