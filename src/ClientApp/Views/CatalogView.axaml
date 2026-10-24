@@ -25,7 +25,7 @@
              xmlns:templates="using:eShop.ClientApp.Views.Templates"
              x:Class="eShop.ClientApp.Views.CatalogView"
              x:DataType="vm:CatalogViewModel">
-    <Grid Background="Transparent">
+    <Grid Background="White">
     <ScrollViewer HorizontalScrollBarVisibility="Auto"
                  VerticalScrollBarVisibility="Auto">
         <Image Source="avares://ClientApp/Assets/eshop_homepage.png"
