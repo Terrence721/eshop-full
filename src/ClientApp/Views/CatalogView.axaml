@@ -29,7 +29,6 @@
     <ScrollViewer HorizontalScrollBarVisibility="Disabled"
                  VerticalScrollBarVisibility="Auto">
         <Image Source="avares://ClientApp/Assets/eshop_homepage.png"
-               Width="{Binding ActualWidth, ElementName=RootGrid}"
                Stretch="Uniform"
                HorizontalAlignment="Center"
                VerticalAlignment="Top" />
