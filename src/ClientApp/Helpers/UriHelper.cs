@@ -1,19 +1,30 @@
-﻿namespace eShop.ClientApp.Helpers
+namespace eShop.ClientApp.Helpers
 {
     public static class UriHelper
     {
-        private static readonly char[] _trims = ['\\', '/'];
+        private static readonly char[] _trims = { '/' };
+
         public static string CombineUri(params string[] uriParts)
         {
-            var uri = string.Empty;
-
-            if (uriParts != null && uriParts.Length > 0)
+            if (uriParts is null || uriParts.Length == 0)
             {
-                uri = (uriParts[0] ?? string.Empty).TrimEnd(_trims);
-                for (var i = 1; i < uriParts.Length; i++)
-                {
-                    uri = $"{uri.TrimEnd(_trims)}/{(uriParts[i] ?? string.Empty).TrimStart(_trims)}";
-                }
+                return string.Empty;
+            }
+
+            var parts = uriParts
+                .Select(part => (part ?? string.Empty).Trim(_trims))
+                .Where(part => part.Length > 0)
+                .ToArray();
+
+            if (parts.Length == 0)
+            {
+                return string.Empty;
+            }
+
+            var uri = parts[0];
+            for (var i = 1; i < parts.Length; i++)
+            {
+                uri = $"{uri}/{parts[i]}";
             }
 
             return uri;
