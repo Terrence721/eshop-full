@@ -30,8 +30,12 @@ export default function CartIndex() {
   }
 
   if (!basketItems || basketItems.length === 0) {
-    return <p>Your shopping bag is empty.</p>
-  }
+    return (
+      <>
+        <h1>Shopping bag</h1>
+        <p>Your shopping bag is empty.</p>
+      </>
+    )  }
 
   const lines = basketItems
     .map((line) => ({ line, item: catalogItems?.find((item) => item?.id === line.productId) }))
@@ -41,6 +45,7 @@ export default function CartIndex() {
 
   return (
     <div className="cart-page">
+        <h1>Shopping bag</h1>
       <table className="data-table">
         <thead>
           <tr>

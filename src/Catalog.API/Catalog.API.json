@@ -36,7 +36,6 @@
             "name": "api-version",
             "in": "query",
             "description": "The API version, in the format 'major.minor'.",
-            "required": true,
             "schema": {
               "enum": [
                 "1.0"
@@ -96,7 +95,6 @@
             "name": "api-version",
             "in": "query",
             "description": "The API version, in the format 'major.minor'.",
-            "required": true,
             "schema": {
               "enum": [
                 "1.0"
@@ -154,7 +152,6 @@
             "name": "api-version",
             "in": "query",
             "description": "The API version, in the format 'major.minor'.",
-            "required": true,
             "schema": {
               "enum": [
                 "1.0"
@@ -197,7 +194,6 @@
             "name": "api-version",
             "in": "query",
             "description": "The API version, in the format 'major.minor'.",
-            "required": true,
             "schema": {
               "enum": [
                 "1.0"
@@ -291,7 +287,6 @@
             "name": "api-version",
             "in": "query",
             "description": "The API version, in the format 'major.minor'.",
-            "required": true,
             "schema": {
               "enum": [
                 "1.0"
@@ -340,7 +335,6 @@
             "name": "api-version",
             "in": "query",
             "description": "The API version, in the format 'major.minor'.",
-            "required": true,
             "schema": {
               "enum": [
                 "1.0"
@@ -389,7 +383,6 @@
             "name": "api-version",
             "in": "query",
             "description": "The API version, in the format 'major.minor'.",
-            "required": true,
             "schema": {
               "enum": [
                 "1.0"
@@ -464,7 +457,6 @@
             "name": "api-version",
             "in": "query",
             "description": "The API version, in the format 'major.minor'.",
-            "required": true,
             "schema": {
               "enum": [
                 "1.0"
@@ -508,7 +500,6 @@
             "name": "api-version",
             "in": "query",
             "description": "The API version, in the format 'major.minor'.",
-            "required": true,
             "schema": {
               "enum": [
                 "1.0"
@@ -605,7 +596,6 @@
             "name": "api-version",
             "in": "query",
             "description": "The API version, in the format 'major.minor'.",
-            "required": true,
             "schema": {
               "enum": [
                 "1.0"
@@ -689,7 +679,6 @@
             "name": "api-version",
             "in": "query",
             "description": "The API version, in the format 'major.minor'.",
-            "required": true,
             "schema": {
               "enum": [
                 "1.0"
@@ -791,7 +780,6 @@
             "name": "api-version",
             "in": "query",
             "description": "The API version, in the format 'major.minor'.",
-            "required": true,
             "schema": {
               "enum": [
                 "1.0"
@@ -879,7 +867,6 @@
             "name": "api-version",
             "in": "query",
             "description": "The API version, in the format 'major.minor'.",
-            "required": true,
             "schema": {
               "enum": [
                 "1.0"

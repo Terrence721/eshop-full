@@ -14,7 +14,10 @@ namespace eShop.Identity.API.Configuration
             return
             [
                 new ApiResource("orders", "Orders Service"),
-                new ApiResource("basket", "Basket Service"),
+                new ApiResource("basket", "Basket Service")
+                {
+                    Scopes = { "basket" }
+                },
                 new ApiResource("webhooks", "Webhooks registration Service"),
             ];
         }

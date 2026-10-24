@@ -21,7 +21,7 @@ export function CartLineItem({ item, quantity, onQuantityChange }: CartLineItemP
         <input
           type="number"
           min={0}
-          aria-label={`Quantity for ${item.name}`}
+          aria-label="product quantity"
           value={quantity}
           onChange={(e) => onQuantityChange(Number(e.target.value))}
         />

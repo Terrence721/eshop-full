@@ -120,6 +120,10 @@ var webBff = builder.AddProject<Projects.WebBFF>("webbff")
     .WithReference(identityApi)
     .WithReference(eventBus, connectionName: "eventbus")
     .WithEnvironment("IdentityUrl", identityApi.GetEndpoint("http"))
+    // WebBFF reads BasketUrl via GetRequiredValue (see src/WebBFF/Program.cs)
+    // and has no service-discovery fallback for this gRPC client; inject the
+    // real AppHost-assigned Basket.API endpoint like IdentityUrl above.
+    .WithEnvironment("BasketUrl", basketApi.GetEndpoint("Grpc"))
     .WaitFor(identityApi)
     .WaitFor(eventBus)
     .WaitFor(kafkaTopicSeeder);
