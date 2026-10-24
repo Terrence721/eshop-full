@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Concurrent;
 using System.Globalization;
+using System.Net.Http;
 using Avalonia.Data.Converters;
 using Avalonia.Media.Imaging;
 using Avalonia.Platform;
@@ -25,22 +26,40 @@ namespace eShop.ClientApp.Converters
                 return cached;
             }
 
-            string[] candidates = path.StartsWith("avares://", StringComparison.OrdinalIgnoreCase)
-                ? new[] { path }
-                : new[] { path, $"avares://ClientApp/Assets/{path}", $"avares://ClientApp/{path}" };
-
             Bitmap? bitmap = null;
-            foreach (var candidate in candidates)
+
+            if (path.StartsWith("http://", StringComparison.OrdinalIgnoreCase) ||
+                path.StartsWith("https://", StringComparison.OrdinalIgnoreCase))
             {
                 try
                 {
-                    using var stream = AssetLoader.Open(new Uri(candidate));
+                    using var http = new HttpClient();
+                    using var stream = http.GetStreamAsync(path).GetAwaiter().GetResult();
                     bitmap = new Bitmap(stream);
-                    break;
                 }
                 catch
                 {
-                    // Try the next candidate URI.
+                    bitmap = null;
+                }
+            }
+            else
+            {
+                string[] candidates = path.StartsWith("avares://", StringComparison.OrdinalIgnoreCase)
+                    ? new[] { path }
+                    : new[] { path, $"avares://ClientApp/Assets/{path}", $"avares://ClientApp/{path}" };
+
+                foreach (var candidate in candidates)
+                {
+                    try
+                    {
+                        using var stream = AssetLoader.Open(new Uri(candidate));
+                        bitmap = new Bitmap(stream);
+                        break;
+                    }
+                    catch
+                    {
+                        // Try the next candidate URI.
+                    }
                 }
             }
 

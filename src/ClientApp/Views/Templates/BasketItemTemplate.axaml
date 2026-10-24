@@ -8,14 +8,19 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:models="using:eShop.ClientApp.Models.Basket"
+             xmlns:conv="using:eShop.ClientApp.Converters"
              x:Class="eShop.ClientApp.Views.Templates.BasketItemTemplate"
              x:DataType="models:BasketItem">
     <Grid Margin="4" ColumnDefinitions="88,*" RowDefinitions="*,Auto">
-        <Border Grid.Row="0" Grid.Column="0"
-                Background="Gray" CornerRadius="8"
-                Width="74" Height="74"
-                Margin="12,0,0,0"
-                VerticalAlignment="Center" />
+        <Grid.Resources>
+            <conv:StringToImageConverter x:Key="ImageConverter" />
+        </Grid.Resources>
+        <Image Grid.Row="0" Grid.Column="0"
+               Source="{Binding PictureUrl, Converter={StaticResource ImageConverter}}"
+               Width="74" Height="74"
+               Margin="12,0,0,0"
+               VerticalAlignment="Center"
+               Stretch="UniformToFill" />
 
         <Grid Grid.Row="0" Grid.Column="1" Margin="6" RowDefinitions="Auto,Auto,Auto">
             <TextBlock Grid.Row="0" Text="{Binding ProductName}" FontWeight="Bold" />
