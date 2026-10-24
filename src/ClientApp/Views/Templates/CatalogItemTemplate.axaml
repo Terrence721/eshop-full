@@ -7,11 +7,16 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:models="using:eShop.ClientApp.Models.Catalog"
+             xmlns:conv="using:eShop.ClientApp.Converters"
              x:Class="eShop.ClientApp.Views.Templates.CatalogItemTemplate"
              x:DataType="models:CatalogItem"
              Width="150">
+    <UserControl.Resources>
+        <conv:StringToImageConverter x:Key="ImageConverter" />
+    </UserControl.Resources>
+
     <StackPanel Margin="8">
-        <Image Source="{Binding PictureUri}"
+        <Image Source="{Binding PictureUri, Converter={StaticResource ImageConverter}}"
                Height="150"
                Width="150"
                Stretch="UniformToFill" />
