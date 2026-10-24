@@ -37,6 +37,7 @@ A living list of what's done and what's left on this build. This is an independe
 | `eShop.AppHost` | Full resource graph (containers, all 7 domain APIs/workers, `WebBFF`/`WebhookClient`, 3 React/Vite frontends) built and live-verified — 6 real bugs found and fixed along the way, plus a new `KafkaTopicSeeder` project — see "eShop.AppHost built and live-verified end-to-end" below |
 | `ClientApp` | Avalonia UI (not MAUI), 4-project solution (`ClientApp` shared lib + `.Desktop`/`.Android`/`.Browser` heads), full MVVM build (9 Views, OIDC login, mock/live service toggle) live-verified running on all 3 heads — see "ClientApp built and live-verified across Desktop/Android/Browser" below |
 | `ClientApp` catalog images | Mock catalog expanded to all 101 products/pictures; added a `StringToImageConverter` (avares + HTTP asset loading w/ caching), rendered pictures on both template and detail modal for desktop/browser/android, and added an anonymous pic proxy in WebBFF. See commit `76e1709`, `c5619b6`, `d8ee0b0`, `a87bf1e`, `6e405d2`, `5edf228`, `f243897`, `d8ee0b0`, `467f168` |
+| `ClientApp` catalog filters | Added type/brand filter bars to CatalogView (wired to Select/Apply/Clear), applied client-side filtering; browser/desktop/android all verified |
 
 **Still to do:** 0 of 21 `.csproj`-equivalent items remain — migration complete. All 21 items done (see "At a glance" above and [project board](https://github.com/users/Terrence721/projects/5)).
 
