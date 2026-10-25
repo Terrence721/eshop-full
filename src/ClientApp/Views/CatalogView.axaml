@@ -23,15 +23,19 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:vm="using:eShop.ClientApp.ViewModels"
              xmlns:templates="using:eShop.ClientApp.Views.Templates"
+             xmlns:conv="using:eShop.ClientApp.Converters"
              x:Class="eShop.ClientApp.Views.CatalogView"
              x:DataType="vm:CatalogViewModel">
     <Grid x:Name="RootGrid" Background="White">
+        <Grid.Resources>
+            <conv:WidthToHeightConverter x:Key="HeightFromWidth" />
+        </Grid.Resources>
     <ScrollViewer HorizontalScrollBarVisibility="Disabled"
                  VerticalScrollBarVisibility="Auto">
         <Image Source="avares://ClientApp/Assets/eshop_homepage.png"
                Width="{Binding Bounds.Width, ElementName=RootGrid}"
+               Height="{Binding Bounds.Width, ElementName=RootGrid, Converter={StaticResource HeightFromWidth}, ConverterParameter=2060/1757}"
                Stretch="Uniform"
-               HorizontalAlignment="Center"
                VerticalAlignment="Top" />
     </ScrollViewer>
 
