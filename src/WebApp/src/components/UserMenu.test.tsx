@@ -21,13 +21,13 @@ describe('UserMenu', () => {
     expect(container).toBeEmptyDOMElement()
   })
 
-  it('shows a Log in link to /user/login with the current path as returnUrl when signed out', async () => {
+  it('renders nothing when signed out', async () => {
     mockFetchOnce(401)
 
-    renderAt('/item/5?foo=bar')
+    const { container } = renderAt('/')
 
-    const logIn = await screen.findByRole('link', { name: 'Log in' })
-    expect(logIn).toHaveAttribute('href', '/user/login?returnUrl=%2Fitem%2F5%3Ffoo%3Dbar')
+    await new Promise((resolve) => setTimeout(resolve, 0))
+    expect(container).toBeEmptyDOMElement()
   })
 
   it('shows the user name and a Log out link to /user/logout when signed in', async () => {

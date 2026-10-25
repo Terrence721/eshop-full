@@ -1,4 +1,4 @@
-import { Link, useLocation } from 'react-router'
+import { Link } from 'react-router'
 import { useCurrentUser } from '../lib/useCurrentUser'
 
 // Mirrors Layout/UserMenu.razor. Unlike WebhookClient.WebApp's version,
@@ -11,19 +11,14 @@ import { useCurrentUser } from '../lib/useCurrentUser'
 // there itself.
 export function UserMenu() {
   const { claims, loading } = useCurrentUser()
-  const location = useLocation()
 
   if (loading) {
     return null
   }
 
   if (!claims) {
-    const returnUrl = location.pathname + location.search
-    return (
-      <Link className="action" to={`/user/login?returnUrl=${encodeURIComponent(returnUrl)}`}>
-        Log in
-      </Link>
-    )
+    // No login button on the landing UI; signed-out users just see no account affordance.
+    return null
   }
 
   const name = claims.find((claim) => claim.type === 'name')?.value
