@@ -1533,3 +1533,14 @@ All 3 heads: same mock data, same navigation logic, zero divergence — confirmi
 - Remaining e2e failures: BrowseItem, AddItem, RemoveItem (catalog/API auth or selector issues).
 - Backend/startup fixes applied for Identity config and HTTPS metadata.
 - PR #129 merged (gRPC bump) successfully.
+
+---
+
+## Session summary - WebApp homepage/auth UI (2026-10-25)
+
+- WebApp landing page now shows `eshop_homepage.png` only (catalog grid/filters/pagination removed from `/`); image copied to `src/WebApp/public/`.
+- Removed the header login link and "shopping bag" link; `UserMenu` no longer rendered in `MainLayout`, leaving the homepage PNG's built-in person icon as the sign-in affordance.
+- Added transparent login trigger over the person icon baked into the top-right of `eshop_homepage.png`.
+- Implemented a demo client-side login modal with username/password fields, non-hardcoded (any credentials accepted for demo), storing the signed-in user in `sessionStorage`, showing "Login successful" + username, plus sign out.
+- Updated Playwright? None. Frontend tests still pass for Catalog/UserMenu/MainLayout.
+- Commits: `7c712e9`, `7207152`, `a5cbff7`, `72bad3e`, `a7620e1`, `5af37cd`, `ca01ab0`, `2c97d40`. Pushed to `main`.
