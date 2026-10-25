@@ -1582,3 +1582,11 @@ All 3 heads: same mock data, same navigation logic, zero divergence — confirmi
 - Added `api-version=2.0` to catalog requests so brand/type filters apply server-side.
 - Cropped homepage image to hide everything below the second row of pictures using a relative clip-path (bottom 7.4%).
 - Commits through `452a06f` pushed to `main`.
+
+---
+
+## Session summary - Desktop parity (2026-10-25)
+
+- `ClientApp` Avalonia: restored product grid/filter UI in `CatalogView` (brand/type ComboBoxes + ItemsControl using CatalogItemTemplate), replacing image-only view while keeping the homepage image at top.
+- `LoginView`: made the person avatar in the homepage image the login affordance and removed the explicit Login button.
+- Commits: `57b3cea`, `7dec62c` (pushed to `main`).
