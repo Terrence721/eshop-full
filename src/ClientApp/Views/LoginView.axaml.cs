@@ -16,28 +16,19 @@ namespace eShop.ClientApp.Views
         public LoginView()
         {
             InitializeComponent();
+            try { System.IO.File.AppendAllText("C:\\temp\\desktop-click.log", $"LoginView constructed {DateTime.Now:HH:mm:ss.fff}\n"); } catch { }
         }
 
-        private void OnImagePointerPressed(object? sender, PointerPressedEventArgs e)
+        private void OnImageClick(object? sender, RoutedEventArgs e)
         {
-            if (sender is not Image image || DataContext is not LoginViewModel vm)
+            try
             {
-                return;
+                System.IO.File.AppendAllText("C:\\temp\\desktop-click.log", $"[LoginView] clicked at {DateTime.Now:HH:mm:ss.fff}\\n");
             }
+            catch { }
+            System.Console.WriteLine("[LoginView] Image area clicked (button).");
 
-            var position = e.GetPosition(image);
-            var bounds = image.Bounds;
-
-            if (bounds.Width <= 0 || bounds.Height <= 0)
-            {
-                return;
-            }
-
-            var x = position.X / bounds.Width;
-            var y = position.Y / bounds.Height;
-
-            // Person avatar is near the top (left or right depending on layout).
-            if (y <= 0.08 && (x <= 0.12 || x >= 0.86))
+            if (DataContext is LoginViewModel vm)
             {
                 vm.OpenLoginModalCommand.Execute(null);
             }
