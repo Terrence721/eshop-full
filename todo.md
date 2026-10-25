@@ -1,7 +1,7 @@
 # 📝 TODO
 
 <!-- markdownlint-disable-next-line MD036 -->
-**Last Updated: October 24, 2026**
+**Last Updated: October 25, 2026**
 
 A living list of what's done and what's left on this build. This is an independently modernized version of Microsoft's [dotnet/eShop](https://github.com/dotnet/eShop) reference app — a .NET Aspire microservices e-commerce platform added **one file at a time**, evaluated and upgraded as it comes in, not a wholesale copy of the source repo. See [docs/architecturedesign.md](docs/architecturedesign.md) for how it's put together and the [project board](https://github.com/users/Terrence721/projects/5) for the live per-project Kanban view of the migration itself.
 
@@ -38,7 +38,7 @@ A living list of what's done and what's left on this build. This is an independe
 | `ClientApp` | Avalonia UI (not MAUI), 4-project solution (`ClientApp` shared lib + `.Desktop`/`.Android`/`.Browser` heads), full MVVM build (9 Views, OIDC login, mock/live service toggle) live-verified running on all 3 heads — see "ClientApp built and live-verified across Desktop/Android/Browser" below |
 | `ClientApp` catalog images | Mock catalog expanded to all 101 products/pictures; added a `StringToImageConverter` (avares + HTTP asset loading w/ caching), rendered pictures on both template and detail modal for desktop/browser/android, and added an anonymous pic proxy in WebBFF. See commit `76e1709`, `c5619b6`, `d8ee0b0`, `a87bf1e`, `6e405d2`, `5edf228`, `f243897`, `d8ee0b0`, `467f168` |
 | `ClientApp` catalog filters | Added type/brand filter bars to CatalogView (wired to Select/Apply/Clear), applied client-side filtering; browser/desktop/android all verified |
-| `ClientApp` homepage layout | Replaced catalog grid with homepage image (`eshop_homepage.png`), full-width fit with vertical scroll; removed filter controls, settings dropdown, and blue theme per user feedback |
+| `ClientApp` homepage layout | Replaced catalog grid with homepage image (`eshop_homepage.png`), full-width fit with vertical scroll; image now fills window width (no upscaling cap); Settings button removed; removed filter controls, settings dropdown, and blue theme per user feedback |
 | Dead-code cleanup | Removed unused Marketing/Campaign, PermissionStatus, TabParameter, LogoutParameter models plus FixCampaignItemPictureUri (and corresponding tests); unit/integration suite still 650/650 passing |
 | `LocalSettingsStore` testing | Left as indirect coverage through `SettingsServiceTests` (no InternalsVisibleTo / no direct tests); avoids touching the user settings file and per-test state issues |
 
