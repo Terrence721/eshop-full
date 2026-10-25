@@ -23,6 +23,12 @@ export default function CatalogIndex() {
 
   return (
     <div className="catalog-page">
+      <img
+        src="/eshop_homepage.png"
+        alt="eShop homepage"
+        className="homepage-image"
+        style={{ width: '100%', height: 'auto', display: 'block' }}
+      />
       <CatalogFilters />
 
       {loading && <p>Loading...</p>}
