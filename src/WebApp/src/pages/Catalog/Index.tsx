@@ -99,6 +99,8 @@ export default function CatalogIndex() {
 
       <button type="button" aria-label="WildRunner catalog items" onClick={() => navigate('/catalog?brand=3')} style={{ position: 'absolute', top: '64.5%', left: '7.5%', width: '4.5%', height: '1.5%', background: 'transparent', border: 'none', cursor: 'pointer', zIndex: 2, padding: 0 }} />
 
+      <button type="button" aria-label="XE catalog items" onClick={() => navigate('/catalog?brand=13')} style={{ position: 'absolute', top: '64.5%', left: '11.5%', width: '2.5%', height: '1.5%', background: 'transparent', border: 'none', cursor: 'pointer', zIndex: 2, padding: 0 }} />
+
       {open ? (
         <div
           role="dialog"
