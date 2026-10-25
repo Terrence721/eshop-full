@@ -1,4 +1,4 @@
-import { Link } from 'react-router'
+import { Link, useLocation } from 'react-router'
 import { useCurrentUser } from '../lib/useCurrentUser'
 
 // Mirrors Layout/UserMenu.razor. Unlike WebhookClient.WebApp's version,
@@ -11,14 +11,34 @@ import { useCurrentUser } from '../lib/useCurrentUser'
 // there itself.
 export function UserMenu() {
   const { claims, loading } = useCurrentUser()
+  const location = useLocation()
 
   if (loading) {
     return null
   }
 
   if (!claims) {
-    // No login button on the landing UI; signed-out users just see no account affordance.
-    return null
+    const returnUrl = location.pathname + location.search
+    return (
+      <Link
+        className="action avatar-link"
+        to={`/user/login?returnUrl=${encodeURIComponent(returnUrl)}`}
+        aria-label="Log in"
+      >
+        <svg
+          width="28"
+          height="28"
+          viewBox="0 0 24 24"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+          aria-hidden="true"
+        >
+          <circle cx="12" cy="12" r="11" stroke="currentColor" strokeWidth="2" />
+          <circle cx="12" cy="9" r="3" fill="currentColor" />
+          <path d="M6 19c0-3 3-5 6-5s6 2 6 5" fill="currentColor" />
+        </svg>
+      </Link>
+    )
   }
 
   const name = claims.find((claim) => claim.type === 'name')?.value
