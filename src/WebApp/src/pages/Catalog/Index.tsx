@@ -59,7 +59,7 @@ export default function CatalogIndex() {
   }
 
   return (
-    <div style={{ position: 'relative', display: 'inline-block', width: '100%', aspectRatio: '1757 / 1660' }}>
+    <div style={{ position: 'relative', display: 'inline-block', width: '100%', aspectRatio: '1757 / 1660', maxHeight: '89vw', overflow: 'hidden' }}>
       <img
         src="/eshop_homepage.png"
         alt="eShop homepage"
@@ -119,6 +119,7 @@ export default function CatalogIndex() {
       <button type="button" aria-label="Ski boarding type catalog items" onClick={() => navigate('/catalog?type=3')} style={{ position: 'absolute', top: '84.5%', left: '6.0%', width: '5.0%', height: '1.5%', background: 'transparent', border: 'none', cursor: 'pointer', zIndex: 2, padding: 0 }} />
 
       <button type="button" aria-label="Trekking type catalog items" onClick={() => navigate('/catalog?type=5')} style={{ position: 'absolute', top: '84.5%', left: '13.0%', width: '4.5%', height: '1.5%', background: 'transparent', border: 'none', cursor: 'pointer', zIndex: 2, padding: 0 }} />
+
 
       {open ? (
         <div
