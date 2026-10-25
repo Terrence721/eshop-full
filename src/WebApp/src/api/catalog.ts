@@ -37,7 +37,7 @@ export interface PaginatedItems<T> {
 const catalogBase = '/remoteapi/catalog/api/catalog'
 
 export function getCatalogItems(pageIndex: number, pageSize: number, brandId?: number, typeId?: number): Promise<PaginatedItems<CatalogItem>> {
-  const params = new URLSearchParams({ pageIndex: String(pageIndex), pageSize: String(pageSize) })
+  const params = new URLSearchParams({ 'api-version': '2.0', pageIndex: String(pageIndex), pageSize: String(pageSize) })
   if (brandId !== undefined) {
     params.set('brand', String(brandId))
   }
