@@ -1,11 +1,12 @@
 import { useEffect, useState } from 'react'
-import { Link } from 'react-router'
+import { useNavigate } from 'react-router'
 
 const DEMO_USER_KEY = 'demo:user'
 
 // Demo-only sign-in: there is no server-side session here, just a client-side
 // flag so the UI can mimic a successful login. Not real authentication.
 export default function CatalogIndex() {
+  const navigate = useNavigate()
   const [open, setOpen] = useState(false)
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
@@ -81,16 +82,21 @@ export default function CatalogIndex() {
           padding: 0,
         }}
       />
-      <Link
-        to="/catalog"
+      <button
+        type="button"
         aria-label="All catalog pics sorted by brand"
+        onClick={() => navigate('/catalog')}
         style={{
           position: 'absolute',
-          top: '4.8%',
-          left: '4%',
-          width: '7%',
-          height: '3.5%',
-          display: 'block',
+          top: '4.5%',
+          left: '3.5%',
+          width: '8%',
+          height: '4%',
+          background: 'transparent',
+          border: 'none',
+          cursor: 'pointer',
+          zIndex: 2,
+          padding: 0,
         }}
       />
 
