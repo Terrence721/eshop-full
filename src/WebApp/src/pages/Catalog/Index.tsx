@@ -85,14 +85,14 @@ export default function CatalogIndex() {
       <button
         type="button"
         aria-label="All catalog pics sorted by brand"
-        onClick={() => navigate('/catalog')}
+        onClick={() => { window.alert('All hotspot clicked'); navigate('/catalog') }}
         style={{
           position: 'absolute',
           top: '4.5%',
           left: '3.5%',
           width: '8%',
           height: '4%',
-          background: 'transparent',
+          background: 'rgba(255,0,0,0.35)',
           border: 'none',
           cursor: 'pointer',
           zIndex: 2,
