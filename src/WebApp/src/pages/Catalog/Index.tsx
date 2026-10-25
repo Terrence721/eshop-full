@@ -59,7 +59,7 @@ export default function CatalogIndex() {
   }
 
   return (
-    <div style={{ position: 'relative', display: 'inline-block', width: '100%' }}>
+    <div style={{ position: 'relative', display: 'inline-block', width: '100%', aspectRatio: '1757 / 1660' }}>
       <img
         src="/eshop_homepage.png"
         alt="eShop homepage"
@@ -85,14 +85,14 @@ export default function CatalogIndex() {
       <button
         type="button"
         aria-label="All catalog pics sorted by brand"
-        onClick={() => { window.alert('All hotspot clicked'); navigate('/catalog') }}
+        onClick={() => navigate('/catalog')}
         style={{
           position: 'absolute',
-          top: '4.5%',
-          left: '3.5%',
-          width: '8%',
-          height: '4%',
-          background: 'rgba(255,0,0,0.35)',
+          top: '50%',
+          left: '5%',
+          width: '6%',
+          height: '1.5%',
+          background: 'transparent',
           border: 'none',
           cursor: 'pointer',
           zIndex: 2,
