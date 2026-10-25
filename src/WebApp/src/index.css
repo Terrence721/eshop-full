@@ -75,8 +75,8 @@ header h1 a {
 }
 
 main {
-  background: #2556cb;
-  color: #ffffff;
+  background: #ffffff;
+  color: #000000;
   min-height: calc(100vh - 64px);
   padding: 1.5rem;
 }
@@ -89,13 +89,13 @@ main {
 
 .catalog-item-card {
   display: block;
-  color: #ffffff;
+  color: #000000;
   text-decoration: none;
-  background: rgba(255, 255, 255, 0.12);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(0, 0, 0, 0.05);
+  border: 1px solid rgba(0, 0, 0, 0.12);
   border-radius: 1rem;
   padding: 1rem;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 }
 
 .catalog-item-card img {
