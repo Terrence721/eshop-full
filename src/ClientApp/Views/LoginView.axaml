@@ -35,9 +35,9 @@
 
         <Button HorizontalAlignment="Right"
                 VerticalAlignment="Top"
-                Margin="0,36,70,0"
-                Width="48"
-                Height="30"
+                Margin="0,36,160,0"
+                Width="80"
+                Height="45"
                 Background="Transparent"
                 BorderThickness="0"
                 Command="{Binding OpenLoginModalCommand}" />
