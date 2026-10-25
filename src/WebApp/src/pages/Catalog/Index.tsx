@@ -1,35 +1,59 @@
 import { useEffect, useState } from 'react'
-import { useLocation } from 'react-router'
-import { useCurrentUser } from '../../lib/useCurrentUser'
 
-// Landing page now shows the homepage image only; the product catalog grid,
-// filters, and pagination are no longer rendered here. The person icon baked
-// into the upper-right of eshop_homepage.png opens a login modal. After the
-// OIDC round-trip completes and the redirect lands back on this page, the
-// modal reopens showing "Login successful".
+const DEMO_USER_KEY = 'demo:user'
+
+// Demo-only sign-in: there is no server-side session here, just a client-side
+// flag so the UI can mimic a successful login. Not real authentication.
 export default function CatalogIndex() {
-  const location = useLocation()
-  const { claims, loading } = useCurrentUser()
   const [open, setOpen] = useState(false)
-  const [success, setSuccess] = useState(false)
+  const [username, setUsername] = useState('')
+  const [password, setPassword] = useState('')
+  const [error, setError] = useState('')
+  const [currentUser, setCurrentUser] = useState<string | null>(() =>
+    typeof window === 'undefined'
+      ? null
+      : window.sessionStorage.getItem(DEMO_USER_KEY),
+  )
+  const [success, setSuccess] = useState<boolean>(
+    typeof window !== 'undefined' &&
+      !!window.sessionStorage.getItem(DEMO_USER_KEY),
+  )
 
   useEffect(() => {
-    if (
-      typeof window !== 'undefined' &&
-      window.sessionStorage.getItem('login:pending') === '1' &&
-      !loading &&
-      claims
-    ) {
-      window.sessionStorage.removeItem('login:pending')
-      setSuccess(true)
-      setOpen(true)
+    if (typeof window !== 'undefined') {
+      const saved = window.sessionStorage.getItem(DEMO_USER_KEY)
+      if (saved) {
+        setCurrentUser(saved)
+        setSuccess(true)
+      }
     }
-  }, [claims, loading])
+  }, [])
 
-  const startLogin = () => {
-    window.sessionStorage.setItem('login:pending', '1')
-    const returnUrl = location.pathname + location.search
-    window.location.assign(`/bff/login?returnUrl=${encodeURIComponent(returnUrl)}`)
+  const signIn = (event: React.FormEvent) => {
+    event.preventDefault()
+    if (!username.trim()) {
+      setError('Username is required')
+      return
+    }
+    if (!password) {
+      setError('Password is required')
+      return
+    }
+    window.sessionStorage.setItem(DEMO_USER_KEY, username.trim())
+    setCurrentUser(username.trim())
+    setPassword('')
+    setError('')
+    setSuccess(true)
+  }
+
+  const signOut = () => {
+    window.sessionStorage.removeItem(DEMO_USER_KEY)
+    setCurrentUser(null)
+    setSuccess(false)
+    setUsername('')
+    setPassword('')
+    setError('')
+    setOpen(false)
   }
 
   return (
@@ -83,26 +107,52 @@ export default function CatalogIndex() {
             }}
             onClick={(e) => e.stopPropagation()}
           >
-            {success ? (
+            {currentUser && success ? (
               <>
-                <p style={{ fontWeight: 600, marginBottom: '16px' }}>Login successful</p>
-                <button type="button" onClick={() => { setOpen(false); setSuccess(false) }}>
+                <p style={{ fontWeight: 600, marginBottom: '16px' }}>
+                  Login successful
+                </p>
+                <p style={{ marginBottom: '16px' }}>Welcome, {currentUser}!</p>
+                <button type="button" onClick={() => setOpen(false)} style={{ marginRight: '8px' }}>
                   Close
                 </button>
+                <button type="button" onClick={signOut}>Sign out</button>
               </>
-            ) : claims ? (
+            ) : currentUser ? (
               <>
-                <p style={{ marginBottom: '16px' }}>You are already signed in.</p>
-                <button type="button" onClick={() => setOpen(false)}>Close</button>
+                <p style={{ marginBottom: '16px' }}>Signed in as {currentUser}</p>
+                <button type="button" onClick={() => setOpen(false)} style={{ marginRight: '8px' }}>
+                  Close
+                </button>
+                <button type="button" onClick={signOut}>Sign out</button>
               </>
             ) : (
-              <>
-                <p style={{ marginBottom: '16px' }}>Sign in to your account</p>
-                <button type="button" onClick={startLogin} style={{ marginRight: '8px' }}>
-                  Log in
-                </button>
+              <form onSubmit={signIn}>
+                <p style={{ fontWeight: 600, marginBottom: '16px' }}>Sign in</p>
+                <div style={{ marginBottom: '12px' }}>
+                  <input
+                    type="text"
+                    placeholder="Username"
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
+                    style={{ width: '100%', padding: '8px', boxSizing: 'border-box' }}
+                  />
+                </div>
+                <div style={{ marginBottom: '12px' }}>
+                  <input
+                    type="password"
+                    placeholder="Password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    style={{ width: '100%', padding: '8px', boxSizing: 'border-box' }}
+                  />
+                </div>
+                {error ? (
+                  <p style={{ color: 'red', marginBottom: '12px' }}>{error}</p>
+                ) : null}
+                <button type="submit" style={{ marginRight: '8px' }}>Log in</button>
                 <button type="button" onClick={() => setOpen(false)}>Cancel</button>
-              </>
+              </form>
             )}
           </div>
         </div>
