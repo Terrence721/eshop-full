@@ -2,6 +2,7 @@
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Interactivity;
+using Avalonia.Input;
 using eShop.ClientApp.ViewModels;
 
 namespace eShop.ClientApp.Views
@@ -14,16 +15,30 @@ namespace eShop.ClientApp.Views
         }
 
         private void OnAvatarClick(object? sender, RoutedEventArgs e)
+
         {
+
+            try { System.IO.File.AppendAllText("C:/temp/desktop-click.log", "clicked;"); } catch { }
+
             if (LoginModal is not null)
+
             {
+
                 LoginModal.IsVisible = true;
+
                 if (StatusText is not null) StatusText.Text = string.Empty;
+
                 if (SuccessText is not null) SuccessText.Text = string.Empty;
+
                 if (UsernameBox is not null) UsernameBox.Text = string.Empty;
+
                 if (PasswordBox is not null) PasswordBox.Text = string.Empty;
+
             }
+
         }
+
+
 
         private void OnCancelLogin(object? sender, RoutedEventArgs e)
         {
