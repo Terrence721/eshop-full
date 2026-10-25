@@ -25,24 +25,40 @@
 
         <Border x:Name="LoginModal"
                 IsVisible="False"
-                Background="#B0000000"
-                Padding="24">
-            <StackPanel HorizontalAlignment="Center"
-                        VerticalAlignment="Center"
-                        MaxWidth="320"
-                        Background="#FFFFFF"
-                        Margin="16"
-                        Spacing="8">
-                <TextBlock Text="Sign in" FontSize="18" />
-                <TextBox x:Name="UsernameBox" PlaceholderText="Username" />
-                <TextBox x:Name="PasswordBox" PlaceholderText="Password" PasswordChar="*" />
-                <TextBlock x:Name="StatusText" Foreground="Red" />
-                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Spacing="8">
-                    <Button Content="Cancel" Click="OnCancelLogin" />
-                    <Button Content="Log in" Click="OnSignIn" />
+                Background="#80000000">
+            <Border HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    Background="#FFFFFF"
+                    Padding="24"
+                    CornerRadius="8"
+                    MinWidth="280">
+                <StackPanel Spacing="12">
+                    <TextBlock Text="Sign in"
+                               FontSize="18"
+                               FontWeight="SemiBold"
+                               HorizontalAlignment="Center" />
+                    <TextBox x:Name="UsernameBox"
+                             PlaceholderText="Username"
+                             Width="280" />
+                    <TextBox x:Name="PasswordBox"
+                             PlaceholderText="Password"
+                             PasswordChar="*"
+                             Width="280" />
+                    <TextBlock x:Name="StatusText"
+                               Foreground="Red"
+                               TextWrapping="Wrap" />
+                    <StackPanel Orientation="Horizontal"
+                                HorizontalAlignment="Right"
+                                Spacing="8">
+                        <Button Content="Cancel" Click="OnCancelLogin" />
+                        <Button Content="Log in" Click="OnSignIn" />
+                    </StackPanel>
+                    <TextBlock x:Name="SuccessText"
+                               Text=""
+                               FontWeight="Bold"
+                               Foreground="Green" />
                 </StackPanel>
-                <TextBlock x:Name="SuccessText" Text="" FontWeight="Bold" Foreground="Green" />
-            </StackPanel>
+            </Border>
         </Border>
     </Grid>
 </UserControl>
