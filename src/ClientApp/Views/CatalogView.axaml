@@ -4,15 +4,12 @@
              x:Class="eShop.ClientApp.Views.CatalogView"
              x:DataType="vm:CatalogViewModel">
     <Grid x:Name="RootGrid" Background="White">
-        <ScrollViewer HorizontalScrollBarVisibility="Disabled"
-                     VerticalScrollBarVisibility="Disabled"
-                     MaxHeight="650">
-            <Image Source="avares://ClientApp/Assets/eshop_homepage.png"
-                   Width="{Binding Bounds.Width, ElementName=RootGrid}"
-                   Stretch="Uniform"
-                   HorizontalAlignment="Center"
-                   VerticalAlignment="Top" />
-        </ScrollViewer>
+        <Image Source="avares://ClientApp/Assets/eshop_homepage.png"
+               Width="{Binding Bounds.Width, ElementName=RootGrid}"
+               Height="{Binding Bounds.Height, ElementName=RootGrid}"
+               Stretch="UniformToFill"
+               HorizontalAlignment="Center"
+               VerticalAlignment="Center" />>
 
     </Grid>
 </UserControl>
