@@ -26,12 +26,4 @@ describe('MainLayout', () => {
     expect(screen.getByRole('link', { name: 'eShop' })).toHaveAttribute('href', '/')
     expect(await screen.findByText('Home content')).toBeInTheDocument()
   })
-
-  it('renders UserMenu in the header', async () => {
-    mockFetchOnce(200, [{ type: 'name', value: 'alice' }])
-
-    renderWithRoutes('/')
-
-    expect(await screen.findByText('alice')).toBeInTheDocument()
-  })
 })

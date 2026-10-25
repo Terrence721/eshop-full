@@ -1,5 +1,4 @@
 import { Link, Outlet } from 'react-router'
-import { UserMenu } from './UserMenu'
 
 // Mirrors Layout/MainLayout.razor -- the title link uses react-router's
 // Link, not a plain <a>, since Blazor's router intercepts same-origin
@@ -13,9 +12,6 @@ export function MainLayout() {
         <h1>
           <Link to="/">eShop</Link>
         </h1>
-        <div className="user-info">
-          <UserMenu />
-        </div>
       </header>
 
       <main>
