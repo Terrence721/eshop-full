@@ -5,7 +5,8 @@
              x:DataType="vm:CatalogViewModel">
     <Grid x:Name="RootGrid" Background="White">
         <ScrollViewer HorizontalScrollBarVisibility="Disabled"
-                     VerticalScrollBarVisibility="Auto">
+                     VerticalScrollBarVisibility="Disabled"
+                     MaxHeight="650">
             <Image Source="avares://ClientApp/Assets/eshop_homepage.png"
                    Width="{Binding Bounds.Width, ElementName=RootGrid}"
                    Stretch="Uniform"
