@@ -151,6 +151,23 @@ export default function CatalogIndex() {
           padding: 0,
         }}
       />
+      <button
+        type="button"
+        aria-label="Gravitator catalog items"
+        onClick={() => navigate('/catalog?brand=2')}
+        style={{
+          position: 'absolute',
+          top: '52.5%',
+          left: '10.5%',
+          width: '4.5%',
+          height: '1.5%',
+          background: 'transparent',
+          border: 'none',
+          cursor: 'pointer',
+          zIndex: 2,
+          padding: 0,
+        }}
+      />
 
       {open ? (
         <div
