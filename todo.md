@@ -1544,3 +1544,14 @@ All 3 heads: same mock data, same navigation logic, zero divergence — confirmi
 - Implemented a demo client-side login modal with username/password fields, non-hardcoded (any credentials accepted for demo), storing the signed-in user in `sessionStorage`, showing "Login successful" + username, plus sign out.
 - Updated Playwright? None. Frontend tests still pass for Catalog/UserMenu/MainLayout.
 - Commits: `7c712e9`, `7207152`, `a5cbff7`, `72bad3e`, `a7620e1`, `5af37cd`, `ca01ab0`, `2c97d40`. Pushed to `main`.
+
+---
+
+## Session summary - WebApp homepage filter hotspots (2026-10-25)
+
+- Added clickable brand hotspots on `eshop_homepage.png` (left-side filter labels): All (`/catalog`), AirStrider (brand 9), B&R (brand 5), Daybird (brand 1), Gravitator (brand 2), Green Equipment (brand 10), Grolltex (brand 8).
+- `/catalog` now renders all items (200/page), sorted by brand, with no Brand/Type filter UI.
+- `CatalogList` now supports a `?brand=` query param to filter by brand.
+- Fixed catalog filtering to request API v2 (`api-version=2.0`) so `brand` is applied.
+- Login is handled by a transparent person-avatar hotspot at top-right opening a demo modal; no more login button/header avatar.
+- Commits: `580aa48`, `b5a2a87`, `4e1ffd8`, `5bca17a`, `ef5f054`, `d25ead3`, `9656da9`, `77a0cda`, `aa286d6` (pushed to `main`).
