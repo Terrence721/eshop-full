@@ -91,6 +91,8 @@ export default function CatalogIndex() {
       <button type="button" aria-label="Green Equipment catalog items" onClick={() => navigate('/catalog?brand=10')} style={{ position: 'absolute', top: '55.5%', left: '8.5%', width: '5%', height: '1.5%', background: 'transparent', border: 'none', cursor: 'pointer', zIndex: 2, padding: 0 }} />
       <button type="button" aria-label="Legend catalog items" onClick={() => navigate('/catalog?brand=12')} style={{ position: 'absolute', top: '58.5%', left: '5.5%', width: '3.5%', height: '1.5%', background: 'transparent', border: 'none', cursor: 'pointer', zIndex: 2, padding: 0 }} />
 
+      <button type="button" aria-label="Quester catalog items" onClick={() => navigate('/catalog?brand=4')} style={{ position: 'absolute', top: '58.5%', left: '9.5%', width: '3.5%', height: '1.5%', background: 'transparent', border: 'none', cursor: 'pointer', zIndex: 2, padding: 0 }} />
+
       {open ? (
         <div
           role="dialog"
