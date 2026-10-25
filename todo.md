@@ -1573,3 +1573,12 @@ All 3 heads: same mock data, same navigation logic, zero divergence — confirmi
 - `/catalog` now supports combined brand/type filtering plus client-side sorting by type then brand.
 - Keeps the existing brand hotspots; overall homepage filter section now fully interactive.
 - Commits: `7ad03a4`, `962c791`, `ec132f1`, `5ec3daf` (pushed to `main`).
+
+---
+
+## Session summary - WebApp type/brand hotspots and homepage crop (2026-10-25)
+
+- Completed all brand and type filter hotspots on `eshop_homepage.png` (13 brands, 8 types + "All"), each opening `/catalog?brand=` or `/catalog?type=`.
+- Added `api-version=2.0` to catalog requests so brand/type filters apply server-side.
+- Cropped homepage image to hide everything below the second row of pictures using a relative clip-path (bottom 7.4%).
+- Commits through `452a06f` pushed to `main`.
