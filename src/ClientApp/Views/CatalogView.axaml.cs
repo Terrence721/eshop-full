@@ -18,7 +18,6 @@ namespace eShop.ClientApp.Views
 
         {
 
-            try { System.IO.File.AppendAllText("C:/temp/desktop-click.log", "clicked;"); } catch { }
 
             if (LoginModal is not null)
 
