@@ -1,60 +1,17 @@
-<!-- Re-enabled product grid (brand/type filtering retained from the original Avalonia port)
-     while keeping the homepage image at the top. -->
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:vm="using:eShop.ClientApp.ViewModels"
-             xmlns:models="using:eShop.ClientApp.Models.Catalog"
-             xmlns:templates="using:eShop.ClientApp.Views.Templates"
              x:Class="eShop.ClientApp.Views.CatalogView"
              x:DataType="vm:CatalogViewModel">
     <Grid x:Name="RootGrid" Background="White">
         <ScrollViewer HorizontalScrollBarVisibility="Disabled"
-                      VerticalScrollBarVisibility="Auto">
-            <StackPanel Orientation="Vertical">
-                <Image Source="avares://ClientApp/Assets/eshop_homepage.png"
-                       Width="{Binding Bounds.Width, ElementName=RootGrid}"
-                       Stretch="Uniform"
-                       HorizontalAlignment="Center"
-                       VerticalAlignment="Top" />
-
-                <StackPanel Orientation="Horizontal"
-                            Margin="12,8"
-                            Spacing="8">
-                    <ComboBox ItemsSource="{Binding Brands}"
-                              SelectionChanged="OnBrandFilterChanged"
-                              Width="180">
-                        <ComboBox.ItemTemplate>
-                            <DataTemplate DataType="vm:CatalogBrandSelectionViewModel">
-                                <TextBlock Text="{Binding Value.Brand}" />
-                            </DataTemplate>
-                        </ComboBox.ItemTemplate>
-                    </ComboBox>
-
-                    <ComboBox ItemsSource="{Binding Types}"
-                              SelectionChanged="OnTypeFilterChanged"
-                              Width="180">
-                        <ComboBox.ItemTemplate>
-                            <DataTemplate DataType="vm:CatalogTypeSelectionViewModel">
-                                <TextBlock Text="{Binding Value.Type}" />
-                            </DataTemplate>
-                        </ComboBox.ItemTemplate>
-                    </ComboBox>
-                </StackPanel>
-
-                <ItemsControl ItemsSource="{Binding Products}"
-                              Margin="8">
-                    <ItemsControl.ItemsPanel>
-                        <ItemsPanelTemplate>
-                            <WrapPanel />
-                        </ItemsPanelTemplate>
-                    </ItemsControl.ItemsPanel>
-                    <ItemsControl.ItemTemplate>
-                        <DataTemplate DataType="models:CatalogItem">
-                            <templates:CatalogItemTemplate />
-                        </DataTemplate>
-                    </ItemsControl.ItemTemplate>
-                </ItemsControl>
-            </StackPanel>
+                     VerticalScrollBarVisibility="Auto">
+            <Image Source="avares://ClientApp/Assets/eshop_homepage.png"
+                   Width="{Binding Bounds.Width, ElementName=RootGrid}"
+                   Stretch="Uniform"
+                   HorizontalAlignment="Center"
+                   VerticalAlignment="Top" />
         </ScrollViewer>
+
     </Grid>
 </UserControl>
