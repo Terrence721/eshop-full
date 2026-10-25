@@ -9,7 +9,7 @@
                Height="{Binding Bounds.Height, ElementName=RootGrid}"
                Stretch="UniformToFill"
                HorizontalAlignment="Center"
-               VerticalAlignment="Center" />>
+               VerticalAlignment="Center" />
 
     </Grid>
 </UserControl>
