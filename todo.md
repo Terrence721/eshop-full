@@ -1555,3 +1555,12 @@ All 3 heads: same mock data, same navigation logic, zero divergence — confirmi
 - Fixed catalog filtering to request API v2 (`api-version=2.0`) so `brand` is applied.
 - Login is handled by a transparent person-avatar hotspot at top-right opening a demo modal; no more login button/header avatar.
 - Commits: `580aa48`, `b5a2a87`, `4e1ffd8`, `5bca17a`, `ef5f054`, `d25ead3`, `9656da9`, `77a0cda`, `aa286d6` (pushed to `main`).
+
+---
+
+## Session summary - WebApp remaining brand hotspots (2026-10-25)
+
+- Added clickable hotspots for the remaining filter brands: Daybird, Gravitator, Green Equipment, Grolltex, Legend.
+- Brand filter support already in place via `?brand=` and API v2; each hotspot navigates to `/catalog?brand=<id>`.
+- Hotspot coordinates measured directly on `eshop_homepage.png` (crosshair picker) then made transparent.
+- Commits: `73c6077`, `9656da9`, `77a0cda`, `2d0115c` (pushed to `main`).
