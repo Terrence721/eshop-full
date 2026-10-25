@@ -6,6 +6,7 @@ import { MainLayout } from './components/MainLayout.tsx'
 import { RequireAuth } from './components/RequireAuth.tsx'
 import CartIndex from './pages/Cart/Index.tsx'
 import CatalogIndex from './pages/Catalog/Index.tsx'
+import CatalogList from './pages/Catalog/List.tsx'
 import CheckoutIndex from './pages/Checkout/Index.tsx'
 import ItemIndex from './pages/Item/Index.tsx'
 import OrdersIndex from './pages/Orders/Index.tsx'
@@ -17,6 +18,7 @@ const router = createBrowserRouter([
     Component: MainLayout,
     children: [
       { path: '/', Component: CatalogIndex },
+      { path: '/catalog', Component: CatalogList },
       { path: '/item/:itemId', Component: ItemIndex },
       { path: '/user/login', Component: UserLogin },
       { path: '/user/logout', Component: UserLogout },

@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { Link } from 'react-router'
 
 const DEMO_USER_KEY = 'demo:user'
 
@@ -78,6 +79,18 @@ export default function CatalogIndex() {
           border: 'none',
           cursor: 'pointer',
           padding: 0,
+        }}
+      />
+      <Link
+        to="/catalog"
+        aria-label="All catalog pics sorted by brand"
+        style={{
+          position: 'absolute',
+          top: '4.8%',
+          left: '4%',
+          width: '7%',
+          height: '3.5%',
+          display: 'block',
         }}
       />
 
