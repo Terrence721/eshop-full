@@ -93,6 +93,8 @@ export default function CatalogIndex() {
 
       <button type="button" aria-label="Quester catalog items" onClick={() => navigate('/catalog?brand=4')} style={{ position: 'absolute', top: '58.5%', left: '9.5%', width: '3.5%', height: '1.5%', background: 'transparent', border: 'none', cursor: 'pointer', zIndex: 2, padding: 0 }} />
 
+      <button type="button" aria-label="Raptor Elite catalog items" onClick={() => navigate('/catalog?brand=6')} style={{ position: 'absolute', top: '61.5%', left: '6.5%', width: '4.5%', height: '1.5%', background: 'transparent', border: 'none', cursor: 'pointer', zIndex: 2, padding: 0 }} />
+
       {open ? (
         <div
           role="dialog"
