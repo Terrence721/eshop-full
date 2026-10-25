@@ -106,25 +106,19 @@ export default function CatalogIndex() {
       <button type="button" aria-label="Type all catalog items" onClick={() => navigate('/catalog')} style={{ position: 'absolute', top: '75.5%', left: '4.8%', width: '2.5%', height: '1.5%', background: 'transparent', border: 'none', cursor: 'pointer', zIndex: 2, padding: 0 }} />
       <button type="button" aria-label="Bags type catalog items" onClick={() => navigate('/catalog?type=4')} style={{ position: 'absolute', top: '75.5%', left: '8.2%', width: '3%', height: '1.5%', background: 'transparent', border: 'none', cursor: 'pointer', zIndex: 2, padding: 0 }} />
 
-      <button
-        type="button"
-        aria-label="Coordinate picker"
-        onClick={(event) => {
-          const rect = (event.currentTarget.parentElement as HTMLElement).getBoundingClientRect()
-          const x = ((event.clientX - rect.left) / rect.width) * 100
-          const y = ((event.clientY - rect.top) / rect.height) * 100
-          window.alert(`x=${x.toFixed(2)}% y=${y.toFixed(2)}%`)
-        }}
-        style={{
-          position: 'absolute',
-          inset: 0,
-          background: 'rgba(0,0,255,0.15)',
-          border: 'none',
-          cursor: 'crosshair',
-          zIndex: 1,
-          padding: 0,
-        }}
-      />
+      <button type="button" aria-label="Climbing type catalog items" onClick={() => navigate('/catalog?type=2')} style={{ position: 'absolute', top: '75.5%', left: '14.0%', width: '4%', height: '1.5%', background: 'transparent', border: 'none', cursor: 'pointer', zIndex: 2, padding: 0 }} />
+
+      <button type="button" aria-label="Cycling type catalog items" onClick={() => navigate('/catalog?type=8')} style={{ position: 'absolute', top: '78.5%', left: '5.3%', width: '4%', height: '1.5%', background: 'transparent', border: 'none', cursor: 'pointer', zIndex: 2, padding: 0 }} />
+
+      <button type="button" aria-label="Footwear type catalog items" onClick={() => navigate('/catalog?type=1')} style={{ position: 'absolute', top: '79.0%', left: '11.2%', width: '4.5%', height: '1.5%', background: 'transparent', border: 'none', cursor: 'pointer', zIndex: 2, padding: 0 }} />
+
+      <button type="button" aria-label="Jackets type catalog items" onClick={() => navigate('/catalog?type=6')} style={{ position: 'absolute', top: '81.5%', left: '5.5%', width: '4%', height: '1.5%', background: 'transparent', border: 'none', cursor: 'pointer', zIndex: 2, padding: 0 }} />
+
+      <button type="button" aria-label="Navigation type catalog items" onClick={() => navigate('/catalog?type=7')} style={{ position: 'absolute', top: '81.5%', left: '11.2%', width: '5.5%', height: '1.5%', background: 'transparent', border: 'none', cursor: 'pointer', zIndex: 2, padding: 0 }} />
+
+      <button type="button" aria-label="Ski boarding type catalog items" onClick={() => navigate('/catalog?type=3')} style={{ position: 'absolute', top: '84.5%', left: '6.0%', width: '5.0%', height: '1.5%', background: 'transparent', border: 'none', cursor: 'pointer', zIndex: 2, padding: 0 }} />
+
+      <button type="button" aria-label="Trekking type catalog items" onClick={() => navigate('/catalog?type=5')} style={{ position: 'absolute', top: '84.5%', left: '13.0%', width: '4.5%', height: '1.5%', background: 'transparent', border: 'none', cursor: 'pointer', zIndex: 2, padding: 0 }} />
 
       {open ? (
         <div
