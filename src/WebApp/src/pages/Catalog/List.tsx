@@ -12,16 +12,20 @@ export default function CatalogList() {
   const [searchParams] = useSearchParams()
   const page = Number(searchParams.get('page') ?? '1')
   const brandParam = searchParams.get('brand')
+  const typeParam = searchParams.get('type')
   const brandId = brandParam ? Number(brandParam) : undefined
+  const typeId = typeParam ? Number(typeParam) : undefined
 
   const { data, loading, error } = useAsync(
-    () => getCatalogItems(page - 1, pageSize, brandId),
-    [page, brandId],
+    () => getCatalogItems(page - 1, pageSize, brandId, typeId),
+    [page, brandId, typeId],
   )
 
   const sorted = data
     ? [...data.data].sort((a, b) =>
-        a.catalogBrandId !== b.catalogBrandId
+        a.catalogTypeId !== b.catalogTypeId
+          ? a.catalogTypeId - b.catalogTypeId
+          : a.catalogBrandId !== b.catalogBrandId
           ? a.catalogBrandId - b.catalogBrandId
           : a.id - b.id,
       )

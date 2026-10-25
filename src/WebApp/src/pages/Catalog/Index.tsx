@@ -103,6 +103,29 @@ export default function CatalogIndex() {
 
       <button type="button" aria-label="Zephyr catalog items" onClick={() => navigate('/catalog?brand=11')} style={{ position: 'absolute', top: '67.0%', left: '5.5%', width: '4%', height: '1.5%', background: 'transparent', border: 'none', cursor: 'pointer', zIndex: 2, padding: 0 }} />
 
+      <button type="button" aria-label="Type all catalog items" onClick={() => navigate('/catalog')} style={{ position: 'absolute', top: '75.5%', left: '4.8%', width: '2.5%', height: '1.5%', background: 'transparent', border: 'none', cursor: 'pointer', zIndex: 2, padding: 0 }} />
+      <button type="button" aria-label="Bags type catalog items" onClick={() => navigate('/catalog?type=4')} style={{ position: 'absolute', top: '75.5%', left: '8.2%', width: '3%', height: '1.5%', background: 'transparent', border: 'none', cursor: 'pointer', zIndex: 2, padding: 0 }} />
+
+      <button
+        type="button"
+        aria-label="Coordinate picker"
+        onClick={(event) => {
+          const rect = (event.currentTarget.parentElement as HTMLElement).getBoundingClientRect()
+          const x = ((event.clientX - rect.left) / rect.width) * 100
+          const y = ((event.clientY - rect.top) / rect.height) * 100
+          window.alert(`x=${x.toFixed(2)}% y=${y.toFixed(2)}%`)
+        }}
+        style={{
+          position: 'absolute',
+          inset: 0,
+          background: 'rgba(0,0,255,0.15)',
+          border: 'none',
+          cursor: 'crosshair',
+          zIndex: 1,
+          padding: 0,
+        }}
+      />
+
       {open ? (
         <div
           role="dialog"
