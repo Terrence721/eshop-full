@@ -1,6 +1,5 @@
 import { useSearchParams } from 'react-router'
 import { getCatalogItems } from '../../api/catalog'
-import { CatalogFilters } from '../../components/CatalogFilters'
 import { CatalogItemCard } from '../../components/CatalogItemCard'
 import { Pagination } from '../../components/Pagination'
 import { useAsync } from '../../lib/useAsync'
@@ -12,12 +11,10 @@ const pageSize = 200
 export default function CatalogList() {
   const [searchParams] = useSearchParams()
   const page = Number(searchParams.get('page') ?? '1')
-  const brand = searchParams.get('brand')
-  const type = searchParams.get('type')
 
   const { data, loading, error } = useAsync(
-    () => getCatalogItems(page - 1, pageSize, brand ? Number(brand) : undefined, type ? Number(type) : undefined),
-    [page, brand, type],
+    () => getCatalogItems(page - 1, pageSize),
+    [page],
   )
 
   const sorted = data
@@ -30,8 +27,6 @@ export default function CatalogList() {
 
   return (
     <div className="catalog-page">
-      <CatalogFilters />
-
       {loading && <p>Loading...</p>}
       {error && <p className="error-message">{error.message}</p>}
 
