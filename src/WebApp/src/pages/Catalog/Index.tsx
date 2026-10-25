@@ -102,6 +102,23 @@ export default function CatalogIndex() {
       />
       <button
         type="button"
+        aria-label="AirStrider catalog items"
+        onClick={() => navigate('/catalog?brand=9')}
+        style={{
+          position: 'absolute',
+          top: '49.5%',
+          left: '8.5%',
+          width: '4%',
+          height: '1.5%',
+          background: 'transparent',
+          border: 'none',
+          cursor: 'pointer',
+          zIndex: 2,
+          padding: 0,
+        }}
+      />
+      <button
+        type="button"
         aria-label="B and R catalog items"
         onClick={() => navigate('/catalog?brand=5')}
         style={{
