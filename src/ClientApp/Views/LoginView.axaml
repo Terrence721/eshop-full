@@ -46,17 +46,16 @@
                 </MenuFlyout>
             </DropDownButton.Flyout>
         </DropDownButton>
+        <Button HorizontalAlignment="Right"
+                VerticalAlignment="Top"
+                Margin="0,36,70,0"
+                Width="48"
+                Height="30"
+                Background="Transparent"
+                BorderThickness="0"
+                Command="{Binding SignInCommand}" />
 
 
-        <Button Grid.Row="2"
-                Content="Login"
-                Command="{Binding SignInCommand}"
-                HorizontalAlignment="Center"
-                Padding="32,12"
-                CornerRadius="16"
-                Background="Black"
-                Foreground="White"
-                Margin="0,24" />
 
         <ProgressBar Grid.Row="3"
                      IsIndeterminate="True"
