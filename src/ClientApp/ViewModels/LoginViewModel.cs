@@ -1,5 +1,7 @@
 ﻿using System.Diagnostics;
+using System.Collections.ObjectModel;
 using eShop.ClientApp.Services;
+using eShop.ClientApp.Models.Catalog;
 using eShop.ClientApp.Services.AppEnvironment;
 using eShop.ClientApp.Services.OpenUrl;
 using eShop.ClientApp.Services.Settings;
@@ -16,6 +18,10 @@ namespace eShop.ClientApp.ViewModels
         [ObservableProperty] public partial bool IsLogin { get; set; }
 
         [ObservableProperty] public partial bool IsMock { get; set; }
+
+        [ObservableProperty] public partial bool IsCatalogVisible { get; set; }
+
+        public ObservableCollection<CatalogItem> CatalogItems { get; } = new();
 
         [ObservableProperty]
         [NotifyCanExecuteChangedFor(nameof(MockSignInCommand))]
@@ -159,6 +165,31 @@ namespace eShop.ClientApp.ViewModels
         public void InvalidateMock()
         {
             IsMock = false; //_settingsService.UseMocks;
+        }
+
+        public async Task ShowCatalogAsync(int? brandId, int? typeId)
+        {
+            IsCatalogVisible = true;
+
+            await IsBusyFor(
+                async () =>
+                {
+                    var allProducts = await _appEnvironmentService.CatalogService.GetCatalogAsync();
+                    var filteredProducts = allProducts.Where(item =>
+                        (brandId is null || item.CatalogBrandId == brandId) &&
+                        (typeId is null || item.CatalogTypeId == typeId));
+                    CatalogItems.Clear();
+                    foreach (var item in filteredProducts)
+                    {
+                        CatalogItems.Add(item);
+                    }
+                });
+        }
+
+        public void CloseCatalog()
+        {
+            IsCatalogVisible = false;
+            CatalogItems.Clear();
         }
     }
 }
