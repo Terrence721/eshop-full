@@ -1,7 +1,9 @@
 ﻿using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Input;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Interactivity;
+using eShop.ClientApp.ViewModels;
 
 namespace eShop.ClientApp.Views
 {
@@ -14,6 +16,31 @@ namespace eShop.ClientApp.Views
         public LoginView()
         {
             InitializeComponent();
+        }
+
+        private void OnImagePointerPressed(object? sender, PointerPressedEventArgs e)
+        {
+            if (sender is not Image image || DataContext is not LoginViewModel vm)
+            {
+                return;
+            }
+
+            var position = e.GetPosition(image);
+            var bounds = image.Bounds;
+
+            if (bounds.Width <= 0 || bounds.Height <= 0)
+            {
+                return;
+            }
+
+            var x = position.X / bounds.Width;
+            var y = position.Y / bounds.Height;
+
+            // Person avatar is near the top (left or right depending on layout).
+            if (y <= 0.08 && (x <= 0.12 || x >= 0.86))
+            {
+                vm.OpenLoginModalCommand.Execute(null);
+            }
         }
 
         // App-exit is a platform concern (no equivalent on mobile/browser heads), not ViewModel
