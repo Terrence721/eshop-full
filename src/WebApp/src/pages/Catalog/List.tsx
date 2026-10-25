@@ -5,7 +5,7 @@ import { CatalogItemCard } from '../../components/CatalogItemCard'
 import { Pagination } from '../../components/Pagination'
 import { useAsync } from '../../lib/useAsync'
 
-const pageSize = 9
+const pageSize = 200
 
 // Catalog listing (kept separate from the image-only landing page). Items are
 // sorted by brand id so the "whole Catalog.API/pics" view is brand-ordered.
