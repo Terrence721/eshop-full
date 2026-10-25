@@ -59,7 +59,7 @@ export default function CatalogIndex() {
   }
 
   return (
-    <div style={{ position: 'relative', display: 'inline-block', width: '100%', aspectRatio: '1757 / 1660', maxHeight: '87.5vw', overflow: 'hidden' }}>
+    <div style={{ position: 'relative', display: 'inline-block', width: '100%', aspectRatio: '1757 / 1660', overflow: 'hidden', clipPath: 'inset(0 0 7.4% 0)' }}>
       <img
         src="/eshop_homepage.png"
         alt="eShop homepage"
