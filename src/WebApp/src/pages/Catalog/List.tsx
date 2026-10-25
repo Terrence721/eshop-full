@@ -12,8 +12,10 @@ export default function CatalogList() {
   const [searchParams] = useSearchParams()
   const page = Number(searchParams.get('page') ?? '1')
 
+  const AIRSTRIDER_BRAND_ID = 9
+
   const { data, loading, error } = useAsync(
-    () => getCatalogItems(page - 1, pageSize),
+    () => getCatalogItems(page - 1, pageSize, AIRSTRIDER_BRAND_ID),
     [page],
   )
 
