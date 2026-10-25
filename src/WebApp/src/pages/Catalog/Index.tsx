@@ -83,42 +83,13 @@ export default function CatalogIndex() {
           padding: 0,
         }}
       />
-      <button
-        type="button"
-        aria-label="All catalog items"
-        onClick={() => navigate('/catalog')}
-        style={{ position: 'absolute', top: '50%', left: '4.5%', width: '3%', height: '1.5%', background: 'transparent', border: 'none', cursor: 'pointer', zIndex: 2, padding: 0 }}
-      />
-      <button
-        type="button"
-        aria-label="AirStrider catalog items"
-        onClick={() => navigate('/catalog?brand=9')}
-        style={{ position: 'absolute', top: '49.5%', left: '8.5%', width: '4%', height: '1.5%', background: 'transparent', border: 'none', cursor: 'pointer', zIndex: 2, padding: 0 }}
-      />
-      <button
-        type="button"
-        aria-label="B and R catalog items"
-        onClick={() => navigate('/catalog?brand=5')}
-        style={{ position: 'absolute', top: '49.5%', left: '13.5%', width: '3.5%', height: '1.5%', background: 'transparent', border: 'none', cursor: 'pointer', zIndex: 2, padding: 0 }}
-      />
-      <button
-        type="button"
-        aria-label="Daybird catalog items"
-        onClick={() => navigate('/catalog?brand=1')}
-        style={{ position: 'absolute', top: '52.5%', left: '5.5%', width: '4%', height: '1.5%', background: 'transparent', border: 'none', cursor: 'pointer', zIndex: 2, padding: 0 }}
-      />
-      <button
-        type="button"
-        aria-label="Gravitator catalog items"
-        onClick={() => navigate('/catalog?brand=2')}
-        style={{ position: 'absolute', top: '52.5%', left: '10.5%', width: '4.5%', height: '1.5%', background: 'transparent', border: 'none', cursor: 'pointer', zIndex: 2, padding: 0 }}
-      />
-      <button
-        type="button"
-        aria-label="Green Equipment catalog items"
-        onClick={() => navigate('/catalog?brand=10')}
-        style={{ position: 'absolute', top: '55.5%', left: '8.5%', width: '5%', height: '1.5%', background: 'transparent', border: 'none', cursor: 'pointer', zIndex: 2, padding: 0 }}
-      />
+      <button type="button" aria-label="All catalog items" onClick={() => navigate('/catalog')} style={{ position: 'absolute', top: '50%', left: '4.5%', width: '3%', height: '1.5%', background: 'transparent', border: 'none', cursor: 'pointer', zIndex: 2, padding: 0 }} />
+      <button type="button" aria-label="AirStrider catalog items" onClick={() => navigate('/catalog?brand=9')} style={{ position: 'absolute', top: '49.5%', left: '8.5%', width: '4%', height: '1.5%', background: 'transparent', border: 'none', cursor: 'pointer', zIndex: 2, padding: 0 }} />
+      <button type="button" aria-label="B and R catalog items" onClick={() => navigate('/catalog?brand=5')} style={{ position: 'absolute', top: '49.5%', left: '13.5%', width: '3.5%', height: '1.5%', background: 'transparent', border: 'none', cursor: 'pointer', zIndex: 2, padding: 0 }} />
+      <button type="button" aria-label="Daybird catalog items" onClick={() => navigate('/catalog?brand=1')} style={{ position: 'absolute', top: '52.5%', left: '5.5%', width: '4%', height: '1.5%', background: 'transparent', border: 'none', cursor: 'pointer', zIndex: 2, padding: 0 }} />
+      <button type="button" aria-label="Gravitator catalog items" onClick={() => navigate('/catalog?brand=2')} style={{ position: 'absolute', top: '52.5%', left: '10.5%', width: '4.5%', height: '1.5%', background: 'transparent', border: 'none', cursor: 'pointer', zIndex: 2, padding: 0 }} />
+      <button type="button" aria-label="Green Equipment catalog items" onClick={() => navigate('/catalog?brand=10')} style={{ position: 'absolute', top: '55.5%', left: '8.5%', width: '5%', height: '1.5%', background: 'transparent', border: 'none', cursor: 'pointer', zIndex: 2, padding: 0 }} />
+      <button type="button" aria-label="Grolltex catalog items" onClick={() => navigate('/catalog?brand=8')} style={{ position: 'absolute', top: '55.5%', left: '14.5%', width: '4%', height: '1.5%', background: 'transparent', border: 'none', cursor: 'pointer', zIndex: 2, padding: 0 }} />
 
       {open ? (
         <div
