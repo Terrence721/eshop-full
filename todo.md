@@ -1590,3 +1590,11 @@ All 3 heads: same mock data, same navigation logic, zero divergence — confirmi
 - `ClientApp` Avalonia: restored product grid/filter UI in `CatalogView` (brand/type ComboBoxes + ItemsControl using CatalogItemTemplate), replacing image-only view while keeping the homepage image at top.
 - `LoginView`: made the person avatar in the homepage image the login affordance and removed the explicit Login button.
 - Commits: `57b3cea`, `7dec62c` (pushed to `main`).
+
+---
+
+## Session summary - Desktop login modal parity (2026-10-25)
+
+- Desktop `CatalogView` now uses a transparent avatar hit area that opens a styled login modal matching the WebApp (username/password, success message, auto-close); modal restyled as card.
+- Fixed click wiring by moving from `PointerPressed` to a `Button` overlay and added safe hit area.
+- Commits: `dd35b25` (pushed to `main`).
