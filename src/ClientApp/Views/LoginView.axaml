@@ -1,18 +1,3 @@
-<!-- Functional equivalent of upstream's LoginView.xaml, not a verbatim port: the real file
-     uses MAUI-only constructs with no Avalonia equivalent (a custom Animations/Triggers
-     framework, Shell.FlyoutBehavior/NavBarIsVisible, iOS-specific safe-area config), all
-     dropped here rather than reinvented. SignInCommand/IsBusy are bound, matching the real
-     upstream file exactly: it never actually binds UserName/Password/MockSignInCommand/
-     RegisterCommand despite LoginViewModel exposing all of them (confirmed dead/unused, same
-     category as AddValidations()). Image assets (header.png, logo_header.png, the settings
-     icon) were never created for this rebuild, so this uses plain text/color instead of
-     inventing new graphics: not a redesign, just the minimum to be functional. Background
-     matches the app's brand blue (MainWindow/MainView's #2556CB) instead of upstream's
-     LightGrayColor, since that color is otherwise never visible once any View fills the
-     window. Settings is a dropdown matching CatalogView's convention (MenuFlyout/MenuItem, not
-     a plain Flyout + HyperlinkButton, see CatalogView for why), with Settings itself now a
-     real reachable destination and Close underneath; there is no Logout before a user is
-     signed in. -->
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:vm="using:eShop.ClientApp.ViewModels"
@@ -25,6 +10,7 @@
                Stretch="Uniform"
                HorizontalAlignment="Center"
                VerticalAlignment="Center" />
+
         <DropDownButton Grid.Row="0"
                          Content="Settings"
                          HorizontalAlignment="Right"
@@ -46,6 +32,7 @@
                 </MenuFlyout>
             </DropDownButton.Flyout>
         </DropDownButton>
+
         <Button HorizontalAlignment="Right"
                 VerticalAlignment="Top"
                 Margin="0,36,70,0"
@@ -53,14 +40,44 @@
                 Height="30"
                 Background="Transparent"
                 BorderThickness="0"
-                Command="{Binding SignInCommand}" />
-
-
+                Command="{Binding OpenLoginModalCommand}" />
 
         <ProgressBar Grid.Row="3"
                      IsIndeterminate="True"
                      IsVisible="{Binding IsBusy}"
                      HorizontalAlignment="Center"
                      Width="200" />
+
+        <Border Grid.Row="0" Grid.RowSpan="5"
+                IsVisible="{Binding LoginModalVisible}"
+                Background="#B0000000"
+                Padding="24">
+            <StackPanel HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        MaxWidth="320"
+                        Background="#FFFFFF"
+                        Margin="16">
+                <TextBlock Text="Sign in" FontSize="18" Margin="0,0,0,12" />
+                <StackPanel IsVisible="{Binding ShowLoginForm}">
+                    <TextBox Text="{Binding UserName.Value}"
+                             PlaceholderText="Username"
+                             Margin="0,0,0,8" />
+                    <TextBox Text="{Binding Password.Value}"
+                             PasswordChar="*"
+                             Margin="0,0,0,12" />
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                        <Button Content="Cancel"
+                                Command="{Binding CloseLoginModalCommand}" />
+                        <Button Content="Log in"
+                                Command="{Binding MockSignInCommand}" />
+                    </StackPanel>
+                </StackPanel>
+                <StackPanel IsVisible="{Binding LoginSuccessful}">
+                    <TextBlock Text="Login successful" FontWeight="Bold" Margin="0,0,0,12" />
+                    <Button Content="Continue"
+                            Command="{Binding ContinueAfterLoginCommand}" />
+                </StackPanel>
+            </StackPanel>
+        </Border>
     </Grid>
 </UserControl>

@@ -21,6 +21,14 @@ namespace eShop.ClientApp.ViewModels
         [NotifyCanExecuteChangedFor(nameof(MockSignInCommand))]
         public partial bool IsValid { get; set; }
 
+        [ObservableProperty] public partial bool LoginModalVisible { get; set; }
+
+        [ObservableProperty]
+        [NotifyPropertyChangedFor(nameof(ShowLoginForm))]
+        public partial bool LoginSuccessful { get; set; }
+
+        public bool ShowLoginForm => !LoginSuccessful;
+
         // Never set anywhere in upstream, not bound in LoginView.xaml - dead.
         [ObservableProperty] public partial string? LoginUrl { get; set; }
 
@@ -58,27 +66,42 @@ namespace eShop.ClientApp.ViewModels
         [RelayCommand(CanExecute = nameof(IsValid))]
         private async Task MockSignInAsync()
         {
+            LoginSuccessful = false;
+
             await IsBusyFor(
                 async () =>
                 {
-                    var isAuthenticated = false;
-
                     try
                     {
-                        await Task.Delay(1000);
-
-                        isAuthenticated = true;
+                        await Task.Delay(500);
+                        LoginSuccessful = true;
                     }
                     catch (Exception ex)
                     {
                         Debug.WriteLine($"[SignIn] Error signing in: {ex}");
                     }
-
-                    if (isAuthenticated)
-                    {
-                        await NavigationService.NavigateToAsync("//Main/Catalog");
-                    }
                 });
+        }
+
+        [RelayCommand]
+        private void OpenLoginModal()
+        {
+            LoginSuccessful = false;
+            LoginModalVisible = true;
+        }
+
+        [RelayCommand]
+        private void CloseLoginModal()
+        {
+            LoginModalVisible = false;
+            LoginSuccessful = false;
+        }
+
+        [RelayCommand]
+        private async Task ContinueAfterLoginAsync()
+        {
+            LoginModalVisible = false;
+            await NavigationService.NavigateToAsync("//Main/Catalog");
         }
 
         [RelayCommand]
