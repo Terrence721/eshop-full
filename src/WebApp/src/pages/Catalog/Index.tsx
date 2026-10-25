@@ -29,7 +29,7 @@ export default function CatalogIndex() {
   const startLogin = () => {
     window.sessionStorage.setItem('login:pending', '1')
     const returnUrl = location.pathname + location.search
-    window.location.href = `/user/login?returnUrl=${encodeURIComponent(returnUrl)}`
+    window.location.assign(`/bff/login?returnUrl=${encodeURIComponent(returnUrl)}`)
   }
 
   return (
