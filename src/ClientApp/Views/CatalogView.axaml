@@ -14,12 +14,12 @@
         </ScrollViewer>
 
         <Button x:Name="AvatarHit"
-                HorizontalAlignment="Stretch"
-                VerticalAlignment="Stretch"
-                Content="TEST CLICK"
-                Background="#FFFF0000"
-                Foreground="#FFFFFFFF"
-                FontSize="24"
+                HorizontalAlignment="Right"
+                VerticalAlignment="Top"
+                Margin="0,36,170,0"
+                Width="100"
+                Height="50"
+                Background="Transparent"
                 BorderThickness="0"
                 Click="OnAvatarClick" />
 
