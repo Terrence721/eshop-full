@@ -134,6 +134,23 @@ export default function CatalogIndex() {
           padding: 0,
         }}
       />
+      <button
+        type="button"
+        aria-label="Daybird catalog items"
+        onClick={() => navigate('/catalog?brand=1')}
+        style={{
+          position: 'absolute',
+          top: '52.5%',
+          left: '5.5%',
+          width: '4%',
+          height: '1.5%',
+          background: 'transparent',
+          border: 'none',
+          cursor: 'pointer',
+          zIndex: 2,
+          padding: 0,
+        }}
+      />
 
       {open ? (
         <div
