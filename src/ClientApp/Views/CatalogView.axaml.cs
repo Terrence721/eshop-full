@@ -12,6 +12,22 @@ namespace eShop.ClientApp.Views
         public CatalogView()
         {
             InitializeComponent();
+            AddHandler(PointerPressedEvent, OnRootPointerPressed, RoutingStrategies.Tunnel, true);
+        }
+
+        private void OnRootPointerPressed(object? sender, PointerPressedEventArgs e)
+        {
+            var image = this.FindControl<Image>("RootImage");
+            Visual surface = image is not null ? image : RootGrid;
+            var pos = e.GetPosition(surface);
+            var bounds = surface.Bounds;
+            if (bounds.Width <= 0 || bounds.Height <= 0) return;
+            var x = pos.X / bounds.Width;
+            var y = pos.Y / bounds.Height;
+            if (x >= 0.040 && x <= 0.085 && y >= 0.880 && y <= 0.915)
+            {
+                if (DataContext is CatalogViewModel vm) { _ = vm.ShowCatalogOverlayAsync(null, null); }
+            }
         }
 
         private void OnAvatarClick(object? sender, RoutedEventArgs e)
@@ -41,6 +57,7 @@ namespace eShop.ClientApp.Views
 
         private async void OnAllCatalogClick(object? sender, RoutedEventArgs e)
         {
+            try { System.IO.File.AppendAllText("C:/temp/desktop-hotspot.log", "[CatalogView] All button clicked\n"); } catch { }
             if (DataContext is CatalogViewModel vm)
             {
                 await vm.ShowCatalogOverlayAsync(null, null);
