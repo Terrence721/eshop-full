@@ -55,6 +55,7 @@ namespace eShop.ClientApp.Views
             if (x >= 0.040 && x <= 0.085 && y >= 0.780 && y <= 0.930) { /* All */ knownHotspot = true; }
             else if (x >= 0.080 && x <= 0.130 && y >= 0.760 && y <= 0.930) { brandId = 9; knownHotspot = true; } // AirStrider
             else if (x >= 0.140 && x <= 0.165 && y >= 0.760 && y <= 0.930) { brandId = 5; knownHotspot = true; } // B&R
+            else if (x >= 0.150 && x <= 0.175 && y >= 0.795 && y <= 0.815) { brandId = 8; knownHotspot = true; } // Grolltex
             // (no duplicate needed)
             // Lower brand/type row.
             else if (x >= 0.050 && x <= 0.095 && y >= 0.740 && y <= 0.775) { brandId = 1; knownHotspot = true; } // Daybird
