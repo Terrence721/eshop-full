@@ -39,6 +39,22 @@ namespace eShop.ClientApp.Views
 
 
 
+        private async void OnAllCatalogClick(object? sender, RoutedEventArgs e)
+        {
+            if (DataContext is CatalogViewModel vm)
+            {
+                await vm.ShowCatalogOverlayAsync(null, null);
+            }
+        }
+
+        private void OnCloseCatalogOverlay(object? sender, RoutedEventArgs e)
+        {
+            if (DataContext is CatalogViewModel vm)
+            {
+                vm.CloseCatalogOverlay();
+            }
+        }
+
         private void OnCancelLogin(object? sender, RoutedEventArgs e)
         {
             if (LoginModal is not null)
