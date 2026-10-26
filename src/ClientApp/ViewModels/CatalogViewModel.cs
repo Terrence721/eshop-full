@@ -105,7 +105,15 @@ namespace eShop.ClientApp.ViewModels
 
                     _products.ReloadData(products);
                     _brands.ReloadData(brands.Select(x => new CatalogBrandSelectionViewModel { Value = x }));
+                    if (!_brands.Any(x => x.Value?.Id == 0))
+                    {
+                        _brands.Insert(0, new CatalogBrandSelectionViewModel { Value = new CatalogBrand { Id = 0, Brand = "All" } });
+                    }
                     _types.ReloadData(types.Select(x => new CatalogTypeSelectionViewModel { Value = x }));
+                    if (!_types.Any(x => x.Value?.Id == 0))
+                    {
+                        _types.Insert(0, new CatalogTypeSelectionViewModel { Value = new CatalogType { Id = 0, Type = "All" } });
+                    }
                 });
         }
 
