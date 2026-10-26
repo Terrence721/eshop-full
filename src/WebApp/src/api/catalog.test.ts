@@ -8,7 +8,7 @@ describe('getCatalogItems', () => {
 
     await getCatalogItems(0, 9)
 
-    expect(fetchMock).toHaveBeenCalledWith('/remoteapi/catalog/api/catalog/items?pageIndex=0&pageSize=9', {
+    expect(fetchMock).toHaveBeenCalledWith('/remoteapi/catalog/api/catalog/items?api-version=2.0&pageIndex=0&pageSize=9', {
       headers: { 'X-CSRF': '1' },
     })
   })
@@ -18,7 +18,7 @@ describe('getCatalogItems', () => {
 
     await getCatalogItems(1, 9, 2, 3)
 
-    expect(fetchMock).toHaveBeenCalledWith('/remoteapi/catalog/api/catalog/items?pageIndex=1&pageSize=9&brand=2&type=3', {
+    expect(fetchMock).toHaveBeenCalledWith('/remoteapi/catalog/api/catalog/items?api-version=2.0&pageIndex=1&pageSize=9&brand=2&type=3', {
       headers: { 'X-CSRF': '1' },
     })
   })
