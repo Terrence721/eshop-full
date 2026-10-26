@@ -38,23 +38,32 @@ namespace eShop.ClientApp.Views
             {
                 return;
             }
-
             var x = pos.X / bounds.Width;
             var y = pos.Y / bounds.Height;
+            try { System.IO.File.AppendAllLines("C:/temp/desktop-hotspot.log", new[] { $"relative x={x:F4} y={y:F4}" }); } catch { }
 
-            if (vm.IsCatalogOverlayVisible)
-            {
-                return;
-            }
-
-            if (x >= 0.84 && y <= 0.08)
+            if (LoginModal is not null && !LoginModal.IsVisible && x >= 0.86 && y <= 0.08 && !vm.IsCatalogOverlayVisible)
             {
                 LoginModal.IsVisible = true;
                 return;
             }
 
-            // Any click opens the full catalog overlay (mirrors the WebApp landing page).
-            _ = vm.ShowCatalogOverlayAsync(null, null);
+            // Region-based hotspots (measured against the desktop pointer log):
+            //  - All     -> (x~0.05, y~0.89): show the whole catalog
+            //  - Bags    -> (x~0.09, y~0.76): show Bags items
+            //  - anything else: open the full catalog overlay
+            if (x >= 0.040 && x <= 0.085 && y >= 0.880 && y <= 0.915)
+            {
+                _ = vm.ShowCatalogOverlayAsync(null, null);
+            }
+            else if (x >= 0.085 && x <= 0.100 && y >= 0.755 && y <= 0.775)
+            {
+                _ = vm.ShowCatalogOverlayAsync(null, 1);
+            }
+            else if (!vm.IsCatalogOverlayVisible)
+            {
+                _ = vm.ShowCatalogOverlayAsync(null, null);
+            }
         }
 
         private void OnAvatarClick(object? sender, RoutedEventArgs e)
