@@ -15,9 +15,22 @@ namespace eShop.ClientApp.Views
             AddHandler(PointerPressedEvent, OnRootPointerPressed, RoutingStrategies.Tunnel, true);
         }
 
+        private void OnCatalogOverlayPressed(object? sender, PointerPressedEventArgs e)
+        {
+            if (CatalogModal is not null && e.Source == CatalogModal && DataContext is CatalogViewModel vm)
+            {
+                vm.CloseCatalogOverlay();
+            }
+        }
+
         private void OnRootPointerPressed(object? sender, PointerPressedEventArgs e)
         {
             var image = this.FindControl<Image>("RootImage");
+            if (DataContext is CatalogViewModel catalogVm && catalogVm.IsCatalogOverlayVisible)
+            {
+                return;
+            }
+
             Visual surface = image is not null ? image : RootGrid;
             var pos = e.GetPosition(surface);
             var bounds = surface.Bounds;
@@ -39,6 +52,10 @@ namespace eShop.ClientApp.Views
             else if (x >= 0.140 && x <= 0.165 && y >= 0.885 && y <= 0.910)
             {
                 if (DataContext is CatalogViewModel vm) { _ = vm.ShowCatalogOverlayAsync(5, null); }
+            }
+            else if (x >= 0.110 && x <= 0.145 && y >= 0.940 && y <= 0.965)
+            {
+                if (DataContext is CatalogViewModel vm) { _ = vm.ShowCatalogOverlayAsync(2, null); }
             }
         }
 
