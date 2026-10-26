@@ -17,8 +17,7 @@ namespace eShop.ClientApp.Views
 
         private void OnCatalogOverlayPressed(object? sender, PointerPressedEventArgs e)
         {
-            var overlay = this.FindControl<Border>("CatalogOverlay");
-            if (overlay is not null && e.Source == overlay && DataContext is CatalogViewModel vm)
+            if (sender is Border overlay && e.Source == overlay && DataContext is CatalogViewModel vm)
             {
                 vm.CloseCatalogOverlay();
             }

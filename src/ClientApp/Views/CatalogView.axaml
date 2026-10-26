@@ -16,8 +16,7 @@
                    VerticalAlignment="Top" />
         </ScrollViewer>
 
-        <Border x:Name="CatalogOverlay"
-                IsVisible="{Binding IsCatalogOverlayVisible}"
+        <Border IsVisible="{Binding IsCatalogOverlayVisible}"
                 Background="#B0000000"
                 Padding="24"
                 PointerPressed="OnCatalogOverlayPressed">
