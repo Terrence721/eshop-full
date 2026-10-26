@@ -26,36 +26,42 @@ namespace eShop.ClientApp.Views
         private void OnRootPointerPressed(object? sender, PointerPressedEventArgs e)
         {
             var image = this.FindControl<Image>("RootImage");
-            if (DataContext is CatalogViewModel catalogVm && catalogVm.IsCatalogOverlayVisible)
-            {
-                return;
-            }
-
             Visual surface = image is not null ? image : RootGrid;
             var pos = e.GetPosition(surface);
             var bounds = surface.Bounds;
             if (bounds.Width <= 0 || bounds.Height <= 0) return;
             var x = pos.X / bounds.Width;
             var y = pos.Y / bounds.Height;
-            if (x >= 0.040 && x <= 0.085 && y >= 0.880 && y <= 0.915)
+            try { System.IO.File.AppendAllLines("C:/temp/desktop-hotspot.log", new[] { $"relative x={x:F4} y={y:F4}" }); } catch { }
+
+            if (DataContext is not CatalogViewModel vm)
             {
-                if (DataContext is CatalogViewModel vm) { _ = vm.ShowCatalogOverlayAsync(null, null); }
+                return;
             }
-            else if (x >= 0.080 && x <= 0.130 && y >= 0.875 && y <= 0.915)
+
+            bool overlayVisible = vm.IsCatalogOverlayVisible;
+            int? brandId = null;
+            int? typeId = null;
+            bool knownHotspot = false;
+
+            // Brand filter row.
+            if (x >= 0.040 && x <= 0.085 && y >= 0.880 && y <= 0.915) { /* All */ knownHotspot = true; }
+            else if (x >= 0.080 && x <= 0.130 && y >= 0.875 && y <= 0.915) { brandId = 9; knownHotspot = true; } // AirStrider
+            else if (x >= 0.140 && x <= 0.165 && y >= 0.885 && y <= 0.910) { brandId = 5; knownHotspot = true; } // B&R
+            // Lower type/brand row.
+            else if (x >= 0.050 && x <= 0.095 && y >= 0.940 && y <= 0.970) { typeId = 1; knownHotspot = true; } // Daybird (example; Type later)
+            else if (x >= 0.110 && x <= 0.145 && y >= 0.940 && y <= 0.965) { brandId = 2; knownHotspot = true; } // Gravitator
+
+            if (overlayVisible && !knownHotspot)
             {
-                if (DataContext is CatalogViewModel vm) { _ = vm.ShowCatalogOverlayAsync(9, null); }
+                vm.CloseCatalogOverlay();
+                return;
             }
-            else if (x >= 0.050 && x <= 0.095 && y >= 0.940 && y <= 0.970)
+
+            if (knownHotspot)
             {
-                if (DataContext is CatalogViewModel vm) { _ = vm.ShowCatalogOverlayAsync(1, null); }
-            }
-            else if (x >= 0.140 && x <= 0.165 && y >= 0.885 && y <= 0.910)
-            {
-                if (DataContext is CatalogViewModel vm) { _ = vm.ShowCatalogOverlayAsync(5, null); }
-            }
-            else if (x >= 0.110 && x <= 0.145 && y >= 0.940 && y <= 0.965)
-            {
-                if (DataContext is CatalogViewModel vm) { _ = vm.ShowCatalogOverlayAsync(2, null); }
+                vm.CloseCatalogOverlay();
+                _ = vm.ShowCatalogOverlayAsync(brandId, typeId);
             }
         }
 
@@ -86,7 +92,6 @@ namespace eShop.ClientApp.Views
 
         private async void OnAllCatalogClick(object? sender, RoutedEventArgs e)
         {
-            try { System.IO.File.AppendAllText("C:/temp/desktop-hotspot.log", "[CatalogView] All button clicked\n"); } catch { }
             if (DataContext is CatalogViewModel vm)
             {
                 await vm.ShowCatalogOverlayAsync(null, null);
