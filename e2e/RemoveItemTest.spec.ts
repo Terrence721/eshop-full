@@ -1,4 +1,5 @@
 import { existsSync } from 'node:fs';
+test.skip(!process.env.USERNAME1 || !process.env.PASSWORD, 'requires USERNAME1 and PASSWORD');
 import { STORAGE_STATE } from '../playwright.config';
 import { test, expect } from '@playwright/test';
 
