@@ -1,8 +1,8 @@
 ﻿using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
-using Avalonia.Interactivity;
 using Avalonia.Input;
+using Avalonia.Interactivity;
 using eShop.ClientApp.ViewModels;
 
 namespace eShop.ClientApp.Views
@@ -17,102 +17,55 @@ namespace eShop.ClientApp.Views
 
         private void OnCatalogOverlayPressed(object? sender, PointerPressedEventArgs e)
         {
-            if (CatalogModal is not null && e.Source == CatalogModal && DataContext is CatalogViewModel vm)
+            if (CatalogOverlay is not null && e.Source == CatalogOverlay && DataContext is CatalogViewModel vm)
             {
                 vm.CloseCatalogOverlay();
-            }
-        }
-
-        private void OnLoginModalPointerPressed(object? sender, PointerPressedEventArgs e)
-        {
-            if (LoginModal is not null && e.Source == LoginModal && e.Source is Border)
-            {
-                LoginModal.IsVisible = false;
             }
         }
 
         private void OnRootPointerPressed(object? sender, PointerPressedEventArgs e)
         {
-            var image = this.FindControl<Image>("RootImage");
-            Visual surface = image is not null ? image : RootGrid;
-            var pos = e.GetPosition(surface);
-            var bounds = surface.Bounds;
-            if (bounds.Width <= 0 || bounds.Height <= 0) return;
-            var x = pos.X / bounds.Width;
-            var y = pos.Y / bounds.Height;
-
             if (DataContext is not CatalogViewModel vm)
             {
                 return;
             }
 
-            bool overlayVisible = vm.IsCatalogOverlayVisible;
-            int? brandId = null;
-            int? typeId = null;
-            bool knownHotspot = false;
-
-            // Brand filter row.
-            if (x >= 0.040 && x <= 0.085 && y >= 0.780 && y <= 0.930) { /* All */ knownHotspot = true; }
-            else if (x >= 0.080 && x <= 0.130 && y >= 0.760 && y <= 0.930) { brandId = 9; knownHotspot = true; } // AirStrider
-            else if (x >= 0.140 && x <= 0.165 && y >= 0.760 && y <= 0.930) { brandId = 5; knownHotspot = true; } // B&R
-            else if (x >= 0.150 && x <= 0.175 && y >= 0.795 && y <= 0.815) { brandId = 8; knownHotspot = true; } // Grolltex
-            // (no duplicate needed)
-            // Lower brand/type row.
-            else if (x >= 0.050 && x <= 0.095 && y >= 0.740 && y <= 0.775) { brandId = 1; knownHotspot = true; } // Daybird
-            else if (x >= 0.110 && x <= 0.145 && y >= 0.930 && y <= 0.975) { brandId = 2; knownHotspot = true; } // Gravitator (old row)
-            else if (x >= 0.110 && x <= 0.135 && y >= 0.750 && y <= 0.770) { brandId = 2; knownHotspot = true; } // Gravitator (measured)
-            else if (x >= 0.070 && x <= 0.095 && y >= 0.795 && y <= 0.815) { brandId = 10; knownHotspot = true; } // Green Equipment
-            else if (x >= 0.060 && x <= 0.075 && y >= 0.785 && y <= 0.805) { brandId = 6; knownHotspot = true; } // Raptor Elite
-            else if (x >= 0.120 && x <= 0.155 && y >= 0.620 && y <= 0.730) { brandId = 7; knownHotspot = true; } // Solstix (broad region)
-            else if (x >= 0.055 && x <= 0.085 && y >= 0.750 && y <= 0.770) { brandId = 11; knownHotspot = true; } // Zephyr (measured 0.0674,0.7560)
-            else if (x >= 0.115 && x <= 0.135 && y >= 0.765 && y <= 0.780) { brandId = 13; knownHotspot = true; } // XE (measured 0.1243,0.7693)
-            else if (x >= 0.065 && x <= 0.085 && y >= 0.825 && y <= 0.850) { brandId = 3; knownHotspot = true; } // WildRunner (measured 0.0723,0.8360) (measured 0.0667,0.7938)
-            else if (x >= 0.100 && x <= 0.125 && y >= 0.720 && y <= 0.735) { brandId = 4; knownHotspot = true; } // Quester (measured)
-            else if (x >= 0.050 && x <= 0.070 && y >= 0.785 && y <= 0.805) { brandId = 12; knownHotspot = true; } // Legend (measured 0.056,0.792)
-
-            if (overlayVisible && !knownHotspot)
+            var image = this.FindControl<Image>("RootImage");
+            Visual surface = image is not null ? image : RootGrid;
+            var pos = e.GetPosition(surface);
+            var bounds = surface.Bounds;
+            if (bounds.Width <= 0 || bounds.Height <= 0)
             {
-                vm.CloseCatalogOverlay();
                 return;
             }
 
-            if (knownHotspot)
+            var x = pos.X / bounds.Width;
+            var y = pos.Y / bounds.Height;
+
+            if (vm.IsCatalogOverlayVisible)
             {
-                vm.CloseCatalogOverlay();
-                _ = vm.ShowCatalogOverlayAsync(brandId, typeId);
+                return;
             }
+
+            if (x >= 0.84 && y <= 0.08)
+            {
+                LoginModal.IsVisible = true;
+                return;
+            }
+
+            // Any click opens the full catalog overlay (mirrors the WebApp landing page).
+            _ = vm.ShowCatalogOverlayAsync(null, null);
         }
 
         private void OnAvatarClick(object? sender, RoutedEventArgs e)
-
         {
-
-
             if (LoginModal is not null)
-
             {
-
                 LoginModal.IsVisible = true;
-
                 if (StatusText is not null) StatusText.Text = string.Empty;
-
                 if (SuccessText is not null) SuccessText.Text = string.Empty;
-
                 if (UsernameBox is not null) UsernameBox.Text = string.Empty;
-
                 if (PasswordBox is not null) PasswordBox.Text = string.Empty;
-
-            }
-
-        }
-
-
-
-        private async void OnAllCatalogClick(object? sender, RoutedEventArgs e)
-        {
-            if (DataContext is CatalogViewModel vm)
-            {
-                await vm.ShowCatalogOverlayAsync(null, null);
             }
         }
 
@@ -165,20 +118,42 @@ namespace eShop.ClientApp.Views
 
         private void OnTypeFilterChanged(object? sender, SelectionChangedEventArgs e)
         {
-            if (DataContext is CatalogViewModel viewModel && e.AddedItems.Count > 0 &&
-                e.AddedItems[0] is CatalogTypeSelectionViewModel selection)
+            if (DataContext is not CatalogViewModel viewModel || e.AddedItems.Count == 0)
             {
-                viewModel.SelectCatalogTypeCommand.Execute(selection.Value);
+                return;
+            }
+
+            if (e.AddedItems[0] is CatalogTypeSelectionViewModel selection)
+            {
+                if (selection.Value?.Id == 0)
+                {
+                    viewModel.SelectedType = null;
+                }
+                else
+                {
+                    viewModel.SelectCatalogTypeCommand.Execute(selection.Value);
+                }
                 viewModel.ApplyFilterCommand.Execute(null);
             }
         }
 
         private void OnBrandFilterChanged(object? sender, SelectionChangedEventArgs e)
         {
-            if (DataContext is CatalogViewModel viewModel && e.AddedItems.Count > 0 &&
-                e.AddedItems[0] is CatalogBrandSelectionViewModel selection)
+            if (DataContext is not CatalogViewModel viewModel || e.AddedItems.Count == 0)
             {
-                viewModel.SelectCatalogBrandCommand.Execute(selection.Value);
+                return;
+            }
+
+            if (e.AddedItems[0] is CatalogBrandSelectionViewModel selection)
+            {
+                if (selection.Value?.Id == 0)
+                {
+                    viewModel.SelectedBrand = null;
+                }
+                else
+                {
+                    viewModel.SelectCatalogBrandCommand.Execute(selection.Value);
+                }
                 viewModel.ApplyFilterCommand.Execute(null);
             }
         }
