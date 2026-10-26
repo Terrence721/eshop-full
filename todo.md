@@ -1640,3 +1640,10 @@ All 3 heads: same mock data, same navigation logic, zero divergence — confirmi
 
 - Added Gravitator filter hotspot to the desktop homepage, opening the filtered catalog overlay.
 - Commit `36e68cc` pushed to `main`.
+
+---
+
+## Session summary - Desktop Green Equipment hotspot (2026-10-25)
+
+- Added Green Equipment (brand 10) region to the desktop homepage pointer handler, opening the filtered catalog overlay.
+- Already pushed to `main` with prior region work.
