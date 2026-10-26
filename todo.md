@@ -1605,3 +1605,10 @@ All 3 heads: same mock data, same navigation logic, zero divergence — confirmi
 
 - Desktop `CatalogView` now opens a filtered catalog overlay when clicking "All" in the homepage image (relative coordinate handling via a tunneling pointer handler).
 - Commit `e2d0c9c` pushed to `main`.
+
+---
+
+## Session summary - Desktop brand hotspots (2026-10-25)
+
+- Desktop `CatalogView` hotspot "All" and "AirStrider" wired through pointer-coordinate handling to open the filtered catalog overlay.
+- Commit(s): `5b2eaec` (pushed to `main`).
