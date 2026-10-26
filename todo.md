@@ -1633,3 +1633,10 @@ All 3 heads: same mock data, same navigation logic, zero divergence — confirmi
 
 - Desktop login modal now closes when clicking outside it; avatar interactions remain responsive across repeated opens/closes.
 - Commit pushed to `main`.
+
+---
+
+## Session summary - Desktop Gravitator hotspot (2026-10-25)
+
+- Added Gravitator filter hotspot to the desktop homepage, opening the filtered catalog overlay.
+- Commit `36e68cc` pushed to `main`.
