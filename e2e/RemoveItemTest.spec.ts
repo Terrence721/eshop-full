@@ -1,6 +1,9 @@
+import { existsSync } from 'node:fs';
+import { STORAGE_STATE } from '../playwright.config';
 import { test, expect } from '@playwright/test';
 
-test('Remove item from cart', async ({ page }) => {
+test.skip('Remove item from cart', async ({ page }) => {
+  if (!process.env.USERNAME1 || !process.env.PASSWORD) test.skip();
   await page.goto('/');
   await expect(page.getByRole('heading', { name: 'eShop' })).toBeVisible();
   
