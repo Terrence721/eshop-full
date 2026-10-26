@@ -1647,3 +1647,10 @@ All 3 heads: same mock data, same navigation logic, zero divergence — confirmi
 
 - Added Green Equipment (brand 10) region to the desktop homepage pointer handler, opening the filtered catalog overlay.
 - Already pushed to `main` with prior region work.
+
+---
+
+## Session summary - Desktop Grolltex hotspot (2026-10-25)
+
+- Added Grolltex filter hotspot to the desktop homepage, opening the filtered catalog overlay.
+- Commit pushed to `main`.
