@@ -28,6 +28,10 @@ namespace eShop.ClientApp.Views
             {
                 if (DataContext is CatalogViewModel vm) { _ = vm.ShowCatalogOverlayAsync(null, null); }
             }
+            else if (x >= 0.080 && x <= 0.130 && y >= 0.875 && y <= 0.915)
+            {
+                if (DataContext is CatalogViewModel vm) { _ = vm.ShowCatalogOverlayAsync(9, null); }
+            }
         }
 
         private void OnAvatarClick(object? sender, RoutedEventArgs e)
