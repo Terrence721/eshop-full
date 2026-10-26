@@ -1668,3 +1668,10 @@ All 3 heads: same mock data, same navigation logic, zero divergence — confirmi
 
 - Added Quester filter hotspot to the desktop homepage, opening the filtered catalog overlay.
 - Commit pushed to `main`.
+
+---
+
+## Session summary - Desktop Raptor Elite hotspot (2026-10-25)
+
+- Added Raptor Elite filter hotspot to the desktop homepage, opening the filtered catalog overlay.
+- Commit pushed to `main`.
