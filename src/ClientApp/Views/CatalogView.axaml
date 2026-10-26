@@ -38,7 +38,8 @@
         <Border x:Name="CatalogModal"
                 IsVisible="{Binding IsCatalogOverlayVisible}"
                 Background="#B0000000"
-                Padding="24">
+                Padding="24"
+                PointerPressed="OnCatalogOverlayPressed">
             <Border HorizontalAlignment="Center"
                     VerticalAlignment="Center"
                     Background="#FFFFFF"
@@ -75,7 +76,8 @@
 
         <Border x:Name="LoginModal"
                 IsVisible="False"
-                Background="#80000000">
+                Background="#80000000"
+                PointerPressed="OnLoginModalPointerPressed">
             <Border HorizontalAlignment="Center"
                     VerticalAlignment="Center"
                     Background="#FFFFFF"

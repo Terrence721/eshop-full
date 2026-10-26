@@ -23,6 +23,14 @@ namespace eShop.ClientApp.Views
             }
         }
 
+        private void OnLoginModalPointerPressed(object? sender, PointerPressedEventArgs e)
+        {
+            if (LoginModal is not null && e.Source == LoginModal && e.Source is Border)
+            {
+                LoginModal.IsVisible = false;
+            }
+        }
+
         private void OnRootPointerPressed(object? sender, PointerPressedEventArgs e)
         {
             var image = this.FindControl<Image>("RootImage");
