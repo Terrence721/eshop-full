@@ -1696,3 +1696,10 @@ All 3 heads: same mock data, same navigation logic, zero divergence — confirmi
 
 - Added XE filter hotspot to the desktop homepage, opening the filtered catalog overlay.
 - Commit pushed to `main`.
+
+---
+
+## Session summary - Desktop Zephyr hotspot (2026-10-25)
+
+- Added Zephyr filter hotspot to the desktop homepage, opening the filtered catalog overlay.
+- Commit `643be05` pushed to `main`.
