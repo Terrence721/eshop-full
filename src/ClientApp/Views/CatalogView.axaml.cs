@@ -62,6 +62,7 @@ namespace eShop.ClientApp.Views
             else if (x >= 0.110 && x <= 0.145 && y >= 0.930 && y <= 0.975) { brandId = 2; knownHotspot = true; } // Gravitator (old row)
             else if (x >= 0.110 && x <= 0.135 && y >= 0.750 && y <= 0.770) { brandId = 2; knownHotspot = true; } // Gravitator (measured)
             else if (x >= 0.070 && x <= 0.095 && y >= 0.795 && y <= 0.815) { brandId = 10; knownHotspot = true; } // Green Equipment
+            else if (x >= 0.060 && x <= 0.075 && y >= 0.785 && y <= 0.805) { brandId = 6; knownHotspot = true; } // Raptor Elite (measured 0.0667,0.7938)
             else if (x >= 0.100 && x <= 0.125 && y >= 0.720 && y <= 0.735) { brandId = 4; knownHotspot = true; } // Quester (measured)
             else if (x >= 0.050 && x <= 0.070 && y >= 0.785 && y <= 0.805) { brandId = 12; knownHotspot = true; } // Legend (measured 0.056,0.792)
 
