@@ -1710,3 +1710,10 @@ All 3 heads: same mock data, same navigation logic, zero divergence — confirmi
 
 - Completed the desktop homepage filter-hotspot set: All, AirStrider, B&R, Daybird, Gravitator (old+measured), Green Equipment, Grolltex, Legend, Quester, Raptor Elite, Solstix, WildRunner, XE, Zephyr. Each opens the filtered catalog overlay by brand.
 - Matching updates committed/pushed to `main`; scrum-board child issues created per label.
+
+---
+
+## Session summary - Desktop catalog dropdown filters (2026-10-25)
+
+- Added brand/type dropdown filters to the desktop homepage catalog overlay, plus "All" handling, mirroring the WebApp filter behavior.
+- Commit `167f0e7` pushed to `main`.
