@@ -1626,3 +1626,10 @@ All 3 heads: same mock data, same navigation logic, zero divergence — confirmi
 
 - Added Daybird filter hotspot to the desktop homepage, opening the filtered catalog overlay.
 - Commit `9de2650` pushed to `main`.
+
+---
+
+## Session summary - Desktop login modal usability (2026-10-25)
+
+- Desktop login modal now closes when clicking outside it; avatar interactions remain responsive across repeated opens/closes.
+- Commit pushed to `main`.
