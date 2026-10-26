@@ -53,12 +53,14 @@ namespace eShop.ClientApp.Views
             bool knownHotspot = false;
 
             // Brand filter row.
-            if (x >= 0.040 && x <= 0.085 && y >= 0.880 && y <= 0.915) { /* All */ knownHotspot = true; }
-            else if (x >= 0.080 && x <= 0.130 && y >= 0.875 && y <= 0.915) { brandId = 9; knownHotspot = true; } // AirStrider
-            else if (x >= 0.140 && x <= 0.165 && y >= 0.885 && y <= 0.910) { brandId = 5; knownHotspot = true; } // B&R
-            // Lower type/brand row.
-            else if (x >= 0.050 && x <= 0.095 && y >= 0.940 && y <= 0.970) { typeId = 1; knownHotspot = true; } // Daybird (example; Type later)
-            else if (x >= 0.110 && x <= 0.145 && y >= 0.940 && y <= 0.965) { brandId = 2; knownHotspot = true; } // Gravitator
+            if (x >= 0.040 && x <= 0.085 && y >= 0.780 && y <= 0.930) { /* All */ knownHotspot = true; }
+            else if (x >= 0.080 && x <= 0.130 && y >= 0.760 && y <= 0.930) { brandId = 9; knownHotspot = true; } // AirStrider
+            else if (x >= 0.140 && x <= 0.165 && y >= 0.760 && y <= 0.930) { brandId = 5; knownHotspot = true; } // B&R
+            // (no duplicate needed)
+            // Lower brand/type row.
+            else if (x >= 0.050 && x <= 0.095 && y >= 0.740 && y <= 0.775) { brandId = 1; knownHotspot = true; } // Daybird
+            else if (x >= 0.110 && x <= 0.145 && y >= 0.930 && y <= 0.975) { brandId = 2; knownHotspot = true; } // Gravitator
+            else if (x >= 0.070 && x <= 0.095 && y >= 0.795 && y <= 0.815) { brandId = 10; knownHotspot = true; } // Green Equipment
 
             if (overlayVisible && !knownHotspot)
             {
