@@ -10,8 +10,7 @@ setup('Login', async ({ page }) => {
     throw new Error('USERNAME1/PASSWORD environment variables are required');
   }
 
-  await page.getByRole('link', { name: 'Log in' }).click();
-  await page.waitForURL(/Account\/Login/, { timeout: 30000 });
+  await page.goto('/user/login?returnUrl=%2F');
 
   const redirectUrl = await page.evaluate(async ({ username, password }) => {
     const url = new URL(window.location.href);
