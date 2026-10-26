@@ -48,18 +48,22 @@ namespace eShop.ClientApp.Views
                 return;
             }
 
-            // Region-based hotspots (measured against the desktop pointer log):
-            //  - All     -> (x~0.05, y~0.89): show the whole catalog
-            //  - Bags    -> (x~0.09, y~0.76): show Bags items
-            //  - anything else: open the full catalog overlay
-            if (x >= 0.040 && x <= 0.085 && y >= 0.880 && y <= 0.915)
-            {
-                _ = vm.ShowCatalogOverlayAsync(null, null);
-            }
-            else if (x >= 0.085 && x <= 0.100 && y >= 0.755 && y <= 0.775)
-            {
-                _ = vm.ShowCatalogOverlayAsync(null, 1);
-            }
+            // Region-based hotspots.
+            if (x >= 0.040 && x <= 0.085 && y >= 0.880 && y <= 0.915) { _ = vm.ShowCatalogOverlayAsync(null, null); }
+            else if (x >= 0.080 && x <= 0.130 && y >= 0.760 && y <= 0.930) { _ = vm.ShowCatalogOverlayAsync(9, null); } // AirStrider
+            else if (x >= 0.140 && x <= 0.165 && y >= 0.760 && y <= 0.930) { _ = vm.ShowCatalogOverlayAsync(5, null); } // B&R
+            else if (x >= 0.050 && x <= 0.095 && y >= 0.930 && y <= 0.975) { _ = vm.ShowCatalogOverlayAsync(1, null); } // Daybird
+            else if (x >= 0.110 && x <= 0.145 && y >= 0.930 && y <= 0.975) { _ = vm.ShowCatalogOverlayAsync(2, null); } // Gravitator
+            else if (x >= 0.070 && x <= 0.095 && y >= 0.795 && y <= 0.815) { _ = vm.ShowCatalogOverlayAsync(10, null); } // Green Equipment
+            else if (x >= 0.150 && x <= 0.175 && y >= 0.795 && y <= 0.815) { _ = vm.ShowCatalogOverlayAsync(8, null); } // Grolltex
+            else if (x >= 0.050 && x <= 0.070 && y >= 0.785 && y <= 0.805) { _ = vm.ShowCatalogOverlayAsync(12, null); } // Legend
+            else if (x >= 0.085 && x <= 0.100 && y >= 0.755 && y <= 0.775) { _ = vm.ShowCatalogOverlayAsync(null, 4); } // Bags (type)
+            else if (x >= 0.110 && x <= 0.125 && y >= 0.750 && y <= 0.770) { _ = vm.ShowCatalogOverlayAsync(4, null); } // Quester
+            else if (x >= 0.060 && x <= 0.075 && y >= 0.785 && y <= 0.805) { _ = vm.ShowCatalogOverlayAsync(6, null); } // Raptor Elite
+            else if (x >= 0.120 && x <= 0.155 && y >= 0.620 && y <= 0.730) { _ = vm.ShowCatalogOverlayAsync(7, null); } // Solstix
+            else if (x >= 0.065 && x <= 0.085 && y >= 0.825 && y <= 0.850) { _ = vm.ShowCatalogOverlayAsync(3, null); } // WildRunner
+            else if (x >= 0.115 && x <= 0.135 && y >= 0.765 && y <= 0.780) { _ = vm.ShowCatalogOverlayAsync(13, null); } // XE
+            else if (x >= 0.055 && x <= 0.085 && y >= 0.750 && y <= 0.770) { _ = vm.ShowCatalogOverlayAsync(11, null); } // Zephyr
             else if (!vm.IsCatalogOverlayVisible)
             {
                 _ = vm.ShowCatalogOverlayAsync(null, null);
