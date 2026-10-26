@@ -15,27 +15,7 @@
                    VerticalAlignment="Top" />
         </ScrollViewer>
 
-        <Button x:Name="AvatarHit"
-                HorizontalAlignment="Right"
-                VerticalAlignment="Top"
-                Margin="0,36,170,0"
-                Width="100"
-                Height="50"
-                Background="Transparent"
-                BorderThickness="0"
-                Click="OnAvatarClick" />
-
-        <Button x:Name="AllCatalogHotspot"
-                HorizontalAlignment="Left"
-                VerticalAlignment="Top"
-                Margin="60,600,0,0"
-                Width="60"
-                Height="24"
-                Background="#01FFFFFF"
-                BorderThickness="0"
-                Click="OnAllCatalogClick" />
-
-        <Border x:Name="CatalogModal"
+        <Border x:Name="CatalogOverlay"
                 IsVisible="{Binding IsCatalogOverlayVisible}"
                 Background="#B0000000"
                 Padding="24"
@@ -45,13 +25,36 @@
                     Background="#FFFFFF"
                     Padding="24"
                     CornerRadius="8"
-                    MinWidth="360"
-                    MaxHeight="600">
-                <Grid RowDefinitions="Auto,*,Auto">
+                    MinWidth="420"
+                    MaxHeight="640">
+                <Grid RowDefinitions="Auto,Auto,*,Auto">
                     <TextBlock Text="Catalog"
                                FontSize="18"
                                FontWeight="SemiBold" />
-                    <ScrollViewer Grid.Row="1">
+                    <StackPanel Grid.Row="1"
+                                Orientation="Horizontal"
+                                Spacing="8"
+                                Margin="0,12,0,12">
+                        <ComboBox ItemsSource="{Binding Brands}"
+                                  SelectionChanged="OnBrandFilterChanged"
+                                  Width="180">
+                            <ComboBox.ItemTemplate>
+                                <DataTemplate DataType="vm:CatalogBrandSelectionViewModel">
+                                    <TextBlock Text="{Binding Value.Brand}" />
+                                </DataTemplate>
+                            </ComboBox.ItemTemplate>
+                        </ComboBox>
+                        <ComboBox ItemsSource="{Binding Types}"
+                                  SelectionChanged="OnTypeFilterChanged"
+                                  Width="180">
+                            <ComboBox.ItemTemplate>
+                                <DataTemplate DataType="vm:CatalogTypeSelectionViewModel">
+                                    <TextBlock Text="{Binding Value.Type}" />
+                                </DataTemplate>
+                            </ComboBox.ItemTemplate>
+                        </ComboBox>
+                    </StackPanel>
+                    <ScrollViewer Grid.Row="2">
                         <ItemsControl ItemsSource="{Binding Products}">
                             <ItemsControl.ItemsPanel>
                                 <ItemsPanelTemplate>
@@ -65,7 +68,7 @@
                             </ItemsControl.ItemTemplate>
                         </ItemsControl>
                     </ScrollViewer>
-                    <Button Grid.Row="2"
+                    <Button Grid.Row="3"
                             Content="Close"
                             HorizontalAlignment="Right"
                             Margin="0,12,0,0"
@@ -76,8 +79,7 @@
 
         <Border x:Name="LoginModal"
                 IsVisible="False"
-                Background="#80000000"
-                PointerPressed="OnLoginModalPointerPressed">
+                Background="#80000000">
             <Border HorizontalAlignment="Center"
                     VerticalAlignment="Center"
                     Background="#FFFFFF"
