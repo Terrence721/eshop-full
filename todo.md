@@ -1732,3 +1732,11 @@ All 3 heads: same mock data, same navigation logic, zero divergence — confirmi
 - Desktop CatalogView simplified to image-only with any-click opening a filtered catalog overlay (brand/type dropdowns, including "All"); login modal remains.
 - WebApp hotspots and filters remain pixel-precise and remain the primary interactive surface.
 - All changes through `644d409` pushed to `main`; remaining optional polish (exact desktop hotspot bounds) is deferred.
+
+---
+
+## Session summary - Playwright coverage and run cleanup (2026-10-25)
+
+- Added `e2e/WebAppHotspots.spec.ts` (5 passing tests) covering WebApp homepage hotspots, filtering, modal login, and header cleanup.
+- Added `e2e/ClientAppBrowser.spec.ts` plus `playwright.clientapp-browser.config.ts` for Avalonia browser-head smoke testing.
+- All changes pushed to `main`.
