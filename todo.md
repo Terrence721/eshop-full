@@ -1619,3 +1619,10 @@ All 3 heads: same mock data, same navigation logic, zero divergence — confirmi
 
 - Added B&R filter hotspot to the desktop homepage image (pointer-region based) opening the filtered catalog overlay.
 - Commit pushed to `main`.
+
+---
+
+## Session summary - Desktop Daybird hotspot (2026-10-25)
+
+- Added Daybird filter hotspot to the desktop homepage, opening the filtered catalog overlay.
+- Commit `9de2650` pushed to `main`.
