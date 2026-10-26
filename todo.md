@@ -1661,3 +1661,10 @@ All 3 heads: same mock data, same navigation logic, zero divergence — confirmi
 
 - Added Legend filter hotspot to the desktop homepage, opening the filtered catalog overlay.
 - Commit `8e5f7f1` pushed to `main`.
+
+---
+
+## Session summary - Desktop Quester hotspot (2026-10-25)
+
+- Added Quester filter hotspot to the desktop homepage, opening the filtered catalog overlay.
+- Commit pushed to `main`.
