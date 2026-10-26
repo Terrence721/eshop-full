@@ -1598,3 +1598,10 @@ All 3 heads: same mock data, same navigation logic, zero divergence — confirmi
 - Desktop `CatalogView` now uses a transparent avatar hit area that opens a styled login modal matching the WebApp (username/password, success message, auto-close); modal restyled as card.
 - Fixed click wiring by moving from `PointerPressed` to a `Button` overlay and added safe hit area.
 - Commits: `dd35b25` (pushed to `main`).
+
+---
+
+## Session summary - Desktop catalog hotspot + overlay (2026-10-25)
+
+- Desktop `CatalogView` now opens a filtered catalog overlay when clicking "All" in the homepage image (relative coordinate handling via a tunneling pointer handler).
+- Commit `e2d0c9c` pushed to `main`.
