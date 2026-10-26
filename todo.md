@@ -1717,3 +1717,10 @@ All 3 heads: same mock data, same navigation logic, zero divergence — confirmi
 
 - Added brand/type dropdown filters to the desktop homepage catalog overlay, plus "All" handling, mirroring the WebApp filter behavior.
 - Commit `167f0e7` pushed to `main`.
+
+---
+
+## Session summary - Desktop Bags hotspot (2026-10-25)
+
+- Added Bags filter hotspot to the desktop homepage; verified it now returns Bags instead of shoes/sneakers.
+- Commit `9b383d1` pushed to `main`.
