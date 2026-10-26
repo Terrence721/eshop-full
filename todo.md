@@ -1654,3 +1654,10 @@ All 3 heads: same mock data, same navigation logic, zero divergence — confirmi
 
 - Added Grolltex filter hotspot to the desktop homepage, opening the filtered catalog overlay.
 - Commit pushed to `main`.
+
+---
+
+## Session summary - Desktop Legend hotspot (2026-10-25)
+
+- Added Legend filter hotspot to the desktop homepage, opening the filtered catalog overlay.
+- Commit `8e5f7f1` pushed to `main`.
