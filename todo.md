@@ -1703,3 +1703,10 @@ All 3 heads: same mock data, same navigation logic, zero divergence — confirmi
 
 - Added Zephyr filter hotspot to the desktop homepage, opening the filtered catalog overlay.
 - Commit `643be05` pushed to `main`.
+
+---
+
+## Session summary - Desktop all filter hotspots wired (2026-10-25)
+
+- Completed the desktop homepage filter-hotspot set: All, AirStrider, B&R, Daybird, Gravitator (old+measured), Green Equipment, Grolltex, Legend, Quester, Raptor Elite, Solstix, WildRunner, XE, Zephyr. Each opens the filtered catalog overlay by brand.
+- Matching updates committed/pushed to `main`; scrum-board child issues created per label.
