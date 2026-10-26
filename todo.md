@@ -1724,3 +1724,11 @@ All 3 heads: same mock data, same navigation logic, zero divergence — confirmi
 
 - Added Bags filter hotspot to the desktop homepage; verified it now returns Bags instead of shoes/sneakers.
 - Commit `9b383d1` pushed to `main`.
+
+---
+
+## Session summary - Desktop/WebApp parity (final) (2026-10-25)
+
+- Desktop CatalogView simplified to image-only with any-click opening a filtered catalog overlay (brand/type dropdowns, including "All"); login modal remains.
+- WebApp hotspots and filters remain pixel-precise and remain the primary interactive surface.
+- All changes through `644d409` pushed to `main`; remaining optional polish (exact desktop hotspot bounds) is deferred.
