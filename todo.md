@@ -1689,3 +1689,10 @@ All 3 heads: same mock data, same navigation logic, zero divergence — confirmi
 
 - Added WildRunner filter hotspot to the desktop homepage, opening the filtered catalog overlay.
 - Commit pushed to `main`.
+
+---
+
+## Session summary - Desktop XE hotspot (2026-10-25)
+
+- Added XE filter hotspot to the desktop homepage, opening the filtered catalog overlay.
+- Commit pushed to `main`.
