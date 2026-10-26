@@ -1612,3 +1612,10 @@ All 3 heads: same mock data, same navigation logic, zero divergence — confirmi
 
 - Desktop `CatalogView` hotspot "All" and "AirStrider" wired through pointer-coordinate handling to open the filtered catalog overlay.
 - Commit(s): `5b2eaec` (pushed to `main`).
+
+---
+
+## Session summary - Desktop B&R hotspot (2026-10-25)
+
+- Added B&R filter hotspot to the desktop homepage image (pointer-region based) opening the filtered catalog overlay.
+- Commit pushed to `main`.
