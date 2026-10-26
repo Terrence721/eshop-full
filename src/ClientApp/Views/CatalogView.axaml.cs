@@ -17,7 +17,8 @@ namespace eShop.ClientApp.Views
 
         private void OnCatalogOverlayPressed(object? sender, PointerPressedEventArgs e)
         {
-            if (CatalogOverlay is not null && e.Source == CatalogOverlay && DataContext is CatalogViewModel vm)
+            var overlay = this.FindControl<Border>("CatalogOverlay");
+            if (overlay is not null && e.Source == overlay && DataContext is CatalogViewModel vm)
             {
                 vm.CloseCatalogOverlay();
             }
@@ -41,9 +42,10 @@ namespace eShop.ClientApp.Views
             var x = pos.X / bounds.Width;
             var y = pos.Y / bounds.Height;
 
-            if (LoginModal is not null && !LoginModal.IsVisible && x >= 0.86 && y <= 0.08 && !vm.IsCatalogOverlayVisible)
+            var loginModal = this.FindControl<Border>("LoginModal");
+            if (loginModal is not null && !loginModal.IsVisible && x >= 0.86 && y <= 0.08 && !vm.IsCatalogOverlayVisible)
             {
-                LoginModal.IsVisible = true;
+                loginModal.IsVisible = true;
                 return;
             }
 
@@ -57,13 +59,18 @@ namespace eShop.ClientApp.Views
 
         private void OnAvatarClick(object? sender, RoutedEventArgs e)
         {
-            if (LoginModal is not null)
+            var loginModal = this.FindControl<Border>("LoginModal");
+            if (loginModal is not null)
             {
-                LoginModal.IsVisible = true;
-                if (StatusText is not null) StatusText.Text = string.Empty;
-                if (SuccessText is not null) SuccessText.Text = string.Empty;
-                if (UsernameBox is not null) UsernameBox.Text = string.Empty;
-                if (PasswordBox is not null) PasswordBox.Text = string.Empty;
+                loginModal.IsVisible = true;
+                var statusText = this.FindControl<TextBlock>("StatusText");
+                var successText = this.FindControl<TextBlock>("SuccessText");
+                var usernameBox = this.FindControl<TextBox>("UsernameBox");
+                var passwordBox = this.FindControl<TextBox>("PasswordBox");
+                if (statusText is not null) statusText.Text = string.Empty;
+                if (successText is not null) successText.Text = string.Empty;
+                if (usernameBox is not null) usernameBox.Text = string.Empty;
+                if (passwordBox is not null) passwordBox.Text = string.Empty;
             }
         }
 
@@ -77,30 +84,36 @@ namespace eShop.ClientApp.Views
 
         private void OnCancelLogin(object? sender, RoutedEventArgs e)
         {
-            if (LoginModal is not null)
+            var loginModal = this.FindControl<Border>("LoginModal");
+            if (loginModal is not null)
             {
-                LoginModal.IsVisible = false;
+                loginModal.IsVisible = false;
             }
         }
 
         private async void OnSignIn(object? sender, RoutedEventArgs e)
         {
-            var username = UsernameBox?.Text ?? string.Empty;
-            var password = PasswordBox?.Text ?? string.Empty;
+            var usernameBox = this.FindControl<TextBox>("UsernameBox");
+            var passwordBox = this.FindControl<TextBox>("PasswordBox");
+            var statusText = this.FindControl<TextBlock>("StatusText");
+            var successText = this.FindControl<TextBlock>("SuccessText");
+            var loginModal = this.FindControl<Border>("LoginModal");
+            var username = usernameBox?.Text ?? string.Empty;
+            var password = passwordBox?.Text ?? string.Empty;
 
             if (string.IsNullOrWhiteSpace(username) || string.IsNullOrWhiteSpace(password))
             {
-                if (StatusText is not null) StatusText.Text = "Username and password are required.";
-                if (SuccessText is not null) SuccessText.Text = string.Empty;
+                if (statusText is not null) statusText.Text = "Username and password are required.";
+                if (successText is not null) successText.Text = string.Empty;
                 return;
             }
 
-            if (StatusText is not null) StatusText.Text = string.Empty;
-            if (SuccessText is not null) SuccessText.Text = $"Login successful. Welcome, {username}!";
+            if (statusText is not null) statusText.Text = string.Empty;
+            if (successText is not null) successText.Text = $"Login successful. Welcome, {username}!";
 
             await Task.Delay(900);
-            if (LoginModal is not null) LoginModal.IsVisible = false;
-            if (SuccessText is not null) SuccessText.Text = string.Empty;
+            if (loginModal is not null) loginModal.IsVisible = false;
+            if (successText is not null) successText.Text = string.Empty;
         }
 
         // Avalonia's ListBox has no bindable equivalent to MAUI CollectionView's
