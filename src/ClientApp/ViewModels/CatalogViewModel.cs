@@ -29,28 +29,6 @@ namespace eShop.ClientApp.ViewModels
 
         [ObservableProperty] public partial bool CatalogVisible { get; set; }
 
-        [ObservableProperty] public partial bool IsCatalogOverlayVisible { get; set; }
-
-        public Task ShowCatalogOverlayAsync(int? brandId, int? typeId)
-        {
-            IsCatalogOverlayVisible = true;
-
-            return IsBusyFor(
-                async () =>
-                {
-                    var allProducts = await _appEnvironmentService.CatalogService.GetCatalogAsync();
-                    var filteredProducts = allProducts.Where(item =>
-                        (brandId is null || item.CatalogBrandId == brandId) &&
-                        (typeId is null || item.CatalogTypeId == typeId));
-                    _products.ReloadData(filteredProducts);
-                });
-        }
-
-        public void CloseCatalogOverlay()
-        {
-            IsCatalogOverlayVisible = false;
-        }
-
         [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(CanFilter))]
         [NotifyCanExecuteChangedFor(nameof(ApplyFilterCommand))]
