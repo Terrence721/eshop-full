@@ -40,7 +40,6 @@ namespace eShop.ClientApp.Views
             if (bounds.Width <= 0 || bounds.Height <= 0) return;
             var x = pos.X / bounds.Width;
             var y = pos.Y / bounds.Height;
-            try { System.IO.File.AppendAllLines("C:/temp/desktop-hotspot.log", new[] { $"relative x={x:F4} y={y:F4}" }); } catch { }
 
             if (DataContext is not CatalogViewModel vm)
             {
@@ -59,7 +58,8 @@ namespace eShop.ClientApp.Views
             // (no duplicate needed)
             // Lower brand/type row.
             else if (x >= 0.050 && x <= 0.095 && y >= 0.740 && y <= 0.775) { brandId = 1; knownHotspot = true; } // Daybird
-            else if (x >= 0.110 && x <= 0.145 && y >= 0.930 && y <= 0.975) { brandId = 2; knownHotspot = true; } // Gravitator
+            else if (x >= 0.110 && x <= 0.145 && y >= 0.930 && y <= 0.975) { brandId = 2; knownHotspot = true; } // Gravitator (old row)
+            else if (x >= 0.110 && x <= 0.135 && y >= 0.750 && y <= 0.770) { brandId = 2; knownHotspot = true; } // Gravitator (measured)
             else if (x >= 0.070 && x <= 0.095 && y >= 0.795 && y <= 0.815) { brandId = 10; knownHotspot = true; } // Green Equipment
 
             if (overlayVisible && !knownHotspot)
