@@ -146,5 +146,82 @@ namespace eShop.EventBusKafka.UnitTests
 
             Assert.IsFalse(consumer.CloseCalled);
         }
+
+        [TestMethod]
+        public async Task PublishAsync_attaches_headers_container()
+        {
+            var producer = new FakeProducer();
+            IEventBus eventBus = CreateEventBus(producer: producer);
+
+            await eventBus.PublishAsync(new TestEvent());
+
+            Assert.IsNotNull(producer.LastMessage);
+            Assert.IsNotNull(producer.LastMessage!.Headers);
+        }
+
+        [TestMethod]
+        public async Task PublishAsync_serializes_the_event_into_the_message_body()
+        {
+            var producer = new FakeProducer();
+            var serializer = new SystemTextJsonEventSerializer(Options.Create(new EventBusSubscriptionInfo()));
+            var eventBus = new KafkaEventBus(
+                NullLogger<KafkaEventBus>.Instance,
+                new ServiceCollection().BuildServiceProvider(),
+                Options.Create(new EventBusOptions { SubscriptionClientName = "test" }),
+                Options.Create(new EventBusSubscriptionInfo()),
+                new KafkaTelemetry(),
+                serializer,
+                producer,
+                new FakeConsumer());
+
+            await eventBus.PublishAsync(new TestEvent());
+
+            Assert.IsNotNull(producer.LastMessage);
+            Assert.IsTrue(producer.LastMessage!.Value.Length > 0);
+        }
+
+        [TestMethod]
+        public async Task StartAsync_subscribes_when_there_are_subscriptions()
+        {
+            var consumer = new FakeConsumer();
+            var subscriptionInfo = new EventBusSubscriptionInfo();
+            subscriptionInfo.EventTypes[typeof(TestEvent).Name] = typeof(TestEvent);
+            var eventBus = CreateEventBus(consumer: consumer, subscriptionInfo: subscriptionInfo);
+
+            await eventBus.StartAsync(CancellationToken.None);
+
+            Assert.IsTrue(consumer.SubscribeCalled);
+        }
+
+        [TestMethod]
+        public async Task StopAsync_closes_the_consumer_when_it_was_subscribed()
+        {
+            var consumer = new FakeConsumer();
+            var subscriptionInfo = new EventBusSubscriptionInfo();
+            subscriptionInfo.EventTypes[typeof(TestEvent).Name] = typeof(TestEvent);
+            var eventBus = CreateEventBus(consumer: consumer, subscriptionInfo: subscriptionInfo);
+            await eventBus.StartAsync(CancellationToken.None);
+
+            await eventBus.StopAsync(CancellationToken.None);
+
+            Assert.IsTrue(consumer.CloseCalled);
+        }
+
+        [TestMethod]
+        public void Dispose_does_not_throw()
+        {
+            var eventBus = CreateEventBus();
+
+            eventBus.Dispose();
+        }
+
+        [TestMethod]
+        public async Task Dispose_makes_subsequent_stop_throw_object_disposed()
+        {
+            var eventBus = CreateEventBus();
+            eventBus.Dispose();
+
+            await Assert.ThrowsExactlyAsync<ObjectDisposedException>(async () => await eventBus.StopAsync(CancellationToken.None));
+        }
     }
 }

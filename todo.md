@@ -1761,3 +1761,20 @@ All 3 heads: same mock data, same navigation logic, zero divergence — confirmi
 
 - Added `ProgramCompositionTests.cs` using `WebApplicationFactory<Program>` to smoke-test the real startup pipeline (`IBasketRepository` registration).
 - Commit `15e01ca` pushed to `main`.
+
+---
+
+## Session summary - Test coverage expansion and Kafka stop fix (2026-10-27)
+
+- Expanded unit tests for low-coverage files:
+  - `RedisBasketRepository` (24 passing)
+  - `ActivityExtensions` (5 passing)
+  - `ResilientTransaction` (8 passing)
+  - `OpenApi.Extensions` / `OpenApiOptionsExtensions` (6 + 16 passing)
+  - `CatalogIntegrationEventService` (7 passing)
+  - `CatalogApi` handlers (26 passing)
+  - `KafkaEventBus` (13 passing)
+  - `OrderingContext` transactions (12 passing)
+  - `CreateOrderCommandValidator` (21 passing)
+- Fixed `KafkaEventBus.StopAsync` to wait for the consume loop before closing the consumer, eliminating a native librdkafka crash during host shutdown (Basket unit tests now 48/48 passing).
+- Added `Microsoft.EntityFrameworkCore.InMemory` and `Asp.Versioning.Http` test package references where needed.
