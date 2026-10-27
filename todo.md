@@ -1754,3 +1754,10 @@ All 3 heads: same mock data, same navigation logic, zero divergence — confirmi
 
 - Added assertions for IEventBus registration and IntegrationEventContext (OrderStartedIntegrationEvent serialization).
 - Commit `15a4f54` pushed to `main`.
+
+---
+
+## Session summary - Basket.API Program composition tests (2026-10-26)
+
+- Added `ProgramCompositionTests.cs` using `WebApplicationFactory<Program>` to smoke-test the real startup pipeline (`IBasketRepository` registration).
+- Commit `15e01ca` pushed to `main`.
