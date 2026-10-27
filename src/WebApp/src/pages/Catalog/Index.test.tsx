@@ -93,6 +93,16 @@ describe('CatalogIndex', () => {
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
   })
 
+  it('closes the login dialog by clicking the backdrop', async () => {
+    const user = userEvent.setup()
+    renderAt('/')
+
+    await user.click(screen.getAllByRole('button', { name: 'Log in' })[0])
+    await user.click(screen.getByRole('dialog'))
+
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
+  })
+
   it('activates every catalog hotspot', async () => {
     const user = userEvent.setup()
     renderAt('/')
@@ -116,5 +126,6 @@ describe('CatalogIndex', () => {
     await waitFor(() => {
       expect(screen.getByText('Welcome, bob!')).toBeInTheDocument()
     })
+    await user.click(screen.getByText('Welcome, bob!'))
   })
 })

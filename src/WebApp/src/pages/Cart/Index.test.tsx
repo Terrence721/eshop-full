@@ -1,6 +1,7 @@
-import { render, screen } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
 import { MemoryRouter } from 'react-router'
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
+import userEvent from '@testing-library/user-event'
 import { mockFetchByUrl } from '../../test/mockFetch'
 import CartIndex from './Index'
 
@@ -71,5 +72,23 @@ describe('CartIndex', () => {
 
     expect(await screen.findByRole('heading', { name: 'Shopping bag' })).toBeInTheDocument()
     expect(screen.queryByLabelText(/Quantity for/)).not.toBeInTheDocument()
+  })
+
+  it('changes a line quantity and propagates the update', async () => {
+    const fetchMock = mockFetchByUrl({
+      '/api/basket': { status: 200, body: [{ productId: 1, quantity: 2 }] },
+      '/remoteapi/catalog/api/catalog/items/1': { status: 200, body: { id: 1, name: 'Mug', description: null, price: 5, catalogTypeId: 1, catalogBrandId: 1 } },
+    })
+
+    renderWithRoutes()
+    await screen.findByText('Mug')
+
+    fetchMock.mockResolvedValueOnce({ ok: true, status: 200, json: vi.fn().mockResolvedValue([{ productId: 1, quantity: 3 }]) })
+    const input = screen.getByLabelText('Quantity for Mug')
+    const user = userEvent.setup()
+    await user.clear(input)
+    await user.type(input, '3')
+
+    await waitFor(() => expect(fetchMock).toHaveBeenCalledWith('/api/basket', expect.objectContaining({ method: 'PUT' })))
   })
 })
