@@ -96,4 +96,22 @@ describe('useAsync', () => {
 
     expect(result.current.data).toBe('from second call')
   })
+
+  it('drops a stale rejection when deps change before the first fetch resolves', async () => {
+    const first = deferred<string>()
+    const second = deferred<string>()
+    const fetcher = vi.fn().mockReturnValueOnce(first.promise).mockReturnValueOnce(second.promise)
+
+    const { result, rerender } = renderHook(({ id }: { id: number }) => useAsync(fetcher, [id]), {
+      initialProps: { id: 1 },
+    })
+
+    rerender({ id: 2 })
+    act(() => second.resolve('from second call'))
+    await waitFor(() => expect(result.current.data).toBe('from second call'))
+
+    act(() => first.reject(new Error('stale failure')))
+
+    expect(result.current.error).toBeNull()
+  })
 })
