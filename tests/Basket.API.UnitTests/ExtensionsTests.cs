@@ -1,5 +1,7 @@
 using eShop.Basket.API.Extensions;
 using eShop.Basket.API.Repositories;
+using eShop.Basket.API.IntegrationEvents.Events;
+using eShop.EventBus.Abstractions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
@@ -37,5 +39,24 @@ namespace eShop.Basket.API.UnitTests
             var serviceProvider = builder.Services.BuildServiceProvider();
             Assert.IsNotNull(serviceProvider);
         }
+
+
+        [TestMethod]
+        public void AddApplicationServices_registers_the_event_bus()
+        {
+            var builder = CreateBuilder();
+            builder.AddApplicationServices();
+
+            var serviceProvider = builder.Services.BuildServiceProvider();
+            Assert.IsNotNull(serviceProvider.GetService<IEventBus>());
+        }
+
+        [TestMethod]
+        public void IntegrationEventContext_can_serialize_order_started_integration_event()
+        {
+            var typeInfo = IntegrationEventContext.Default.GetTypeInfo(typeof(OrderStartedIntegrationEvent));
+            Assert.IsNotNull(typeInfo);
+        }
+
     }
 }
