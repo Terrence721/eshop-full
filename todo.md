@@ -1778,3 +1778,11 @@ All 3 heads: same mock data, same navigation logic, zero divergence — confirmi
   - `CreateOrderCommandValidator` (21 passing)
 - Fixed `KafkaEventBus.StopAsync` to wait for the consume loop before closing the consumer, eliminating a native librdkafka crash during host shutdown (Basket unit tests now 48/48 passing).
 - Added `Microsoft.EntityFrameworkCore.InMemory` and `Asp.Versioning.Http` test package references where needed.
+
+---
+
+## Session summary - Playwright AddItem e2e fix (2026-10-27)
+
+- Fixed `e2e/AddItemTest.spec.ts`: `Add to shopping bag` now waits for the basket `PUT /api/basket` response before navigating to `/cart`; the previous `/in your shopping bag/` assertion could pass on the initial `0 in your shopping bag` text before the mutation finished, leaving the cart empty. Marked the "Playwright coverage added for WebApp and ClientApp browser smoke tests" scrum-board item Done.
+- All 9 Playwright e2e tests pass (`Add item to the cart`, `Remove item from cart`, plus homepage/hotspot/browse tests).
+- Commit `25e9571` pushed to `main`.
