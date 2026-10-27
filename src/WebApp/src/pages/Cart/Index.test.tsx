@@ -61,4 +61,15 @@ describe('CartIndex', () => {
 
     expect(await screen.findByText(/failed: 500/)).toBeInTheDocument()
   })
+
+  it('ignores basket lines without matching catalog details', async () => {
+    mockFetchByUrl({
+      '/api/basket': { status: 200, body: [{ productId: 99, quantity: 1 }] },
+      '/remoteapi/catalog/api/catalog/items/99': { status: 404 },
+    })
+    renderWithRoutes()
+
+    expect(await screen.findByRole('heading', { name: 'Shopping bag' })).toBeInTheDocument()
+    expect(screen.queryByLabelText(/Quantity for/)).not.toBeInTheDocument()
+  })
 })

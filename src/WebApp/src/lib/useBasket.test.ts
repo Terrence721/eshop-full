@@ -40,6 +40,20 @@ describe('useBasket', () => {
     expect(fetchMock).toHaveBeenCalledWith('/api/basket', expect.objectContaining({ body: JSON.stringify([{ productId: 7, quantity: 2 }]) }))
   })
 
+  it('setQuantity updates an existing line in place', async () => {
+    const fetchMock = mockFetchByUrl({
+      '/api/basket': { status: 200, body: [{ productId: 7, quantity: 1 }] },
+    })
+    const { result } = renderHook(() => useBasket())
+    await waitFor(() => expect(result.current.items).toEqual([{ productId: 7, quantity: 1 }]))
+
+    fetchMock.mockResolvedValueOnce({ ok: true, status: 200, json: vi.fn().mockResolvedValue([{ productId: 7, quantity: 4 }]) })
+    await act(() => result.current.setQuantity(7, 4))
+
+    expect(fetchMock).toHaveBeenCalledWith('/api/basket', expect.objectContaining({ body: JSON.stringify([{ productId: 7, quantity: 4 }]) }))
+    expect(result.current.items).toEqual([{ productId: 7, quantity: 4 }])
+  })
+
   it('setQuantity to 0 removes the line', async () => {
     const fetchMock = mockFetchByUrl({
       '/api/basket': { status: 200, body: [{ productId: 7, quantity: 1 }] },

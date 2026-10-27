@@ -67,6 +67,11 @@ describe('CheckoutIndex', () => {
     await screen.findByLabelText('Street')
     await waitFor(() => expect(screen.getByLabelText('Street')).toHaveValue('1 Microsoft Way'))
 
+    await user.type(screen.getByLabelText('Street'), '!')
+    await user.type(screen.getByLabelText('City'), '!')
+    await user.type(screen.getByLabelText('State'), '!')
+    await user.type(screen.getByLabelText('Country'), '!')
+    await user.type(screen.getByLabelText('Zip code'), '!')
     fetchMock.mockResolvedValueOnce({ ok: true, status: 200, json: vi.fn() }) // createOrder
     fetchMock.mockResolvedValueOnce({ ok: true, status: 204, json: vi.fn() }) // clearBasket
     await user.click(screen.getByRole('button', { name: 'Place order' }))
