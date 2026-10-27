@@ -1740,3 +1740,10 @@ All 3 heads: same mock data, same navigation logic, zero divergence — confirmi
 - Added `e2e/WebAppHotspots.spec.ts` (5 passing tests) covering WebApp homepage hotspots, filtering, modal login, and header cleanup.
 - Added `e2e/ClientAppBrowser.spec.ts` plus `playwright.clientapp-browser.config.ts` for Avalonia browser-head smoke testing.
 - All changes pushed to `main`.
+
+---
+
+## Session summary - Basket.API Extensions tests (2026-10-26)
+
+- Added `ExtensionsTests.cs` verifying `AddApplicationServices` registers `IBasketRepository` and builds a service provider without throwing (configuration provided via in-memory strings).
+- Commit `eb0ca02` pushed to `main`.
