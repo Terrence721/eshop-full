@@ -2,6 +2,8 @@
 using eShop.Ordering.Domain.Events;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Diagnostics;
+using Microsoft.EntityFrameworkCore.Storage;
 using NSubstitute;
 
 namespace eShop.Ordering.Infrastructure.UnitTests
@@ -55,5 +57,95 @@ namespace eShop.Ordering.Infrastructure.UnitTests
 
             Assert.AreEqual(1, await context.Buyers.CountAsync());
         }
+
+    [TestMethod]
+    public void Constructor_with_mediator_sets_up_the_context()
+    {
+        var context = TestOrderingContext.Create(Substitute.For<IMediator>());
+
+        Assert.IsNotNull(context);
+        Assert.IsFalse(context.HasActiveTransaction);
+    }
+
+    [TestMethod]
+    public void Constructor_throws_when_mediator_is_null()
+    {
+        var options = new DbContextOptionsBuilder<OrderingContext>().UseInMemoryDatabase(Guid.NewGuid().ToString()).Options;
+
+        Assert.ThrowsExactly<ArgumentNullException>(() => new OrderingContext(options, null!));
+    }
+
+    private static OrderingContext CreateTransactionalContext(IMediator mediator) =>
+        new(new DbContextOptionsBuilder<OrderingContext>()
+            .UseInMemoryDatabase(Guid.NewGuid().ToString())
+            .ConfigureWarnings(w => w.Ignore(InMemoryEventId.TransactionIgnoredWarning))
+            .Options, mediator);
+
+    [TestMethod]
+    public async Task BeginTransactionAsync_returns_a_transaction_on_the_first_call()
+    {
+        var context = CreateTransactionalContext(Substitute.For<IMediator>());
+
+        var transaction = await context.BeginTransactionAsync();
+
+        Assert.IsNotNull(transaction);
+        Assert.IsTrue(context.HasActiveTransaction);
+    }
+
+    [TestMethod]
+    public async Task BeginTransactionAsync_returns_null_when_a_transaction_is_already_active()
+    {
+        var context = CreateTransactionalContext(Substitute.For<IMediator>());
+        await context.BeginTransactionAsync();
+
+        var second = await context.BeginTransactionAsync();
+
+        Assert.IsNull(second);
+    }
+
+    [TestMethod]
+    public async Task CommitTransactionAsync_throws_when_transaction_is_null()
+    {
+        var context = CreateTransactionalContext(Substitute.For<IMediator>());
+
+        await Assert.ThrowsExactlyAsync<ArgumentNullException>(() => context.CommitTransactionAsync(null!));
+    }
+
+    [TestMethod]
+    public async Task CommitTransactionAsync_commits_and_clears_the_current_transaction()
+    {
+        var context = CreateTransactionalContext(Substitute.For<IMediator>());
+        var transaction = await context.BeginTransactionAsync();
+        var buyer = new Buyer("identity-1", "Alice");
+        context.Add(buyer);
+
+        await context.CommitTransactionAsync(transaction!);
+
+        Assert.IsFalse(context.HasActiveTransaction);
+        Assert.IsNull(context.GetCurrentTransaction());
+        Assert.AreEqual(1, await context.Buyers.CountAsync());
+    }
+
+    [TestMethod]
+    public async Task RollbackTransaction_clears_the_current_transaction()
+    {
+        var context = CreateTransactionalContext(Substitute.For<IMediator>());
+        await context.BeginTransactionAsync();
+
+        context.RollbackTransaction();
+
+        Assert.IsFalse(context.HasActiveTransaction);
+        Assert.IsNull(context.GetCurrentTransaction());
+    }
+
+    [TestMethod]
+    public void RollbackTransaction_does_not_throw_when_no_transaction_is_active()
+    {
+        var context = TestOrderingContext.Create(Substitute.For<IMediator>());
+
+        context.RollbackTransaction();
+
+        Assert.IsFalse(context.HasActiveTransaction);
+    }
     }
 }

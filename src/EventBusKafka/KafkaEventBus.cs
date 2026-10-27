@@ -23,6 +23,7 @@
         private readonly EventBusSubscriptionInfo _subscriptionInfo = subscriptionOptions.Value;
         private readonly CancellationTokenSource _stoppingCts = new();
         private bool _isConsuming;
+        private Task? _consumeTask;
 
         public async Task PublishAsync(IntegrationEvent @event)
         {
@@ -75,8 +76,11 @@
             _isConsuming = true;
             consumer.Subscribe(topics);
 
-            // Messaging is async so we don't need to wait for it to complete.
-            _ = Task.Factory.StartNew(() => ConsumeLoop(_stoppingCts.Token), TaskCreationOptions.LongRunning);
+            // Messaging is async so we don't need to wait for it to complete. Keep
+            // a reference so StopAsync can wait for the loop to exit before closing
+            // the consumer -- closing it while Consume is still on another thread
+            // crashes the native librdkafka poll (0xC0000005).
+            _consumeTask = Task.Factory.StartNew(() => ConsumeLoop(_stoppingCts.Token), TaskCreationOptions.LongRunning);
 
             return Task.CompletedTask;
         }
@@ -206,19 +210,28 @@
             }
         }
 
-        public Task StopAsync(CancellationToken cancellationToken)
+        public async Task StopAsync(CancellationToken cancellationToken)
         {
             _stoppingCts.Cancel();
 
+            if (_consumeTask is not null)
+            {
+                try
+                {
+                    await Task.WhenAny(_consumeTask, Task.Delay(TimeSpan.FromSeconds(5))).ConfigureAwait(false);
+                }
+                catch
+                {
+                }
+            }
+
             // Closing the consumer (rather than just abandoning it, which RabbitMQEventBus's own
-            // no-op StopAsync effectively does for its channel) commits final offsets and leaves the
-            // consumer group cleanly, so the next startup doesn't wait out a rebalance timeout.
+            // no-op StopAsync effectively does for its channel) commits final offsets and leaves
+            // the consumer group cleanly, so the next startup doesn't wait out a rebalance timeout.
             if (_isConsuming)
             {
                 consumer.Close();
             }
-
-            return Task.CompletedTask;
         }
     }
 }

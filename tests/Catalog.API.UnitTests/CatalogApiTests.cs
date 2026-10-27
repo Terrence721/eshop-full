@@ -262,5 +262,82 @@ namespace eShop.Catalog.API.UnitTests
 
             Assert.AreEqual(Path.Combine("/app", "Pics", "1.webp"), path);
         }
+
+    [TestMethod]
+    public async Task GetAllItemsV1_forwards_to_GetAllItems_without_filters()
+    {
+        using var context = await SeededContext();
+
+        var result = await CatalogApi.GetAllItemsV1(new PaginationRequest(), CreateServices(context));
+
+        Assert.AreEqual(3, result.Value!.Count);
+    }
+
+    [TestMethod]
+    public async Task GetItemsByName_returns_only_items_whose_name_starts_with_the_requested_name()
+    {
+        using var context = await SeededContext();
+
+        var result = await CatalogApi.GetItemsByName(new PaginationRequest(), CreateServices(context), "Beta");
+
+        Assert.AreEqual(1, result.Value!.Count);
+        Assert.AreEqual("Beta Widget", result.Value!.Data.Single().Name);
+    }
+
+    [TestMethod]
+    public async Task GetItemsByIds_returns_an_empty_list_when_no_ids_are_requested()
+    {
+        using var context = await SeededContext();
+
+        var result = await CatalogApi.GetItemsByIds(CreateServices(context), []);
+
+        Assert.IsEmpty(result.Value!);
+    }
+
+    [TestMethod]
+    public async Task GetItemsByBrandAndTypeId_filters_by_type_and_optional_brand()
+    {
+        using var context = await SeededContext();
+        context.CatalogTypes.Add(new CatalogType("Other") { Id = 2 });
+        context.CatalogItems.Add(new CatalogItem("Delta") { Id = 4, CatalogBrandId = 1, CatalogTypeId = 2, Price = 40 });
+        await context.SaveChangesAsync();
+
+        var byTypeAndBrand = await CatalogApi.GetItemsByBrandAndTypeId(new PaginationRequest(), CreateServices(context), 1, 1);
+        var byTypeOnly = await CatalogApi.GetItemsByBrandAndTypeId(new PaginationRequest(), CreateServices(context), 1, null);
+
+        Assert.AreEqual(3, byTypeAndBrand.Value!.Count);
+        Assert.AreEqual(3, byTypeOnly.Value!.Count);
+    }
+
+    [TestMethod]
+    public async Task GetItemsByBrandId_returns_items_for_the_requested_brand()
+    {
+        using var context = await SeededContext();
+
+        var result = await CatalogApi.GetItemsByBrandId(new PaginationRequest(), CreateServices(context), 1);
+
+        Assert.AreEqual(3, result.Value!.Count);
+    }
+
+    [TestMethod]
+    public async Task GetItemsByBrandId_returns_all_items_when_brand_is_null()
+    {
+        using var context = await SeededContext();
+
+        var result = await CatalogApi.GetItemsByBrandId(new PaginationRequest(), CreateServices(context), null);
+
+        Assert.AreEqual(3, result.Value!.Count);
+    }
+
+    [TestMethod]
+    public async Task GetItemById_returns_bad_request_for_a_negative_id()
+    {
+        using var context = await SeededContext();
+
+        var result = await CatalogApi.GetItemById(new DefaultHttpContext(), CreateServices(context), -5);
+
+        Assert.IsInstanceOfType<BadRequest<ProblemDetails>>(result.Result);
+    }
+
     }
 }

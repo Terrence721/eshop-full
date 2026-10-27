@@ -1,6 +1,8 @@
 ﻿using System.Text;
 using Asp.Versioning;
 using Asp.Versioning.ApiExplorer;
+using Microsoft.AspNetCore.OpenApi;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Primitives;
 
 namespace eShop.ServiceDefaults.UnitTests
@@ -128,5 +130,82 @@ namespace eShop.ServiceDefaults.UnitTests
                 $"Catalog API. This API version has been deprecated. The API will be sunset on {expectedDate}.",
                 result);
         }
+
+    [TestMethod]
+    public void GetScopes_returns_the_scopes_dictionary()
+    {
+        var builder = new ConfigurationBuilder().AddInMemoryCollection(
+        [
+            new("Identity:Scopes:api", "API access"),
+            new("Identity:Scopes:offline_access", "Offline access"),
+        ]).Build();
+        var section = builder.GetSection("Identity");
+
+        var scopes = OpenApiOptionsExtensions.GetScopes(section);
+
+        Assert.HasCount(2, scopes);
+        Assert.AreEqual("API access", scopes["api"]);
+        Assert.AreEqual("Offline access", scopes["offline_access"]);
+    }
+
+    [TestMethod]
+    public void GetScopes_throws_when_the_Scopes_section_is_missing()
+    {
+        var builder = new ConfigurationBuilder().AddInMemoryCollection([]).Build();
+        var section = builder.GetSection(string.Empty);
+
+        Assert.ThrowsExactly<InvalidOperationException>(() => OpenApiOptionsExtensions.GetScopes(section));
+    }
+
+    [TestMethod]
+    public void ApplyApiVersionInfo_returns_the_same_options_and_registers_a_transformer()
+    {
+        var options = new OpenApiOptions();
+
+        var result = options.ApplyApiVersionInfo("Title", "Description");
+
+        Assert.AreSame(options, result);
+    }
+
+    [TestMethod]
+    public void ApplySecuritySchemeDefinitions_returns_the_same_options_and_registers_a_transformer()
+    {
+        var options = new OpenApiOptions();
+
+        var result = options.ApplySecuritySchemeDefinitions();
+
+        Assert.AreSame(options, result);
+    }
+
+    [TestMethod]
+    public void ApplyAuthorizationChecks_returns_the_same_options_and_registers_a_transformer()
+    {
+        var options = new OpenApiOptions();
+
+        var result = options.ApplyAuthorizationChecks(["scope"]);
+
+        Assert.AreSame(options, result);
+    }
+
+    [TestMethod]
+    public void ApplyOperationDeprecatedStatus_returns_the_same_options_and_registers_a_transformer()
+    {
+        var options = new OpenApiOptions();
+
+        var result = options.ApplyOperationDeprecatedStatus();
+
+        Assert.AreSame(options, result);
+    }
+
+    [TestMethod]
+    public void ApplyApiVersionDescription_returns_the_same_options_and_registers_a_transformer()
+    {
+        var options = new OpenApiOptions();
+
+        var result = options.ApplyApiVersionDescription();
+
+        Assert.AreSame(options, result);
+    }
+
     }
 }
