@@ -1747,3 +1747,10 @@ All 3 heads: same mock data, same navigation logic, zero divergence — confirmi
 
 - Added `ExtensionsTests.cs` verifying `AddApplicationServices` registers `IBasketRepository` and builds a service provider without throwing (configuration provided via in-memory strings).
 - Commit `eb0ca02` pushed to `main`.
+
+---
+
+## Session summary - Basket.API Extensions stricter coverage (2026-10-26)
+
+- Added assertions for IEventBus registration and IntegrationEventContext (OrderStartedIntegrationEvent serialization).
+- Commit `15a4f54` pushed to `main`.
