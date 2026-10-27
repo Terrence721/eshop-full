@@ -4,11 +4,6 @@ import { STORAGE_STATE } from '../playwright.config';
 setup('Login', async ({ page }) => {
   await page.goto('/');
 
-  if (process.env.PLAYWRIGHT_FULL_LOGIN !== '1') {
-    setup.skip();
-    return;
-  }
-
   const username = process.env.USERNAME1;
   const password = process.env.PASSWORD;
   if (!username || !password) {
