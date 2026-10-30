@@ -59,7 +59,7 @@ jobs:
       - name: Install Workloads
         shell: pwsh
         run: |
-          dotnet workload install android --version 10.0.401
+          dotnet workload install android
 
       # Business logic (Services/ViewModels) and real Views are done and live-verified
       # (2026-10-16, see todo.md) -- Build steps enabled. Test stays commented out: no
@@ -109,7 +109,7 @@ jobs:
 
       # Pinned to workload set 10.0.401 -- see the windows job's comment above for why.
       - name: Install Android workload
-        run: dotnet workload install android --version 10.0.401
+        run: dotnet workload install android
 
       # Confirmed locally: a plain `dotnet build -c Release` for net10.0-android does not run
       # linking/trimming -- that's a `dotnet publish` concern here -- so no IL20xx NoWarn
@@ -177,7 +177,7 @@ jobs:
       # wasm-tools is only needed for *publish* (the AOT/linking step that produces a real,
       # runnable wwwroot bundle) -- confirmed locally that `dotnet build` alone doesn't need it.
       - name: Install wasm-tools workload
-        run: dotnet workload install wasm-tools --version 10.0.401
+        run: dotnet workload install wasm-tools
 
       - name: Publish Browser
         run: dotnet publish src/ClientApp.Browser/ClientApp.Browser.csproj -c Release
