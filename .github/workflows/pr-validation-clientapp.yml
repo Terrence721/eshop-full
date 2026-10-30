@@ -65,6 +65,13 @@ jobs:
           dotnet --list-sdks
           dotnet workload list
           Write-Host "DOTNET_ROOT=$env:DOTNET_ROOT"
+
+      - name: Show Android environment
+        shell: pwsh
+        run: |
+          Write-Host "ANDROID_HOME=$env:ANDROID_HOME"
+          Write-Host "ANDROID_SDK_ROOT=$env:ANDROID_SDK_ROOT"
+          Get-ChildItem -Recurse "C:\Program Files\dotnet" -Filter "Mono.Android.dll" -ErrorAction SilentlyContinue | Select-Object -First 3 FullName
       - name: Install Workloads
         shell: pwsh
         run: |
