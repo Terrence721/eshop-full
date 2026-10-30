@@ -50,7 +50,7 @@ jobs:
       - name: Setup .NET (global.json)
         uses: actions/setup-dotnet@v6
         with:
-          dotnet-version: 10.0.400
+          dotnet-version: 10.0.402
 
       - name: Update Workloads
         run: dotnet workload update
@@ -125,7 +125,7 @@ jobs:
       - name: Setup .NET (global.json)
         uses: actions/setup-dotnet@v6
         with:
-          dotnet-version: 10.0.400
+          dotnet-version: 10.0.402
 
       # Pinned to workload set 10.0.401 -- see the windows job's comment above for why.
       - name: Install Android workload
@@ -195,7 +195,7 @@ jobs:
       - name: Setup .NET (global.json)
         uses: actions/setup-dotnet@v6
         with:
-          dotnet-version: 10.0.400
+          dotnet-version: 10.0.402
 
       # wasm-tools is only needed for *publish* (the AOT/linking step that produces a real,
       # runnable wwwroot bundle) -- confirmed locally that `dotnet build` alone doesn't need it.
