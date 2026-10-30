@@ -43,9 +43,9 @@ jobs:
         uses: actions/cache@v6
         with:
           path: C:\Program Files\dotnet
-          key: ${{ runner.os }}-dotnet-${{ hashFiles('global.json', '.github/workflows/pr-validation-clientapp.yml') }}
+          key: ${{ runner.os }}-dotnet-v2-${{ hashFiles('global.json', '.github/workflows/pr-validation-clientapp.yml') }}
           restore-keys: |
-            ${{ runner.os }}-dotnet-
+            ${{ runner.os }}-dotnet-v2-
 
       - name: Setup .NET (global.json)
         uses: actions/setup-dotnet@v6
@@ -118,9 +118,9 @@ jobs:
         uses: actions/cache@v6
         with:
           path: /home/runner/.dotnet
-          key: ${{ runner.os }}-dotnet-${{ hashFiles('global.json', '.github/workflows/pr-validation-clientapp.yml') }}
+          key: ${{ runner.os }}-dotnet-v2-${{ hashFiles('global.json', '.github/workflows/pr-validation-clientapp.yml') }}
           restore-keys: |
-            ${{ runner.os }}-dotnet-
+            ${{ runner.os }}-dotnet-v2-
 
       - name: Setup .NET (global.json)
         uses: actions/setup-dotnet@v6
@@ -188,9 +188,9 @@ jobs:
         uses: actions/cache@v6
         with:
           path: /home/runner/.dotnet
-          key: ${{ runner.os }}-dotnet-${{ hashFiles('global.json', '.github/workflows/pr-validation-clientapp.yml') }}
+          key: ${{ runner.os }}-dotnet-v2-${{ hashFiles('global.json', '.github/workflows/pr-validation-clientapp.yml') }}
           restore-keys: |
-            ${{ runner.os }}-dotnet-
+            ${{ runner.os }}-dotnet-v2-
 
       - name: Setup .NET (global.json)
         uses: actions/setup-dotnet@v6
