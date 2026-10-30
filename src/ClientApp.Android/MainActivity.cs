@@ -13,3 +13,5 @@ namespace eShop.ClientApp.Android
     {
     }
 }
+
+// build fix retry
