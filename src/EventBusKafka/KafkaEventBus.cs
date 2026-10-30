@@ -80,7 +80,11 @@
             // a reference so StopAsync can wait for the loop to exit before closing
             // the consumer -- closing it while Consume is still on another thread
             // crashes the native librdkafka poll (0xC0000005).
-            _consumeTask = Task.Factory.StartNew(() => ConsumeLoop(_stoppingCts.Token), TaskCreationOptions.LongRunning);
+            // Task.Run (rather than Task.Factory.StartNew) unwraps the returned Task so _consumeTask
+            // tracks the whole consume loop, not just its synchronous start -- otherwise StopAsync
+            // would believe the loop has finished while native polling is still in flight and close
+            // the consumer out from under it (0xC0000005).
+            _consumeTask = Task.Run(() => ConsumeLoop(_stoppingCts.Token));
 
             return Task.CompletedTask;
         }
@@ -93,7 +97,11 @@
 
                 try
                 {
-                    result = consumer.Consume(cancellationToken);
+                    // Use a short poll timeout instead of Consume(cancellationToken): cancelling
+                    // the token inside librdkafka's native poll has been observed to crash the
+                    // process with 0xC0000005 (rd_kafka_consumer_poll), so the loop instead
+                    // checks the token between polls and lets each poll return promptly.
+                    result = consumer.Consume(TimeSpan.FromMilliseconds(100));
                 }
                 catch (OperationCanceledException)
                 {
@@ -230,7 +238,17 @@
             // the consumer group cleanly, so the next startup doesn't wait out a rebalance timeout.
             if (_isConsuming)
             {
-                consumer.Close();
+                // The underlying librdkafka handle may already have been destroyed by the time
+                // StopAsync runs (e.g. when Kafka was unreachable during startup or the consumer
+                // was partially disposed), in which case Close() throws ObjectDisposedException.
+                // Treat that as "already closed" and never let hosted-service teardown fail the host.
+                try
+                {
+                    consumer.Close();
+                }
+                catch (ObjectDisposedException)
+                {
+                }
             }
         }
     }
