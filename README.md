@@ -131,3 +131,5 @@ For more information on contributing to this repo, read [the contribution docume
 ## Acknowledgment
 
 Built from Microsoft's [dotnet/eShop](https://github.com/dotnet/eShop) reference application. For the original, upstream-maintained version — including Azure OpenAI integration and Azure Developer CLI deployment, both out of scope until this fork is runnable end-to-end — see the source repo directly.
+
+<!-- trigger 2 -->
