@@ -58,6 +58,13 @@ jobs:
       # Pinned to workload set 10.0.401 -- an unpinned install grabs whatever's newest, which
       # has previously defaulted other net10.0-* workloads to packs requiring not-yet-GA
       # toolchain versions no runner image ships (the exact failure mode this pin avoids).
+      - name: Diagnose .NET/Android workload
+        shell: pwsh
+        run: |
+          dotnet --version
+          dotnet --list-sdks
+          dotnet workload list
+          Write-Host "DOTNET_ROOT=$env:DOTNET_ROOT"
       - name: Install Workloads
         shell: pwsh
         run: |
