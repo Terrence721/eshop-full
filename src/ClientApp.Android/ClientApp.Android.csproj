@@ -2,7 +2,13 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>net10.0-android</TargetFramework>
+    <!-- GitHub's automatic dependency-submission action runs `dotnet restore` on every
+         .csproj without installing the .NET Android workload, which fails the whole
+         submission. When running on GitHub Actions, target plain net10.0 so the
+         project's dependencies can still be collected; real Android builds (which
+         set neither variable) keep targeting net10.0-android. -->
+    <TargetFramework Condition="'$(GITHUB_ACTIONS)' == 'true'">net10.0</TargetFramework>
+    <TargetFramework Condition="'$(GITHUB_ACTIONS)' != 'true'">net10.0-android</TargetFramework>
     <SupportedOSPlatformVersion>23</SupportedOSPlatformVersion>
     <ApplicationId>com.companyname.eshop</ApplicationId>
     <ApplicationVersion>1</ApplicationVersion>
@@ -11,7 +17,7 @@
     <AndroidEnableProfiledAot>false</AndroidEnableProfiledAot>
   </PropertyGroup>
 
-  <ItemGroup>
+  <ItemGroup Condition="'$(GITHUB_ACTIONS)' != 'true'">
     <PackageReference Include="Avalonia.Android" />
   </ItemGroup>
 
