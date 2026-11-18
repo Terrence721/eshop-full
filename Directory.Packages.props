@@ -2,7 +2,7 @@
   <PropertyGroup>
     <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
     <CentralPackageTransitivePinningEnabled>true</CentralPackageTransitivePinningEnabled>
-    <DotnetPackagesVersion>10.0.14</DotnetPackagesVersion>
+    <DotnetPackagesVersion>10.0.15</DotnetPackagesVersion>
     <MicrosoftExtensionsVersion>10.11.0</MicrosoftExtensionsVersion>
     <AspireVersion>13.6.5</AspireVersion>
     <AspireUnstablePackagesVersion>13.4.6-preview.1.26319.6</AspireUnstablePackagesVersion>
@@ -46,7 +46,7 @@
     <PackageVersion Include="Microsoft.Extensions.AI" Version="10.6.0" />
     <PackageVersion Include="Microsoft.Extensions.ApiDescription.Server" Version="$(DotnetPackagesVersion)" />
     <PackageVersion Include="Microsoft.Extensions.Identity.Stores" Version="$(DotnetPackagesVersion)" />
-    <PackageVersion Include="Microsoft.OpenApi" Version="2.12.2" />
+    <PackageVersion Include="Microsoft.OpenApi" Version="2.13.0" />
     <PackageVersion Include="MessagePack" Version="2.5.307" />
     <PackageVersion Include="MSTest" Version="4.3.3" />
     <!-- Microsoft marks this extension experimental: API/CLI options/report format may change without notice. -->
