@@ -163,7 +163,6 @@ jobs:
             # signed if one exists). The glob covers both com.companyname.eshop.apk
             # and com.companyname.eshop-Signed.apk.
             APK_PATH=$(find artifacts/bin/ClientApp.Android -name "*.apk" -path "*release_android-x64*" | head -n 1) && echo "Installing: $APK_PATH" && adb install "$APK_PATH"
-
             # monkey resolves and starts the app's own launcher activity, so nothing here needs
             # to know the mangled Java class name .NET for Android generates for MainActivity.
             adb shell monkey -p com.companyname.eshop -c android.intent.category.LAUNCHER 1
