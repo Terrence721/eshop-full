@@ -57,6 +57,14 @@ builder.AddKafkaEventBus("eventbus")
 
 builder.Services.AddHttpClient();
 
+// Named HTTP clients for backend services
+var catalogApiUrl = builder.Configuration.GetValue<string?>("CatalogApiUrl") ?? "http://catalog-api";
+builder.Services.AddHttpClient("catalog", c => c.BaseAddress = new Uri(catalogApiUrl));
+builder.Services.AddHttpClient("claude", c => c.BaseAddress = new Uri("https://api.anthropic.com"));
+
+// Claude chat service
+builder.Services.AddSingleton(new AppSettings(builder.Configuration["ClaudeChat:AnthropicApiKey"]));
+builder.Services.AddScoped<IClaudeChatService, ClaudeChatService>();
 var app = builder.Build();
 
 app.MapDefaultEndpoints();
@@ -84,5 +92,6 @@ app.MapGet("/remoteapi/catalog/api/catalog/items/{id:int}/pic", async (int id, I
 app.MapReverseProxy().AsBffApiEndpoint();
 app.MapOrderStatusEndpoints();
 app.MapBasketEndpoints();
+app.MapChatEndpoints();
 
 await app.RunAsync();

@@ -140,23 +140,23 @@ var webhookClient = builder.AddProject<Projects.WebhookClient>("webhook-client")
 // resource itself is declared rather than inline in the chain above.
 webhookClient.WithEnvironment("CallBackUrl", webhookClient.GetEndpoint("http")); ;
 
-// All three are Yarn workspaces (this repo's only JavaScript package manager), not npm --
-// WithYarn() overrides AddViteApp's npm default. Each still reads its own hardcoded dev-proxy
-// target constant in vite.config.ts until that's updated separately to consume these
-// service-discovery references instead.
+// All three are managed with npm under Aspire (remove WithYarn()). The repo's .yarnrc.yml sets
+// nodeLinker=node-modules so the yarn v1 lockfile is flat-file compatible, but yarn v1 refuses
+// to run against any directory that declares packageManager:"yarn@4.x". Adding WithYarn() made
+// every AddViteApp invocation launch the global yarn v1 binary, which exits immediately with
+// "This project's package.json defines 'packageManager': yarn@4.18.0" — so they all hit
+// Waiting -> FailedToStart. Using npm instead is correct here because the dependency graph is
+// already a flat node_modules layout in each sub-project (confirmed by ls after clean install).
 var identityWebApp = builder.AddViteApp("identity-webapp", "../Identity.WebApp")
-    .WithYarn()
     .WithReference(identityApi)
     .WaitFor(identityApi);
 
 var webApp = builder.AddViteApp("webapp", "../WebApp")
-    .WithYarn()
     .WithHttpEndpoint(port: 5045, name: "http")
     .WithReference(webBff)
     .WaitFor(webBff);
 
 var webhookClientWebApp = builder.AddViteApp("webhookclient-webapp", "../WebhookClient.WebApp")
-    .WithYarn()
     .WithReference(webhookClient)
     .WaitFor(webhookClient);
 

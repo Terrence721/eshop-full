@@ -14,6 +14,7 @@
   </PropertyGroup>
   <ItemGroup>
     <!-- Version together with Aspire -->
+    <PackageVersion Include="Anthropic" Version="13.10.0" />
     <PackageVersion Include="Aspire.Confluent.Kafka" Version="$(AspireVersion)" />
     <PackageVersion Include="Aspire.Hosting" Version="$(AspireVersion)" />
     <PackageVersion Include="Aspire.Hosting.Azure.CognitiveServices" Version="$(AspireVersion)" />
@@ -42,6 +43,7 @@
     <PackageVersion Include="Microsoft.AspNetCore.Mvc.Testing" Version="$(DotnetPackagesVersion)" />
     <PackageVersion Include="Microsoft.AspNetCore.OpenApi" Version="$(DotnetPackagesVersion)" />
     <PackageVersion Include="Microsoft.AspNetCore.TestHost" Version="$(DotnetPackagesVersion)" />
+    <PackageVersion Include="Microsoft.Extensions.AI" Version="10.6.0" />
     <PackageVersion Include="Microsoft.Extensions.ApiDescription.Server" Version="$(DotnetPackagesVersion)" />
     <PackageVersion Include="Microsoft.Extensions.Identity.Stores" Version="$(DotnetPackagesVersion)" />
     <PackageVersion Include="Microsoft.OpenApi" Version="2.12.2" />
@@ -147,4 +149,3 @@
     <PackageVersion Include="Microsoft.Extensions.Logging.Debug" Version="$(DotnetPackagesVersion)" />
   </ItemGroup>
 </Project>
-
