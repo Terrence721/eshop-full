@@ -35,7 +35,7 @@ export default defineConfig({
   projects: [
     {
       name: 'setup',
-      testMatch: '**/setup.test.ts',
+      testMatch: '**/*.setup.ts',
     },
     {
       name: 'e2e tests logged in',
@@ -48,41 +48,7 @@ export default defineConfig({
     {
       name: 'e2e tests without logged in',
       testMatch: ['**/BrowseItemTest.spec.ts', '**/WebAppHotspots.spec.ts'],
-    }
-    // {
-    //   name: 'chromium',
-    //   use: { ...devices['Desktop Chrome'] },
-    // },
-
-    // {
-    //   name: 'firefox',
-    //   use: { ...devices['Desktop Firefox'] },
-    // },
-
-    // {
-    //   name: 'webkit',
-    //   use: { ...devices['Desktop Safari'] },
-    // },
-
-    /* Test against mobile viewports. */
-    // {
-    //   name: 'Mobile Chrome',
-    //   use: { ...devices['Pixel 5'] },
-    // },
-    // {
-    //   name: 'Mobile Safari',
-    //   use: { ...devices['iPhone 12'] },
-    // },
-
-    /* Test against branded browsers. */
-    // {
-    //   name: 'Microsoft Edge',
-    //   use: { ...devices['Desktop Edge'], channel: 'msedge' },
-    // },
-    // {
-    //   name: 'Google Chrome',
-    //   use: { ...devices['Desktop Chrome'], channel: 'chrome' },
-    // },
+    },
   ],
 
   /* Run your local dev server before starting the tests */
