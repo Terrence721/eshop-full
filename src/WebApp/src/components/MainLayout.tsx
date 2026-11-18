@@ -1,4 +1,5 @@
 import { Link, Outlet } from 'react-router'
+import { ChatSidebar } from './ChatSidebar'
 
 // Mirrors Layout/MainLayout.razor -- the title link uses react-router's
 // Link, not a plain <a>, since Blazor's router intercepts same-origin
@@ -14,8 +15,11 @@ export function MainLayout() {
         </h1>
       </header>
 
-      <main>
-        <Outlet />
+      <main style={{ display: 'flex', height: '100vh', gap: '1rem', padding: '1rem' }}>
+        <div style={{ flex: 1 }}>
+          <Outlet />
+        </div>
+        <ChatSidebar />
       </main>
     </>
   )

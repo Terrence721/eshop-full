@@ -1,6 +1,9 @@
 import { test as setup, expect } from '@playwright/test';
 import { STORAGE_STATE } from '../playwright.config';
 
+// Identity API endpoint - login happens on Identity.API (port 5223), not WebApp (5045)
+const IDENTITY_API_URL = process.env.IDENTITY_API_URL ?? 'http://localhost:5223';
+
 setup('Login', async ({ page }) => {
   await page.goto('/');
 
@@ -12,29 +15,21 @@ setup('Login', async ({ page }) => {
   }
 
   try {
-    await page.goto('/user/login?returnUrl=%2F');
-    await page.waitForURL(/localhost:5223/, { timeout: 30000 }).catch(() => {});
-
-    const redirectUrl = await page.evaluate(async ({ username, password }) => {
-      const url = new URL(window.location.href);
-      const returnUrl = url.searchParams.get('ReturnUrl') ?? url.searchParams.get('returnUrl') ?? '/';
-
-      const response = await fetch('/Account/Login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, password, returnUrl }),
-      });
-
-      if (!response.ok) {
-        return null;
-      }
-      try {
-        const result = await response.json();
-        return result.redirectUrl ?? '/';
-      } catch {
-        return null;
-      }
-    }, { username, password });
+    // Perform login via API request directly without UI navigation
+    const response = await page.request.post(`${IDENTITY_API_URL}/Account/Login`, {
+      data: { username, password, returnUrl: '/' },
+      headers: { 'Content-Type': 'application/json' },
+      ignoreHTTPSErrors: true,
+    });
+    // Extract cookies from response and add them to the browser context
+    const setCookieHeaders = response.headersArray().filter(h => h.name.toLowerCase() === 'set-cookie');
+    const cookies = setCookieHeaders.map(h => {
+      const parts = h.value.split(';')[0].split('=');
+      return { name: parts[0], value: parts.slice(1).join('='), url: IDENTITY_API_URL };
+    });
+    if (cookies.length) await page.context().addCookies(cookies);
+    const result = await response.json();
+    const redirectUrl = result.redirectUrl ?? '/';
 
     if (!redirectUrl) {
       setup.skip();
