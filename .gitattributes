@@ -69,3 +69,9 @@
 ###############################################################################
 *.pfx binary
 
+###############################################################################
+# Generated OpenAPI JSON files – store with LF, don't let Git auto-convert
+###############################################################################
+src/Catalog.API/Catalog.API.json text eol=lf
+src/Catalog.API/Catalog.API_v2.json text eol=lf
+
