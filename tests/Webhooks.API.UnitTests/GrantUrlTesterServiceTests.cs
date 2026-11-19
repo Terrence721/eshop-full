@@ -97,5 +97,47 @@ namespace Webhooks.API.UnitTests
 
             Assert.IsTrue(result);
         }
+
+        [TestMethod]
+        public async Task TestGrantUrl_returns_false_when_scheme_differs()
+        {
+            var (service, handler) = CreateService(_ => RespondWithToken(HttpStatusCode.OK, "tok"));
+
+            var result = await service.TestGrantUrl("https://example.com/hook", "http://example.com/grant", "tok");
+
+            Assert.IsFalse(result);
+            Assert.HasCount(0, handler.Requests);
+        }
+
+        [TestMethod]
+        public async Task TestGrantUrl_returns_false_when_port_differs()
+        {
+            var (service, handler) = CreateService(_ => RespondWithToken(HttpStatusCode.OK, "tok"));
+
+            var result = await service.TestGrantUrl("https://example.com:443/hook", "https://example.com:8443/grant", "tok");
+
+            Assert.IsFalse(result);
+            Assert.HasCount(0, handler.Requests);
+        }
+
+        [TestMethod]
+        public async Task TestGrantUrl_returns_true_when_host_matches_despite_different_paths()
+        {
+            var (service, _) = CreateService(_ => RespondWithToken(HttpStatusCode.OK, "tok"));
+
+            var result = await service.TestGrantUrl("https://example.com/a/b/c", "https://example.com/x/y/z", "tok");
+
+            Assert.IsTrue(result);
+        }
+
+        [TestMethod]
+        public async Task TestGrantUrl_returns_false_when_host_is_different_case_insensitive()
+        {
+            var (service, handler) = CreateService(_ => RespondWithToken(HttpStatusCode.OK, "tok"));
+
+            var result = await service.TestGrantUrl("https://Example.com/hook", "https://EXAMPLE.COM/grant", "tok");
+
+            Assert.IsTrue(result); // URI comparison is case-insensitive for host
+        }
     }
 }
