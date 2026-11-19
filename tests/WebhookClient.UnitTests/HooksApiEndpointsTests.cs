@@ -45,6 +45,19 @@ namespace eShop.WebhookClient.UnitTests
         }
 
         [TestMethod]
+        public async Task GetHooksAsync_returns_empty_when_client_returns_null()
+        {
+            var (client, _) = CreateWebhooksClient(_ => new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                Content = JsonContent.Create<IEnumerable<WebhookResponse>?>(null),
+            });
+
+            var result = (Ok<IEnumerable<WebhookResponse>>)await HooksApiEndpoints.GetHooksAsync(client);
+
+            Assert.HasCount(0, result.Value!);
+        }
+
+        [TestMethod]
         public void GetDefaultToken_returns_the_configured_token()
         {
             var options = Options.Create(new WebhookClientOptions { Token = "tok" });
@@ -54,6 +67,16 @@ namespace eShop.WebhookClient.UnitTests
             var ok = (IValueHttpResult)HooksApiEndpoints.GetDefaultToken(options);
 
             Assert.AreEqual("tok", ok.Value!.GetType().GetProperty("token")!.GetValue(ok.Value));
+        }
+
+        [TestMethod]
+        public void GetDefaultToken_returns_null_when_token_not_configured()
+        {
+            var options = Options.Create(new WebhookClientOptions());
+
+            var ok = (IValueHttpResult)HooksApiEndpoints.GetDefaultToken(options);
+
+            Assert.IsNull(ok.Value!.GetType().GetProperty("token")!.GetValue(ok.Value));
         }
 
         [TestMethod]
@@ -68,6 +91,14 @@ namespace eShop.WebhookClient.UnitTests
         public void BuildBaseUrl_derives_from_the_request_when_SelfUrl_is_not_set()
         {
             var baseUrl = HooksApiEndpoints.BuildBaseUrl(null, "https", "client.example.com");
+
+            Assert.AreEqual("https://client.example.com/", baseUrl);
+        }
+
+        [TestMethod]
+        public void BuildBaseUrl_derives_from_the_request_when_SelfUrl_is_empty()
+        {
+            var baseUrl = HooksApiEndpoints.BuildBaseUrl("", "https", "client.example.com");
 
             Assert.AreEqual("https://client.example.com/", baseUrl);
         }
@@ -92,6 +123,23 @@ namespace eShop.WebhookClient.UnitTests
         }
 
         [TestMethod]
+        public async Task RegisterHookAsync_uses_SelfUrl_when_configured()
+        {
+            var (client, handler) = CreateWebhooksClient(_ => new HttpResponseMessage(HttpStatusCode.Created));
+            var options = Options.Create(new WebhookClientOptions { SelfUrl = "https://self.example.com/" });
+            var httpContext = new DefaultHttpContext();
+            httpContext.Request.Scheme = "https";
+            httpContext.Request.Host = new HostString("client.example.com");
+
+            var result = await HooksApiEndpoints.RegisterHookAsync(new RegisterHookRequest("tok"), client, options, httpContext);
+
+            Assert.IsInstanceOfType<StatusCodeHttpResult>(result);
+            using var sentBody = JsonDocument.Parse(handler.LastRequestBody!);
+            Assert.AreEqual("https://self.example.com/webhook-received", sentBody.RootElement.GetProperty("url").GetString());
+            Assert.AreEqual("https://self.example.com/check", sentBody.RootElement.GetProperty("grantUrl").GetString());
+        }
+
+        [TestMethod]
         public async Task GetReceivedAsync_returns_everything_in_the_repository()
         {
             var repository = new HooksRepository();
@@ -101,6 +149,16 @@ namespace eShop.WebhookClient.UnitTests
             var result = (Ok<IEnumerable<WebHookReceived>>)await HooksApiEndpoints.GetReceivedAsync(repository);
 
             Assert.AreSame(hook, result.Value!.Single());
+        }
+
+        [TestMethod]
+        public async Task GetReceivedAsync_returns_empty_when_repository_is_empty()
+        {
+            var repository = new HooksRepository();
+
+            var result = (Ok<IEnumerable<WebHookReceived>>)await HooksApiEndpoints.GetReceivedAsync(repository);
+
+            Assert.HasCount(0, result.Value!);
         }
     }
 }

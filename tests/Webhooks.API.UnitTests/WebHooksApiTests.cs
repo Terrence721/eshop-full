@@ -35,6 +35,18 @@ namespace Webhooks.API.UnitTests
         }
 
         [TestMethod]
+        public async Task GetAllAsync_returns_empty_when_user_has_no_subscriptions()
+        {
+            using var context = CreateContext();
+            context.Subscriptions.Add(new WebhookSubscription { Type = WebhookType.OrderPaid, DestUrl = "https://a.example.com", UserId = "user-1" });
+            await context.SaveChangesAsync();
+
+            var result = await WebHooksApi.GetAllAsync(context, CreateUser("user-2"));
+
+            Assert.HasCount(0, result.Value!);
+        }
+
+        [TestMethod]
         public async Task GetByIdAsync_returns_the_subscription_when_owned_by_the_user()
         {
             using var context = CreateContext();
@@ -62,6 +74,16 @@ namespace Webhooks.API.UnitTests
         }
 
         [TestMethod]
+        public async Task GetByIdAsync_returns_not_found_when_subscription_does_not_exist()
+        {
+            using var context = CreateContext();
+
+            var result = await WebHooksApi.GetByIdAsync(context, CreateUser("user-1"), 999);
+
+            Assert.IsInstanceOfType<NotFound<string>>(result.Result);
+        }
+
+        [TestMethod]
         public async Task CreateAsync_creates_the_subscription_when_the_grant_url_is_valid()
         {
             using var context = CreateContext();
@@ -79,6 +101,22 @@ namespace Webhooks.API.UnitTests
         }
 
         [TestMethod]
+        public async Task CreateAsync_creates_subscription_with_null_token_when_not_provided()
+        {
+            using var context = CreateContext();
+            var request = new WebhookSubscriptionRequest { Url = "https://a.example.com/hook", GrantUrl = "https://a.example.com/grant", Event = "OrderShipped" };
+            var grantTester = Substitute.For<IGrantUrlTesterService>();
+            grantTester.TestGrantUrl(request.Url, request.GrantUrl, string.Empty).Returns(true);
+
+            var result = await WebHooksApi.CreateAsync(request, grantTester, context, CreateUser("user-1"));
+
+            Assert.IsInstanceOfType<Created>(result.Result);
+            var saved = context.Subscriptions.Single();
+            Assert.IsNull(saved.Token);
+            Assert.AreEqual(WebhookType.OrderShipped, saved.Type);
+        }
+
+        [TestMethod]
         public async Task CreateAsync_returns_bad_request_when_the_grant_url_is_invalid()
         {
             using var context = CreateContext();
@@ -89,6 +127,28 @@ namespace Webhooks.API.UnitTests
             var result = await WebHooksApi.CreateAsync(request, grantTester, context, CreateUser("user-1"));
 
             Assert.IsInstanceOfType<BadRequest<string>>(result.Result);
+            Assert.HasCount(0, context.Subscriptions.ToList());
+        }
+
+        [TestMethod]
+        public async Task CreateAsync_returns_bad_request_when_event_type_is_invalid()
+        {
+            using var context = CreateContext();
+            var request = new WebhookSubscriptionRequest { Url = "https://a.example.com/hook", GrantUrl = "https://a.example.com/grant", Event = "InvalidEvent" };
+            var grantTester = Substitute.For<IGrantUrlTesterService>();
+            grantTester.TestGrantUrl(request.Url, request.GrantUrl, string.Empty).Returns(true);
+
+            Exception? ex = null;
+            try
+            {
+                await WebHooksApi.CreateAsync(request, grantTester, context, CreateUser("user-1"));
+            }
+            catch (ArgumentException e)
+            {
+                ex = e;
+            }
+
+            Assert.IsNotNull(ex);
             Assert.HasCount(0, context.Subscriptions.ToList());
         }
 
@@ -118,6 +178,16 @@ namespace Webhooks.API.UnitTests
 
             Assert.IsInstanceOfType<NotFound<string>>(result.Result);
             Assert.HasCount(1, context.Subscriptions.ToList());
+        }
+
+        [TestMethod]
+        public async Task DeleteAsync_returns_not_found_when_subscription_does_not_exist()
+        {
+            using var context = CreateContext();
+
+            var result = await WebHooksApi.DeleteAsync(context, CreateUser("user-1"), 999);
+
+            Assert.IsInstanceOfType<NotFound<string>>(result.Result);
         }
     }
 }

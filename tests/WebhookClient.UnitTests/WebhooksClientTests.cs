@@ -21,11 +21,24 @@ namespace eShop.WebhookClient.UnitTests
             }
         }
 
+        private sealed class ThrowingHandler : HttpMessageHandler
+        {
+            protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
+                => throw new HttpRequestException("network failure");
+        }
+
         private static (WebhooksClient client, FakeHandler handler) CreateClient(Func<HttpRequestMessage, HttpResponseMessage> respond)
         {
             var handler = new FakeHandler(respond);
             var httpClient = new HttpClient(handler) { BaseAddress = new Uri("http://webhooks-api") };
             return (new WebhooksClient(httpClient), handler);
+        }
+
+        private static WebhooksClient CreateThrowingClient()
+        {
+            var handler = new ThrowingHandler();
+            var httpClient = new HttpClient(handler) { BaseAddress = new Uri("http://webhooks-api") };
+            return new WebhooksClient(httpClient);
         }
 
         [TestMethod]
@@ -41,6 +54,35 @@ namespace eShop.WebhookClient.UnitTests
             Assert.AreEqual("http://webhooks-api/api/webhooks", handler.LastRequest.RequestUri!.ToString());
             using var sentBody = JsonDocument.Parse(handler.LastRequestBody!);
             Assert.AreEqual("https://a.example.com", sentBody.RootElement.GetProperty("url").GetString());
+        }
+
+        [TestMethod]
+        public async Task AddWebHookAsync_returns_error_response_when_api_fails()
+        {
+            var (client, _) = CreateClient(_ => new HttpResponseMessage(HttpStatusCode.BadRequest));
+
+            var response = await client.AddWebHookAsync(new WebhookSubscriptionRequest());
+
+            Assert.AreEqual(HttpStatusCode.BadRequest, response.StatusCode);
+        }
+
+        [TestMethod]
+        public async Task AddWebHookAsync_propagates_exception_when_network_fails()
+        {
+            var client = CreateThrowingClient();
+
+            Exception? ex = null;
+            try
+            {
+                await client.AddWebHookAsync(new WebhookSubscriptionRequest());
+            }
+            catch (HttpRequestException e)
+            {
+                ex = e;
+            }
+
+            Assert.IsNotNull(ex);
+            Assert.AreEqual("network failure", ex!.Message);
         }
 
         [TestMethod]
@@ -67,6 +109,25 @@ namespace eShop.WebhookClient.UnitTests
             var result = await client.LoadWebhooks();
 
             Assert.HasCount(0, result.ToList());
+        }
+
+        [TestMethod]
+        public async Task LoadWebhooks_propagates_exception_when_network_fails()
+        {
+            var client = CreateThrowingClient();
+
+            Exception? ex = null;
+            try
+            {
+                await client.LoadWebhooks();
+            }
+            catch (HttpRequestException e)
+            {
+                ex = e;
+            }
+
+            Assert.IsNotNull(ex);
+            Assert.AreEqual("network failure", ex!.Message);
         }
     }
 }

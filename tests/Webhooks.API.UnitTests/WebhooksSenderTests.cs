@@ -25,6 +25,12 @@ namespace Webhooks.API.UnitTests
             }
         }
 
+        private sealed class ThrowingHandler : HttpMessageHandler
+        {
+            protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
+                => throw new HttpRequestException("network failure");
+        }
+
         private static (WebhooksSender sender, RecordingHandler handler) CreateSender()
         {
             var handler = new RecordingHandler();
@@ -34,6 +40,14 @@ namespace Webhooks.API.UnitTests
             var httpClientFactory = Substitute.For<IHttpClientFactory>();
             httpClientFactory.CreateClient(Arg.Any<string>()).Returns(new HttpClient(handler));
             return (new WebhooksSender(httpClientFactory, Substitute.For<ILogger<WebhooksSender>>()), handler);
+        }
+
+        private static WebhooksSender CreateThrowingSender()
+        {
+            var handler = new ThrowingHandler();
+            var httpClientFactory = Substitute.For<IHttpClientFactory>();
+            httpClientFactory.CreateClient(Arg.Any<string>()).Returns(new HttpClient(handler));
+            return new WebhooksSender(httpClientFactory, Substitute.For<ILogger<WebhooksSender>>());
         }
 
         [TestMethod]
@@ -94,5 +108,92 @@ namespace Webhooks.API.UnitTests
                 new[] { "https://a.example.com/", "https://b.example.com/" },
                 handler.Requests.Select(r => r.RequestUri!.ToString()).ToArray());
         }
+
+        [TestMethod]
+        public async Task SendAll_propagates_exception_when_http_send_fails()
+        {
+            var sender = CreateThrowingSender();
+            var subscription = new WebhookSubscription { DestUrl = "https://client.example.com/hook", UserId = "user-1" };
+
+            Exception? ex = null;
+            try
+            {
+                await sender.SendAll([subscription], new WebhookData(WebhookType.OrderPaid, new { }));
+            }
+            catch (HttpRequestException e)
+            {
+                ex = e;
+            }
+
+            Assert.IsNotNull(ex);
+            Assert.AreEqual("network failure", ex!.Message);
+        }
+
+        [TestMethod]
+        public async Task SendAll_sends_requests_concurrently_not_sequentially()
+        {
+            var startTimes = new List<DateTime>();
+            var tcs = new TaskCompletionSource<bool>();
+
+            var handler = new HttpMessageHandlerWrapper(async (request, ct) =>
+            {
+                lock (startTimes)
+                {
+                    startTimes.Add(DateTime.UtcNow);
+                }
+                await tcs.Task.WaitAsync(ct);
+                return new HttpResponseMessage(HttpStatusCode.OK);
+            });
+
+            var httpClientFactory = Substitute.For<IHttpClientFactory>();
+            httpClientFactory.CreateClient(Arg.Any<string>()).Returns(new HttpClient(handler));
+
+            var sender = new WebhooksSender(httpClientFactory, Substitute.For<ILogger<WebhooksSender>>());
+            var subscriptions = new[]
+            {
+                new WebhookSubscription { DestUrl = "https://a.example.com", UserId = "user-1" },
+                new WebhookSubscription { DestUrl = "https://b.example.com", UserId = "user-2" },
+            };
+
+            var sendTask = sender.SendAll(subscriptions, new WebhookData(WebhookType.OrderPaid, new { }));
+
+            // Wait for both requests to start
+            while (startTimes.Count < 2) await Task.Delay(10);
+            var timeDiff = (startTimes[1] - startTimes[0]).TotalMilliseconds;
+
+            // Complete both
+            tcs.TrySetResult(true);
+            await sendTask;
+
+            // Both should start almost simultaneously (concurrent)
+            Assert.IsTrue(timeDiff < 100, "Requests should start concurrently, not sequentially");
+        }
+
+        [TestMethod]
+        public async Task SendAll_sets_content_type_to_application_json()
+        {
+            var (sender, handler) = CreateSender();
+            var subscription = new WebhookSubscription { DestUrl = "https://client.example.com/hook", UserId = "user-1" };
+            var data = new WebhookData(WebhookType.OrderPaid, new { OrderId = 1 });
+
+            await sender.SendAll([subscription], data);
+
+            var request = handler.Requests.Single();
+            Assert.AreEqual("application/json", request.Content!.Headers.ContentType!.MediaType);
+        }
+    }
+
+    // Helper for concurrency test
+    internal sealed class HttpMessageHandlerWrapper : HttpMessageHandler
+    {
+        private readonly Func<HttpRequestMessage, CancellationToken, Task<HttpResponseMessage>> _func;
+
+        public HttpMessageHandlerWrapper(Func<HttpRequestMessage, CancellationToken, Task<HttpResponseMessage>> func)
+        {
+            _func = func;
+        }
+
+        protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
+            => _func(request, cancellationToken);
     }
 }
