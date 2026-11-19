@@ -287,5 +287,43 @@ namespace eShop.Ordering.Domain.UnitTests
 
             Assert.AreEqual(0m, order.GetTotal());
         }
+
+        [TestMethod]
+        public void SetPaidStatus_is_a_no_op_when_not_StockConfirmed()
+        {
+            var order = CreateOrder();
+            // Start with Submitted (default)
+            order.SetAwaitingValidationStatus();
+            order.SetStockConfirmedStatus();
+            order.SetPaidStatus();
+            order.SetShippedStatus();
+
+            // Try to set Paid again - should be no-op
+            var initialStatus = order.OrderStatus;
+            var initialDescription = order.Description;
+            order.SetPaidStatus();
+
+            Assert.AreEqual(initialStatus, order.OrderStatus);
+            Assert.AreEqual(initialDescription, order.Description);
+        }
+
+        [TestMethod]
+        public void SetStockConfirmedStatus_is_a_no_op_when_not_AwaitingValidation()
+        {
+            var order = CreateOrder();
+            // Start with Submitted (default)
+            order.SetAwaitingValidationStatus();
+            order.SetStockConfirmedStatus();
+            order.SetPaidStatus();
+            order.SetShippedStatus();
+
+            // Try to set StockConfirmed again - should be no-op
+            var initialStatus = order.OrderStatus;
+            var initialDescription = order.Description;
+            order.SetStockConfirmedStatus();
+
+            Assert.AreEqual(initialStatus, order.OrderStatus);
+            Assert.AreEqual(initialDescription, order.Description);
+        }
     }
 }
