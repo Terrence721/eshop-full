@@ -11,6 +11,7 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.Testing.Extensions.HtmlReport" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" />
+    <PackageReference Include="NSubstitute" />
   </ItemGroup>
 
   <ItemGroup>
