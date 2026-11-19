@@ -54,6 +54,20 @@ namespace eShop.WebBFF.UnitTests
         }
 
         [TestMethod]
+        public async Task NotifyOrderStatusChangedAsync_swallows_all_subscriber_exceptions_and_notifies_the_others()
+        {
+            var notifications = new OrderStatusNotifications();
+            var thirdNotified = false;
+            using var first = notifications.Subscribe("buyer-1", () => throw new InvalidOperationException("first boom"));
+            using var second = notifications.Subscribe("buyer-1", () => throw new InvalidOperationException("second boom"));
+            using var third = notifications.Subscribe("buyer-1", () => { thirdNotified = true; return Task.CompletedTask; });
+
+            await notifications.NotifyOrderStatusChangedAsync("buyer-1");
+
+            Assert.IsTrue(thirdNotified);
+        }
+
+        [TestMethod]
         public async Task Subscribe_dispose_stops_future_notifications()
         {
             var notifications = new OrderStatusNotifications();
@@ -64,6 +78,37 @@ namespace eShop.WebBFF.UnitTests
             await notifications.NotifyOrderStatusChangedAsync("buyer-1");
 
             Assert.AreEqual(0, notifyCount);
+        }
+
+        [TestMethod]
+        public async Task Subscribe_multiple_times_notifies_all_subscriptions()
+        {
+            var notifications = new OrderStatusNotifications();
+            var counts = new int[3];
+            var subscriptions = new List<IDisposable>();
+
+            for (int i = 0; i < 3; i++)
+            {
+                int index = i;
+                subscriptions.Add(notifications.Subscribe("buyer-1", () => { counts[index]++; return Task.CompletedTask; }));
+            }
+
+            await notifications.NotifyOrderStatusChangedAsync("buyer-1");
+
+            CollectionAssert.AreEquivalent(new[] { 1, 1, 1 }, counts);
+        }
+
+        [TestMethod]
+        public async Task Subscribe_after_add_new_does_not_receive_past_notifications()
+        {
+            var notifications = new OrderStatusNotifications();
+
+            await notifications.NotifyOrderStatusChangedAsync("buyer-1");
+
+            var notified = false;
+            using var subscription = notifications.Subscribe("buyer-1", () => { notified = true; return Task.CompletedTask; });
+
+            Assert.IsFalse(notified);
         }
     }
 }

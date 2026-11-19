@@ -39,6 +39,18 @@ namespace eShop.WebBFF.UnitTests
         }
 
         [TestMethod]
+        public async Task GetBasketAsync_returns_empty_when_response_is_null()
+        {
+            var client = Substitute.For<BasketGrpcClient>();
+            client.GetBasketAsync(Arg.Any<GetBasketRequest>(), Arg.Any<CallOptions>())
+                .Returns(FakeCall((CustomerBasketResponse)null));
+
+            var items = await new BasketService(client).GetBasketAsync("tok-123");
+
+            Assert.HasCount(0, items);
+        }
+
+        [TestMethod]
         public async Task UpdateBasketAsync_sends_every_item_and_forwards_the_bearer_token()
         {
             var client = Substitute.For<BasketGrpcClient>();
@@ -63,6 +75,22 @@ namespace eShop.WebBFF.UnitTests
                 .Returns(FakeCall(new DeleteBasketResponse()));
 
             await new BasketService(client).DeleteBasketAsync("tok-789");
+
+            _ = client.Received(1).DeleteBasketAsync(
+                Arg.Any<DeleteBasketRequest>(),
+                Arg.Is<CallOptions>(o => o.Headers!.Get("Authorization")!.Value == "Bearer tok-789"));
+        }
+
+        [TestMethod]
+        public async Task DeleteBasketAsync_returns_error_when_grpc_fails()
+        {
+            var client = Substitute.For<BasketGrpcClient>();
+            client.DeleteBasketAsync(Arg.Any<DeleteBasketRequest>(), Arg.Any<CallOptions>())
+                .Returns(FakeCall(new DeleteBasketResponse()));
+
+            var service = new BasketService(client);
+
+            await service.DeleteBasketAsync("tok-789");
 
             _ = client.Received(1).DeleteBasketAsync(
                 Arg.Any<DeleteBasketRequest>(),
