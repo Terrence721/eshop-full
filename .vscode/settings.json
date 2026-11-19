@@ -1,4 +1,5 @@
 {
   "dotnet.defaultSolution": "eShop.slnx",
-  "tsimporter.noStatusBar": true
+  "tsimporter.noStatusBar": true,
+  "github.copilot.llm-gateway.serverUrl": "http://localhost:8000"
 }
