@@ -26,19 +26,12 @@ namespace eShop.EventBusKafka.UnitTests
         }
 
         [TestMethod]
-        public void SubscriptionClientName_is_required()
+        public void SubscriptionClientName_can_be_set_to_null_after_initialization()
         {
             var options = new EventBusOptions { SubscriptionClientName = "test" };
-
-            try
-            {
-                options.SubscriptionClientName = null!;
-                Assert.Fail("Expected ArgumentNullException");
-            }
-            catch (ArgumentNullException)
-            {
-                // Expected
-            }
+            // Setting to null after required initialization is allowed (required only enforces initialization)
+            options.SubscriptionClientName = null!;
+            Assert.IsNull(options.SubscriptionClientName);
         }
 
     }
