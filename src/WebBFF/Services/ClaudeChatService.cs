@@ -89,7 +89,7 @@ namespace eShop.WebBFF.Services
 
                     using var req = new HttpRequestMessage(HttpMethod.Post, "https://api.anthropic.com/v1/messages")
                     {
-                        Headers = { { "x-api-key", apiKey }, { "anthropic-version", "2023-06-01" }, { "content-type", "application/json" } },
+                        Headers = { { "x-api-key", apiKey }, { "anthropic-version", "2023-06-01" } },
                         Content = new StringContent(body, System.Text.Encoding.UTF8, "application/json")
                     };
                     var resp = await http.SendAsync(req);

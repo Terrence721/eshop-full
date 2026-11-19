@@ -27,8 +27,8 @@
             await basketClient.DeleteBasketAsync(new DeleteBasketRequest(), BuildCallOptions(accessToken));
         }
 
-        private static IReadOnlyCollection<BasketQuantity> MapItems(CustomerBasketResponse response) =>
-            response.Items.Select(item => new BasketQuantity(item.ProductId, item.Quantity)).ToList();
+        private static IReadOnlyCollection<BasketQuantity> MapItems(CustomerBasketResponse? response) =>
+            response?.Items?.Select(item => new BasketQuantity(item.ProductId, item.Quantity)).ToList() ?? [];
 
         private static CallOptions BuildCallOptions(string accessToken) =>
             new(headers: new Metadata { { "Authorization", $"Bearer {accessToken}" } });
