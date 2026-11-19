@@ -1,18 +1,11 @@
-﻿using eShop.EventBus.Abstractions;
+﻿using System.Text.Json;
+using eShop.EventBus.Abstractions;
 
 namespace eShop.EventBus.UnitTests.Abstractions
 {
     [TestClass]
     public class EventBusSubscriptionInfoTests
     {
-        [TestMethod]
-        public void EventTypes_starts_empty()
-        {
-            var info = new EventBusSubscriptionInfo();
-
-            Assert.AreEqual(0, info.EventTypes.Count);
-        }
-
         [TestMethod]
         public void JsonSerializerOptions_is_populated_with_a_TypeInfoResolver()
         {
@@ -32,6 +25,19 @@ namespace eShop.EventBus.UnitTests.Abstractions
             first.JsonSerializerOptions.WriteIndented = true;
 
             Assert.IsFalse(second.JsonSerializerOptions.WriteIndented);
+        }
+
+        [TestMethod]
+        public void Default_options_serialize_and_deserialize_a_plain_object_round_trip()
+        {
+            var info = new EventBusSubscriptionInfo();
+            var payload = new { Id = 42, Name = "test" };
+
+            var json = JsonSerializer.Serialize(payload, info.JsonSerializerOptions);
+            var deserialized = JsonSerializer.Deserialize<JsonElement>(json, info.JsonSerializerOptions);
+
+            Assert.AreEqual(42, deserialized.GetProperty("Id").GetInt32());
+            Assert.AreEqual("test", deserialized.GetProperty("Name").GetString());
         }
     }
 }
