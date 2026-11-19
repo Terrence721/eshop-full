@@ -5,6 +5,11 @@ namespace eShop.EventBus.UnitTests.Events
     [TestClass]
     public class IntegrationEventTests
     {
+        private sealed record DerivedIntegrationEvent : IntegrationEvent
+        {
+            public string? Message { get; init; }
+        }
+
         [TestMethod]
         public void Default_constructor_assigns_a_non_empty_Id()
         {
@@ -34,6 +39,28 @@ namespace eShop.EventBus.UnitTests.Events
 
             Assert.AreEqual(id, @event.Id);
             Assert.AreEqual(creationDate, @event.CreationDate);
+        }
+
+        [TestMethod]
+        public void Constructor_of_derived_type_also_initalizes_guid_and_creation_date()
+        {
+            var before = DateTime.UtcNow;
+
+            var @event = new DerivedIntegrationEvent { Message = "hello" };
+
+            var after = DateTime.UtcNow;
+            Assert.AreNotEqual(Guid.Empty, @event.Id);
+            Assert.IsTrue(@event.CreationDate >= before && @event.CreationDate <= after);
+            Assert.AreEqual("hello", @event.Message);
+        }
+
+        [TestMethod]
+        public void Subclass_can_be_assigned_to_base_class_reference()
+        {
+            IntegrationEvent @event = new DerivedIntegrationEvent { Message = "world" };
+
+            Assert.IsNotNull(@event);
+            Assert.IsInstanceOfType<DerivedIntegrationEvent>(@event);
         }
     }
 }
