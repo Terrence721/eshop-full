@@ -7,6 +7,25 @@ namespace eShop.EventBus.UnitTests.Abstractions
     public class EventBusSubscriptionInfoTests
     {
         [TestMethod]
+        public void EventTypes_dictionary_is_initially_empty()
+        {
+            var info = new EventBusSubscriptionInfo();
+
+            Assert.AreEqual(0, info.EventTypes.Count);
+        }
+
+        [TestMethod]
+        public void EventTypes_can_add_and_retrieve_event_types()
+        {
+            var info = new EventBusSubscriptionInfo();
+            var testEventType = typeof(TestEvent);
+
+            info.EventTypes[testEventType.Name] = testEventType;
+
+            Assert.AreEqual(testEventType, info.EventTypes[testEventType.Name]);
+        }
+
+        [TestMethod]
         public void JsonSerializerOptions_is_populated_with_a_TypeInfoResolver()
         {
             var info = new EventBusSubscriptionInfo();
@@ -39,5 +58,7 @@ namespace eShop.EventBus.UnitTests.Abstractions
             Assert.AreEqual(42, deserialized.GetProperty("Id").GetInt32());
             Assert.AreEqual("test", deserialized.GetProperty("Name").GetString());
         }
+
+        private sealed record TestEvent;
     }
 }
