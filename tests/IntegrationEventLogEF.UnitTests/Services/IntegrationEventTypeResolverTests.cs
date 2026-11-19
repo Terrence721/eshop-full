@@ -1,35 +1,31 @@
-﻿using eShop.IntegrationEventLogEF.Services;
+﻿using eShop.EventBus.Events;
+using eShop.IntegrationEventLogEF.Services;
 
 namespace eShop.IntegrationEventLogEF.UnitTests.Services
 {
     [TestClass]
     public class IntegrationEventTypeResolverTests
     {
-        private sealed class OrderNamespace
+        private sealed record SomeIntegrationEvent : IntegrationEvent
         {
-            public sealed class OrderPlacedIntegrationEvent;
+            public string? Payload { get; init; }
         }
 
-        private sealed class CatalogNamespace
+        private sealed record AnotherIntegrationEvent : IntegrationEvent
         {
-            public sealed class OrderPlacedIntegrationEvent;
-        }
-
-        private sealed class BasketNamespace
-        {
-            public sealed class BasketCheckoutIntegrationEvent;
+            public string? Payload { get; init; }
         }
 
         [TestMethod]
         public void BuildEventTypesByShortName_indexes_candidate_types_by_their_simple_name()
         {
-            Type[] candidates = [typeof(OrderNamespace.OrderPlacedIntegrationEvent), typeof(BasketNamespace.BasketCheckoutIntegrationEvent)];
+            Type[] candidates = [typeof(SomeIntegrationEvent), typeof(AnotherIntegrationEvent)];
 
             var result = IntegrationEventTypeResolver.BuildEventTypesByShortName(candidates);
 
             Assert.AreEqual(2, result.Count);
-            Assert.AreEqual(typeof(OrderNamespace.OrderPlacedIntegrationEvent), result[nameof(OrderNamespace.OrderPlacedIntegrationEvent)]);
-            Assert.AreEqual(typeof(BasketNamespace.BasketCheckoutIntegrationEvent), result[nameof(BasketNamespace.BasketCheckoutIntegrationEvent)]);
+            Assert.AreEqual(typeof(SomeIntegrationEvent), result[typeof(SomeIntegrationEvent).Name]);
+            Assert.AreEqual(typeof(AnotherIntegrationEvent), result[typeof(AnotherIntegrationEvent).Name]);
         }
 
         [TestMethod]
@@ -43,27 +39,27 @@ namespace eShop.IntegrationEventLogEF.UnitTests.Services
         [TestMethod]
         public void BuildEventTypesByShortName_throws_when_two_candidates_share_a_simple_name()
         {
-            Type[] candidates = [typeof(OrderNamespace.OrderPlacedIntegrationEvent), typeof(CatalogNamespace.OrderPlacedIntegrationEvent)];
+            Type[] candidates = [typeof(SomeIntegrationEvent), typeof(SomeIntegrationEvent)];
 
             var exception = Assert.ThrowsExactly<InvalidOperationException>(() => IntegrationEventTypeResolver.BuildEventTypesByShortName(candidates));
 
-            StringAssert.Contains(exception.Message, nameof(OrderNamespace.OrderPlacedIntegrationEvent));
+            StringAssert.Contains(exception.Message, "SomeIntegrationEvent");
         }
 
         [TestMethod]
         public void Resolve_returns_the_matching_type()
         {
-            var eventTypesByShortName = IntegrationEventTypeResolver.BuildEventTypesByShortName([typeof(OrderNamespace.OrderPlacedIntegrationEvent)]);
+            var eventTypesByShortName = IntegrationEventTypeResolver.BuildEventTypesByShortName([typeof(SomeIntegrationEvent)]);
 
-            var result = IntegrationEventTypeResolver.Resolve(eventTypesByShortName, nameof(OrderNamespace.OrderPlacedIntegrationEvent));
+            var result = IntegrationEventTypeResolver.Resolve(eventTypesByShortName, nameof(SomeIntegrationEvent));
 
-            Assert.AreEqual(typeof(OrderNamespace.OrderPlacedIntegrationEvent), result);
+            Assert.AreEqual(typeof(SomeIntegrationEvent), result);
         }
 
         [TestMethod]
         public void Resolve_throws_when_no_type_matches_the_short_name()
         {
-            var eventTypesByShortName = IntegrationEventTypeResolver.BuildEventTypesByShortName([typeof(OrderNamespace.OrderPlacedIntegrationEvent)]);
+            var eventTypesByShortName = IntegrationEventTypeResolver.BuildEventTypesByShortName([typeof(SomeIntegrationEvent)]);
 
             var exception = Assert.ThrowsExactly<InvalidOperationException>(
                 () => IntegrationEventTypeResolver.Resolve(eventTypesByShortName, "NonexistentIntegrationEvent"));
