@@ -43,7 +43,7 @@ namespace eShop.WebBFF.UnitTests
         {
             var client = Substitute.For<BasketGrpcClient>();
             client.GetBasketAsync(Arg.Any<GetBasketRequest>(), Arg.Any<CallOptions>())
-                .Returns(FakeCall((CustomerBasketResponse)null));
+                .Returns(FakeCall((CustomerBasketResponse?)null));
 
             var items = await new BasketService(client).GetBasketAsync("tok-123");
 
