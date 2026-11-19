@@ -78,7 +78,7 @@ namespace eShop.WebBFF.UnitTests
 
             // Should not make HTTP call for unknown buyer
             service.ClearConversation("unknown-buyer");
-            factory.Received(1).CreateClient(Arg.Any<string>());
+            factory.DidNotReceive().CreateClient(Arg.Any<string>());
         }
 
         [TestMethod]
