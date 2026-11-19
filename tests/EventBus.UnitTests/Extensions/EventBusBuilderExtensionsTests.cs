@@ -1,4 +1,5 @@
-﻿using eShop.EventBus.Abstractions;
+﻿using System.Text.Json;
+using eShop.EventBus.Abstractions;
 using eShop.EventBus.Events;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
@@ -11,6 +12,18 @@ namespace eShop.EventBus.UnitTests.Extensions
         private sealed record TestEvent : IntegrationEvent;
 
         private sealed class TestHandler : IIntegrationEventHandler<TestEvent>
+        {
+            public Task Handle(TestEvent @event) => Task.CompletedTask;
+        }
+
+        private sealed record SecondTestEvent : IntegrationEvent;
+
+        private sealed class SecondTestHandler : IIntegrationEventHandler<SecondTestEvent>
+        {
+            public Task Handle(SecondTestEvent @event) => Task.CompletedTask;
+        }
+
+        private sealed class DuplicateTestHandler : IIntegrationEventHandler<TestEvent>
         {
             public Task Handle(TestEvent @event) => Task.CompletedTask;
         }
@@ -34,6 +47,15 @@ namespace eShop.EventBus.UnitTests.Extensions
         }
 
         [TestMethod]
+        public void ConfigureJsonOptions_returns_the_same_builder_for_fluent_chaining()
+        {
+            var builder = new TestEventBusBuilder();
+            var returned = builder.ConfigureJsonOptions(o => o.WriteIndented = true);
+
+            Assert.AreSame(builder, returned);
+        }
+
+        [TestMethod]
         public void AddSubscription_registers_the_handler_as_a_keyed_transient_service()
         {
             var builder = new TestEventBusBuilder();
@@ -47,6 +69,15 @@ namespace eShop.EventBus.UnitTests.Extensions
         }
 
         [TestMethod]
+        public void AddSubscription_returns_the_same_builder_for_fluent_chaining()
+        {
+            var builder = new TestEventBusBuilder();
+            var returned = builder.AddSubscription<TestEvent, TestHandler>();
+
+            Assert.AreSame(builder, returned);
+        }
+
+        [TestMethod]
         public void AddSubscription_records_the_event_type_in_EventTypes()
         {
             var builder = new TestEventBusBuilder();
@@ -57,6 +88,52 @@ namespace eShop.EventBus.UnitTests.Extensions
             var info = provider.GetRequiredService<IOptions<EventBusSubscriptionInfo>>().Value;
 
             Assert.AreEqual(typeof(TestEvent), info.EventTypes[nameof(TestEvent)]);
+        }
+
+        [TestMethod]
+        public void Multiple_AddSubscription_calls_accumulate_all_event_types()
+        {
+            var builder = new TestEventBusBuilder();
+
+            builder.AddSubscription<TestEvent, TestHandler>()
+                   .AddSubscription<SecondTestEvent, SecondTestHandler>();
+
+            using var provider = builder.Services.BuildServiceProvider();
+            var info = provider.GetRequiredService<IOptions<EventBusSubscriptionInfo>>().Value;
+
+            Assert.AreEqual(2, info.EventTypes.Count);
+            Assert.AreEqual(typeof(TestEvent), info.EventTypes[nameof(TestEvent)]);
+            Assert.AreEqual(typeof(SecondTestEvent), info.EventTypes[nameof(SecondTestEvent)]);
+        }
+
+        [TestMethod]
+        public void Multiple_AddSubscription_calls_register_separate_keyed_services()
+        {
+            var builder = new TestEventBusBuilder();
+
+            builder.AddSubscription<TestEvent, TestHandler>()
+                   .AddSubscription<SecondTestEvent, SecondTestHandler>();
+
+            using var provider = builder.Services.BuildServiceProvider();
+            var testHandler = provider.GetKeyedService<IIntegrationEventHandler>(typeof(TestEvent));
+            var secondHandler = provider.GetKeyedService<IIntegrationEventHandler>(typeof(SecondTestEvent));
+
+            Assert.IsInstanceOfType<TestHandler>(testHandler);
+            Assert.IsInstanceOfType<SecondTestHandler>(secondHandler);
+        }
+
+        [TestMethod]
+        public void Two_subscriptions_with_the_same_event_type_register_two_handlers()
+        {
+            var builder = new TestEventBusBuilder();
+
+            builder.AddSubscription<TestEvent, TestHandler>()
+                   .AddSubscription<TestEvent, DuplicateTestHandler>();
+
+            using var provider = builder.Services.BuildServiceProvider();
+            var handlers = provider.GetKeyedServices<IIntegrationEventHandler>(typeof(TestEvent)).ToList();
+
+            Assert.AreEqual(2, handlers.Count);
         }
     }
 }
