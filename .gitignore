@@ -510,3 +510,15 @@ tempkey.jwk
 # Packaged .vsix build output for .vscode-extension/ -- rebuilt on demand,
 # not source
 .vscode-extension/*.vsix
+
+# Claude Code local config -- machine-specific, not shared
+.claude/
+.config/
+
+# Personal dev tools / scripts with hardcoded paths
+scripts/
+build/
+
+# One-off docs (not part of the project)
+todo.md
+portfolio.html
