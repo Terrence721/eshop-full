@@ -47,17 +47,12 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-dotnet-v2-
 
-      - name: Setup .NET (global.json)
+      - name: Setup .NET (SDK roll-forward picks latest compatible major from global.json)
         uses: actions/setup-dotnet@v6
         with:
           dotnet-version: 10.0.402
 
-      - name: Update Workloads
-        run: dotnet workload update
-
-      # Pinned to workload set 10.0.401 -- an unpinned install grabs whatever's newest, which
-      # has previously defaulted other net10.0-* workloads to packs requiring not-yet-GA
-      # toolchain versions no runner image ships (the exact failure mode this pin avoids).
+      # Diagnose -- confirm which SDK we actually landed on (may differ from pin due to latestMajor).
       - name: Diagnose .NET/Android workload
         shell: pwsh
         run: |
@@ -65,17 +60,6 @@ jobs:
           dotnet --list-sdks
           dotnet workload list
           Write-Host "DOTNET_ROOT=$env:DOTNET_ROOT"
-
-      - name: Show Android environment
-        shell: pwsh
-        run: |
-          Write-Host "ANDROID_HOME=$env:ANDROID_HOME"
-          Write-Host "ANDROID_SDK_ROOT=$env:ANDROID_SDK_ROOT"
-          Get-ChildItem -Recurse "C:\Program Files\dotnet" -Filter "Mono.Android.dll" -ErrorAction SilentlyContinue | Select-Object -First 3 FullName
-      - name: Install Workloads
-        shell: pwsh
-        run: |
-          dotnet workload install android --version 10.0.401
 
       # Business logic (Services/ViewModels) and real Views are done and live-verified
       # (2026-10-16, see todo.md) -- Build steps enabled. Test stays commented out: no
@@ -127,9 +111,12 @@ jobs:
         with:
           dotnet-version: 10.0.402
 
-      # Pinned to workload set 10.0.401 -- see the windows job's comment above for why.
+      # dotnet-version pin matches global.json; rollForward: latestMajor means any compatible
+      # minor/patch is accepted, which is exactly what we want for CI. Workloads are installed
+      # without a version pin so they resolve against whichever SDK setup-dotnet provides,
+      # avoiding manifest conflicts between .NET 10 and .NET 11 workload sets.
       - name: Install Android workload
-        run: dotnet workload install android --version 10.0.401
+        run: dotnet workload install android
 
       # Confirmed locally: a plain `dotnet build -c Release` for net10.0-android does not run
       # linking/trimming -- that's a `dotnet publish` concern here -- so no IL20xx NoWarn
@@ -201,8 +188,9 @@ jobs:
 
       # wasm-tools is only needed for *publish* (the AOT/linking step that produces a real,
       # runnable wwwroot bundle) -- confirmed locally that `dotnet build` alone doesn't need it.
+      # No version pin here either -- let it resolve against the SDK setup-dotnet provides.
       - name: Install wasm-tools workload
-        run: dotnet workload install wasm-tools --version 10.0.401
+        run: dotnet workload install wasm-tools-net10
 
       - name: Publish Browser
         run: dotnet publish src/ClientApp.Browser/ClientApp.Browser.csproj -c Release
