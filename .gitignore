@@ -518,7 +518,3 @@ tempkey.jwk
 # Personal dev tools / scripts with hardcoded paths
 scripts/
 build/
-
-# One-off docs (not part of the project)
-todo.md
-portfolio.html
