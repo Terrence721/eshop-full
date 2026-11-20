@@ -70,7 +70,7 @@ jobs:
         run: dotnet build src/ClientApp.Android/ClientApp.Android.csproj
         continue-on-error: true
       - name: Build Browser
-        run: dotnet build src/ClientApp.Browser/ClientApp.Browser.csproj
+        run: dotnet workload restore src/ClientApp.Browser/ClientApp.Browser.csproj && dotnet build src/ClientApp.Browser/ClientApp.Browser.csproj
       # - name: Test
       #   run: dotnet test --project tests/ClientApp.UnitTests/ClientApp.UnitTests.csproj --no-progress --output detailed
 
@@ -191,6 +191,10 @@ jobs:
       # No version pin here either -- let it resolve against the SDK setup-dotnet provides.
       - name: Install wasm-tools workload
         run: dotnet workload install wasm-tools-net10
+
+      # Restore workloads explicitly required by ClientApp.Browser (e.g. wasm-tools-net10)
+      - name: Restore workloads for Browser
+        run: dotnet workload restore src/ClientApp.Browser/ClientApp.Browser.csproj
 
       - name: Publish Browser
         run: dotnet publish src/ClientApp.Browser/ClientApp.Browser.csproj -c Release
