@@ -3,6 +3,9 @@
     <TargetFramework>net10.0-browser</TargetFramework>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <OverrideHtmlAssetPlaceholders>true</OverrideHtmlAssetPlaceholders>
+    <!-- Enable native asset linking for SkiaSharp in .NET 11 -->
+    <WasmBuildNative>true</WasmBuildNative>
+    <WasmNativeStrip>false</WasmNativeStrip>
   </PropertyGroup>
 
   <ItemGroup>
